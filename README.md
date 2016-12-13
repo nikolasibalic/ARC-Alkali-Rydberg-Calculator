@@ -9,7 +9,7 @@ For installation instructions and documentations see **documentation/index.html*
 
 For example IPython notebook in .html format see **documentation/Rydberg_atoms_a_primer.html** or for .ipynb format see **documentation/Rydberg_atoms_a_primer_notebook.ipynb**
 
-For online access to a selection of package functions see atomcalc.jqc.org.uk
+For online access to a selection of package functions see (web page arriving soon)
 
 -------
 Authors
