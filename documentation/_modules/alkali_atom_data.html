@@ -1,0 +1,990 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>alkali_atom_data &mdash; ARC - Alkali Rydberg Calculator 0.9 beta documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../_static/arc_logo.ico"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ARC - Alkali Rydberg Calculator 0.9 beta documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ARC - Alkali Rydberg Calculator
+          
+
+          
+            
+            <img src="../_static/logo_small.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting started with ARC</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../detailed_doc.html">Detailed documentation of functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute.html">How to contribute to the project</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">ARC - Alkali Rydberg Calculator</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>alkali_atom_data</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for alkali_atom_data</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This module specifies properties of individual alkali metals.</span>
+<span class="sd">    </span>
+<span class="sd">    If you want to change e.g. coefficients used for model potential, \</span>
+<span class="sd">    quantum defects, or other numerical values, this is the place to look at.</span>
+<span class="sd">    </span>
+<span class="sd">    Data sources</span>
+<span class="sd">    -------------</span>
+<span class="sd">    </span>
+<span class="sd">    .. [#c1] M. Marinescu, H. R. Sadeghpour, and A. Dalgarno, \</span>
+<span class="sd">            *Phys.Rev.A* **49**, 982 (1994)</span>
+<span class="sd">            https://doi.org/10.1103/PhysRevA.49.982</span>
+
+<span class="sd">    .. [#Weber1987] K.-H. Weber and Craig J. Sansonetti,</span>
+<span class="sd">            *Phys.Rev.A* **35**, 4650 (1987)</span>
+
+<span class="sd">    .. [#c3] C.B.Alcock, V.P.Itkin, M.K.Horrigan,\</span>
+<span class="sd">            *Canadian Metallurgical Quarterly*, **23**, 309 (1984)</span>
+<span class="sd">            http://dx.doi.org/10.1179/cmq.1984.23.3.309</span>
+<span class="sd">    </span>
+<span class="sd">    .. [#c4] Wenhui Li, I. Mourachko, M. W. Noel, and T. F. Gallagher, \</span>
+<span class="sd">            *Phys. Rev. A* **67**, 052502 (2003)</span>
+<span class="sd">            https://doi.org/10.1103/PhysRevA.67.052502</span>
+<span class="sd">         </span>
+<span class="sd">    .. [#c5] Jianing Han, Yasir Jamil, D. V. L. Norum, Paul J. Tanner, \</span>
+<span class="sd">            and T. F. Gallagher, *Phys. Rev. A* **74**, 054502 (2006)</span>
+<span class="sd">            https://doi.org/10.1103/PhysRevA.74.054502</span>
+<span class="sd">            </span>
+<span class="sd">    .. [#Mack2011] Markus Mack, Florian Karlewski, Helge Hattermann, Simone Hockh,</span>
+<span class="sd">            Florian Jessen, Daniel Cano, and Jozsef Fortagh, *Phys. Rev. A* **83**,</span>
+<span class="sd">            052515 (2011), https://doi.org/10.1103/PhysRevA.83.052515</span>
+
+<span class="sd">    .. [#Afrousheh2006a] K. Afrousheh, P. Bohlouli-Zanjani, J. A. Petrus, and</span>
+<span class="sd">            J. D. D. Martin, *Phys. Rev. A* **74**, 062712 (2006)</span>
+<span class="sd">            https://doi.org/10.1103/PhysRevA.74.062712</span>
+
+<span class="sd">    .. [#c6] P. Goy, J. Liang, M. Gross, and S. Haroche,\</span>
+<span class="sd">            *Phys. Rev. A* **34**, 2889 (1986)</span>
+<span class="sd">            https://doi.org/10.1103/PhysRevA.34.2889</span>
+<span class="sd">      </span>
+<span class="sd">    .. [#jd2016] Johannes Deiglmayr, Holger Herburger, Heiner Sassmannshausen,</span>
+<span class="sd">        Paul Jansen, Hansjurg Schmutz, Frederic Merkt, *Phys. Rev. A* **93**, 013424 (2016)</span>
+<span class="sd">        https://doi.org/10.1103/PhysRevA.93.013424</span>
+<span class="sd">    </span>
+<span class="sd">    .. [#Lorenzen1984] C. -J. Lorenzen, and K. Niemax, *Z. Phys. A* **315**,</span>
+<span class="sd">        127 (1984) dx.doi.org/ 10.1007/BF01419370</span>
+<span class="sd">     </span>
+<span class="sd">    .. [#c7] C. -J. Lorenzen, and K. Niemax, *Physica Scripta* **27**, 300 (1983)</span>
+<span class="sd">            </span>
+<span class="sd">    .. [#Baugh1998] J. F. Baugh, C. E. Burkhardt, J. J. Leventhal,</span>
+<span class="sd">        and T. Bergeman, **Phys. Rev. A** *58*, 1585 (1998).</span>
+<span class="sd">        https://doi.org/10.1103/PhysRevA.58.1585</span>
+<span class="sd">    </span>
+<span class="sd">    .. [#c8] NIST, P. Mohr and S. Kotochigova, unpublished calculations (2000). </span>
+<span class="sd">        The wavelengths for the Balmer-alpha and Balmer-beta transitions at 6563 </span>
+<span class="sd">        and 4861 :math:`\\unicode{xC5}` include only the stronger components of </span>
+<span class="sd">        more extensive fine structures.</span>
+<span class="sd">    </span>
+<span class="sd">    .. [#c11] R. L. Kelly, *J. Phys. Chem. Ref. Data* **16**, Suppl. 1 (1987).  </span>
+<span class="sd">    </span>
+<span class="sd">    .. [#c12] J. F. Baugh, C. E. Burkhardt, J. J. Leventhal, and T. Bergeman, </span>
+<span class="sd">        *Phys. Rev. A* **58**, 1585 (1998).</span>
+<span class="sd">        https://doi.org/10.1103/PhysRevA.58.1585</span>
+<span class="sd">        </span>
+<span class="sd">    .. [#c13] J. Sugar and C. Corliss, *J. Phys. Chem. Ref. Data* **14**,\</span>
+<span class="sd">         Suppl. 2 (1985).</span>
+<span class="sd">    </span>
+<span class="sd">    Module</span>
+<span class="sd">    ------</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">alkali_atom_functions</span> <span class="k">import</span> <span class="o">*</span>
+
+
+<div class="viewcode-block" id="Hydrogen"><a class="viewcode-back" href="../alkali_atom_data.html#alkali_atom_data.Hydrogen">[docs]</a><span class="k">class</span> <span class="nc">Hydrogen</span><span class="p">(</span><span class="n">AlkaliAtom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Properties of hydrogen atoms</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ionisationEnergy</span> <span class="o">=</span> <span class="mf">13.598433</span>  <span class="c1">#: (eV), Ref. [#c8]_.</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">scaledRydbergConstant</span> <span class="o">=</span> <span class="mf">109677.5834</span><span class="o">*</span><span class="mf">1.e2</span>\
+        <span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;inverse meter-electron volt relationship&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="n">precalculatedDB</span> <span class="o">=</span> <span class="s2">&quot;h_precalculated.db&quot;</span>
+    
+    <span class="n">groundStateN</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">minQuantumDefectN</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">def</span> <span class="nf">potential</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">s</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">r</span><span class="p">):</span>
+        <span class="c1"># Returns total potential that electron feels = core potential + Spin-Orbit interaction</span>
+        <span class="k">return</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="o">/</span><span class="n">r</span>
+    
+    <span class="k">def</span> <span class="nf">stateQuantumDefect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">j</span><span class="p">):</span>
+        <span class="n">defect</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="k">return</span> <span class="n">defect</span> </div>
+
+<div class="viewcode-block" id="Caesium"><a class="viewcode-back" href="../alkali_atom_data.html#alkali_atom_data.Caesium">[docs]</a><span class="k">class</span> <span class="nc">Caesium</span><span class="p">(</span><span class="n">AlkaliAtom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Properties of caesium atoms</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)</span>
+    <span class="n">alphaC</span>  <span class="o">=</span> <span class="mf">15.6440</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># </span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.49546309</span><span class="p">,</span> <span class="mf">4.69366096</span><span class="p">,</span> <span class="mf">4.32466196</span><span class="p">,</span> <span class="mf">3.01048361</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">a2</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.47533800</span><span class="p">,</span> <span class="mf">1.71398344</span><span class="p">,</span> <span class="mf">1.61365288</span><span class="p">,</span> <span class="mf">1.40000001</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a3</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">9.72143084</span><span class="p">,</span> <span class="o">-</span><span class="mf">24.65624280</span><span class="p">,</span> <span class="o">-</span><span class="mf">6.70128850</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.20036138</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a4</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.02629242</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.09543125</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.74095193</span><span class="p">,</span> <span class="mf">0.00034538</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.92046930</span><span class="p">,</span> <span class="mf">2.13383095</span><span class="p">,</span> <span class="mf">0.93007296</span><span class="p">,</span> <span class="mf">1.99969677</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="mi">55</span>
+    
+    <span class="c1">#: (eV), Ref. [#jd2016]_.</span>
+    <span class="n">ionisationEnergy</span> <span class="o">=</span> <span class="mf">31406.4677325</span><span class="o">*</span><span class="mf">1.e2</span>\
+        <span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;inverse meter-electron volt relationship&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="c1"># State energies sEnergy [a,b] = state energy for n=a+1, l = b; j = l-1/2</span>
+    <span class="c1"># sEnergy [l,n] = state energy for j = l+1/2</span>
+    <span class="n">sEnergy</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">NISTdataLevels</span> <span class="o">=</span> <span class="mi">25</span>
+    
+    
+    <span class="c1"># first index [0]:  j-1/2    [1]: j+1/2</span>
+    <span class="c1"># second index [0..4] : s,p,d,f,g</span>
+    <span class="c1"># third index [delta0,delta2...]</span>
+
+    <span class="n">quantumDefect</span> <span class="o">=</span> <span class="p">[[[</span><span class="mf">4.04935665</span><span class="p">,</span><span class="mf">0.2377037</span><span class="p">,</span><span class="mf">0.255401</span><span class="p">,</span><span class="mf">0.00378</span><span class="p">,</span><span class="mf">0.25486</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">3.59158950</span><span class="p">,</span><span class="mf">0.360926</span><span class="p">,</span><span class="mf">0.41905</span><span class="p">,</span><span class="mf">0.64388</span><span class="p">,</span><span class="mf">1.45035</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">2.4754562</span><span class="p">,</span><span class="mf">0.009320</span><span class="p">,</span><span class="o">-</span><span class="mf">0.43498</span><span class="p">,</span><span class="o">-</span><span class="mf">0.76358</span><span class="p">,</span><span class="o">-</span><span class="mf">18.0061</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.03341424</span><span class="p">,</span><span class="o">-</span><span class="mf">0.198674</span><span class="p">,</span><span class="mf">0.28953</span><span class="p">,</span><span class="o">-</span><span class="mf">0.2601</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">0.00703865</span><span class="p">,</span><span class="o">-</span><span class="mf">0.049252</span><span class="p">,</span><span class="mf">0.01291</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]],</span>\
+                     <span class="p">[[</span><span class="mf">4.04935665</span><span class="p">,</span><span class="mf">0.2377037</span><span class="p">,</span><span class="mf">0.255401</span><span class="p">,</span><span class="mf">0.00378</span><span class="p">,</span><span class="mf">0.25486</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">3.5589599</span><span class="p">,</span><span class="mf">0.392469</span><span class="p">,</span><span class="o">-</span><span class="mf">0.67431</span><span class="p">,</span><span class="mf">22.3531</span><span class="p">,</span><span class="o">-</span><span class="mf">92.289</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">2.46631524</span><span class="p">,</span><span class="mf">0.013577</span><span class="p">,</span><span class="o">-</span><span class="mf">0.37457</span><span class="p">,</span><span class="o">-</span><span class="mf">2.1867</span><span class="p">,</span><span class="o">-</span><span class="mf">1.5532</span><span class="p">,</span><span class="o">-</span><span class="mf">56.6739</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.03341424</span><span class="p">,</span><span class="o">-</span><span class="mf">0.198674</span><span class="p">,</span><span class="mf">0.28953</span><span class="p">,</span><span class="o">-</span><span class="mf">0.2601</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]]]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        quantum defects for :math:`S_{1/2}`, :math:`nP_{1/2}`, :math:`D_{5/2}`,</span>
+<span class="sd">        :math:`F_{5/2}` and :math:`G_{7/2}` are from [#Weber1987]_, while</span>
+<span class="sd">        quantum defects for :math:`nP_{3/2}`,:math:`D_{3/2}` are from [#Lorenzen1984]_, </span>
+<span class="sd">    </span>
+<span class="sd">        Note:</span>
+<span class="sd">            f_7/2 quantum defects are PUT TO BE EXACTLY the same as f_5/2 (~10MHz difference?!)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">minQuantumDefectN</span> <span class="o">=</span>  <span class="mi">9</span>
+    
+    <span class="c1">#: from [#jd2016]_.</span>
+    <span class="n">scaledRydbergConstant</span> <span class="o">=</span> <span class="mf">109736.8627339</span><span class="o">*</span><span class="mf">1.e2</span>\
+        <span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;inverse meter-electron volt relationship&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">levelDataFromNIST</span> <span class="o">=</span> <span class="s2">&quot;cs_NIST_level_data.ascii&quot;</span>
+    
+    <span class="n">precalculatedDB</span> <span class="o">=</span> <span class="s2">&quot;cs_precalculated.db&quot;</span>
+    
+    <span class="n">dipoleMatrixElementFile</span> <span class="o">=</span> <span class="s2">&quot;cs_dipole_matrix_elements.npy&quot;</span>
+    <span class="n">quadrupoleMatrixElementFile</span> <span class="o">=</span> <span class="s2">&quot;cs_quadrupole_matrix_elements.npy&quot;</span>
+    
+    <span class="n">literatureDMEfilename</span> <span class="o">=</span> <span class="s1">&#39;caesium_literature_dme.csv&#39;</span>
+
+    <span class="c1">#: levels that are for smaller n than ground level, but are above in energy due to angular part</span>
+    <span class="n">extraLevels</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="o">+</span><span class="mf">0.5</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="o">-</span><span class="mf">0.5</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="o">+</span><span class="mf">0.5</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="o">-</span><span class="mf">0.5</span><span class="p">],</span>\
+                   <span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="o">+</span><span class="mf">0.5</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="o">-</span><span class="mf">0.5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="o">+</span><span class="mf">0.5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="o">-</span><span class="mf">0.5</span><span class="p">]]</span>
+    
+    <span class="n">groundStateN</span> <span class="o">=</span> <span class="mi">6</span>
+    
+    <span class="n">mass</span> <span class="o">=</span> <span class="mf">132.905429</span><span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;atomic mass constant&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">abundance</span> <span class="o">=</span> <span class="mf">1.000</span>
+    
+    <span class="n">elementName</span> <span class="o">=</span> <span class="s2">&quot;Cs133&quot;</span>
+       
+<div class="viewcode-block" id="Caesium.getPressure"><a class="viewcode-back" href="../alkali_atom_data.html#alkali_atom_data.Caesium.getPressure">[docs]</a>    <span class="k">def</span> <span class="nf">getPressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temperature</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Pressure of atomic vapour at given temperature.</span>
+<span class="sd">            </span>
+<span class="sd">            Uses equation and values from [#c3]_. Values from table 2. </span>
+<span class="sd">            (accuracy +- 5%) are used for Cs in solid phase. Values from table 3.</span>
+<span class="sd">            (accuracy +-1 %) are used for Cs in liquid phase.</span>
+<span class="sd">            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="c1"># returns pressure in Pa for temperature in K</span>
+    
+        <span class="k">if</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mf">28.5</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># Cs is in solid phase (from table 2. for recommended equations / +-5%) </span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">2.881</span><span class="o">+</span><span class="mf">4.711</span><span class="o">-</span><span class="mf">3999.</span><span class="o">/</span><span class="n">temperature</span><span class="p">)</span><span class="o">*</span><span class="mf">133.322368</span>
+        
+        <span class="k">elif</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mf">550.</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># Cs is in liquid phase (from table 3. of the cited reference &quot;precisely fitted equations / +- 1%)</span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">2.881</span><span class="o">+</span><span class="mf">8.232</span><span class="o">-</span><span class="mf">4062.</span><span class="o">/</span><span class="n">temperature</span><span class="o">-</span>\
+                          <span class="mf">1.3359</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span><span class="o">/</span><span class="n">log</span><span class="p">(</span><span class="mf">10.</span><span class="p">))</span><span class="o">*</span><span class="mf">133.322368</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s2">&quot;ERROR: Cs vapour pressure above 550 C is unknown </span><span class="se">\</span>
+<span class="s2">                    (limits of experimental interpolation)&quot;</span>
+            <span class="k">return</span> <span class="mi">0</span></div>
+      
+    <span class="k">def</span> <span class="nf">getPressureOld</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temperature</span><span class="p">):</span>
+        <span class="c1"># returns pressure in Pa for temperature in K</span>
+
+        <span class="c1"># from A.N.Nesmeyanov, Vapor Pressure of the Chemical Elements (Elsevier, Amsterdam, 1963). English edition</span>
+        <span class="c1"># edited by Robert Gary</span>
+        <span class="c1"># as was found in Steck Alkali metal data, revision 1.6, 14 October 2003</span>
+        
+        <span class="nb">print</span> <span class="s2">&quot;WARNING: getPressureOld is provided just for reference for </span><span class="se">\</span>
+<span class="s2">                the old versions of the programme&quot;</span>
+        <span class="nb">print</span> <span class="s2">&quot;New programmes should use getPressure function instead !&quot;</span>
+        
+        <span class="k">if</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mf">28.44</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># Cs is in solid phase</span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="o">-</span><span class="mf">219.482</span><span class="o">+</span><span class="mf">1088.676</span><span class="o">/</span><span class="n">temperature</span><span class="o">-</span><span class="mf">0.08336185</span><span class="o">*</span><span class="n">temperature</span><span class="o">+</span>\
+                          <span class="mf">94.88752</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span><span class="o">/</span><span class="n">log</span><span class="p">(</span><span class="mf">10.0</span><span class="p">))</span><span class="o">*</span><span class="mf">133.322368</span>
+        
+        <span class="k">elif</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mi">671</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># Cs is in liquid phase</span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">8.22127</span><span class="o">-</span><span class="mf">4006.048</span><span class="o">/</span><span class="n">temperature</span><span class="o">-</span><span class="mf">0.00060194</span><span class="o">*</span><span class="n">temperature</span><span class="o">-</span>\
+                          <span class="mf">0.19623</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span><span class="o">/</span><span class="n">log</span><span class="p">(</span><span class="mf">10.0</span><span class="p">))</span><span class="o">*</span><span class="mf">133.322368</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s2">&quot;ERROR: Cs vapour pressure above 671 C is unknown </span><span class="se">\</span>
+<span class="s2">                    (limits of experimental interpolation)&quot;</span>
+            <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Rubidium"><a class="viewcode-back" href="../alkali_atom_data.html#alkali_atom_data.Rubidium">[docs]</a><span class="k">class</span> <span class="nc">Rubidium</span><span class="p">(</span><span class="n">AlkaliAtom</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Properites of rubidium 85 atoms</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)</span>
+    <span class="n">alphaC</span>  <span class="o">=</span> <span class="mf">9.0760</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">a1</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.69628474</span><span class="p">,</span> <span class="mf">4.44088978</span><span class="p">,</span> <span class="mf">3.78717363</span><span class="p">,</span> <span class="mf">2.39848933</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.64915255</span><span class="p">,</span> <span class="mf">1.92828831</span><span class="p">,</span> <span class="mf">1.57027864</span><span class="p">,</span> <span class="mf">1.76810544</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a3</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">9.86069196</span><span class="p">,</span> <span class="o">-</span><span class="mf">16.79597770</span><span class="p">,</span> <span class="o">-</span><span class="mf">11.65588970</span><span class="p">,</span> <span class="o">-</span><span class="mf">12.07106780</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a4</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.19579987</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.8163314</span><span class="p">,</span> <span class="mf">0.52942835</span><span class="p">,</span> <span class="mf">0.77256589</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.66242117</span><span class="p">,</span> <span class="mf">1.50195124</span><span class="p">,</span> <span class="mf">4.86851938</span><span class="p">,</span> <span class="mf">4.79831327</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="mi">37</span>
+    
+    <span class="n">NISTdataLevels</span> <span class="o">=</span> <span class="mi">77</span>
+    
+    <span class="c1">#: (eV) Ref. [#Mack2011]_</span>
+    <span class="n">ionisationEnergy</span> <span class="o">=</span> <span class="mf">33690.94644</span><span class="o">*</span><span class="mf">1.e2</span> \
+        <span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;inverse meter-electron volt relationship&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> 
+    
+    <span class="n">quantumDefect</span> <span class="o">=</span> <span class="p">[[[</span><span class="mf">3.1311804</span><span class="p">,</span><span class="mf">0.1784</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">2.6548849</span><span class="p">,</span><span class="mf">0.2900</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">1.34809171</span><span class="p">,</span><span class="o">-</span><span class="mf">0.60286</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0165192</span><span class="p">,</span><span class="o">-</span><span class="mf">0.085</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.00405</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]],</span>
+                     <span class="p">[[</span><span class="mf">3.1311804</span><span class="p">,</span><span class="mf">0.1784</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">2.6416737</span><span class="p">,</span><span class="mf">0.2950</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">1.34646572</span><span class="p">,</span><span class="o">-</span><span class="mf">0.59600</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0165437</span><span class="p">,</span><span class="o">-</span><span class="mf">0.086</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.00405</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]]]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        quantum defects for :math:`nF` states are</span>
+<span class="sd">        from [#c5]_. Quantum defects for :math:`nG` states are </span>
+<span class="sd">        from [#Afrousheh2006a]_. All other quantum defects are from from [#c4]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#:  in eV</span>
+    <span class="n">scaledRydbergConstant</span> <span class="o">=</span> <span class="mf">109736.605</span><span class="o">*</span><span class="mf">1.e2</span> \
+        <span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;inverse meter-electron volt relationship&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> 
+    
+    <span class="n">levelDataFromNIST</span> <span class="o">=</span> <span class="s2">&quot;rb_NIST_level_data.ascii&quot;</span>
+    <span class="n">dipoleMatrixElementFile</span> <span class="o">=</span> <span class="s2">&quot;rb_dipole_matrix_elements.npy&quot;</span>
+    <span class="n">quadrupoleMatrixElementFile</span> <span class="o">=</span> <span class="s2">&quot;rb_quadrupole_matrix_elements.npy&quot;</span>
+    
+    <span class="n">minQuantumDefectN</span> <span class="o">=</span> <span class="mi">8</span>
+    
+    <span class="n">precalculatedDB</span> <span class="o">=</span> <span class="s2">&quot;rb_precalculated.db&quot;</span>
+    
+    <span class="n">literatureDMEfilename</span> <span class="o">=</span> <span class="s1">&#39;rubidium_literature_dme.csv&#39;</span>
+    
+    <span class="c1">#: levels that are for smaller n than ground level, but are above in energy due to angular part</span>
+    <span class="n">extraLevels</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="o">+</span><span class="mf">0.5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="o">-</span><span class="mf">0.5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="o">+</span><span class="mf">0.5</span><span class="p">],[</span><span class="mi">4</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="o">-</span><span class="mf">0.5</span><span class="p">]]</span>
+    
+    <span class="n">groundStateN</span> <span class="o">=</span> <span class="mi">5</span>
+    
+    <span class="n">mass</span> <span class="o">=</span> <span class="mf">85.4678</span><span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;atomic mass constant&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">elementName</span> <span class="o">=</span> <span class="s2">&quot;Rb&quot;</span>
+
+<div class="viewcode-block" id="Rubidium.getPressure"><a class="viewcode-back" href="../alkali_atom_data.html#alkali_atom_data.Rubidium.getPressure">[docs]</a>    <span class="k">def</span> <span class="nf">getPressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temperature</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Pressure of atomic vapour at given temperature.</span>
+<span class="sd">            </span>
+<span class="sd">            Uses equation and values from [#c3]_. Values from table 2. </span>
+<span class="sd">            (accuracy +- 5%) are used for Rb in solid phase. Values from table 3.</span>
+<span class="sd">            (accuracy +-1 %) are used for Rb in liquid phase.</span>
+<span class="sd">            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+         
+        <span class="k">if</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mf">39.3</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># Rb is in solid phase (from table 2. for recommended equations / +-5%) </span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">2.881</span><span class="o">+</span><span class="mf">4.857</span><span class="o">-</span><span class="mf">4215.</span><span class="o">/</span><span class="n">temperature</span><span class="p">)</span><span class="o">*</span><span class="mf">133.322368</span>
+        
+        <span class="k">elif</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mf">550.</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># Rb is in liquid phase (from table 3. of the cited reference &quot;precisely fitted equations / +- 1%)</span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">2.881</span><span class="o">+</span><span class="mf">8.316</span><span class="o">-</span><span class="mf">4275.</span><span class="o">/</span><span class="n">temperature</span><span class="o">-</span>\
+                          <span class="mf">1.3102</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span><span class="o">/</span><span class="n">log</span><span class="p">(</span><span class="mf">10.</span><span class="p">))</span><span class="o">*</span><span class="mf">133.322368</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s2">&quot;ERROR: Rb vapour pressure above 550 C is unknown </span><span class="se">\</span>
+<span class="s2">                    (limits of experimental interpolation)&quot;</span>
+            <span class="k">return</span> <span class="mi">0</span></div></div>
+
+<div class="viewcode-block" id="Lithium6"><a class="viewcode-back" href="../alkali_atom_data.html#alkali_atom_data.Lithium6">[docs]</a><span class="k">class</span> <span class="nc">Lithium6</span><span class="p">(</span><span class="n">AlkaliAtom</span><span class="p">):</span> <span class="c1"># Li</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Properties of lithium 6 atoms</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)</span>
+    <span class="n">alphaC</span>  <span class="o">=</span> <span class="mf">0.1923</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># model potential parameters from Marinescu et.al, PRA 49:982 (1994)</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.47718079</span><span class="p">,</span> <span class="mf">3.45414648</span><span class="p">,</span> <span class="mf">2.51909839</span><span class="p">,</span> <span class="mf">2.51909839</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.84150932</span><span class="p">,</span> <span class="mf">2.55151080</span><span class="p">,</span> <span class="mf">2.43712450</span><span class="p">,</span> <span class="mf">2.43712450</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a3</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.02169712</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.21646561</span><span class="p">,</span> <span class="mf">0.32505524</span><span class="p">,</span> <span class="mf">0.32505524</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a4</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.11988362</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.06990078</span><span class="p">,</span> <span class="mf">0.10602430</span><span class="p">,</span> <span class="mf">0.10602430</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.61340824</span><span class="p">,</span> <span class="mf">0.61566441</span><span class="p">,</span> <span class="mf">2.34126273</span><span class="p">,</span> <span class="mf">2.34126273</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">Z</span> <span class="o">=</span> <span class="mi">3</span>
+    
+    <span class="n">NISTdataLevels</span> <span class="o">=</span> <span class="mi">42</span>
+    
+    <span class="c1"># (eV) from Ref. [#c7]_</span>
+    <span class="n">ionisationEnergy</span> <span class="o">=</span> <span class="mf">43487.15</span><span class="o">*</span><span class="mf">1.e2</span>\
+        <span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;inverse meter-electron volt relationship&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="c1"># PRA 34, 2889 (1986); and (for D_J and F_J) from Physica Scripta 27:300-305 (1983) </span>
+    <span class="n">quantumDefect</span> <span class="o">=</span> <span class="p">[[[</span><span class="mf">0.3995101</span><span class="p">,</span><span class="mf">0.0290</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0471835</span><span class="p">,</span><span class="o">-</span><span class="mf">0.024</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.002129</span><span class="p">,</span><span class="o">-</span><span class="mf">0.01491</span><span class="p">,</span><span class="mf">0.1759</span><span class="p">,</span><span class="o">-</span><span class="mf">0.8507</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="o">-</span><span class="mf">0.000077</span><span class="p">,</span><span class="mf">0.021856</span><span class="p">,</span><span class="o">-</span><span class="mf">0.4211</span><span class="p">,</span><span class="mf">2.3891</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]],</span>
+                     <span class="p">[[</span><span class="mf">0.3995101</span><span class="p">,</span><span class="mf">0.0290</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0471720</span><span class="p">,</span><span class="o">-</span><span class="mf">0.024</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.002129</span><span class="p">,</span><span class="o">-</span><span class="mf">0.01491</span><span class="p">,</span><span class="mf">0.1759</span><span class="p">,</span><span class="o">-</span><span class="mf">0.8507</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="o">-</span><span class="mf">0.000077</span><span class="p">,</span><span class="mf">0.021856</span><span class="p">,</span><span class="o">-</span><span class="mf">0.4211</span><span class="p">,</span><span class="mf">2.3891</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]]]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        quantum defects for :math:`nS` and :math:`nP` are from Ref. [#c6]_ . </span>
+<span class="sd">        Quantum defects for :math:`D_j` and :math:`F_j` are from Ref. [#c7]_ </span>
+<span class="sd">        (note that this defects in Ref. [#c7]_ are for Li7, differences</span>
+<span class="sd">        are expected not be too big).</span>
+<span class="sd">         </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">scaledRydbergConstant</span> <span class="o">=</span> <span class="mf">3.289541926</span><span class="o">*</span><span class="mf">1.e15</span><span class="o">/</span>\
+                <span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;electron volt-hertz relationship&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="n">levelDataFromNIST</span> <span class="o">=</span> <span class="s2">&quot;li_NIST_level_data.ascii&quot;</span>
+    <span class="n">dipoleMatrixElementFile</span> <span class="o">=</span> <span class="s2">&quot;li6_dipole_matrix_elements.npy&quot;</span>
+    <span class="n">quadrupoleMatrixElementFile</span> <span class="o">=</span> <span class="s2">&quot;li6_quadrupole_matrix_elements.npy&quot;</span>
+
+    <span class="n">minQuantumDefectN</span> <span class="o">=</span> <span class="mi">4</span>
+
+    <span class="n">precalculatedDB</span> <span class="o">=</span> <span class="s2">&quot;li6_precalculated.db&quot;</span>
+
+    <span class="c1"># levels that are for smaller n than ground level, but are above in energy </span>
+    <span class="c1"># due to angular part</span>
+    <span class="n">extraLevels</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="n">groundStateN</span> <span class="o">=</span> <span class="mi">2</span>
+    
+    <span class="n">mass</span> <span class="o">=</span> <span class="mf">6.015121</span><span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;atomic mass constant&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">abundance</span> <span class="o">=</span> <span class="mf">0.075</span>
+    
+    <span class="n">elementName</span> <span class="o">=</span> <span class="s2">&quot;Li6&quot;</span>
+
+    
+<div class="viewcode-block" id="Lithium6.getPressure"><a class="viewcode-back" href="../alkali_atom_data.html#alkali_atom_data.Lithium6.getPressure">[docs]</a>    <span class="k">def</span> <span class="nf">getPressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temperature</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Pressure of atomic vapour at given temperature.</span>
+<span class="sd">            </span>
+<span class="sd">            Uses equation and values from [#c3]_. Values from table 3. </span>
+<span class="sd">            (accuracy +-1 %) are used both for liquid and solid phase of Li.</span>
+<span class="sd">            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+         
+        <span class="k">if</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mf">180.5</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># Li is in solid phase (from table 3. of the cited reference </span>
+            <span class="c1"># &quot;precisely fitted equations / +- 1%) </span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">2.881</span><span class="o">+</span><span class="mf">7.790</span><span class="o">-</span><span class="mf">8423.</span><span class="o">/</span><span class="n">temperature</span><span class="o">-</span>\
+                          <span class="mf">0.7074</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span><span class="o">/</span><span class="n">log</span><span class="p">(</span><span class="mf">10.</span><span class="p">))</span><span class="o">*</span><span class="mf">133.322368</span>
+        
+        <span class="k">elif</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mf">1000.</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># Li is in liquid phase (from table 3. of the cited reference </span>
+            <span class="c1"># &quot;precisely fitted equations / +- 1%)</span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">2.881</span><span class="o">+</span><span class="mf">8.409</span><span class="o">-</span><span class="mf">8320.</span><span class="o">/</span><span class="n">temperature</span><span class="o">-</span>\
+                          <span class="mf">1.0255</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span><span class="o">/</span><span class="n">log</span><span class="p">(</span><span class="mf">10.</span><span class="p">))</span><span class="o">*</span><span class="mf">133.322368</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s2">&quot;ERROR: Li vapour pressure above 1000 C is unknown </span><span class="se">\</span>
+<span class="s2">                    (limits of experimental interpolation)&quot;</span>
+            <span class="k">return</span> <span class="mi">0</span></div></div>
+
+<div class="viewcode-block" id="Lithium7"><a class="viewcode-back" href="../alkali_atom_data.html#alkali_atom_data.Lithium7">[docs]</a><span class="k">class</span> <span class="nc">Lithium7</span><span class="p">(</span><span class="n">AlkaliAtom</span><span class="p">):</span> <span class="c1"># Li</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Properties of lithium 7 atoms</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)</span>
+    <span class="c1"># model potential parameters from Marinescu et.al, PRA 49:982 (1994)</span>
+    <span class="n">alphaC</span>  <span class="o">=</span> <span class="mf">0.1923</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.47718079</span><span class="p">,</span> <span class="mf">3.45414648</span><span class="p">,</span> <span class="mf">2.51909839</span><span class="p">,</span> <span class="mf">2.51909839</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.84150932</span><span class="p">,</span> <span class="mf">2.55151080</span><span class="p">,</span> <span class="mf">2.43712450</span><span class="p">,</span> <span class="mf">2.43712450</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a3</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.02169712</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.21646561</span><span class="p">,</span> <span class="mf">0.32505524</span><span class="p">,</span> <span class="mf">0.32505524</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a4</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.11988362</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.06990078</span><span class="p">,</span> <span class="mf">0.10602430</span><span class="p">,</span> <span class="mf">0.10602430</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.61340824</span><span class="p">,</span> <span class="mf">0.61566441</span><span class="p">,</span> <span class="mf">2.34126273</span><span class="p">,</span> <span class="mf">2.34126273</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">Z</span> <span class="o">=</span> <span class="mi">3</span>
+    
+    <span class="n">NISTdataLevels</span> <span class="o">=</span> <span class="mi">42</span>
+    <span class="n">ionisationEnergy</span> <span class="o">=</span> <span class="mf">5.391719</span>  <span class="c1">#: (eV) NIST Ref. [#c11]_.</span>
+    
+    <span class="n">quantumDefect</span> <span class="o">=</span> <span class="p">[[[</span><span class="mf">0.3995101</span><span class="p">,</span><span class="mf">0.0290</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0471780</span><span class="p">,</span><span class="o">-</span><span class="mf">0.024</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.002129</span><span class="p">,</span><span class="o">-</span><span class="mf">0.01491</span><span class="p">,</span><span class="mf">0.1759</span><span class="p">,</span><span class="o">-</span><span class="mf">0.8507</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="o">-</span><span class="mf">0.000077</span><span class="p">,</span><span class="mf">0.021856</span><span class="p">,</span><span class="o">-</span><span class="mf">0.4211</span><span class="p">,</span><span class="mf">2.3891</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]],</span>
+                     <span class="p">[[</span><span class="mf">0.3995101</span><span class="p">,</span><span class="mf">0.0290</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0471665</span><span class="p">,</span><span class="o">-</span><span class="mf">0.024</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.002129</span><span class="p">,</span><span class="o">-</span><span class="mf">0.01491</span><span class="p">,</span><span class="mf">0.1759</span><span class="p">,</span><span class="o">-</span><span class="mf">0.8507</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="o">-</span><span class="mf">0.000077</span><span class="p">,</span><span class="mf">0.021856</span><span class="p">,</span><span class="o">-</span><span class="mf">0.4211</span><span class="p">,</span><span class="mf">2.3891</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]]]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        quantum defects for :math:`nS` and :math:`nP` states are </span>
+<span class="sd">        from Ref. [#c6]_. Quantum defects for :math:`D_j` and :math:`F_j`</span>
+<span class="sd">        states are from [#c7]_.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">scaledRydbergConstant</span> <span class="o">=</span> <span class="mf">3.289584728</span><span class="o">*</span><span class="mf">1.e15</span><span class="o">/</span>\
+                <span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;electron volt-hertz relationship&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    
+     
+        
+    <span class="n">levelDataFromNIST</span> <span class="o">=</span> <span class="s2">&quot;li_NIST_level_data.ascii&quot;</span>
+    <span class="n">dipoleMatrixElementFile</span> <span class="o">=</span> <span class="s2">&quot;li7_dipole_matrix_elements.npy&quot;</span>
+    <span class="n">quadrupoleMatrixElementFile</span> <span class="o">=</span> <span class="s2">&quot;li7_quadrupole_matrix_elements.npy&quot;</span>
+    
+    <span class="n">minQuantumDefectN</span> <span class="o">=</span> <span class="mi">4</span>
+    
+    <span class="n">precalculatedDB</span> <span class="o">=</span> <span class="s2">&quot;li7_precalculated.db&quot;</span>
+    
+    <span class="c1"># levels that are for smaller n than ground level, </span>
+    <span class="c1"># but are above in energy due to angular part</span>
+    <span class="n">extraLevels</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="n">groundStateN</span> <span class="o">=</span> <span class="mi">2</span>
+    
+    <span class="n">mass</span> <span class="o">=</span> <span class="mf">7.016003</span><span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;atomic mass constant&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">abundance</span> <span class="o">=</span> <span class="mf">0.925</span>
+
+    <span class="n">elementName</span> <span class="o">=</span> <span class="s2">&quot;Li7&quot;</span>
+
+
+<div class="viewcode-block" id="Lithium7.getPressure"><a class="viewcode-back" href="../alkali_atom_data.html#alkali_atom_data.Lithium7.getPressure">[docs]</a>    <span class="k">def</span> <span class="nf">getPressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temperature</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Pressure of atomic vapour at given temperature (in K).</span>
+<span class="sd">            </span>
+<span class="sd">            Uses equation and values from [#c3]_. Values from table 3. </span>
+<span class="sd">            (accuracy +-1 %) are used for both liquid and solid phase of Li.</span>
+<span class="sd">            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mf">180.5</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># Li is in solid phase (from table 3. of the cited reference </span>
+            <span class="c1"># &quot;precisely fitted equations / +- 1%) </span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">2.881</span><span class="o">+</span><span class="mf">7.790</span><span class="o">-</span><span class="mf">8423.</span><span class="o">/</span><span class="n">temperature</span><span class="o">-</span>\
+                          <span class="mf">0.7074</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span><span class="o">/</span><span class="n">log</span><span class="p">(</span><span class="mf">10.</span><span class="p">))</span><span class="o">*</span><span class="mf">133.322368</span>
+        
+        <span class="k">elif</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mf">1000.</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># Li is in liquid phase (from table 3. of the cited reference </span>
+            <span class="c1"># &quot;precisely fitted equations / +- 1%)</span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">2.881</span><span class="o">+</span><span class="mf">8.409</span><span class="o">-</span><span class="mf">8320.</span><span class="o">/</span><span class="n">temperature</span><span class="o">-</span>\
+                          <span class="mf">1.0255</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span><span class="o">/</span><span class="n">log</span><span class="p">(</span><span class="mf">10.</span><span class="p">))</span><span class="o">*</span><span class="mf">133.322368</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s2">&quot;ERROR: Li vapour pressure above 1000 C is unknown </span><span class="se">\</span>
+<span class="s2">                    (limits of experimental interpolation)&quot;</span>
+            <span class="k">return</span> <span class="mi">0</span></div></div>
+
+<div class="viewcode-block" id="Sodium"><a class="viewcode-back" href="../alkali_atom_data.html#alkali_atom_data.Sodium">[docs]</a><span class="k">class</span> <span class="nc">Sodium</span><span class="p">(</span><span class="n">AlkaliAtom</span><span class="p">):</span> <span class="c1">#Na23</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Properties of sodium 23 atoms</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1">#: ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)</span>
+    <span class="n">alphaC</span>  <span class="o">=</span> <span class="mf">0.9448</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4.82223117</span><span class="p">,</span> <span class="mf">5.08382502</span><span class="p">,</span> <span class="mf">3.53324124</span><span class="p">,</span> <span class="mf">1.11056646</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="p">[</span><span class="mf">2.45449865</span><span class="p">,</span> <span class="mf">2.18226881</span><span class="p">,</span> <span class="mf">2.48697936</span><span class="p">,</span> <span class="mf">1.05458759</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a3</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.12255048</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.19534623</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.75688448</span><span class="p">,</span> <span class="mf">1.73203428</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a4</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.42631393</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.03142861</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.27852357</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.09265696</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.45489422</span><span class="p">,</span> <span class="mf">0.45798739</span><span class="p">,</span> <span class="mf">0.71875312</span><span class="p">,</span> <span class="mf">28.6735059</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">Z</span> <span class="o">=</span> <span class="mi">11</span>
+    
+    <span class="n">NISTdataLevels</span> <span class="o">=</span> <span class="mi">20</span>
+    
+    <span class="c1">#: (eV) from Ref. [#c7]_</span>
+    <span class="n">ionisationEnergy</span> <span class="o">=</span>  <span class="mf">41449.44</span><span class="o">*</span><span class="mf">1.e2</span>\
+        <span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;inverse meter-electron volt relationship&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="n">quantumDefect</span> <span class="o">=</span> <span class="p">[[[</span><span class="mf">1.347964</span><span class="p">,</span><span class="mf">0.060673</span><span class="p">,</span><span class="mf">0.0233</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0085</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.855380</span><span class="p">,</span><span class="mf">0.11363</span><span class="p">,</span><span class="mf">0.0384</span><span class="p">,</span><span class="mf">0.1412</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.015543</span><span class="p">,</span><span class="o">-</span><span class="mf">0.08535</span><span class="p">,</span><span class="mf">0.7958</span><span class="p">,</span><span class="o">-</span><span class="mf">4.0513</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.001453</span><span class="p">,</span><span class="mf">0.017312</span><span class="p">,</span><span class="o">-</span><span class="mf">0.7809</span><span class="p">,</span><span class="mf">7.021</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]],</span>
+                     <span class="p">[[</span><span class="mf">1.347964</span><span class="p">,</span><span class="mf">0.060673</span><span class="p">,</span><span class="mf">0.0233</span><span class="p">,</span><span class="o">-</span><span class="mf">0.0085</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.854565</span><span class="p">,</span><span class="mf">0.114195</span><span class="p">,</span><span class="mf">0.0352</span><span class="p">,</span><span class="mf">0.1533</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.015543</span><span class="p">,</span><span class="o">-</span><span class="mf">0.08535</span><span class="p">,</span><span class="mf">0.7958</span><span class="p">,</span><span class="o">-</span><span class="mf">4.0513</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.001453</span><span class="p">,</span><span class="mf">0.017312</span><span class="p">,</span><span class="o">-</span><span class="mf">0.7809</span><span class="p">,</span><span class="mf">7.021</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]]]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Quantum defects are from Ref. [#c7]_. Note that we are using modified</span>
+<span class="sd">        Rydberg-Ritz formula. In literature both modified and non-modified</span>
+<span class="sd">        coefficients appear. For more details about the two equations see</span>
+<span class="sd">        page 301. of Ref. [#c7]_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    
+    <span class="c1">#: (eV) from Ref. [#c7]_</span>
+    <span class="n">scaledRydbergConstant</span> <span class="o">=</span> <span class="mf">109734.69</span><span class="o">*</span><span class="mf">1.e2</span>\
+        <span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;inverse meter-electron volt relationship&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    
+    
+    <span class="n">levelDataFromNIST</span> <span class="o">=</span> <span class="s2">&quot;na_NIST_level_data.ascii&quot;</span>
+    <span class="n">dipoleMatrixElementFile</span> <span class="o">=</span> <span class="s2">&quot;na23_dipole_matrix_elements.npy&quot;</span>
+    <span class="n">quadrupoleMatrixElementFile</span> <span class="o">=</span> <span class="s2">&quot;na23_quadrupole_matrix_elements.npy&quot;</span>
+
+    <span class="n">precalculatedDB</span> <span class="o">=</span> <span class="s2">&quot;na23_precalculated.db&quot;</span>
+
+    <span class="n">literatureDMEfilename</span> <span class="o">=</span> <span class="s1">&#39;sodium_literature_dme.csv&#39;</span>
+    
+    <span class="c1"># levels that are for smaller n than ground level, but are above in </span>
+    <span class="c1"># energy due to angular part</span>
+    <span class="n">extraLevels</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">groundStateN</span> <span class="o">=</span> <span class="mi">3</span>
+
+    <span class="n">mass</span> <span class="o">=</span> <span class="mf">22.989767</span><span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;atomic mass constant&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">abundance</span> <span class="o">=</span> <span class="mf">1.00</span>
+
+    <span class="n">elementName</span> <span class="o">=</span> <span class="s2">&quot;Na23&quot;</span>
+
+
+<div class="viewcode-block" id="Sodium.getPressure"><a class="viewcode-back" href="../alkali_atom_data.html#alkali_atom_data.Sodium.getPressure">[docs]</a>    <span class="k">def</span> <span class="nf">getPressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temperature</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Pressure of atomic vapour at given temperature.</span>
+<span class="sd">            </span>
+<span class="sd">            Uses equation and values from [#c3]_. Values from table 2. </span>
+<span class="sd">            (accuracy +- 5%) are used for Na in solid phase. Values from table 3.</span>
+<span class="sd">            (accuracy +-1 %) are used for Na in liquid phase.</span>
+<span class="sd">            </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+         
+        <span class="k">if</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mf">97.794</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># Na is in solid phase (from table 2. of the cited reference  / +- 5%) </span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">2.881</span><span class="o">+</span><span class="mf">5.298</span><span class="o">-</span><span class="mf">5603.</span><span class="o">/</span><span class="n">temperature</span><span class="p">)</span><span class="o">*</span><span class="mf">133.322368</span>
+        
+        <span class="k">elif</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mf">700.</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># Na is in liquid phase (from table 3. of the cited reference </span>
+            <span class="c1"># &quot;precisely fitted equations / +- 1%)</span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">2.881</span><span class="o">+</span><span class="mf">8.400</span><span class="o">-</span><span class="mf">5634.</span><span class="o">/</span><span class="n">temperature</span><span class="o">-</span>\
+                          <span class="mf">1.1748</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span><span class="o">/</span><span class="n">log</span><span class="p">(</span><span class="mf">10.</span><span class="p">))</span><span class="o">*</span><span class="mf">133.322368</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s2">&quot;ERROR: Na vapour pressure above 700 C is unknown </span><span class="se">\</span>
+<span class="s2">                    (limits of experimental interpolation)&quot;</span>
+            <span class="k">return</span> <span class="mi">0</span></div></div>
+
+<div class="viewcode-block" id="Potassium"><a class="viewcode-back" href="../alkali_atom_data.html#alkali_atom_data.Potassium">[docs]</a><span class="k">class</span> <span class="nc">Potassium</span><span class="p">(</span><span class="n">AlkaliAtom</span><span class="p">):</span> <span class="c1"># K39</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Properties of potassium 39 atoms</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)</span>
+    <span class="n">alphaC</span>  <span class="o">=</span> <span class="mf">5.3310</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a1</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.56079437</span><span class="p">,</span> <span class="mf">3.65670429</span><span class="p">,</span> <span class="mf">4.12713694</span><span class="p">,</span> <span class="mf">1.42310446</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a2</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.83909642</span><span class="p">,</span> <span class="mf">1.67520788</span><span class="p">,</span> <span class="mf">1.79837462</span><span class="p">,</span> <span class="mf">1.27861156</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a3</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.74701102</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.07416615</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.69935174</span><span class="p">,</span> <span class="mf">4.77441476</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">a4</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.03237313</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.89030421</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.98913582</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.94829262</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.83167545</span><span class="p">,</span> <span class="mf">0.85235381</span><span class="p">,</span> <span class="mf">0.83216907</span><span class="p">,</span> <span class="mf">6.50294371</span><span class="p">]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        model potential parameters from [#c1]_</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    
+    <span class="n">Z</span> <span class="o">=</span> <span class="mi">19</span>
+    
+    <span class="n">NISTdataLevels</span> <span class="o">=</span> <span class="mi">46</span>
+    
+    <span class="c1">#: (eV), weighted average of values in Ref. [#c7]_.</span>
+    <span class="n">ionisationEnergy</span> <span class="o">=</span> <span class="mf">35009.8139375</span><span class="o">*</span><span class="mf">1.e2</span>\
+        <span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;inverse meter-electron volt relationship&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="c1"># quantum defects from Physica Scripta 27:300 (1983)</span>
+    <span class="n">quantumDefect</span> <span class="o">=</span> <span class="p">[[[</span><span class="mf">2.1801985</span><span class="p">,</span><span class="mf">0.13558</span><span class="p">,</span><span class="mf">0.0759</span><span class="p">,</span><span class="mf">0.117</span><span class="p">,</span><span class="o">-</span><span class="mf">0.206</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">1.713892</span><span class="p">,</span><span class="mf">0.233294</span><span class="p">,</span><span class="mf">0.16137</span><span class="p">,</span><span class="mf">0.5345</span><span class="p">,</span><span class="o">-</span><span class="mf">0.234</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.27697</span><span class="p">,</span><span class="o">-</span><span class="mf">1.024911</span><span class="p">,</span><span class="o">-</span><span class="mf">0.709174</span><span class="p">,</span><span class="mf">11.839</span><span class="p">,</span><span class="o">-</span><span class="mf">26.689</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.010098</span><span class="p">,</span><span class="o">-</span><span class="mf">0.100224</span><span class="p">,</span><span class="mf">1.56334</span><span class="p">,</span><span class="o">-</span><span class="mf">12.6851</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]],</span>
+                     <span class="p">[[</span><span class="mf">2.1801985</span><span class="p">,</span><span class="mf">0.13558</span><span class="p">,</span><span class="mf">0.0759</span><span class="p">,</span><span class="mf">0.117</span><span class="p">,</span><span class="o">-</span><span class="mf">0.206</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">1.710848</span><span class="p">,</span><span class="mf">0.235437</span><span class="p">,</span><span class="mf">0.11551</span><span class="p">,</span><span class="mf">1.1015</span><span class="p">,</span><span class="o">-</span><span class="mf">2.0356</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.2771580</span><span class="p">,</span><span class="o">-</span><span class="mf">1.025635</span><span class="p">,</span><span class="o">-</span><span class="mf">0.59201</span><span class="p">,</span><span class="mf">10.0053</span><span class="p">,</span><span class="o">-</span><span class="mf">19.0244</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.010098</span><span class="p">,</span><span class="o">-</span><span class="mf">0.100224</span><span class="p">,</span><span class="mf">1.56334</span><span class="p">,</span><span class="o">-</span><span class="mf">12.6851</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>\
+                      <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]]]</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        quantum defects from Ref. [#c7]_.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">scaledRydbergConstant</span> <span class="o">=</span> <span class="mf">109735.774</span><span class="o">*</span><span class="mf">1.e2</span>\
+        <span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;inverse meter-electron volt relationship&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    
+    
+    <span class="n">levelDataFromNIST</span> <span class="o">=</span> <span class="s2">&quot;k_NIST_level_data.ascii&quot;</span>
+    <span class="n">dipoleMatrixElementFile</span> <span class="o">=</span> <span class="s2">&quot;k_dipole_matrix_elements.npy&quot;</span>
+    <span class="n">quadrupoleMatrixElementFile</span> <span class="o">=</span> <span class="s2">&quot;k_quadrupole_matrix_elements.npy&quot;</span>
+    
+    <span class="n">precalculatedDB</span> <span class="o">=</span> <span class="s2">&quot;k_precalculated.db&quot;</span>
+    
+    <span class="n">literatureDMEfilename</span> <span class="o">=</span> <span class="s1">&#39;potassium_literature_dme.csv&#39;</span>
+    
+    <span class="c1">#: levels that are for smaller n than ground level, but are above in energy due to angular part</span>
+    <span class="n">extraLevels</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="o">+</span><span class="mf">0.5</span><span class="p">],[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="o">-</span><span class="mf">0.5</span><span class="p">]]</span>
+    
+    <span class="n">groundStateN</span> <span class="o">=</span> <span class="mi">4</span>
+    
+    <span class="n">mass</span> <span class="o">=</span> <span class="mf">38.963707</span><span class="o">*</span><span class="n">physical_constants</span><span class="p">[</span><span class="s2">&quot;atomic mass constant&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">abundance</span> <span class="o">=</span> <span class="mf">0.932581</span>
+    
+    <span class="n">elementName</span> <span class="o">=</span> <span class="s2">&quot;K39&quot;</span>
+    
+<div class="viewcode-block" id="Potassium.getPressure"><a class="viewcode-back" href="../alkali_atom_data.html#alkali_atom_data.Potassium.getPressure">[docs]</a>    <span class="k">def</span> <span class="nf">getPressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">temperature</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Pressure of atomic vapour at given temperature.</span>
+<span class="sd">            </span>
+<span class="sd">            Uses equation and values from [#c3]_. Values from table 2. </span>
+<span class="sd">            (accuracy +- 5%) are used for Na in solid phase. Values from table 3. </span>
+<span class="sd">            (accuracy +-1 %) are used for Na in liquid phase.</span>
+<span class="sd">             </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+         
+        <span class="k">if</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mf">63.5</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># K is in solid phase (from table 2. of the cited reference  / +- 5%) </span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">2.881</span><span class="o">+</span><span class="mf">4.961</span><span class="o">-</span><span class="mf">4646.</span><span class="o">/</span><span class="n">temperature</span><span class="p">)</span><span class="o">*</span><span class="mf">133.322368</span>
+        
+        <span class="k">elif</span> <span class="n">temperature</span><span class="o">&lt;</span><span class="mf">600.</span><span class="o">+</span><span class="mf">273.15</span><span class="p">:</span>
+            <span class="c1"># K is in liquid phase (from table 3. of the cited reference </span>
+            <span class="c1"># &quot;precisely fitted equations / +- 1%)</span>
+            <span class="k">return</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="mf">2.881</span><span class="o">+</span><span class="mf">8.233</span><span class="o">-</span><span class="mf">4693.</span><span class="o">/</span><span class="n">temperature</span><span class="o">-</span>\
+                          <span class="mf">1.2403</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">temperature</span><span class="p">)</span><span class="o">/</span><span class="n">log</span><span class="p">(</span><span class="mf">10.</span><span class="p">))</span><span class="o">*</span><span class="mf">133.322368</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span> <span class="s2">&quot;ERROR: K vapour pressure above 600 C is unknown </span><span class="se">\</span>
+<span class="s2">                (limits of experimental interpolation)&quot;</span>
+            <span class="k">return</span> <span class="mi">0</span></div></div>
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Nikola Šibalić.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.9 beta',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,1627 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Alkali atom functions &mdash; ARC - Alkali Rydberg Calculator 0.9 beta documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/arc_logo.ico"/>
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="ARC - Alkali Rydberg Calculator 0.9 beta documentation" href="index.html"/>
+        <link rel="up" title="Detailed documentation of functions" href="detailed_doc.html"/>
+        <link rel="next" title="Alkali atom data" href="alkali_atom_data.html"/>
+        <link rel="prev" title="Detailed documentation of functions" href="detailed_doc.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> ARC - Alkali Rydberg Calculator
+          
+
+          
+            
+            <img src="_static/logo_small.png" class="logo" />
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started with ARC</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="detailed_doc.html">Detailed documentation of functions</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Alkali atom functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-alkali_atom_functions">Detailed documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="alkali_atom_data.html">Alkali atom data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calculations_atoms_single.html">Single atom calculations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calculations_atom_pairstate.html">Pair-state basis calculations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">How to contribute to the project</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">ARC - Alkali Rydberg Calculator</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="detailed_doc.html">Detailed documentation of functions</a> &raquo;</li>
+      
+    <li>Alkali atom functions</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="alkali-atom-functions">
+<h1>Alkali atom functions<a class="headerlink" href="#alkali-atom-functions" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p class="rubric">Classes and global methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom" title="alkali_atom_functions.AlkaliAtom"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom</span></code></a>([preferQuantumDefects,&nbsp;cpp_numerov])</td>
+<td>Implements general calculations for alkali atoms.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.NumerovBack" title="alkali_atom_functions.NumerovBack"><code class="xref py py-obj docutils literal"><span class="pre">NumerovBack</span></code></a>(innerLimit,&nbsp;outerLimit,&nbsp;kfun,&nbsp;...)</td>
+<td>Full Python implementation of Numerov integration</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.saveCalculation" title="alkali_atom_functions.saveCalculation"><code class="xref py py-obj docutils literal"><span class="pre">saveCalculation</span></code></a>(calculation,&nbsp;fileName)</td>
+<td>Saves calculation for future use.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.loadSavedCalculation" title="alkali_atom_functions.loadSavedCalculation"><code class="xref py py-obj docutils literal"><span class="pre">loadSavedCalculation</span></code></a>(fileName)</td>
+<td>Loads previously saved calculation.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.printState" title="alkali_atom_functions.printState"><code class="xref py py-obj docutils literal"><span class="pre">printState</span></code></a>(n,&nbsp;l,&nbsp;j)</td>
+<td>Prints state spectroscopic label for numeric <span class="math">\(n\)</span>,</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.printStateString" title="alkali_atom_functions.printStateString"><code class="xref py py-obj docutils literal"><span class="pre">printStateString</span></code></a>(n,&nbsp;l,&nbsp;j)</td>
+<td>Returns state spectroscopic label for numeric <span class="math">\(n\)</span>,</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">AlkaliAtom Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getDipoleMatrixElement" title="alkali_atom_functions.AlkaliAtom.getDipoleMatrixElement"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getDipoleMatrixElement</span></code></a>(n1,&nbsp;l1,&nbsp;...)</td>
+<td>Reduced dipole matrix element</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getTransitionWavelength" title="alkali_atom_functions.AlkaliAtom.getTransitionWavelength"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getTransitionWavelength</span></code></a>(n1,&nbsp;l1,&nbsp;...)</td>
+<td>Calculated transition wavelength (in vacuum) in m.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getTransitionFrequency" title="alkali_atom_functions.AlkaliAtom.getTransitionFrequency"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getTransitionFrequency</span></code></a>(n1,&nbsp;l1,&nbsp;...)</td>
+<td>Calculated transition frequency in Hz</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getRabiFrequency" title="alkali_atom_functions.AlkaliAtom.getRabiFrequency"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getRabiFrequency</span></code></a>(n1,&nbsp;l1,&nbsp;j1,&nbsp;mj1,&nbsp;...)</td>
+<td>Returns a Rabi frequency for resonant excitation</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getStateLifetime" title="alkali_atom_functions.AlkaliAtom.getStateLifetime"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getStateLifetime</span></code></a>(n,&nbsp;l,&nbsp;j[,&nbsp;...])</td>
+<td>Returns the lifetime of the state (in s)</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getTransitionRate" title="alkali_atom_functions.AlkaliAtom.getTransitionRate"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getTransitionRate</span></code></a>(n1,&nbsp;l1,&nbsp;j1,&nbsp;n2,&nbsp;...)</td>
+<td>Transition rate due to coupling to vacuum modes (black body included)</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getReducedMatrixElementJ_asymmetric" title="alkali_atom_functions.AlkaliAtom.getReducedMatrixElementJ_asymmetric"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getReducedMatrixElementJ_asymmetric</span></code></a>(n1,&nbsp;...)</td>
+<td>Reduced matrix element in <span class="math">\(J\)</span> basis, defined in asymmetric notation.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getReducedMatrixElementJ" title="alkali_atom_functions.AlkaliAtom.getReducedMatrixElementJ"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getReducedMatrixElementJ</span></code></a>(n1,&nbsp;l1,&nbsp;...)</td>
+<td>Reduced matrix element in <span class="math">\(J\)</span> basis (symmetric notation)</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getReducedMatrixElementL" title="alkali_atom_functions.AlkaliAtom.getReducedMatrixElementL"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getReducedMatrixElementL</span></code></a>(n1,&nbsp;l1,&nbsp;...)</td>
+<td>Reduced matrix element in <span class="math">\(L\)</span> basis (symmetric notation)</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getRadialMatrixElement" title="alkali_atom_functions.AlkaliAtom.getRadialMatrixElement"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getRadialMatrixElement</span></code></a>(n1,&nbsp;l1,&nbsp;...)</td>
+<td>Radial part of the dipole matrix element</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getQuadrupoleMatrixElement" title="alkali_atom_functions.AlkaliAtom.getQuadrupoleMatrixElement"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getQuadrupoleMatrixElement</span></code></a>(n1,&nbsp;...)</td>
+<td>Radial part of the quadrupole matrix element</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getPressure" title="alkali_atom_functions.AlkaliAtom.getPressure"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getPressure</span></code></a>(temperature)</td>
+<td>Vapour pressure (in Pa) at given temperature</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getNumberDensity" title="alkali_atom_functions.AlkaliAtom.getNumberDensity"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getNumberDensity</span></code></a>(temperature)</td>
+<td>Atom number density at given temperature</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getAverageInteratomicSpacing" title="alkali_atom_functions.AlkaliAtom.getAverageInteratomicSpacing"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getAverageInteratomicSpacing</span></code></a>(...)</td>
+<td>Returns average interatomic spacing in atomic vapour</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.corePotential" title="alkali_atom_functions.AlkaliAtom.corePotential"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.corePotential</span></code></a>(l,&nbsp;r)</td>
+<td>core potential felt by valence electron</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.effectiveCharge" title="alkali_atom_functions.AlkaliAtom.effectiveCharge"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.effectiveCharge</span></code></a>(l,&nbsp;r)</td>
+<td>effective charge of the core felt by valence electron</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.potential" title="alkali_atom_functions.AlkaliAtom.potential"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.potential</span></code></a>(l,&nbsp;s,&nbsp;j,&nbsp;r)</td>
+<td>returns total potential that electron feels</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.radialWavefunction" title="alkali_atom_functions.AlkaliAtom.radialWavefunction"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.radialWavefunction</span></code></a>(l,&nbsp;s,&nbsp;j,&nbsp;...)</td>
+<td>Radial part of electron wavefunction</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getEnergy" title="alkali_atom_functions.AlkaliAtom.getEnergy"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getEnergy</span></code></a>(n,&nbsp;l,&nbsp;j)</td>
+<td>Energy of the level relative to the ionisation level (in eV)</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getQuantumDefect" title="alkali_atom_functions.AlkaliAtom.getQuantumDefect"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getQuantumDefect</span></code></a>(n,&nbsp;l,&nbsp;j)</td>
+<td>Quantum defect of the level.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getC6term" title="alkali_atom_functions.AlkaliAtom.getC6term"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getC6term</span></code></a>(n,&nbsp;l,&nbsp;j,&nbsp;n1,&nbsp;l1,&nbsp;j1,&nbsp;...)</td>
+<td>C6 interaction term for the given two pair-states</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getC3term" title="alkali_atom_functions.AlkaliAtom.getC3term"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getC3term</span></code></a>(n,&nbsp;l,&nbsp;j,&nbsp;n1,&nbsp;l1,&nbsp;j1,&nbsp;...)</td>
+<td>C3 interaction term for the given two pair-states</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getEnergyDefect" title="alkali_atom_functions.AlkaliAtom.getEnergyDefect"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getEnergyDefect</span></code></a>(n,&nbsp;l,&nbsp;j,&nbsp;n1,&nbsp;l1,&nbsp;...)</td>
+<td>Energy defect for the given two pair-states (one of the state has</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getEnergyDefect2" title="alkali_atom_functions.AlkaliAtom.getEnergyDefect2"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getEnergyDefect2</span></code></a>(n,&nbsp;l,&nbsp;j,&nbsp;nn,&nbsp;ll,&nbsp;...)</td>
+<td>Energy defect for the given two pair-states</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.updateDipoleMatrixElementsFile" title="alkali_atom_functions.AlkaliAtom.updateDipoleMatrixElementsFile"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.updateDipoleMatrixElementsFile</span></code></a>()</td>
+<td>Updates the file with pre-calculated dipole matrix elements.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getRadialCoupling" title="alkali_atom_functions.AlkaliAtom.getRadialCoupling"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getRadialCoupling</span></code></a>(n,&nbsp;l,&nbsp;j,&nbsp;n1,&nbsp;l1,&nbsp;j1)</td>
+<td>Returns radial part of the coupling between two states (dipole and</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getAverageSpeed" title="alkali_atom_functions.AlkaliAtom.getAverageSpeed"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getAverageSpeed</span></code></a>(temperature)</td>
+<td>Average one-dimensional speed at a given temperature</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getLiteratureDME" title="alkali_atom_functions.AlkaliAtom.getLiteratureDME"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.getLiteratureDME</span></code></a>(n1,&nbsp;l1,&nbsp;j1,&nbsp;n2,&nbsp;...)</td>
+<td>Returns literature information on requested transition.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="module-alkali_atom_functions">
+<span id="detailed-documentation"></span><h2>Detailed documentation<a class="headerlink" href="#module-alkali_atom_functions" title="Permalink to this headline">¶</a></h2>
+<p>Implements general single-atom calculations</p>
+<p>This module calculates single (isolated) atom properties of all alkali metals in
+general. For example, it calculates dipole matrix elements, quandrupole matrix
+elements, etc.  Also, some helpful general functions are here, e.g. for saving
+and loading calculations (single-atom and pair-state based), printing state
+labels etc.</p>
+<dl class="class">
+<dt id="alkali_atom_functions.AlkaliAtom">
+<em class="property">class </em><code class="descclassname">alkali_atom_functions.</code><code class="descname">AlkaliAtom</code><span class="sig-paren">(</span><em>preferQuantumDefects=True</em>, <em>cpp_numerov=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements general calculations for alkali atoms.</p>
+<p>This abstract class implements general calculations methods.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>preferQuantumDefects</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Use quantum defects for energy level calculations. If False,
+uses NIST ASD values
+where available. If True, uses quantum defects for energy calculations
+for principal quantum numbers equal or above
+<a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.minQuantumDefectN" title="alkali_atom_functions.AlkaliAtom.minQuantumDefectN"><code class="xref py py-obj docutils literal"><span class="pre">minQuantumDefectN</span></code></a> which is specified for each element
+separately. For principal quantum numbers below this value,
+NIST ASD values are used, since quantum defects don&#8217;t reproduce
+well low-lying states. Default is True.</li>
+<li><strong>cpp_numerov</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; should the wavefunction be calculated with Numerov algorithm
+implemented in C++; if False, it uses pure Python implementation
+that is much slower. Default is True.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.Z">
+<code class="descname">Z</code><em class="property"> = 0.0</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.Z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Atomic number</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.abundance">
+<code class="descname">abundance</code><em class="property"> = 1.0</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.abundance" title="Permalink to this definition">¶</a></dt>
+<dd><p>relative isotope abundance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.alpha">
+<code class="descname">alpha</code><em class="property"> = 0.0072992700729927005</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.alpha" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hyperfine constant</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.alphaC">
+<code class="descname">alphaC</code><em class="property"> = 0.0</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.alphaC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Core polarizability</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.corePotential">
+<code class="descname">corePotential</code><span class="sig-paren">(</span><em>l</em>, <em>r</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.corePotential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.corePotential" title="Permalink to this definition">¶</a></dt>
+<dd><p>core potential felt by valence electron</p>
+<p>For more details about derivation of model potential see
+Ref. <a class="footnote-reference" href="#marinescu" id="id1">[2]</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>r</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; distance from the nucleus (in a.u.)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">core potential felt by valence electron (in a.u. ???)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<table class="docutils footnote" frame="void" id="marinescu" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>)</em> M. Marinescu, H. R. Sadeghpour, and A. Dalgarno
+PRA <strong>49</strong>, 982 (1994), <a class="reference external" href="https://doi.org/10.1103/PhysRevA.49.982">https://doi.org/10.1103/PhysRevA.49.982</a></td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.cpp_numerov">
+<code class="descname">cpp_numerov</code><em class="property"> = True</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.cpp_numerov" title="Permalink to this definition">¶</a></dt>
+<dd><p>swich - should the wavefunction be calculated with Numerov algorithm implemented in C++</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.dipoleMatrixElementFile">
+<code class="descname">dipoleMatrixElementFile</code><em class="property"> = ''</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.dipoleMatrixElementFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>location of hard-disk stored dipole matrix elements</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.effectiveCharge">
+<code class="descname">effectiveCharge</code><span class="sig-paren">(</span><em>l</em>, <em>r</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.effectiveCharge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.effectiveCharge" title="Permalink to this definition">¶</a></dt>
+<dd><p>effective charge of the core felt by valence electron</p>
+<p>For more details about derivation of model potential see
+Ref. <a class="footnote-reference" href="#marinescu" id="id2">[2]</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>r</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; distance from the nucleus (in a.u.)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">effective charge (in a.u.)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.elementName">
+<code class="descname">elementName</code><em class="property"> = 'elementName'</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.elementName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Human-readable element name</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.extraLevels">
+<code class="descname">extraLevels</code><em class="property"> = []</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.extraLevels" title="Permalink to this definition">¶</a></dt>
+<dd><p>levels that are for smaller principal quantum number (n) than ground level, but are above in energy due to angular part</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getAverageInteratomicSpacing">
+<code class="descname">getAverageInteratomicSpacing</code><span class="sig-paren">(</span><em>temperature</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getAverageInteratomicSpacing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getAverageInteratomicSpacing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns average interatomic spacing in atomic vapour</p>
+<p>See <a class="reference external" href="./Rydberg_atoms_a_primer.html#General-atomic-properties">calculation of basic properties example snippet</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; temperature of the atomic vapour</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">average interatomic spacing in m</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getAverageSpeed">
+<code class="descname">getAverageSpeed</code><span class="sig-paren">(</span><em>temperature</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getAverageSpeed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getAverageSpeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Average one-dimensional speed at a given temperature</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; temperature (K)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">average 1D speed (m/s)</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getC3term">
+<code class="descname">getC3term</code><span class="sig-paren">(</span><em>n</em>, <em>l</em>, <em>j</em>, <em>n1</em>, <em>l1</em>, <em>j1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getC3term"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getC3term" title="Permalink to this definition">¶</a></dt>
+<dd><p>C3 interaction term for the given two pair-states</p>
+<p>Calculates <span class="math">\(C_3\)</span> intaraction term for <span class="math">\(|n,l,j,n,l,j\rangle                  \leftrightarrow |n_1,l_1,j_1,n_2,l_2,j_2\rangle\)</span></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momenutum</li>
+<li><strong>j</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><span class="math">\(C_3 = \frac{\langle n,l,j |er|n_1,l_1,j_1\rangle                     \langle n,l,j |er|n_2,l_2,j_2\rangle}{4\pi\varepsilon_0}\)</span>
+(<span class="math">\(h\)</span> Hz m <span class="math">\({}^3\)</span>).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getC6term">
+<code class="descname">getC6term</code><span class="sig-paren">(</span><em>n</em>, <em>l</em>, <em>j</em>, <em>n1</em>, <em>l1</em>, <em>j1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getC6term"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getC6term" title="Permalink to this definition">¶</a></dt>
+<dd><p>C6 interaction term for the given two pair-states</p>
+<p>Calculates <span class="math">\(C_6\)</span> intaraction term for <span class="math">\(|n,l,j,n,l,j\rangle            \leftrightarrow |n_1,l_1,j_1,n_2,l_2,j_2\rangle\)</span>. For details
+of calculation see Ref. <a class="footnote-reference" href="#c6r1" id="id3">[3]</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momenutum</li>
+<li><strong>j</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><span class="math">\(C_6 = \frac{1}{4\pi\varepsilon_0}                     \frac{|\langle n,l,j |er|n_1,l_1,j_1\rangle|^2|                    \langle n,l,j |er|n_2,l_2,j_2\rangle|^2}                    {E(n_1,l_1,j_2,n_2,j_2,j_2)-E(n,l,j,n,l,j)}\)</span>
+(<span class="math">\(h\)</span> Hz m <span class="math">\({}^6\)</span>).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<p>We can reproduce values from Ref. <a class="footnote-reference" href="#c6r1" id="id4">[3]</a> for C3 coupling
+to particular channels. Taking for example channels described
+by the Eq. (50a-c) we can get the values:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">arc</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="n">channels</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">70</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span> <span class="mi">69</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span>\
+            <span class="p">[</span><span class="mi">70</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span> <span class="mi">69</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>\
+            <span class="p">[</span><span class="mi">70</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">69</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>\
+            <span class="p">[</span><span class="mi">70</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">69</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]]</span>
+
+<span class="nb">print</span> <span class="s2">&quot; = = = Caesium = = = &quot;</span>
+<span class="n">atom</span> <span class="o">=</span> <span class="n">Caesium</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+    <span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%.0f</span><span class="s2">  GHz (mu m)^6&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">atom</span><span class="o">.</span><span class="n">getC6term</span><span class="p">(</span><span class="o">*</span><span class="n">channel</span><span class="p">)</span><span class="o">/</span><span class="n">h</span><span class="o">*</span><span class="mf">1.e27</span> <span class="p">)</span>
+
+<span class="nb">print</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> = = = Rubidium  = = =&quot;</span>
+<span class="n">atom</span> <span class="o">=</span> <span class="n">Rubidium</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+    <span class="nb">print</span> <span class="s2">&quot;</span><span class="si">%.0f</span><span class="s2">  GHz (mu m)^6&quot;</span> <span class="o">%</span> <span class="p">(</span> <span class="n">atom</span><span class="o">.</span><span class="n">getC6term</span><span class="p">(</span><span class="o">*</span><span class="n">channel</span><span class="p">)</span><span class="o">/</span><span class="n">h</span><span class="o">*</span><span class="mf">1.e27</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>Returns:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span> <span class="o">=</span> <span class="o">=</span> <span class="o">=</span> <span class="n">Caesium</span> <span class="o">=</span> <span class="o">=</span> <span class="o">=</span>
+<span class="mi">722</span>  <span class="n">GHz</span> <span class="p">(</span><span class="n">mu</span> <span class="n">m</span><span class="p">)</span><span class="o">^</span><span class="mi">6</span>
+<span class="mi">316</span>  <span class="n">GHz</span> <span class="p">(</span><span class="n">mu</span> <span class="n">m</span><span class="p">)</span><span class="o">^</span><span class="mi">6</span>
+<span class="mi">383</span>  <span class="n">GHz</span> <span class="p">(</span><span class="n">mu</span> <span class="n">m</span><span class="p">)</span><span class="o">^</span><span class="mi">6</span>
+<span class="mi">228</span>  <span class="n">GHz</span> <span class="p">(</span><span class="n">mu</span> <span class="n">m</span><span class="p">)</span><span class="o">^</span><span class="mi">6</span>
+
+ <span class="o">=</span> <span class="o">=</span> <span class="o">=</span> <span class="n">Rubidium</span>  <span class="o">=</span> <span class="o">=</span> <span class="o">=</span>
+<span class="mi">799</span>  <span class="n">GHz</span> <span class="p">(</span><span class="n">mu</span> <span class="n">m</span><span class="p">)</span><span class="o">^</span><span class="mi">6</span>
+<span class="mi">543</span>  <span class="n">GHz</span> <span class="p">(</span><span class="n">mu</span> <span class="n">m</span><span class="p">)</span><span class="o">^</span><span class="mi">6</span>
+<span class="mi">589</span>  <span class="n">GHz</span> <span class="p">(</span><span class="n">mu</span> <span class="n">m</span><span class="p">)</span><span class="o">^</span><span class="mi">6</span>
+<span class="mi">437</span>  <span class="n">GHz</span> <span class="p">(</span><span class="n">mu</span> <span class="n">m</span><span class="p">)</span><span class="o">^</span><span class="mi">6</span>
+</pre></div>
+</div>
+<p>which is in good agreement with the values cited in the Ref. <a class="footnote-reference" href="#c6r1" id="id5">[3]</a>.
+Small discrepancies for Caesium originate from slightly different
+quantum defects used in calculations.</p>
+<p class="rubric">References</p>
+<table class="docutils footnote" frame="void" id="c6r1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[3]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id4">2</a>, <a class="fn-backref" href="#id5">3</a>)</em> T. G. Walker, M. Saffman, PRA <strong>77</strong>, 032723 (2008)
+<a class="reference external" href="https://doi.org/10.1103/PhysRevA.77.032723">https://doi.org/10.1103/PhysRevA.77.032723</a></td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getDipoleMatrixElement">
+<code class="descname">getDipoleMatrixElement</code><span class="sig-paren">(</span><em>n1</em>, <em>l1</em>, <em>j1</em>, <em>mj1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em>, <em>mj2</em>, <em>q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getDipoleMatrixElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getDipoleMatrixElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduced dipole matrix element
+<span class="math">\(\langle n_1 l_1 j_1 m_{j_1} |e\mathbf{r}|n_2 l_2 j_2 m_{j_2}\rangle\)</span>
+in units of <span class="math">\(a_0 e\)</span></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">dipole matrix element( <span class="math">\(a_0 e\)</span>)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<p>For example, calculation of <span class="math">\(5 S_{1/2}m_j=-\frac{1}{2} \rightarrow  5 P_{3/2}m_j=-\frac{3}{2}\)</span>
+transition dipole matrix element for laser driving <span class="math">\(\sigma^-\)</span>
+transition:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">arc</span> <span class="k">import</span> <span class="o">*</span>
+<span class="n">atom</span> <span class="o">=</span> <span class="n">Rubidium</span><span class="p">()</span>
+<span class="c1"># transition 5 S_{1/2} m_j=-0.5 -&gt; 5 P_{3/2} m_j=-1.5 for laser</span>
+<span class="c1"># driving sigma- transition</span>
+<span class="nb">print</span> <span class="n">atom</span><span class="o">.</span><span class="n">getDipoleMatrixElement</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getEnergy">
+<code class="descname">getEnergy</code><span class="sig-paren">(</span><em>n</em>, <em>l</em>, <em>j</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getEnergy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getEnergy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Energy of the level relative to the ionisation level (in eV)</p>
+<p>If <cite>preferQuantumDefects</cite> =False (set during initialization) program
+will try use NIST energy value, if such exists, falling back to energy
+calculation with quantum defects if the measured value doesn&#8217;t exist.
+For <cite>preferQuantumDefects</cite> =True, program will always calculate
+energies from quantum defects (useful for comparing quantum defect
+calculations with measured energy level values).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">state energy (eV)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getEnergyDefect">
+<code class="descname">getEnergyDefect</code><span class="sig-paren">(</span><em>n</em>, <em>l</em>, <em>j</em>, <em>n1</em>, <em>l1</em>, <em>j1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getEnergyDefect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getEnergyDefect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Energy defect for the given two pair-states (one of the state has
+two atoms in the same state)</p>
+<p>Energy difference between the states <span class="math">\(E(n,l,j,n,l,j) -             E(n_1,l_1,j_1,n_2,l_2,j_2)\)</span></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momenutum</li>
+<li><strong>j</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">energy defect (SI units: J)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getEnergyDefect2">
+<code class="descname">getEnergyDefect2</code><span class="sig-paren">(</span><em>n</em>, <em>l</em>, <em>j</em>, <em>nn</em>, <em>ll</em>, <em>jj</em>, <em>n1</em>, <em>l1</em>, <em>j1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getEnergyDefect2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getEnergyDefect2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Energy defect for the given two pair-states</p>
+<p>Energy difference between the states <span class="math">\(E(n,l,j,nn,ll,jj) -             E(n_1,l_1,j_1,n_2,l_2,j_2)\)</span></p>
+<p>See <a class="reference external" href="./Rydberg_atoms_a_primer.html#Rydberg-atom-interactions">pair-state energy defects example snippet</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momenutum</li>
+<li><strong>j</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>nn</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>ll</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momenutum</li>
+<li><strong>jj</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">energy defect (SI units: J)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getLiteratureDME">
+<code class="descname">getLiteratureDME</code><span class="sig-paren">(</span><em>n1</em>, <em>l1</em>, <em>j1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getLiteratureDME"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getLiteratureDME" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns literature information on requested transition.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n1,l1,j1</strong> &#8211; one of the states we are coupling</li>
+<li><strong>n2,l2,j2</strong> &#8211; the other state to which we are coupling</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>hasLiteratureValue?, dme, referenceInformation</p>
+<p><strong>If Boolean value is True</strong>, a literature value for dipole matrix
+element was found and reduced DME in J basis is returned
+as the number. Third returned argument (array) contains
+additional information about the literature value in the
+following order [ typeOfSource, errorEstimate , comment ,
+reference, reference DOI] upon success to
+find a literature value for dipole matrix element:</p>
+<blockquote>
+<div><ul class="simple">
+<li>typeOfSource=1 if the value is theoretical calculation;                         otherwise, if it is experimentally obtained value                         typeOfSource=0</li>
+<li>comment details where within the publication the value                         can be found</li>
+<li>errorEstimate is absolute error estimate</li>
+<li>reference is human-readable formatted reference</li>
+<li>reference DOI provides link to the publication.</li>
+</ul>
+</div></blockquote>
+<p><strong>Boolean value is False</strong>, followed by zero and an empty array
+if no literature value for dipole matrix element is found.</p>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool, float, [int,float,string,string,string]</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The literature values are stored in /data folder in
+&lt;element name&gt;_literature_dme.csv files as a ; separated values.
+Each row in the file consists of one literature entry, that has
+information in the following order:</p>
+<blockquote>
+<div><ul class="simple">
+<li>n1</li>
+<li>l1</li>
+<li>j1</li>
+<li>n2</li>
+<li>l2</li>
+<li>j2</li>
+<li>dipole matrix element reduced l basis (a.u.)</li>
+<li>comment (e.g. where in the paper value appears?)</li>
+<li>value origin: 1 for theoretical; 0 for experimental values</li>
+<li>accuracy</li>
+<li>source (human readable formatted citation)</li>
+<li>doi number (e.g. 10.1103/RevModPhys.82.2313 )</li>
+</ul>
+</div></blockquote>
+<p class="last">If there are several values for a given transition, program will
+output the value that has smallest error (under column accuracy).
+The list of values can be expanded - every time program runs
+this file is read and the list is parsed again for use in
+calculations.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getNumberDensity">
+<code class="descname">getNumberDensity</code><span class="sig-paren">(</span><em>temperature</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getNumberDensity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getNumberDensity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Atom number density at given temperature</p>
+<p>See <a class="reference external" href="./Rydberg_atoms_a_primer.html#General-atomic-properties">calculation of basic properties example snippet</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; temperature in K</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">atom concentration in <span class="math">\(1/m^3\)</span></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getPressure">
+<code class="descname">getPressure</code><span class="sig-paren">(</span><em>temperature</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getPressure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getPressure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vapour pressure (in Pa) at given temperature</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>temperature</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; temperature in K</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">vapour pressure in Pa</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getQuadrupoleMatrixElement">
+<code class="descname">getQuadrupoleMatrixElement</code><span class="sig-paren">(</span><em>n1</em>, <em>l1</em>, <em>j1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getQuadrupoleMatrixElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getQuadrupoleMatrixElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Radial part of the quadrupole matrix element</p>
+<p>Calculates <span class="math">\(\int \mathbf{d}r~R_{n_1,l_1,j_1}(r)\cdot             R_{n_1,l_1,j_1}(r) \cdot r^4\)</span>.
+See <a class="reference external" href="./Rydberg_atoms_a_primer.html#Quadrupole-matrix-elements">Quadrupole calculation example snippet</a>  .</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of state 1</li>
+<li><strong>l1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of state 1</li>
+<li><strong>j1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of state 1</li>
+<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of state 2</li>
+<li><strong>l2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of state 2</li>
+<li><strong>j2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of state 2</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">quadrupole matrix element (<span class="math">\(a_0^2 e\)</span>).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getQuantumDefect">
+<code class="descname">getQuantumDefect</code><span class="sig-paren">(</span><em>n</em>, <em>l</em>, <em>j</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getQuantumDefect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getQuantumDefect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quantum defect of the level.</p>
+<p>For an example, see <a class="reference external" href="./Rydberg_atoms_a_primer.html#Rydberg-Atom-Energy-Levels">Rydberg energy levels example snippet</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">quantum defect</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getRabiFrequency">
+<code class="descname">getRabiFrequency</code><span class="sig-paren">(</span><em>n1</em>, <em>l1</em>, <em>j1</em>, <em>mj1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em>, <em>q</em>, <em>laserPower</em>, <em>laserWaist</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getRabiFrequency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getRabiFrequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a Rabi frequency for resonant excitation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n1,l1,j1,mj1</strong> &#8211; state from which we are driving transition</li>
+<li><strong>n2,l2,j2</strong> &#8211; state to which we are driving transition</li>
+<li><strong>q</strong> &#8211; laser polarization (-1,0,1 correspond to <span class="math">\(\sigma^-\)</span>,
+<span class="math">\(\pi\)</span> and <span class="math">\(\sigma^+\)</span> respectively)</li>
+<li><strong>laserPower</strong> &#8211; laser power in units of W</li>
+<li><strong>laserWaist</strong> &#8211; laser <span class="math">\(1/e^2\)</span> waist (radius) in units of m</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Frequency in rad <span class="math">\(^{-1}\)</span>. If you want frequency in Hz,
+divide by returned value by <span class="math">\(2\pi\)</span></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getRadialCoupling">
+<code class="descname">getRadialCoupling</code><span class="sig-paren">(</span><em>n</em>, <em>l</em>, <em>j</em>, <em>n1</em>, <em>l1</em>, <em>j1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getRadialCoupling"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getRadialCoupling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns radial part of the coupling between two states (dipole and
+quadrupole interactions only)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">radial coupling strength (in a.u.), or zero for forbidden
+transitions in dipole and quadrupole approximation.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getRadialMatrixElement">
+<code class="descname">getRadialMatrixElement</code><span class="sig-paren">(</span><em>n1</em>, <em>l1</em>, <em>j1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em>, <em>useLiterature=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getRadialMatrixElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getRadialMatrixElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Radial part of the dipole matrix element</p>
+<p>Calculates <span class="math">\(\int \mathbf{d}r~R_{n_1,l_1,j_1}(r)\cdot                 R_{n_1,l_1,j_1}(r) \cdot r^3\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of state 1</li>
+<li><strong>l1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of state 1</li>
+<li><strong>j1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of state 1</li>
+<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of state 2</li>
+<li><strong>l2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of state 2</li>
+<li><strong>j2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of state 2</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">dipole matrix element (<span class="math">\(a_0 e\)</span>).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getReducedMatrixElementJ">
+<code class="descname">getReducedMatrixElementJ</code><span class="sig-paren">(</span><em>n1</em>, <em>l1</em>, <em>j1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getReducedMatrixElementJ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getReducedMatrixElementJ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduced matrix element in <span class="math">\(J\)</span> basis (symmetric notation)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of state 1</li>
+<li><strong>l1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of state 1</li>
+<li><strong>j1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of state 1</li>
+<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of state 2</li>
+<li><strong>l2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of state 2</li>
+<li><strong>j2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of state 2</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">reduced dipole matrix element in <span class="math">\(J\)</span> basis
+<span class="math">\(\langle j || er || j' \rangle\)</span> (<span class="math">\(a_0 e\)</span>).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getReducedMatrixElementJ_asymmetric">
+<code class="descname">getReducedMatrixElementJ_asymmetric</code><span class="sig-paren">(</span><em>n1</em>, <em>l1</em>, <em>j1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getReducedMatrixElementJ_asymmetric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getReducedMatrixElementJ_asymmetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduced matrix element in <span class="math">\(J\)</span> basis, defined in asymmetric
+notation.</p>
+<p>Note that notation for symmetric and asymmetricly defined
+reduced matrix element is not consistent in the literature. For
+example, notation is used e.g. in Steck <a class="footnote-reference" href="#id8" id="id7">[1]</a> is precisely the oposite.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Note that this notation is asymmetric: <span class="math">\(( j||e r                 ||j' ) \neq ( j'||e r ||j )\)</span>.
+Relation between the two notation is <span class="math">\(\langle j||er||j'\rangle=                \sqrt{2j+1} ( j ||er ||j')\)</span>.
+This function always returns value for transition from
+lower to higher energy state, independent of the order of states
+entered in the function call.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of state 1</li>
+<li><strong>l1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of state 1</li>
+<li><strong>j1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of state 1</li>
+<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of state 2</li>
+<li><strong>l2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of state 2</li>
+<li><strong>j2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of state 2</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">reduced dipole matrix element in Steck notation
+<span class="math">\(\langle j || er || j' \rangle\)</span> (<span class="math">\(a_0 e\)</span>).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id8" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id7">[1]</a></td><td>Daniel A. Steck, &#8220;Cesium D Line Data,&#8221; (revision 2.0.1, 2 May 2008).
+<a class="reference external" href="http://steck.us/alkalidata">http://steck.us/alkalidata</a></td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getReducedMatrixElementL">
+<code class="descname">getReducedMatrixElementL</code><span class="sig-paren">(</span><em>n1</em>, <em>l1</em>, <em>j1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getReducedMatrixElementL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getReducedMatrixElementL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduced matrix element in <span class="math">\(L\)</span> basis (symmetric notation)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of state 1</li>
+<li><strong>l1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of state 1</li>
+<li><strong>j1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of state 1</li>
+<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of state 2</li>
+<li><strong>l2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of state 2</li>
+<li><strong>j2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of state 2</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">reduced dipole matrix element in <span class="math">\(L\)</span> basis
+<span class="math">\(( l || er || l' )\)</span> (<span class="math">\(a_0 e\)</span>).</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getStateLifetime">
+<code class="descname">getStateLifetime</code><span class="sig-paren">(</span><em>n</em>, <em>l</em>, <em>j</em>, <em>temperature=0</em>, <em>includeLevelsUpTo=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getStateLifetime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getStateLifetime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the lifetime of the state (in s)</p>
+<p>For non-zero temperatures, user must specify up to which principal
+quantum number levels, that is <strong>above</strong> the initial state, should be
+included in order to account for black-body induced transitions to
+higher lying states. See <a class="reference external" href="./Rydberg_atoms_a_primer.html#Rydberg-Atom-Lifetimes">Rydberg lifetimes example snippet</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>l, j</strong> (<em>n,</em>) &#8211; specifies state whose lifetime we are calculating</li>
+<li><strong>temperature</strong> &#8211; optional. Temperature at which the atom environment
+is, measured in K. If this parameter is non-zero, user has
+to specify transitions up to which state (due to black-body
+decay) should be included in calculation.</li>
+<li><strong>includeLevelsUpTo</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; optional and not needed for atom lifetimes
+calculated at zero temperature. At non zero temperatures,
+this specify maximum principal quantum number of the state
+to which black-body induced transitions will be included.
+Minimal value of the parameter in that case is <span class="math">\(n+1\)</span></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">State lifetime in units of s (seconds)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.getTransitionRate" title="alkali_atom_functions.AlkaliAtom.getTransitionRate"><code class="xref py py-obj docutils literal"><span class="pre">getTransitionRate</span></code></a> for calculating rates of individual
+transition rates between the two states</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getTransitionFrequency">
+<code class="descname">getTransitionFrequency</code><span class="sig-paren">(</span><em>n1</em>, <em>l1</em>, <em>j1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getTransitionFrequency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getTransitionFrequency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculated transition frequency in Hz</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of the state <strong>from</strong> which we are going</li>
+<li><strong>l1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of the state <strong>from</strong> which we are going</li>
+<li><strong>j1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of the state <strong>from</strong> which we are going</li>
+<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of the state <strong>to</strong> which we are going</li>
+<li><strong>l2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of the state <strong>to</strong> which we are going</li>
+<li><strong>j2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of the state <strong>to</strong> which we are going</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">transition frequency (in Hz). If the returned value is negative,
+level from which we are going is <strong>above</strong> the level to which we are
+going.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getTransitionRate">
+<code class="descname">getTransitionRate</code><span class="sig-paren">(</span><em>n1</em>, <em>l1</em>, <em>j1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em>, <em>temperature=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getTransitionRate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getTransitionRate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transition rate due to coupling to vacuum modes (black body included)</p>
+<p>Calculates transition rate from the first given state to the second
+given state <span class="math">\(|n_1,l_1,j_1\rangle \rightarrow             |n_2,j_2,j_2\rangle\)</span> at given temperature due to interaction with
+the vacuum field. For zero temperature this returns Einstein A
+coefficient. For details of calculation see Ref. <a class="footnote-reference" href="#lf1" id="id9">[4]</a> and Ref. <a class="footnote-reference" href="#lf2" id="id10">[5]</a>.
+See <a class="reference external" href="./Rydberg_atoms_a_primer.html#Rydberg-Atom-Lifetimes">Black-body induced population transfer example snippet</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>[temperature]</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; temperature in K</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">transition rate in s <span class="math">\({}^{-1}\)</span> (SI)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">References</p>
+<table class="docutils footnote" frame="void" id="lf1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id9">[4]</a></td><td>C. E. Theodosiou, PRA <strong>30</strong>, 2881 (1984)
+<a class="reference external" href="https://doi.org/10.1103/PhysRevA.30.2881">https://doi.org/10.1103/PhysRevA.30.2881</a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="lf2" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id10">[5]</a></td><td>I. I. Beterov, I. I. Ryabtsev, D. B. Tretyakov,                    and V. M. Entin, PRA <strong>79</strong>, 052504 (2009)
+<a class="reference external" href="https://doi.org/10.1103/PhysRevA.79.052504">https://doi.org/10.1103/PhysRevA.79.052504</a></td></tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.getTransitionWavelength">
+<code class="descname">getTransitionWavelength</code><span class="sig-paren">(</span><em>n1</em>, <em>l1</em>, <em>j1</em>, <em>n2</em>, <em>l2</em>, <em>j2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.getTransitionWavelength"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.getTransitionWavelength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculated transition wavelength (in vacuum) in m.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of the state <strong>from</strong> which we are going</li>
+<li><strong>l1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of the state <strong>from</strong> which we are going</li>
+<li><strong>j1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of the state <strong>from</strong> which we are going</li>
+<li><strong>n2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number of the state <strong>to</strong> which we are going</li>
+<li><strong>l2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum of the state <strong>to</strong> which we are going</li>
+<li><strong>j2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum of the state <strong>to</strong> which we are going</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">transition wavelength (in m). If the returned value is negative,
+level from which we are going is <strong>above</strong> the level to which we are
+going.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.groundStateN">
+<code class="descname">groundStateN</code><em class="property"> = 0</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.groundStateN" title="Permalink to this definition">¶</a></dt>
+<dd><p>principal quantum number for the ground state</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.levelDataFromNIST">
+<code class="descname">levelDataFromNIST</code><em class="property"> = ''</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.levelDataFromNIST" title="Permalink to this definition">¶</a></dt>
+<dd><p>location of stored NIST values of measured energy levels in eV</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.literatureDMEfilename">
+<code class="descname">literatureDMEfilename</code><em class="property"> = ''</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.literatureDMEfilename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filename of the additional literature source values of dipole matrix
+elements.</p>
+<p>These additional values should be saved as reduced dipole matrix elements
+in J basis.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.mass">
+<code class="descname">mass</code><em class="property"> = 0.0</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.mass" title="Permalink to this definition">¶</a></dt>
+<dd><p>atomic mass in kg</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.minQuantumDefectN">
+<code class="descname">minQuantumDefectN</code><em class="property"> = 0</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.minQuantumDefectN" title="Permalink to this definition">¶</a></dt>
+<dd><p>minimal quantum number for which quantum defects can be used; uses measured energy levels otherwise</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.potential">
+<code class="descname">potential</code><span class="sig-paren">(</span><em>l</em>, <em>s</em>, <em>j</em>, <em>r</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.potential"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.potential" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns total potential that electron feels</p>
+<p>Total potential = core potential + Spin-Orbit interaction</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>s</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; spin angular momentum</li>
+<li><strong>j</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>r</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; distance from the nucleus (in a.u.)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">potential (in a.u.)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.quadrupoleMatrixElementFile">
+<code class="descname">quadrupoleMatrixElementFile</code><em class="property"> = ''</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.quadrupoleMatrixElementFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>location of hard-disk stored dipole matrix elements</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="alkali_atom_functions.AlkaliAtom.quantumDefect">
+<code class="descname">quantumDefect</code><em class="property"> = [[[0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]], [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]</em><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.quantumDefect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains list of modified Rydberg-Ritz coefficients for calculating
+quantum defects for [[ <span class="math">\(S_{1/2},P_{1/2},D_{3/2},F_{5/2}\)</span>],
+[ <span class="math">\(S_{1/2},P_{3/2},D_{5/2},F_{7/2}\)</span>]].</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.radialWavefunction">
+<code class="descname">radialWavefunction</code><span class="sig-paren">(</span><em>l</em>, <em>s</em>, <em>j</em>, <em>stateEnergy</em>, <em>innerLimit</em>, <em>outerLimit</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.radialWavefunction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.radialWavefunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Radial part of electron wavefunction</p>
+<p>Calculates radial function with Numerov (from outside towards the core).
+Note that wavefunction might not be calculated all the way to the requested
+<cite>innerLimit</cite> if the divergence occurs before. In that case third returned
+argument gives nonzero value, corresponding to the first index in the array
+for which wavefunction was calculated. For quick example see
+<a class="reference external" href="./Rydberg_atoms_a_primer.html#Rydberg-atom-wavefunctions">Rydberg wavefunction calculation snippet</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>s</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; spin angular momentum</li>
+<li><strong>j</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+<li><strong>stateEnergy</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; state energy, relative to ionization threshold,
+should be given in atomic units (Hatree)</li>
+<li><strong>innerLimit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; inner limit at which wavefunction is requested</li>
+<li><strong>outerLimit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; outer limit at which wavefunction is requested</li>
+<li><strong>step</strong> (<em>flaot</em>) &#8211; radial step for integration mesh (a.u.)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p><span class="math">\(r\)</span></p>
+<p><span class="math">\(R(r)\cdot r\)</span></p>
+<p>divergence index of array - smallest index
+of returned lists where there is no divergence (0 if divergence didn&#8217;t occured).
+This is important for high <span class="math">\(l\)</span> wavefunction calculations.</p>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">List[float], List[flaot], int</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Radial wavefunction is not scaled to unity! This normalization
+condition means that we are using spherical harmonics which are
+normalized such that
+<span class="math">\(\int \mathrm{d}\theta~\mathrm{d}\psi~Y(l,m_l)^* \times             Y(l',m_{l'})  =  \delta (l,l') ~\delta (m_l, m_{l'})\)</span>.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Alternative calculation methods can be added here (potenatial
+package expansion).</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="alkali_atom_functions.AlkaliAtom.updateDipoleMatrixElementsFile">
+<code class="descname">updateDipoleMatrixElementsFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#AlkaliAtom.updateDipoleMatrixElementsFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.AlkaliAtom.updateDipoleMatrixElementsFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the file with pre-calculated dipole matrix elements.</p>
+<p>This function will add the the file all the elements that have been
+calculated in the previous run, allowing quick access to them in the
+future calculations.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="alkali_atom_functions.NumerovBack">
+<code class="descclassname">alkali_atom_functions.</code><code class="descname">NumerovBack</code><span class="sig-paren">(</span><em>innerLimit</em>, <em>outerLimit</em>, <em>kfun</em>, <em>step</em>, <em>init1</em>, <em>init2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#NumerovBack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.NumerovBack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full Python implementation of Numerov integration</p>
+<p>Calculates solution function <span class="math">\(rad(r)\)</span> with descrete step in
+<span class="math">\(r\)</span> size of <cite>step</cite>, integrating from <cite>outerLimit</cite> towards the
+<cite>innerLimit</cite> (from outside, inwards) equation
+<span class="math">\(\frac{\mathrm{d}^2 rad(r)}{\mathrm{d} r^2} = kfun(r)\cdot rad(r)\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>innerLimit</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; inner limit of integration</li>
+<li><strong>outerLimit</strong> (<em>flaot</em>) &#8211; outer limit of integration</li>
+<li><strong>kfun</strong> (<em>function(double</em>) &#8211; pointer to function used in equation (see
+longer explanation above)</li>
+<li><strong>step</strong> &#8211; descrete step size for integration</li>
+<li><strong>init1</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; initial value, <cite>rad`(`outerLimit`+`step</cite>)</li>
+<li><strong>init2</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; initial value, <cite>rad`(`outerLimit`+:math:`2cdot</cite> <cite>step</cite>)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p><span class="math">\(r\)</span> (a.u),
+<span class="math">\(rad(r)\)</span>, divergencePoint;</p>
+<blockquote>
+<div><p>divergencePoint is zero if no divergence occurred before reaching
+<cite>innerLimit</cite>. Otherwise, if divergence occurred before
+reaching <cite>innerLimit</cite>, divergencePoint is index of the first
+element in the returned array which is outside the divergence
+region.</p>
+</div></blockquote>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy array of float , numpy array of float, int</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Returned function is not normalized!</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If <a class="reference internal" href="#alkali_atom_functions.AlkaliAtom.cpp_numerov" title="alkali_atom_functions.AlkaliAtom.cpp_numerov"><code class="xref py py-obj docutils literal"><span class="pre">AlkaliAtom.cpp_numerov</span></code></a> swich is set to True (default option),
+much faster C++ algorithm will be used instead. That is recommended
+option. Just make sure that there is executabeble nvwcpp located in
+the package folder. You can build this executable, e.g. by using
+the GNU C++ compiler yourself by calling from the command line:</p>
+<div class="last highlight-default"><div class="highlight"><pre><span></span><span class="n">g</span><span class="o">++</span> <span class="o">-</span><span class="n">O3</span> <span class="n">nwvcpp</span><span class="o">.</span><span class="n">cpp</span> <span class="o">-</span><span class="n">o</span> <span class="n">nvwcpp</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="alkali_atom_functions.loadSavedCalculation">
+<code class="descclassname">alkali_atom_functions.</code><code class="descname">loadSavedCalculation</code><span class="sig-paren">(</span><em>fileName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#loadSavedCalculation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.loadSavedCalculation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads previously saved calculation.</p>
+<p>Loads <a class="reference internal" href="calculations_atom_pairstate.html#calculations_atom_pairstate.PairStateInteractions" title="calculations_atom_pairstate.PairStateInteractions"><code class="xref py py-obj docutils literal"><span class="pre">calculations_atom_pairstate.PairStateInteractions</span></code></a> and
+<a class="reference internal" href="calculations_atoms_single.html#calculations_atom_single.StarkMap" title="calculations_atom_single.StarkMap"><code class="xref py py-obj docutils literal"><span class="pre">calculations_atom_single.StarkMap</span></code></a>
+calculation instance from file named <cite>filename</cite> where it was previously saved
+with <a class="reference internal" href="#alkali_atom_functions.saveCalculation" title="alkali_atom_functions.saveCalculation"><code class="xref py py-obj docutils literal"><span class="pre">saveCalculation</span></code></a> .</p>
+<p class="rubric">Example</p>
+<p>See example for <a class="reference internal" href="#alkali_atom_functions.saveCalculation" title="alkali_atom_functions.saveCalculation"><code class="xref py py-obj docutils literal"><span class="pre">saveCalculation</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fileName</strong> &#8211; name of the file where calculation will be saved</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">saved calculation</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="alkali_atom_functions.printState">
+<code class="descclassname">alkali_atom_functions.</code><code class="descname">printState</code><span class="sig-paren">(</span><em>n</em>, <em>l</em>, <em>j</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#printState"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.printState" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints state spectroscopic label for numeric <span class="math">\(n\)</span>,
+<span class="math">\(l\)</span>, <span class="math">\(s\)</span> label of the state</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="alkali_atom_functions.printStateString">
+<code class="descclassname">alkali_atom_functions.</code><code class="descname">printStateString</code><span class="sig-paren">(</span><em>n</em>, <em>l</em>, <em>j</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#printStateString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.printStateString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns state spectroscopic label for numeric <span class="math">\(n\)</span>,
+<span class="math">\(l\)</span>, <span class="math">\(s\)</span> label of the state</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">label for the state in standard spectroscopic notation</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)">string</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="alkali_atom_functions.printStateStringLatex">
+<code class="descclassname">alkali_atom_functions.</code><code class="descname">printStateStringLatex</code><span class="sig-paren">(</span><em>n</em>, <em>l</em>, <em>j</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#printStateStringLatex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.printStateStringLatex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns latex code for spectroscopic label for numeric <span class="math">\(n\)</span>,
+<span class="math">\(l\)</span>, <span class="math">\(s\)</span> label of the state</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; principal quantum number</li>
+<li><strong>l</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; orbital angular momentum</li>
+<li><strong>j</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; total angular momentum</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">label for the state in standard spectroscopic notation</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/string.html#module-string" title="(in Python v2.7)">string</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="alkali_atom_functions.saveCalculation">
+<code class="descclassname">alkali_atom_functions.</code><code class="descname">saveCalculation</code><span class="sig-paren">(</span><em>calculation</em>, <em>fileName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/alkali_atom_functions.html#saveCalculation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#alkali_atom_functions.saveCalculation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves calculation for future use.</p>
+<p>Saves <a class="reference internal" href="calculations_atom_pairstate.html#calculations_atom_pairstate.PairStateInteractions" title="calculations_atom_pairstate.PairStateInteractions"><code class="xref py py-obj docutils literal"><span class="pre">calculations_atom_pairstate.PairStateInteractions</span></code></a> and
+<a class="reference internal" href="calculations_atoms_single.html#calculations_atom_single.StarkMap" title="calculations_atom_single.StarkMap"><code class="xref py py-obj docutils literal"><span class="pre">calculations_atom_single.StarkMap</span></code></a>
+calculations in compact binary format in file named <cite>filename</cite>. It uses
+cPickle serialization library in Python, and also zips the final file.</p>
+<p>Calculation can be retrieved and used with <a class="reference internal" href="#alkali_atom_functions.loadSavedCalculation" title="alkali_atom_functions.loadSavedCalculation"><code class="xref py py-obj docutils literal"><span class="pre">loadSavedCalculation</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>calculation</strong> &#8211; class instance of calculations (instance of
+<a class="reference internal" href="calculations_atom_pairstate.html#calculations_atom_pairstate.PairStateInteractions" title="calculations_atom_pairstate.PairStateInteractions"><code class="xref py py-obj docutils literal"><span class="pre">calculations_atom_pairstate.PairStateInteractions</span></code></a>
+or <a class="reference internal" href="calculations_atoms_single.html#calculations_atom_single.StarkMap" title="calculations_atom_single.StarkMap"><code class="xref py py-obj docutils literal"><span class="pre">calculations_atom_single.StarkMap</span></code></a>)
+to be saved.</li>
+<li><strong>fileName</strong> &#8211; name of the file where calculation will be saved</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<p>Let&#8217;s suppose that we did the part of the
+<code class="xref py py-obj docutils literal"><span class="pre">calculation_atom_pairstate.PairStateInteractions</span></code>
+calculation that involves generation of the interaction
+matrix. After that we can save the full calculation in a single file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">calc</span> <span class="o">=</span> <span class="n">PairStateInteractions</span><span class="p">(</span><span class="n">Rubidium</span><span class="p">(),</span> <span class="mi">60</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">defineBasis</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span> <span class="mf">25.e9</span><span class="p">)</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">diagonalise</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">10.0</span><span class="p">,</span><span class="mi">200</span><span class="p">),</span><span class="mi">150</span><span class="p">)</span>
+<span class="n">saveCalculation</span><span class="p">(</span><span class="n">calc</span><span class="p">,</span> <span class="s2">&quot;mySavedCalculation.pkl&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, at a later time, and even on the another machine, we can load
+that file and continue with calculation. We can for example explore
+the calculated level diagram:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">calc</span> <span class="o">=</span> <span class="n">loadSavedCalculation</span><span class="p">(</span><span class="s2">&quot;mySavedCalculation.pkl&quot;</span><span class="p">)</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">plotLevelDiagram</span><span class="p">()</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">showPlot</span><span class="p">()</span>
+<span class="n">rvdw</span> <span class="o">=</span> <span class="n">calc</span><span class="o">.</span><span class="n">getVdwFromLevelDiagram</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="n">minStateContribution</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>\
+                                   <span class="n">showPlot</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Or, we can do additional matrix diagonalization, in some new range,
+then and find C6 by fitting the obtained level diagram:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">calc</span> <span class="o">=</span> <span class="n">loadSavedCalculation</span><span class="p">(</span><span class="s2">&quot;mySavedCalculation.pkl&quot;</span><span class="p">)</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">diagonalise</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mf">6.0</span><span class="p">,</span><span class="mi">200</span><span class="p">),</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">calc</span><span class="o">.</span><span class="n">getC6fromLevelDiagram</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mf">6.0</span><span class="p">,</span><span class="n">showPlot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that for all loading of saved calculations we&#8217;ve been using
+function <a class="reference internal" href="#alkali_atom_functions.loadSavedCalculation" title="alkali_atom_functions.loadSavedCalculation"><code class="xref py py-obj docutils literal"><span class="pre">loadSavedCalculation</span></code></a> .</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This doesn&#8217;t save results of <code class="xref py py-obj docutils literal"><span class="pre">plotLevelDiagram</span></code> for the corresponding
+calculations. Call the plot function before calling <code class="xref py py-obj docutils literal"><span class="pre">showPlot</span></code> function
+for the corresponding calculation.</p>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="alkali_atom_data.html" class="btn btn-neutral float-right" title="Alkali atom data" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="detailed_doc.html" class="btn btn-neutral" title="Detailed documentation of functions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Nikola Šibalić.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.9 beta',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
