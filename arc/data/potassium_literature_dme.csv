@@ -1,0 +1,17 @@
+n1;l1;j1;n2;l2;j2;dipole matrix element reduced l basis (a.u.);comment;theory = 1, experiment = 0;accuracy;source;doi
+4;0;0.5;4;1;0.5;4.098;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+4;0;0.5;5;1;0.5;0.275;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+4;0;0.5;6;1;0.5;0.084;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+4;0;0.5;7;1;0.5;0.039;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+5;0;0.5;4;1;0.5;3.866;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+5;0;0.5;5;1;0.5;9.461;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+5;0;0.5;6;1;0.5;0.892;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+5;0;0.5;7;1;0.5;0.335;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+4;0;0.5;4;1;1.5;5.794;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+4;0;0.5;5;1;1.5;0.406;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+4;0;0.5;6;1;1.5;0.128;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+4;0;0.5;7;1;1.5;0.061;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+5;0;0.5;4;1;1.5;5.51;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+5;0;0.5;5;1;1.5;13.358;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+5;0;0.5;6;1;1.5;1.292;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
+5;0;0.5;7;1;1.5;0.491;table V;1;0.001;Physical Review A, 60 4476 (1999);10.1103/PhysRevA.60.4476
