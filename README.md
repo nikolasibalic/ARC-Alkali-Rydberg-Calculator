@@ -16,9 +16,10 @@ Authors
 -------
 
 Nikola Šibalić, Jonathan D. Pritchard, Charles S. Adams, Kevin J. Weatherill
+
 Please cite as: N. Šibalić, J. D. Pritchard, K. J. Weatherill, C. S. Adams,
 ARC: An open-source library for calculating properties of alkali Rydberg atoms,
-(submitted to Computer Physics Communications), arXiv: 
+(submitted to Computer Physics Communications), arXiv: (id arriving soon)
 
 -------
 License
