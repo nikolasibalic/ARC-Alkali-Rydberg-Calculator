@@ -17,11 +17,7 @@ import os
 
 sys.path.insert(0,'../arc/')
 
-#import mock
- 
-#MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot', 'scipy.interpolate','scipy.constants','scipy.optimize','matplotlib.ticker']
-#for mod_name in MOCK_MODULES:
-#    sys.modules[mod_name] = mock.Mock()
+html_extra_path = ['./_static/']
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
