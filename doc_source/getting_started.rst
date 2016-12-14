@@ -8,7 +8,7 @@ IPython notebook with examples
 
 `Rydberg atoms - a primer`_ introduces Rydberg atoms and ARC package, and is a good starting point to learn how to use ARC to get relevant information about alkali metal Rydberg atoms. Notebook can also be downloaded in .ipython format :download:`here <./Rydberg_atoms_a_primer_notebook.ipynb>`, and can be interactively then modified and used in a Jupyter.
 
-.. _`Rydberg atoms - a primer`: ./Rydberg_atoms_a_primer.html
+.. _`Rydberg atoms - a primer`: ./_static/Rydberg_atoms_a_primer.html
 
 On demand examples from online Atom calculator
 ----------------------------------------------
