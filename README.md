@@ -11,15 +11,14 @@ For examples of use check [IPython notebook in .html](http://arc-alkali-rydberg-
 
 For online access to a selection of package functions see (web page arriving soon).
 
-If you want to contribute to the project, please see **documentation/contribute.html**.
+If you want to contribute to the project, [check this page](http://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/contribute.html).
 
-|docs|
 
 -------
 Authors
 -------
 
-Nikola Šibalić, Jonathan D. Pritchard, Charles S. Adams, Kevin J. Weatherill
+[Nikola Šibalić](http://www.jqc.org.uk/people/nikola-sibalic/104/), [Jonathan D. Pritchard](http://photonics.phys.strath.ac.uk/people/dr-jonathan-pritchard/), [Charles S. Adams](http://www.jqc.org.uk/people/charles-adams/44/), [Kevin J. Weatherill](http://www.jqc.org.uk/people/kevin-weatherill/18/)
 
 Please cite as: N. Šibalić, J. D. Pritchard, K. J. Weatherill, C. S. Adams,
 ARC: An open-source library for calculating properties of alkali Rydberg atoms,
