@@ -13,7 +13,7 @@ For online access to a selection of package functions see (web page arriving soo
 
 If you want to contribute to the project, please see **documentation/contribute.html**.
 
-|build-status| |docs|
+|docs|
 
 -------
 Authors
