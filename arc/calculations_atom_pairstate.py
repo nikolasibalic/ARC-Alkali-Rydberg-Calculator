@@ -32,7 +32,6 @@ from math import exp,log,sqrt
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from __builtin__ import True
-from astropy.units import ymin
 mpl.rcParams['xtick.minor.visible'] = True
 mpl.rcParams['ytick.minor.visible'] = True
 mpl.rcParams['xtick.major.size'] = 8
