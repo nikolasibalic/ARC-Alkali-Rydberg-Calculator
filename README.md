@@ -7,7 +7,7 @@ ARC (Alkali Rydberg Calculator)  is package of routines writen in Python, using 
 
 For installation instructions and documentation see [online documentation on Read The Docs](http://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/).
 
-For examples of use check [IPython notebook in .html](http://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/_static/Rydberg_atoms_a_primer.html) or download [.ipynb interactive notebook](doc_source/Rydberg_atoms_a_primer_notebook.ipynb).
+For examples of use check [IPython notebook in .html](http://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/_static/Rydberg_atoms_a_primer.html) or download [.ipynb interactive notebook](doc/Rydberg_atoms_a_primer_notebook.ipynb).
 
 For online access to a selection of package functions see (web page arriving soon).
 
