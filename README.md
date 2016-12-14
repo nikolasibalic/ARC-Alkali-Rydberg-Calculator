@@ -13,6 +13,10 @@ For online access to a selection of package functions see (web page arriving soo
 
 If you want to contribute to the project, [check this page](http://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/contribute.html).
 
+.. image:: https://readthedocs.org/projects/arc-alkali-rydberg-calculator/badge/?version=latest
+   :target: https://readthedocs.org/projects/arc-alkali-rydberg-calculator/?badge=latest
+   :alt: Documentation Status
+
 
 -------
 Authors
