@@ -6,7 +6,7 @@ from alkali_atom_functions import printStateString,elemCharge,h,pi
 def htmlLiteratureOutput(v,ref):
     print "<div class='lit'><p>Literature values<p>Radial part of dipole matrix element: %.3f</p>" % v
     typeOfSource = "experimental value"
-    if ref[1]==1:
+    if ref[0]==1:
         typeOfSource = "theoretical value"
     print "<p>Source: <a class='link' target='_blank' href='http://dx.doi.org/%s'>%s</a>, %s (%s) </p>"%(ref[4],ref[3],typeOfSource,ref[2])
     print "</div>"
