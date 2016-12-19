@@ -13,7 +13,7 @@ IPython notebook with examples
 On demand examples from online Atom calculator
 ----------------------------------------------
 
-You can try using the package without installing anything on your computer. Simply point your web browser from your computer, tablet or phone to  `atomcalc.jqc.org.uk <http://atomcalc.jqc.org.uk>`_ and use ARC online.
+You can try using the package without installing anything on your computer. Simply point your web browser from your computer, tablet or phone to  `atomcalc.jqc.org.uk <https://atomcalc.jqc.org.uk>`_ and use ARC online.
 
 Online version also generates the correct code necessary for answering the questions you ask, which can be downladed and used as a starting point for running the package locally on your computer.
 
