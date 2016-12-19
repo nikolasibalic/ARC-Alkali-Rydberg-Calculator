@@ -9,7 +9,7 @@ Install Python and packages for scientific computing in Python (scipy, numpy, ma
 Download the ARC library/package
 --------------------------------
 
-[Download the module from the main site](https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator), unzip the archive and set the folder somewhere within the Python package search path or directly in your project directory. Simply import and use the module::
+(Download the module from the main site)[https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator], unzip the archive and set the folder somewhere within the Python package search path or directly in your project directory. Simply import and use the module::
 
     >>> from arc import *
     >>> # write your code that uses ARC then.
