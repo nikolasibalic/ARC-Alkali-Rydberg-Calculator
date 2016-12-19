@@ -9,7 +9,7 @@ For installation instructions and documentation see [online documentation on Rea
 
 For examples of use check [IPython notebook in .html](http://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/_static/Rydberg_atoms_a_primer.html) or download [.ipynb interactive notebook](doc/Rydberg_atoms_a_primer_notebook.ipynb).
 
-For online access to a selection of package functions see (web page arriving soon).
+For online access to a selection of package functions see [online Atom Calculator](https://atomcalc.jqc.org.uk).
 
 If you want to contribute to the project, [check this page](http://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/contribute.html).
 
@@ -23,7 +23,7 @@ Authors
 
 Please cite as: N. Šibalić, J. D. Pritchard, K. J. Weatherill, C. S. Adams,
 ARC: An open-source library for calculating properties of alkali Rydberg atoms,
-(submitted to Computer Physics Communications), arXiv: (id arriving soon)
+(submitted to Computer Physics Communications), [arXiv:1612.05529](http://arxiv.org/abs/1612.05529) 
 
 
 -------
