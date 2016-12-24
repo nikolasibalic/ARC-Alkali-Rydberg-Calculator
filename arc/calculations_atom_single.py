@@ -17,6 +17,8 @@
     
 """
 
+from __future__ import print_function
+
 from math import exp,log,sqrt
 #from pylab import *
 import matplotlib.pyplot as plt
@@ -223,9 +225,9 @@ class StarkMap:
 
         dimension = len(states)
         if progressOutput:
-            print "Found ",dimension," states." 
+            print("Found ",dimension," states.")
             if debugOutput:
-                print states
+                print(states)
         
         indexOfCoupledState = 0
         index = 0
@@ -235,10 +237,10 @@ class StarkMap:
                 indexOfCoupledState = index
             index +=1 
         if debugOutput:
-            print "Index of initial state"
-            print indexOfCoupledState
-            print "Initial state = "
-            print states[indexOfCoupledState]
+            print("Index of initial state")
+            print(indexOfCoupledState)
+            print("Initial state = ")
+            print(states[indexOfCoupledState])
         
         
         mat1 = np.zeros((dimension,dimension),dtype=np.double)
@@ -248,7 +250,7 @@ class StarkMap:
         self.indexOfCoupledState = indexOfCoupledState
         
         if progressOutput:
-            print "Generating matrix..."
+            print("Generating matrix...")
         progress = 0.
 
         for ii in xrange(dimension):
@@ -275,10 +277,10 @@ class StarkMap:
                 mat2[ii][jj] = coupling
          
         if progressOutput:
-            print "\n"
+            print("\n")
         if debugOutput:
-            print mat1+mat2
-            print mat2[0]
+            print(mat1+mat2)
+            print(mat2[0])
             
         self.mat1 = mat1
         self.mat2 = mat2
@@ -315,7 +317,7 @@ class StarkMap:
         self.maxCoupling = 0.
         self.drivingFromState = drivingFromState
         if (self.drivingFromState[0] != 0):
-            if progressOutput: print "Finding coupling strengths"
+            if progressOutput: print("Finding coupling strengths")
             # get first what was the state we are calculating coupling with
             state1 = drivingFromState
             n1 = int(round(state1[0]))
@@ -339,9 +341,9 @@ class StarkMap:
                     j2 = state2[2]
                     m2 = state2[3]
                     if debugOutput:
-                        print n1," ",l1," ",j1," ",m1," < - ",q," - >",n2," ",\
-                            l2," ",j2," ",m2,"\n"
-                        #print self.basisStates[i]
+                        print(n1," ",l1," ",j1," ",m1," < - ",q," - >",n2," ",\
+                            l2," ",j2," ",m2,"\n")
+                        #print(self.basisStates[i])
                     dme = self.atom.getDipoleMatrixElement(n1, l1,j1,m1,\
                                                             n2,l2,j2,m2,\
                                                             q)
@@ -350,7 +352,7 @@ class StarkMap:
                 if thisCoupling > self.maxCoupling:
                     self.maxCoupling = thisCoupling
                 if (thisCoupling >0.00000001) and debugOutput:
-                    print "coupling = ",thisCoupling       
+                    print("coupling = ",thisCoupling)
                 coupling.append(thisCoupling)
         
             if self.maxCoupling<0.00000001:
@@ -374,7 +376,7 @@ class StarkMap:
         self.composition = []
         
         if progressOutput:
-            print "Finding eigenvectors..."
+            print("Finding eigenvectors...")
         progress = 0.
         for eField in eFieldList:
             if progressOutput:
@@ -411,7 +413,7 @@ class StarkMap:
             
 
         if progressOutput:
-            print "\n"
+            print("\n")
         return 
 
     def exportData(self,fileBase,exportFormat = "csv"):
@@ -457,7 +459,7 @@ class StarkMap:
         
         
         if exportFormat=="csv":
-            print "Exporting StarkMap calculation results as .csv ..."
+            print("Exporting StarkMap calculation results as .csv ...")
             
             commonHeader += " - Export consists of three (3) files:\n"
             commonHeader += ("       1) %s,\n" % (fileBase+"_eField."+exportFormat))
@@ -470,7 +472,7 @@ class StarkMap:
                 newline='\n', \
                 header=(commonHeader + " - - - eField (V/m) - - -"),\
                 comments='# ')
-            print "   Electric field values (V/m) saved in %s" % filename 
+            print("   Electric field values (V/m) saved in %s" % filename)
             
             filename = fileBase+"_energyLevels."+exportFormat
             headerDetails = " NOTE : Each row corresponds to eigenstates for a single specified electric field"
@@ -479,7 +481,7 @@ class StarkMap:
                 newline='\n', \
                 header=(commonHeader + ' - - - Energy (GHz) - - -\n' + headerDetails),\
                 comments='# ')
-            print "   Lists of energies (in GHz relative to ionisation) saved in %s" % filename
+            print("   Lists of energies (in GHz relative to ionisation) saved in %s" % filename)
             
             filename = fileBase+"_highlight."+exportFormat
             np.savetxt(filename, \
@@ -487,9 +489,9 @@ class StarkMap:
                 newline='\n', \
                 header=(commonHeader + ' - - - Highlight value (rel.units) - - -\n'+ headerDetails),\
                 comments='# ')
-            print "   Highlight values saved in %s" % filename
+            print("   Highlight values saved in %s" % filename)
             
-            print "... data export finished!"
+            print("... data export finished!")
         else:
             raise ValueError("Unsupported export format (.%s)." % format)
     
@@ -520,7 +522,7 @@ class StarkMap:
         self.units = units
         
         if progressOutput:
-            print "plotting..."
+            print("plotting...")
         
         #eFieldList = self.eFieldList
         #y = self.y
@@ -550,7 +552,7 @@ class StarkMap:
                 eFieldList.append(self.eFieldList[br])
                 y.append(self.y[br][i])
                 yState.append(self.highlight[br][i])
-                    #print self.highlight[br][i]
+                    #print(self.highlight[br][i])
                 #else:
                 #    grayX.append(self.x[i])
                 #    grayY.append(self.y[br][i])
@@ -639,7 +641,7 @@ class StarkMap:
         if (self.fig != 0):
             self.fig.savefig(filename,bbox_inches='tight')
         else:
-            print "Error while saving a plot: nothing is plotted yet"
+            print("Error while saving a plot: nothing is plotted yet")
         return 0
 
     def showPlot(self, interactive = True):
@@ -657,7 +659,7 @@ class StarkMap:
             self.fig = 0
             self.ax = 0
         else:
-            print "Error while showing a plot: nothing is plotted yet"
+            print("Error while showing a plot: nothing is plotted yet")
         return 0
     
     def _onPick(self,event):
@@ -771,7 +773,7 @@ class StarkMap:
         energyOfOriginalState = self.atom.getEnergy(n,l,j)*elemCharge/h*1e-9 # in  GHz
 
         if debugOutput:
-            print "finding original state for each electric field value"
+            print("finding original state for each electric field value")
             
         stopFitIndex = 0
         while stopFitIndex<len(eFieldList)-1 and \
@@ -806,7 +808,7 @@ class StarkMap:
 
         
         if debugOutput:
-            print "found ",len(xOriginalState)     
+            print("found ",len(xOriginalState))
         if showPlot:
             self.fig, self.ax = plt.subplots(1, 1,figsize=(6.5, 3))
             self.ax.scatter(xOriginalState,yOriginalState,s=2,color="k")  
@@ -828,15 +830,15 @@ class StarkMap:
                               yOriginalState,\
                               [0,0])
         except:
-            print "\nERROR: fitting energy levels for extracting polarizability\
+            print("\nERROR: fitting energy levels for extracting polarizability\
                     of the state failed. Please check the range of electric \
                     fields where you are trying to fit polarizability and ensure\
                     that there is only one state with continuous energy change\
-                    that has dominant contribution of the initial state.\n\n"
+                    that has dominant contribution of the initial state.\n\n")
             return 0
         
         if debugOutput:
-            print "Scalar polarizability = ",popt[1]*1.e3," MHz cm^2 / V^2 "
+            print("Scalar polarizability = ",popt[1]*1.e3," MHz cm^2 / V^2 ")
           
         y_fit = []
         for val in xOriginalState:
@@ -964,7 +966,7 @@ class LevelPlot:
                 dipoleAllowed = (abs(state1[1]-state2[1])==1)and\
                                 (abs(state1[2]-state2[2])<=1.01)
                 if (dipoleAllowed):
-                    #print state1," ",state2
+                    #print(state1," ",state2)
                     # decay to thius state
                     rate = self.atom.getTransitionRate(state2[0],state2[1],state2[2],\
                                                     state1[0],state1[1],state1[2],\
@@ -984,10 +986,10 @@ class LevelPlot:
                     
             transitionVector[i] = decay
             if printDecays:
-                print "Decay time of "
+                print("Decay time of ")
                 printState(state1[0], state1[1], state1[2])
                 if decay < -1e-20:
-                    print "\t is\t",-1.e9/decay," ns"
+                    print("\t is\t",-1.e9/decay," ns")
             self.transitionMatrix.append(transitionVector)
         
         np.array(self.transitionMatrix)
@@ -1123,9 +1125,9 @@ class LevelPlot:
                 return i
             i = i+1
             
-        print "Error: requested state "
-        print state
-        print "could not be found!"
+        print("Error: requested state ")
+        print(state)
+        print("could not be found!")
         return -1
 
     def findLine(self,x,y):
@@ -1185,7 +1187,7 @@ class LevelPlot:
             xdata = thisline.get_xdata()
             ydata = thisline.get_ydata()
             ind = event.ind
-            print ind[0]
+            print(ind[0])
 
             line = self.findLine(xdata[ind][0], ydata[ind][0])
             self.ax.set_title(line)
@@ -1203,7 +1205,7 @@ def printState(n,l,j):
             j (float): total angular momentum
     """
         
-    print n," ",printStateLetter(l),(" %.0d/2" % (j*2))
+    print(n," ",printStateLetter(l),(" %.0d/2" % (j*2)))
 
 def printStateString(n,l,j):
     """

@@ -1,15 +1,16 @@
+from __future__ import print_function
 
 import numpy as np
 from alkali_atom_functions import printStateString,elemCharge,h,pi
 
 
 def htmlLiteratureOutput(v,ref):
-    print "<div class='lit'><p>Literature values<p>Radial part of dipole matrix element: %.3f</p>" % v
+    print("<div class='lit'><p>Literature values<p>Radial part of dipole matrix element: %.3f</p>" % v)
     typeOfSource = "experimental value"
     if ref[0]==1:
         typeOfSource = "theoretical value"
-    print "<p>Source: <a class='link' target='_blank' href='http://dx.doi.org/%s'>%s</a>, %s (%s) </p>"%(ref[4],ref[3],typeOfSource,ref[2])
-    print "</div>"
+    print("<p>Source: <a class='link' target='_blank' href='http://dx.doi.org/%s'>%s</a>, %s (%s) </p>"%(ref[4],ref[3],typeOfSource,ref[2]))
+    print("</div>")
 
 def rabiFrequencyWidget(atom,n1,l1,j1,n2,l2,j2,laserPower,laserWaist):
     sol = []
@@ -293,14 +294,14 @@ title: '"+self.ylabel+"',\n\
             if name == "":
                 name = 'plotdiv'
             if (self.title != ""):
-                print "<p>"+self.title+"</p>"
-            print "<div id='"+name+"' style='width:%dpx;height:%dpx;'></div>\n"%(width,height)
-            print "<script id='"+scriptName+"' type='text/javascript'>\n"
-            print "plotarea = document.getElementById('"+name+"');\n"
-            print d
-            print l
-            print "Plotly.plot(plotarea, data, layout);\n"
-            print "</script>\n"
+                print("<p>"+self.title+"</p>")
+            print("<div id='"+name+"' style='width:%dpx;height:%dpx;'></div>\n"%(width,height))
+            print("<script id='"+scriptName+"' type='text/javascript'>\n")
+            print("plotarea = document.getElementById('"+name+"');\n")
+            print(d)
+            print(l)
+            print("Plotly.plot(plotarea, data, layout);\n")
+            print("</script>\n")
         else:
             f = open(filename,"w")
             if name == "":

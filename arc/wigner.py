@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import division
+from __future__ import division, print_function
 from scipy import floor, sqrt
 from scipy.misc import factorial
 from numpy import arange
@@ -51,40 +51,40 @@ def Wigner3j(j1,j2,j3,m1,m2,m3):
     if ( ( 2*j1 != floor(2*j1) ) | ( 2*j2 != floor(2*j2) ) | \
          ( 2*j3 != floor(2*j3) ) | ( 2*m1 != floor(2*m1) ) | \
          ( 2*m2 != floor(2*m2) ) | ( 2*m3 != floor(2*m3) ) ):
-        print 'All arguments must be integers or half-integers.'
+        print('All arguments must be integers or half-integers.')
         return -1
 
     # Additional check if the sum of the second row equals zero
     if ( m1+m2+m3 != 0 ):
-        #print '3j-Symbol unphysical'
+        #print('3j-Symbol unphysical')
         return 0
 
     if ( j1 - m1 != floor ( j1 - m1 ) ):
-        print '2*j1 and 2*m1 must have the same parity'
+        print('2*j1 and 2*m1 must have the same parity')
         return 0
     
     if ( j2 - m2 != floor ( j2 - m2 ) ):
-        print '2*j2 and 2*m2 must have the same parity'
+        print('2*j2 and 2*m2 must have the same parity')
         return; 0
 
     if ( j3 - m3 != floor ( j3 - m3 ) ):
-        print '2*j3 and 2*m3 must have the same parity'
+        print('2*j3 and 2*m3 must have the same parity')
         return 0
     
     if ( j3 > j1 + j2)  | ( j3 < abs(j1 - j2) ):
-        print 'j3 is out of bounds.'
+        print('j3 is out of bounds.')
         return 0
 
     if abs(m1) > j1:
-        print 'm1 is out of bounds.'
+        print('m1 is out of bounds.')
         return 0
 
     if abs(m2) > j2:
-        print 'm2 is out of bounds.'
+        print('m2 is out of bounds.')
         return 0 
 
     if abs(m3) > j3:
-        print 'm3 is out of bounds.'
+        print('m3 is out of bounds.')
         return 0
 
     t1 = j2 - m1 - j3
@@ -123,7 +123,7 @@ def Wigner6j(j1,j2,j3,J1,J2,J3):
         # we have precalculated value
         return wignerPrecal6j[j1,J3,int(round(0.5 +j1-j3)),\
                               int(round(0.5+J3-J1)),J2-1]
-    ##print "not in database %1.f %1.f %1.f %1.f %1.f %1.f" % (j1,j2,j3,J1,J2,J3)
+    ##print("not in database %1.f %1.f %1.f %1.f %1.f %1.f" % (j1,j2,j3,J1,J2,J3))
     
 #======================================================================
 # Calculating the Wigner6j-Symbols using the Racah-Formula                
@@ -145,17 +145,17 @@ def Wigner6j(j1,j2,j3,J1,J2,J3):
 
     # Check that the js and Js are only integer or half integer
     if ( ( 2*j1 != round(2*j1) ) | ( 2*j2 != round(2*j2) ) | ( 2*j2 != round(2*j2) ) | ( 2*J1 != round(2*J1) ) | ( 2*J2 != round(2*J2) ) | ( 2*J3 != round(2*J3) ) ):
-        print 'All arguments must be integers or half-integers.'
+        print('All arguments must be integers or half-integers.')
         return -1
     
 # Check if the 4 triads ( (j1 j2 j3), (j1 J2 J3), (J1 j2 J3), (J1 J2 j3) ) satisfy the triangular inequalities
     if ( ( abs(j1-j2) > j3 ) | ( j1+j2 < j3 ) | ( abs(j1-J2) > J3 ) | ( j1+J2 < J3 ) | ( abs(J1-j2) > J3 ) | ( J1+j2 < J3 ) | ( abs(J1-J2) > j3 ) | ( J1+J2 < j3 ) ):
-        print '6j-Symbol is not triangular!'
+        print('6j-Symbol is not triangular!')
         return 0
     
     # Check if the sum of the elements of each traid is an integer
     if ( ( 2*(j1+j2+j3) != round(2*(j1+j2+j3)) ) | ( 2*(j1+J2+J3) != round(2*(j1+J2+J3)) ) | ( 2*(J1+j2+J3) != round(2*(J1+j2+J3)) ) | ( 2*(J1+J2+j3) != round(2*(J1+J2+j3)) ) ):
-        print '6j-Symbol is not triangular!'
+        print('6j-Symbol is not triangular!')
         return 0
     
     # Arguments for the factorials
@@ -224,15 +224,15 @@ def wignerd(j,m,n=0,approx_lim=10):
             + " Valid range for parameters: j>=0, -j<=m,n<=j.")
 
     if (j > (m + approx_lim)) and (j > (n + approx_lim)):
-        #print 'bessel (approximation)'
+        #print('bessel (approximation)')
         return lambda beta: jv(m-n, j*beta)
 
     if (floor(j) == j) and (n == 0):
         if m == 0:
-            #print 'legendre (exact)'
+            #print('legendre (exact)')
             return lambda beta: legendre(j)(cos(beta))
         elif False:
-            #print 'spherical harmonics (exact)'
+            #print('spherical harmonics (exact)')
             a = sqrt(4.*pi / (2.*j + 1.))
             return lambda beta: a * conjugate(sph_harm(m,j,beta,0.))
 
@@ -254,7 +254,7 @@ def wignerd(j,m,n=0,approx_lim=10):
 
     coeff = power(-1.,lmb) * sqrt(comb(2.*j-k,k+a)) * (1./sqrt(comb(k+b,b)))
 
-    #print 'jacobi (exact)'
+    #print('jacobi (exact)')
     return lambda beta: coeff \
         * power(sin(0.5*beta),a) \
         * power(cos(0.5*beta),b) \

@@ -28,10 +28,11 @@
     
 """
 
+from __future__ import print_function
+
 from math import exp,log,sqrt
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-from __builtin__ import True
 mpl.rcParams['xtick.minor.visible'] = True
 mpl.rcParams['ytick.minor.visible'] = True
 mpl.rcParams['xtick.major.size'] = 8
@@ -307,8 +308,8 @@ class PairStateInteractions:
         #am = csr_matrix(am)
         index = len(self.savedAngularMatrix_matrix)
 
-        #print "inserting"
-        #print [l,j*2,ll,jj*2,l1,j1*2,l2,j2*2,index]
+        #print("inserting")
+        #print([l,j*2,ll,jj*2,l1,j1*2,l2,j2*2,index])
         self.c.execute(''' INSERT INTO pair_angularMatrix 
                             VALUES (?,?, ?,?, ?,?, ?,?, ?)''',\
                        (l,j*2,ll,jj*2,l1,j1*2,l2,j2*2,index) )
@@ -343,8 +344,8 @@ class PairStateInteractions:
                         pickle.HIGHEST_PROTOCOL) 
             fileHandle.close()
         except IOError as e:
-            print "Error while updating angularMatrix \
-                data meta (description) File "+self.angularMatrixFile_meta
+            print("Error while updating angularMatrix \
+                data meta (description) File "+self.angularMatrixFile_meta)
 
         try:
             fileHandle = gzip.GzipFile(os.path.join(self.dataFolder,\
@@ -353,9 +354,9 @@ class PairStateInteractions:
                         pickle.HIGHEST_PROTOCOL)
             fileHandle.close() 
         except IOError as e:
-            print "Error while updating angularMatrix \
-                    data File "+self.angularMatrixFile
-            print e
+            print("Error while updating angularMatrix \
+                    data File "+self.angularMatrixFile)
+            print(e)
     
     def __loadAngularMatrixElementsFile(self):
 
@@ -384,11 +385,11 @@ class PairStateInteractions:
             self.conn.commit()
             
         except sqlite3.Error as e:
-            print "Error while loading precalculated values into the database!"
-            print e
+            print("Error while loading precalculated values into the database!")
+            print(e)
             exit()  
         if len(data)==0:
-            print "error"
+            print("error")
             return
             
         try:
@@ -397,8 +398,8 @@ class PairStateInteractions:
             self.savedAngularMatrix_matrix = pickle.load(fileHandle)
             fileHandle.close()
         except :
-            print "Note: No saved angular matrix files to be loaded."
-            print sys.exc_info()
+            print("Note: No saved angular matrix files to be loaded.")
+            print(sys.exc_info())
 
     
     def __isCoupled(self,n,l,j,nn,ll,jj,n1,l1,j1,n2,l2,j2,limit):
@@ -455,7 +456,7 @@ class PairStateInteractions:
         if ll==0: l2start=0
         
         if debugOutput:
-            print "\n ======= Relevant states =======\n"
+            print("\n ======= Relevant states =======\n")
         
         for n1 in xrange(max(n-k,1),n+k+1):
             for n2 in xrange(max(nn-k,1),nn+k+1):
@@ -487,7 +488,7 @@ class PairStateInteractions:
                                     if debugOutput:
                                         pairState = "|"+printStateString(n1,l1,j1)+\
                                                 ","+printStateString(n2,l2,j2)+">"
-                                        print pairState+("\t EnergyDefect = %.3f GHz" % (ed*1.e-9))
+                                        print(pairState+("\t EnergyDefect = %.3f GHz" % (ed*1.e-9)))
                                     
                                     states.append([n1,l1,j1,n2,l2,j2])
                                     
@@ -500,11 +501,11 @@ class PairStateInteractions:
                                 j2 = j2+1.0
                             j1 = j1+1.0
         
-        #print opi
-        #print states[opi]
+        #print(opi)
+        #print(states[opi])
         
         if debugOutput:
-            print "\tMatrix dimension\t=\t",dimension
+            print("\tMatrix dimension\t=\t",dimension)
         m = np.zeros((dimension,dimension),dtype=np.float64)
 
         # mat_value, mat_row, mat_column for each sparce matrix describing
@@ -516,13 +517,13 @@ class PairStateInteractions:
 
         
         if debugOutput:
-            print "\n ======= Coupling strengths (radial part only) =======\n"
+            print("\n ======= Coupling strengths (radial part only) =======\n")
         
         maxCoupling = "quadrupole-quadrupole"
         if (self.interactionsUpTo == 1):
             maxCoupling = "dipole-dipole"
         if debugOutput:
-            print "Calculating coupling (up to ",maxCoupling,") between the pair states"
+            print("Calculating coupling (up to ",maxCoupling,") between the pair states")
                     
         for i in xrange(dimension):
             
@@ -548,10 +549,10 @@ class PairStateInteractions:
                                              states[j][3],states[j][4],states[j][5], limit)
                 
                 if (states[i][0]==24 and states[j][0]==18):
-                    print "\n"
-                    print states[i]
-                    print states[j]
-                    print coupled
+                    print("\n")
+                    print(states[i])
+                    print(states[j])
+                    print(coupled)
                 
                 
                 if coupled and (abs(states[i][0]-states[j][0])<=k and\
@@ -559,7 +560,7 @@ class PairStateInteractions:
                     pairState2 = "|"+printStateString(states[j][0],states[j][1],states[j][2])+\
                                 ","+printStateString(states[j][3],states[j][4],states[j][5])+">"
                     if debugOutput:
-                        print pairState1+" <---> "+pairState2
+                        print(pairState1+" <---> "+pairState2)
                     
                     couplingStregth = _atomLightAtomCoupling(states[i][0],states[i][1],states[i][2],
                                             states[i][3],states[i][4],states[i][5],
@@ -572,9 +573,9 @@ class PairStateInteractions:
                     
                     exponent = coupled+1
                     if debugOutput:
-                        print ("\tcoupling (C_%d/R^%d) = %.5f" %
+                        print(("\tcoupling (C_%d/R^%d) = %.5f" %
                             (exponent,exponent,couplingStregth*(1e6)**(exponent))),\
-                            "/R^",exponent," GHz  (mu m)^",exponent,"\n"
+                            "/R^",exponent," GHz  (mu m)^",exponent,"\n")
                     
         # coupling = [1,1] dipole-dipole, [2,1]  quadrupole dipole, [2,2] quadrupole quadrupole
 
@@ -608,7 +609,7 @@ class PairStateInteractions:
                  PRIMARY KEY (l1,j1_x2, l2,j2_x2, l3,j3_x2, l4,j4_x2)
                 ) ''')
             except sqlite3.Error as e:
-                print e
+                print(e)
             self.conn.commit()
         self.__loadAngularMatrixElementsFile()
         self.savedAngularMatrixChanged = False
@@ -762,7 +763,7 @@ class PairStateInteractions:
             for n2 in xrange(max(self.nn-nRange,1),self.nn+nRange+1):
                 for l1 in xrange(lmin1,self.l+2,2):
                     for l2 in xrange(lmin2,self.ll+2,2):
-                        #print n1," ",n2," --- ",l1," ",l2
+                        #print(n1," ",n2," --- ",l1," ",l2)
                         j1 = l1-0.5
                         if l1 == 0:
                             j1 = 0.5
@@ -786,11 +787,11 @@ class PairStateInteractions:
                                             self.nn,self.ll,self.jj,
                                             n1,l1,j1,
                                             n2,l2,j2,self.atom)*(1.0e-9*(1.e6)**3/h) # GHz / mum^3
-                                    #print "cs = ",couplingStregth
+                                    #print("cs = ",couplingStregth)
                                     
                                     pairState2 = "|"+printStateString(n1,l1,j1)+\
                                         ","+printStateString(n2,l2,j2)+">"
-                                    #print "---> "+pairState2
+                                    #print("---> "+pairState2)
                                     
                                     # include relevant mj and add contributions
                                     for m1c in np.linspace(j1,-j1,round(1+2*j1)):
@@ -816,7 +817,7 @@ class PairStateInteractions:
                                                 angularFactor = conjugate(stateCom2.T).dot(d.dot(stateCom))
                                                 angularFactor = real(angularFactor[0,0])
                                                 
-                                                #print ("%.5f" % angularFactor)
+                                                #print("%.5f" % angularFactor)
                                                 
                                                 C6 += ((couplingStregth*angularFactor)**2/getEnergyDefect)
                                                 
@@ -886,8 +887,8 @@ class PairStateInteractions:
                                                     debugOutput=debugOutput) 
         
         self.atom.updateDipoleMatrixElementsFile()
-        #print self.coupling[0]
-        #print self.channel[0]
+        #print(self.coupling[0])
+        #print(self.channel[0])
         #exit()
         # generate all the states (with mj principal quantum number)
         
@@ -921,17 +922,17 @@ class PairStateInteractions:
                             abs(m2c-self.m2)<0.1):
                             opi = len(self.states)-1
             if (self.index[i] == len(self.states)):
-                print stateCoupled
+                print(stateCoupled)
         self.index[-1] = len(self.states)
                            
-        #print self.states
-        #print "Original state = "
-        #print self.states[opi]
+        #print(self.states)
+        #print("Original state = ")
+        #print(self.states[opi])
         
-        print "\nCalculating Hamiltonian matrix...\n"
+        print("\nCalculating Hamiltonian matrix...\n")
         
         dimension = len(self.states)
-        print "\n\tmatrix (dimension ",dimension,")\n"
+        print("\n\tmatrix (dimension ",dimension,")\n")
     
         # INITIALIZING MATICES
         # all (sparce) matrices will be saved in csr format
@@ -952,11 +953,11 @@ class PairStateInteractions:
                                       (matRIndex+3,float(progress)/float(dim**2)*100.,\
                                                    ii,len(self.channel)))
                     sys.stdout.flush()
-                #print ("%.1f %% (state %d of %d)"%(float(ii)/len(self.channel)*100.,\
-                #                                   ii,len(self.channel)))
+                #print(("%.1f %% (state %d of %d)"%(float(ii)/len(self.channel)*100.,\
+                #                                   ii,len(self.channel))))
                 ed = self.channel[ii][6]
-                #print ed
-                #print self.index[ii]," - ",self.index[ii+1]
+                #print(ed)
+                #print(self.index[ii]," - ",self.index[ii+1])
                 
                 # solves problems with exactly degenerate states
                 degeneracyOffset = 0.000001
@@ -966,7 +967,7 @@ class PairStateInteractions:
                 dMatrix2 = wgd.get(self.states[i][6])
                 
                 for i in xrange(self.index[ii],self.index[ii+1]):
-                    #print "i=",i
+                    #print("i=",i)
                     statePart1 = singleAtomState(self.states[i][2], self.states[i][3])
                     statePart2 = singleAtomState(self.states[i][6], self.states[i][7])
                     # rotate individual states
@@ -983,7 +984,7 @@ class PairStateInteractions:
                         matDiagonalConstructor[2].append(i)
                     
                     for dataIndex in xrange(c.indptr[ii],c.indptr[ii+1]):
-                        #print ii, c.indices[dataIndex], c.data[dataIndex]
+                        #print(ii, c.indices[dataIndex], c.data[dataIndex])
                         
                         jj = c.indices[dataIndex]
                         radialPart = c.data[dataIndex]
@@ -1000,7 +1001,7 @@ class PairStateInteractions:
                                                         self.atom)
                             secondPart = d.dot(stateCom)
                         else:
-                            print " - - - ",self.channel[jj]
+                            print(" - - - ",self.channel[jj])
                         
                         
                         for j in xrange(self.index[jj],self.index[jj+1]):
@@ -1025,7 +1026,7 @@ class PairStateInteractions:
                                 matRConstructor[matRIndex][1].append(j)
                                 matRConstructor[matRIndex][2].append(i)
             matRIndex += 1
-            print "\n"               
+            print("\n")
         
         self.matDiagonal = csr_matrix((matDiagonalConstructor[0], \
                                     (matDiagonalConstructor[1], matDiagonalConstructor[2])),
@@ -1096,9 +1097,9 @@ class PairStateInteractions:
         
         if (noOfEigenvectors>=dimension-1):
             noOfEigenvectors=dimension-1
-            print "Warning: Requested number of eigenvectors >=dimension-1\n \
+            print("Warning: Requested number of eigenvectors >=dimension-1\n \
                  ARPACK can only find up to dimension-1 eigenvectors, where\
-                dimension is matrix dimension.\n";
+                dimension is matrix dimension.\n");
             if noOfEigenvectors<1:
                 return
                     
@@ -1107,7 +1108,7 @@ class PairStateInteractions:
         self.maxCoupledStateIndex = 0
         if (drivingFromState[0] != 0):
             self.drivingFromState = drivingFromState
-            if progressOutput: print "Finding coupling strengths"
+            if progressOutput: print("Finding coupling strengths")
             # get first what was the state we are calculating coupling with
             state1 = drivingFromState
             n1 = int(round(state1[0]))
@@ -1134,8 +1135,8 @@ class PairStateInteractions:
                     j2 = state2[2]
                     m2 = state2[3]
                     if debugOutput:
-                        print n1," ",l1," ",j1," ",m1," ",n2," ",l2," ",j2," ",m2," q=",q
-                        print self.states[i]
+                        print(n1," ",l1," ",j1," ",m1," ",n2," ",l2," ",j2," ",m2," q=",q)
+                        print(self.states[i])
                     dme = self.atom.getDipoleMatrixElement(n1, l1,j1,m1,\
                                                             n2,l2,j2,m2,\
                                                             q)
@@ -1152,8 +1153,8 @@ class PairStateInteractions:
                     j2 = state2[2+4]
                     m2 = state2[3+4]
                     if debugOutput:
-                        print n1," ",l1," ",j1," ",m1," ",n2," ",l2," ",j2," ",m2," q=",q
-                        print self.states[i]
+                        print(n1," ",l1," ",j1," ",m1," ",n2," ",l2," ",j2," ",m2," q=",q)
+                        print(self.states[i])
                     dme = self.atom.getDipoleMatrixElement(n1, l1,j1,m1,\
                                                             n2,l2,j2,m2,\
                                                             q)
@@ -1164,20 +1165,20 @@ class PairStateInteractions:
                     self.maxCoupling = thisCoupling
                     self.maxCoupledStateIndex = i
                 if (thisCoupling >0.000001) and debugOutput:
-                    print "original pairstate index = ",self.originalPairStateIndex 
-                    print "this pairstate index = ",i
-                    print "state itself ", self.states[i]
-                    print "coupling = ",thisCoupling       
+                    print("original pairstate index = ",self.originalPairStateIndex)
+                    print("this pairstate index = ",i)
+                    print("state itself ", self.states[i])
+                    print("coupling = ",thisCoupling)
                 coupling.append(thisCoupling)
             
-            print "Maximal coupling from a state"
-            print "is to a state ",self.maxCoupledStateIndex
-            print "is equal to %.3e a_0 e" % self.maxCoupling
-            #print "Coupling strengths calculated for each pair-state"
-            #print coupling   
+            print("Maximal coupling from a state")
+            print("is to a state ",self.maxCoupledStateIndex)
+            print("is equal to %.3e a_0 e" % self.maxCoupling)
+            #print("Coupling strengths calculated for each pair-state")
+            #print(coupling)
         
         if progressOutput:
-            print "\n\nDiagonalizing interaction matrix...\n"
+            print("\n\nDiagonalizing interaction matrix...\n")
         
         rvalIndex = 0.
         for rval in self.r:
@@ -1295,7 +1296,7 @@ class PairStateInteractions:
                 
         
         if exportFormat=="csv":
-            print "Exporting StarkMap calculation results as .csv ..."
+            print("Exporting StarkMap calculation results as .csv ...")
             
             commonHeader += " - Export consists of three (3) files:\n"
             commonHeader += ("       1) %s,\n" % (fileBase+"_r."+exportFormat))
@@ -1308,7 +1309,7 @@ class PairStateInteractions:
                 newline='\n', \
                 header=(commonHeader + " - - - Interatomic distance, r (\mu m) - - -"),\
                 comments='# ')
-            print "   Interatomic distances (\mu m) saved in %s" % filename 
+            print("   Interatomic distances (\mu m) saved in %s" % filename)
             
             filename = fileBase+"_energyLevels."+exportFormat
             headerDetails = " NOTE : Each row corresponds to eigenstates for a single specified interatomic distance"
@@ -1317,8 +1318,8 @@ class PairStateInteractions:
                 newline='\n', \
                 header=(commonHeader + ' - - - Energy (GHz) - - -\n' + headerDetails),\
                 comments='# ')
-            print "   Lists of energies (in GHz relative to the original pair-state energy)"+\
-                  (" saved in %s" % filename)
+            print("   Lists of energies (in GHz relative to the original pair-state energy)"+\
+                  (" saved in %s" % filename))
             
             filename = fileBase+"_highlight."+exportFormat
             np.savetxt(filename, \
@@ -1326,9 +1327,9 @@ class PairStateInteractions:
                 newline='\n', \
                 header=(commonHeader + ' - - - Highlight value (rel.units) - - -\n'+ headerDetails),\
                 comments='# ')
-            print "   Highlight values saved in %s" % filename
+            print("   Highlight values saved in %s" % filename)
             
-            print "... data export finished!"
+            print("... data export finished!")
         else:
             raise ValueError("Unsupported export format (.%s)." % format)
         
@@ -1373,7 +1374,7 @@ class PairStateInteractions:
         
         cNorm  = matplotlib.colors.Normalize(vmin=0., vmax=1.)
         
-        print " Now we are plotting..."
+        print(" Now we are plotting...")
         self.fig, self.ax = plt.subplots(1, 1,figsize=(11.5,5.0)) #figsize=(15.5,7.0)
         
         self.y = np.array(self.y)
@@ -1424,7 +1425,7 @@ class PairStateInteractions:
         ##    sumStates = 0.0
         ##    for br2 in xrange(len(self.y)):
         ##        sumStates = sumStates+self.highlight[br2][br]
-        ##    print sumStates
+        ##    print(sumStates)
         
         self.ax.set_xlabel(r"Interatomic distance, $R$ ($\mu$m)")
         self.ax.set_ylabel(r"Pair-state relative energy, $\Delta E/h$ (GHz)")
@@ -1442,7 +1443,7 @@ class PairStateInteractions:
         if (self.fig != 0):
             self.fig.savefig(filename,bbox_inches='tight')
         else:
-            print "Error while saving a plot: nothing is plotted yet"
+            print("Error while saving a plot: nothing is plotted yet")
         return 0
 
     def showPlot(self, interactive = True):
@@ -1564,10 +1565,10 @@ class PairStateInteractions:
         if (fromRindex != -1) and (toRindex == -1):
             toRindex = len(self.r)-1
         if (fromRindex == -1):
-            print "\nERROR: could not find data for energy levels for interatomic"
-            print "distances between %2.f and %.2f mu m.\n\n" % (rStart,rStop)
+            print("\nERROR: could not find data for energy levels for interatomic")
+            print("distances between %2.f and %.2f mu m.\n\n" % (rStart,rStop))
             return 0;
-        # print fromRindex," ",toRindex
+        # print(fromRindex," ",toRindex)
         
         
         for br in xrange(fromRindex,toRindex+1):
@@ -1593,10 +1594,10 @@ class PairStateInteractions:
                               initialStateDetuning,\
                               [1,0])
         except:
-            print "ERROR: unable to find a fit for C6."
+            print("ERROR: unable to find a fit for C6.")
             return False
-        print "c6 = ",popt[0]," GHz /R^6 (mu m)^6"
-        print "offset = ",popt[1]
+        print("c6 = ",popt[0]," GHz /R^6 (mu m)^6")
+        print("offset = ",popt[1])
         
         y_fit = []
         for val in initialStateDetuningX:
@@ -1708,10 +1709,10 @@ class PairStateInteractions:
         if (fromRindex != -1) and (toRindex == -1):
             toRindex = len(self.r)-1
         if (fromRindex == -1):
-            print "\nERROR: could not find data for energy levels for interatomic"
-            print "distances between %2.f and %.2f mu m.\n\n" % (rStart,rStop)
+            print("\nERROR: could not find data for energy levels for interatomic")
+            print("distances between %2.f and %.2f mu m.\n\n" % (rStart,rStop))
             return False
-        # print fromRindex," ",toRindex
+        # print(fromRindex," ",toRindex)
         
         discontinuityDetected = False
         for br in xrange(toRindex,fromRindex-1,-1):
@@ -1742,17 +1743,17 @@ class PairStateInteractions:
         def c3fit(r,c3,offset):
             return np.log(c3/r**3+offset)
         
-        # print len(initialStateDetuningX)
+        # print(len(initialStateDetuningX))
         try:
             popt,pcov = curve_fit(c3fit,\
                               initialStateDetuningX,\
                               initialStateDetuning,\
                               [1,0])
         except:
-            print "ERROR: unable to find a fit for C3."
+            print("ERROR: unable to find a fit for C3.")
             return False
-        print "c3 = ",popt[0]," GHz /R^3 (mu m)^3"
-        print "offset = ",popt[1]
+        print("c3 = ",popt[0]," GHz /R^3 (mu m)^3")
+        print("offset = ",popt[1])
         
         y_fit = []
         
@@ -1865,8 +1866,8 @@ class PairStateInteractions:
         if (fromRindex != -1) and (toRindex == -1):
             toRindex = len(self.r)-1
         if (fromRindex == -1):
-            print "\nERROR: could not find data for energy levels for interatomic"
-            print "distances between %2.f and %.2f mu m.\n\n" % (rStart,rStop)
+            print("\nERROR: could not find data for energy levels for interatomic")
+            print("distances between %2.f and %.2f mu m.\n\n" % (rStart,rStop))
             return False
         
         discontinuityDetected = False;
@@ -1897,7 +1898,7 @@ class PairStateInteractions:
   
         
         noOfPoints = len(initialStateDetuningX)
-        print "Data points to fit = ",noOfPoints
+        print("Data points to fit = ",noOfPoints)
         
         try:
             popt,pcov = curve_fit(vdwFit,\
@@ -1906,15 +1907,15 @@ class PairStateInteractions:
                               [0,initialStateDetuning[noOfPoints/2],\
                                initialStateDetuningX[noOfPoints/2]])
         except:
-            print "ERROR: unable to find a fit for van der Waals distance."
+            print("ERROR: unable to find a fit for van der Waals distance.")
             return False
         
         if (initialStateDetuningX[0]<popt[2]) or (popt[2]<initialStateDetuningX[-1]):
-            print "WARNING: vdw radius seems to be outside the fitting range!"
-            print "It's estimated to be around %.2f mu m from the current fit."%popt[2]
+            print("WARNING: vdw radius seems to be outside the fitting range!")
+            print("It's estimated to be around %.2f mu m from the current fit."%popt[2])
 
-        print "Rvdw =  ",popt[2]," mu m"
-        print "offset = ",popt[0],"\n scale = ",popt[1]
+        print("Rvdw =  ",popt[2]," mu m")
+        print("offset = ",popt[0],"\n scale = ",popt[1])
         
         y_fit = []
         
@@ -2159,11 +2160,11 @@ class StarkMapResonances:
                         self.y[i].extend(yList)
                         self.composition[i].extend(compositionList)   
                                      
-                print "\n"
+                print("\n")
 
         
         for i in xrange(len(sm1.eFieldList)):
-            #print (" plotting %d" % i)
+            #print(" plotting %d" % i)
             self.y[i] = np.array(self.y[i])
             self.composition[i] = np.array(self.composition[i])
             self.ax.scatter([sm1.eFieldList[i]/100.]*len(self.y[i]),\
@@ -2200,7 +2201,7 @@ class StarkMapResonances:
                 #plt.savefig("foster.pdf", bbox_inches='tight')
             plt.show()
         else:
-            print "Error while showing a plot: nothing is plotted yet"
+            print("Error while showing a plot: nothing is plotted yet")
 
     def _onPick(self,event):
         if isinstance(event.artist, matplotlib.collections.PathCollection):
