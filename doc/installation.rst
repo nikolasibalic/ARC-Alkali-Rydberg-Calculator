@@ -23,28 +23,28 @@ That is all, enjoy using ARC package. Check :ref:`get-started-page` to see some 
 Precompiled modules on unsupported operating systems 
 ----------------------------------------------------
 
-Optimized of the Numerov is provided as the C++ code `nvwcpp.cpp`. If you are using 64-bit Windows, Mac or Linux operating system, package will recognize the system and use appropriate precompuled binary provided in the package - i.e. you should not have to do anything additional manually, this is out-of-the box feature.
+Optimized of the Numerov is provided as the C code `nvwcpp.cpp`. If you are using 64-bit Windows, Mac or Linux operating system, package will recognize the system and use appropriate precompuled binary provided in the package - i.e. you should not have to do anything additional manually, this is out-of-the box feature.
 
 If you are using some other operating system, or 32-bit version of the operating systems above, to run the optimized precompiled version (recommended) do the following:
 
 **For Windows users**
 
-Downlaod and install `MinGW <http://www.mingw.org/>`_ compiler, or some other distribution of GNU C++ compiler. In the command propt, navigate to the arc folder where `nvwcpp.cpp` file is located and execute::
+Downlaod and install `MinGW <http://www.mingw.org/>`_ compiler, or some other distribution of GNU C compiler. In the command propt, navigate to the arc folder where `nvwcpp.cpp` file is located and execute::
 
-    g++ -O3 nvwcpp.cpp -o nvwcpp_win
+    gcc -Wall -Wextra -pedantic -std=c99 -O3 arc\nvwcpp.c -lm -o arc\nvwcpp_win
 
 **For Linux users**
 
-Download and install GNU C++ compiler. Then with terminal open, navigate to arc folder where `nvwcpp.cpp` file is located execute::
+Download and install GNU C compiler. Then with terminal open, navigate to arc folder where `nvwcpp.cpp` file is located execute::
 
-    g++ -O3 nvwcpp.cpp -o nvwcpp_linux
+    gcc -Wall -Wextra -pedantic -std=c99 -O3 arc/nvwcpp.c -lm -o arc/nvwcpp_linux
 
 
 **For MAC users**
 
-Download and install GNU C++ compiler. Then with terminal open, navigate to arc folder where `nvwcpp.cpp` file is located execute::
+Download and install GNU C compiler. Then with terminal open, navigate to arc folder where `nvwcpp.cpp` file is located execute::
 
-    g++ -O3 nvwcpp.cpp -o nvwcpp_mac
+    gcc -Wall -Wextra -pedantic -std=c99 -O3 arc/nvwcpp.c -lm -o arc/nvwcpp_mac
     
 ** For people who don't want to compile anythig **
     
@@ -52,4 +52,4 @@ Alternative solution, if you don't want to compile anything, is to use pure Pyth
 
     atom = Rubidium(cpp_numerov=False)
 
-This is not recommended option for complex calculations, since it will run much more slowly then optimized C++ version, but is fine if you need just a few numbers.
+This is not recommended option for complex calculations, since it will run much more slowly then optimized C version, but is fine if you need just a few numbers.
