@@ -1,0 +1,8 @@
+language: generic
+
+matrix:
+  include:
+    - os: linux
+      script:
+      - python -m compileall arc/*.py
+      - gcc -Wall -Wextra -pedantic -std=c99 -O3 arc/nvwcpp.c -lm

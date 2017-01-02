@@ -8,13 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <new>
-
-using namespace std;
 
 #define DEBUG_OUTPUT
-
-#define ABS(X) ((X)>(-X) ? (X) : (-X))
 
 double innerLimit;
 double outerLimit;
@@ -125,10 +120,10 @@ int main(int argc, char** argv) {
 #endif
 
 	int br = totalLength;
-	double* sol = new (std::nothrow) double[br];
-	double* rad = new (std::nothrow) double[br];
+	double* sol = (double*) malloc(br*sizeof(double));
+	double* rad = (double*) malloc(br*sizeof(double));
 
-	if (!sol or !rad){
+	if (!sol || !rad){
 		printf("Memory allocaiton failed! Aborting.");
 		return 1;
 	}
@@ -159,8 +154,8 @@ int main(int argc, char** argv) {
 	        r = r-step;
 	        sol[br] = (2*(1-5.0/12.0*step2*kfun(r))*sol[br+1]-(1+1/12.0*step2*kfun(r+step))*sol[br+2])/(1+1/12.0*step2*kfun(r-step));
 	        rad[br] = r;
-	        if (ABS(sol[br])>maxValue){
-	            maxValue = ABS(sol[br]);
+	        if (abs(sol[br])>maxValue){
+	            maxValue = abs(sol[br]);
 	        }
 	        else{
 	            fromLastMax += 1;
@@ -176,9 +171,9 @@ int main(int argc, char** argv) {
 	        r = r-step;
 	        sol[br] = (2*(1-5.0/12.0*step2*kfun(r))*sol[br+1]-(1+1/12.0*step2*kfun(r+step))*sol[br+2])/(1+1/12.0*step2*kfun(r-step));
 	        rad[br] = r;
-	        if ((divergencePoint==0)&&(ABS(sol[br])>maxValue)){
+	        if ((divergencePoint==0)&&(abs(sol[br])>maxValue)){
 	            divergencePoint = br;
-	            while ((ABS(sol[divergencePoint])>ABS(sol[divergencePoint+1])) && (divergencePoint<checkPoint)){
+	            while ((abs(sol[divergencePoint])>abs(sol[divergencePoint+1])) && (divergencePoint<checkPoint)){
 	                divergencePoint +=1;
 	            }
 	            if (divergencePoint>checkPoint){
@@ -214,8 +209,8 @@ int main(int argc, char** argv) {
 	        r = r-step;
 	        sol[br] = (2*(1-5.0/12.0*step2*kfun2(r))*sol[br+1]-(1+1/12.0*step2*kfun2(r+step))*sol[br+2])/(1+1/12.0*step2*kfun2(r-step));
 	        rad[br] = r;
-	        if (ABS(sol[br])>maxValue){
-	            maxValue = ABS(sol[br]);
+	        if (abs(sol[br])>maxValue){
+	            maxValue = abs(sol[br]);
 	        }
 	        else{
 	            fromLastMax += 1;
@@ -232,9 +227,9 @@ int main(int argc, char** argv) {
 	        r = r-step;
 	        sol[br] = (2*(1-5.0/12.0*step2*kfun2(r))*sol[br+1]-(1+1/12.0*step2*kfun2(r+step))*sol[br+2])/(1+1/12.0*step2*kfun2(r-step));
 	        rad[br] = r;
-	        if ((divergencePoint==0)&&(ABS(sol[br])>maxValue)){
+	        if ((divergencePoint==0)&&(abs(sol[br])>maxValue)){
 	            divergencePoint = br;
-	            while ((ABS(sol[divergencePoint])>ABS(sol[divergencePoint+1])) && (divergencePoint<checkPoint)){
+	            while ((abs(sol[divergencePoint])>abs(sol[divergencePoint+1])) && (divergencePoint<checkPoint)){
 	                divergencePoint +=1;
 	            }
 	            if (divergencePoint>checkPoint){
@@ -288,7 +283,7 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-    delete[] rad;
-    delete[] sol;
+    free(rad);
+    free(sol);
     return 0;
 }
