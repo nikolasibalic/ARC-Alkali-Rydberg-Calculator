@@ -70,6 +70,8 @@
     ------
 """
 
+from __future__ import print_function
+
 from alkali_atom_functions import *
 
 
@@ -211,8 +213,8 @@ class Caesium(AlkaliAtom):
             return 10.0**(2.881+8.232-4062./temperature-\
                           1.3359*log(temperature)/log(10.))*133.322368
         else:
-            print "ERROR: Cs vapour pressure above 550 C is unknown \
-                    (limits of experimental interpolation)"
+            print("ERROR: Cs vapour pressure above 550 C is unknown \
+                    (limits of experimental interpolation)")
             return 0
       
     def getPressureOld(self,temperature):
@@ -222,9 +224,9 @@ class Caesium(AlkaliAtom):
         # edited by Robert Gary
         # as was found in Steck Alkali metal data, revision 1.6, 14 October 2003
         
-        print "WARNING: getPressureOld is provided just for reference for \
-                the old versions of the programme"
-        print "New programmes should use getPressure function instead !"
+        print("WARNING: getPressureOld is provided just for reference for \
+                the old versions of the programme")
+        print("New programmes should use getPressure function instead !")
         
         if temperature<28.44+273.15:
             # Cs is in solid phase
@@ -236,8 +238,8 @@ class Caesium(AlkaliAtom):
             return 10.0**(8.22127-4006.048/temperature-0.00060194*temperature-\
                           0.19623*log(temperature)/log(10.0))*133.322368
         else:
-            print "ERROR: Cs vapour pressure above 671 C is unknown \
-                    (limits of experimental interpolation)"
+            print("ERROR: Cs vapour pressure above 671 C is unknown \
+                    (limits of experimental interpolation)")
             return 0
 
 class Rubidium(AlkaliAtom):
@@ -343,8 +345,8 @@ class Rubidium(AlkaliAtom):
             return 10.0**(2.881+8.316-4275./temperature-\
                           1.3102*log(temperature)/log(10.))*133.322368
         else:
-            print "ERROR: Rb vapour pressure above 550 C is unknown \
-                    (limits of experimental interpolation)"
+            print("ERROR: Rb vapour pressure above 550 C is unknown \
+                    (limits of experimental interpolation)")
             return 0
 
 class Lithium6(AlkaliAtom): # Li
@@ -456,8 +458,8 @@ class Lithium6(AlkaliAtom): # Li
             return 10.0**(2.881+8.409-8320./temperature-\
                           1.0255*log(temperature)/log(10.))*133.322368
         else:
-            print "ERROR: Li vapour pressure above 1000 C is unknown \
-                    (limits of experimental interpolation)"
+            print("ERROR: Li vapour pressure above 1000 C is unknown \
+                    (limits of experimental interpolation)")
             return 0
 
 class Lithium7(AlkaliAtom): # Li
@@ -565,8 +567,8 @@ class Lithium7(AlkaliAtom): # Li
             return 10.0**(2.881+8.409-8320./temperature-\
                           1.0255*log(temperature)/log(10.))*133.322368
         else:
-            print "ERROR: Li vapour pressure above 1000 C is unknown \
-                    (limits of experimental interpolation)"
+            print("ERROR: Li vapour pressure above 1000 C is unknown \
+                    (limits of experimental interpolation)")
             return 0
 
 class Sodium(AlkaliAtom): #Na23
@@ -677,8 +679,8 @@ class Sodium(AlkaliAtom): #Na23
             return 10.0**(2.881+8.400-5634./temperature-\
                           1.1748*log(temperature)/log(10.))*133.322368
         else:
-            print "ERROR: Na vapour pressure above 700 C is unknown \
-                    (limits of experimental interpolation)"
+            print("ERROR: Na vapour pressure above 700 C is unknown \
+                    (limits of experimental interpolation)")
             return 0
 
 class Potassium(AlkaliAtom): # K39
@@ -783,8 +785,8 @@ class Potassium(AlkaliAtom): # K39
             return 10.0**(2.881+8.233-4693./temperature-\
                           1.2403*log(temperature)/log(10.))*133.322368
         else:
-            print "ERROR: K vapour pressure above 600 C is unknown \
-                (limits of experimental interpolation)"
+            print("ERROR: K vapour pressure above 600 C is unknown \
+                (limits of experimental interpolation)")
             return 0
 
 

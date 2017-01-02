@@ -11,6 +11,7 @@ labels etc.
 
 """
 
+from __future__ import print_function
 
 from math import exp,log,sqrt
 # for web-server execution, uncomment the following two lines
@@ -185,14 +186,14 @@ class AlkaliAtom(object):
                         self.c.executemany('INSERT INTO dipoleME VALUES (?,?,?,?,?,?,?)', data)
                         self.conn.commit()
                 except sqlite3.Error as e:
-                    print "Error while loading precalculated values into the database"
-                    print e
+                    print("Error while loading precalculated values into the database")
+                    print(e)
                     exit()  
                     
             except IOError as e:
-                print "Error reading dipoleMatrixElement File "+\
-                    os.path.join(self.dataFolder,self.dipoleMatrixElementFile)
-                print e
+                print("Error reading dipoleMatrixElement File "+\
+                    os.path.join(self.dataFolder,self.dipoleMatrixElementFile))
+                print(e)
                
         # load quadrupole matrix elements previously calculated        
         if (self.quadrupoleMatrixElementFile != ""):
@@ -218,14 +219,14 @@ class AlkaliAtom(object):
                         self.c.executemany('INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?,?)', data)
                         self.conn.commit()
                 except sqlite3.Error as e:
-                    print "Error while loading precalculated values into the database"
-                    print e
+                    print("Error while loading precalculated values into the database")
+                    print(e)
                     exit() 
                     
             except IOError as e:
-                print "Error reading quadrupoleMatrixElementFile File "+\
-                    os.path.join(self.dataFolder,self.quadrupoleMatrixElementFile)
-                print e
+                print("Error reading quadrupoleMatrixElementFile File "+\
+                    os.path.join(self.dataFolder,self.quadrupoleMatrixElementFile))
+                print(e)
         
         self.sEnergy = np.array([[0.0]*self.NISTdataLevels]*self.NISTdataLevels)
 
@@ -236,7 +237,7 @@ class AlkaliAtom(object):
         # minQuantumDefectN cut-off (defined for each element separately)
         # getEnergy(...) will always return measured, not calculated energy levels
         if (self.levelDataFromNIST == ""):
-            print "NIST level data file not specified. Only quantum defects will be used."
+            print("NIST level data file not specified. Only quantum defects will be used.")
         else:
             levels = self._parseLevelsFromNIST(os.path.join(self.dataFolder,\
                                                self.levelDataFromNIST))
@@ -275,8 +276,8 @@ class AlkaliAtom(object):
             Returns:
                 float: vapour pressure in Pa
         """
-        print "Error: getPressure to-be implement in child class (otherwise this\
-                call is invalid for the specified atom"
+        print("Error: getPressure to-be implement in child class (otherwise this\
+                call is invalid for the specified atom")
         exit()
     
     def getNumberDensity(self,temperature):
@@ -441,14 +442,14 @@ class AlkaliAtom(object):
             out, err = proc.communicate()
             exitcode = proc.returncode
             if (exitcode!=0):
-                print "ERROR: C++ implementation of Numerov calculation of the \
-                        wavefunction doesn't work. Error is:"
-                print err
-                print "Try recompiling C++ code, or initialize atoms with cpp_numerov=False"
-                print "e.g. atom = Rubidium(cpp_numerov=False)"
-                print "NOTE: this will significantly slow down calculation of new \
+                print("ERROR: C++ implementation of Numerov calculation of the \
+                        wavefunction doesn't work. Error is:")
+                print(err)
+                print("Try recompiling C++ code, or initialize atoms with cpp_numerov=False")
+                print("e.g. atom = Rubidium(cpp_numerov=False)")
+                print("NOTE: this will significantly slow down calculation of new \
                         dipole matrix elements. Recommended option is compilation\
-                        of the C++ code. See documentation for more details"
+                        of the C++ code. See documentation for more details")
                 exit()
             
             fileRoot = ""
@@ -515,7 +516,7 @@ class AlkaliAtom(object):
                 elif ch == "h":
                     l = 5
                 else:
-                    print "Unidentified character in line:\n",line
+                    print("Unidentified character in line:\n",line)
                     exit() 
 
             match = re.search(pattern2,line)
@@ -980,7 +981,7 @@ class AlkaliAtom(object):
                     atom = Rubidium()
                     # transition 5 S_{1/2} m_j=-0.5 -> 5 P_{3/2} m_j=-1.5 for laser 
                     # driving sigma- transition
-                    print atom.getDipoleMatrixElement(5,0,0.5,-0.5,5,1,1.5,-1.5,-1)
+                    print(atom.getDipoleMatrixElement(5,0,0.5,-0.5,5,1,1.5,-1.5,-1))
                     
                     
         """
@@ -1057,15 +1058,15 @@ class AlkaliAtom(object):
                                 [70,0,0.5, 69, 1,1.5, 70,1, 0.5],\\
                                 [70,0,0.5, 70, 1,0.5, 69,1, 0.5]]
                     
-                    print " = = = Caesium = = = "
+                    print(" = = = Caesium = = = ")
                     atom = Caesium()
                     for channel in channels:
-                        print "%.0f  GHz (mu m)^6" % ( atom.getC6term(*channel)/h*1.e27 )
+                        print("%.0f  GHz (mu m)^6" % ( atom.getC6term(*channel)/h*1.e27 ))
                     
-                    print "\\n = = = Rubidium  = = ="
+                    print("\\n = = = Rubidium  = = =")
                     atom = Rubidium()
                     for channel in channels:
-                        print "%.0f  GHz (mu m)^6" % ( atom.getC6term(*channel)/h*1.e27 )
+                        print("%.0f  GHz (mu m)^6" % ( atom.getC6term(*channel)/h*1.e27 ))
                     
                 Returns::
                 
@@ -1214,18 +1215,18 @@ class AlkaliAtom(object):
                                  self.dipoleMatrixElementFile),\
                     dipoleMatrixElement) 
         except IOError as e:
-            print "Error while updating dipoleMatrixElements File "+\
-                    self.dipoleMatrixElementFile
-            print e
+            print("Error while updating dipoleMatrixElements File "+\
+                    self.dipoleMatrixElementFile)
+            print(e)
         # save quadrupole elements
         try:
             np.save(os.path.join(self.dataFolder,\
                                  self.quadrupoleMatrixElementFile),\
                     quadrupoleMatrixElement) 
         except IOError as e:
-            print "Error while updating quadrupoleMatrixElements File "+\
-                    self.quadrupoleMatrixElementFile
-            print e
+            print("Error while updating quadrupoleMatrixElements File "+\
+                    self.quadrupoleMatrixElementFile)
+            print(e)
 
     def getTransitionRate(self,n1,l1,j1,n2,l2,j2,temperature = 0.):
         """
@@ -1390,7 +1391,7 @@ class AlkaliAtom(object):
         """
         dl = abs(l-l1)
         if (dl == 1 and abs(j-j1)<1.1):
-            #print n," ",l," ",j," ",n1," ",l1," ",j1
+            #print(n," ",l," ",j," ",n1," ",l1," ",j1)
             return self.getRadialMatrixElement(n,l,j,n1,l1,j1)
         elif (dl==0 or dl==1 or dl==2) and(abs(j-j1)<2.1):
             # quadrupole coupling
@@ -1398,7 +1399,7 @@ class AlkaliAtom(object):
             return self.getQuadrupoleMatrixElement(n,l,j,n1,l1,j1)
         else:
             # neglect octopole coupling and higher
-            #print "NOTE: Neglecting couplings higher then quadrupole"
+            #print("NOTE: Neglecting couplings higher then quadrupole")
             return 0
         
     def getAverageSpeed(self,temperature):
@@ -1493,17 +1494,17 @@ class AlkaliAtom(object):
                                      literatureDME)
                 self.conn.commit()
             except sqlite3.Error as e:
-                print "Error while loading precalculated values into the database"
-                print e
+                print("Error while loading precalculated values into the database")
+                print(e)
                 exit()  
                 
             
             
                 
         except IOError as e:
-            print "Error reading literature values File "+\
-                    self.literatureDMEfilename
-            print e
+            print("Error reading literature values File "+\
+                    self.literatureDMEfilename)
+            print(e)
         
         
     
@@ -1704,7 +1705,7 @@ def NumerovBack(innerLimit,outerLimit,kfun,step,init1,init2):
                 (divergencePoint<checkPoint):
                 divergencePoint +=1
             if divergencePoint>checkPoint:
-                print "Numerov error"
+                print("Numerov error")
                 exit()
 
     return rad,sol,divergencePoint
@@ -1821,8 +1822,8 @@ def saveCalculation(calculation,fileName):
         calculation.ax = ax
         calculation.fig = fig
     except:
-        print "ERROR: saving of the calculation failed."
-        print sys.exc_info()
+        print("ERROR: saving of the calculation failed.")
+        print(sys.exc_info())
         return 1
     return 0
     
@@ -1850,11 +1851,11 @@ def loadSavedCalculation(fileName):
         calcInput = gzip.GzipFile(fileName, 'rb')
         calculation = pickle.load(calcInput)
     except:
-        print "ERROR: loading of the calculation from '%s' failed"  % fileName
-        print sys.exc_info()
+        print("ERROR: loading of the calculation from '%s' failed"  % fileName)
+        print(sys.exc_info())
         return False
-    print "Loading of "+calculation.__class__.__name__+" from '"+fileName+\
-        "' successful."
+    print("Loading of "+calculation.__class__.__name__+" from '"+fileName+\
+        "' successful.")
     
     # establish conneciton to the database
     calculation.atom._databaseInit()
@@ -1894,7 +1895,7 @@ def printState(n,l,j):
             j (float): total angular momentum
     """
         
-    print n," ",printStateLetter(l),(" %.0d/2" % (j*2))
+    print(n," ",printStateLetter(l),(" %.0d/2" % (j*2)))
 
 def printStateString(n,l,j):
     """
@@ -2054,7 +2055,7 @@ class _EFieldCoupling:
          ''',(l1,2*j1,j1+mj1,l2,j2*2,j2+mj2))
         answer = self.c.fetchone()
         if (answer):
-            #print "cache hit!"
+            #print("cache hit!")
             return answer[0]
         
         # if it is not calculated before, calculate now
