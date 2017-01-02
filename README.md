@@ -14,7 +14,7 @@ For online access to a selection of package functions see [online Atom Calculato
 If you want to contribute to the project, [check this page](http://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/contribute.html).
 
 ![Documentation Status](https://readthedocs.org/projects/arc-alkali-rydberg-calculator/badge/?version=latest)
-
+[![Build Status](https://travis-ci.org/nikolasibalic/ARC-Alkali-Rydberg-Calculator.svg?branch=master)](https://travis-ci.org/nikolasibalic/ARC-Alkali-Rydberg-Calculator)
 -------
 Authors
 -------
