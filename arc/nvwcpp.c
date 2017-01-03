@@ -1,9 +1,9 @@
 //============================================================================
-// Name        : Rydberg_Wavefunction_Numerov_Integration.cpp
+// Name        : Rydberg_Wavefunction_Numerov_Integration.c
 // Author      : Nikola Sibalic
-// Version     :
-// Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
+// Version     : 0.9
+// Copyright   : BSD 3 clause
+// Description : Rydberg_Wavefunction_Numerov_Integration in C
 //============================================================================
 #include <stdio.h>
 #include <stdlib.h>
@@ -154,8 +154,8 @@ int main(int argc, char** argv) {
 	        r = r-step;
 	        sol[br] = (2*(1-5.0/12.0*step2*kfun(r))*sol[br+1]-(1+1/12.0*step2*kfun(r+step))*sol[br+2])/(1+1/12.0*step2*kfun(r-step));
 	        rad[br] = r;
-	        if (abs(sol[br])>maxValue){
-	            maxValue = abs(sol[br]);
+	        if (fabs(sol[br])>maxValue){
+	            maxValue = fabs(sol[br]);
 	        }
 	        else{
 	            fromLastMax += 1;
@@ -171,9 +171,9 @@ int main(int argc, char** argv) {
 	        r = r-step;
 	        sol[br] = (2*(1-5.0/12.0*step2*kfun(r))*sol[br+1]-(1+1/12.0*step2*kfun(r+step))*sol[br+2])/(1+1/12.0*step2*kfun(r-step));
 	        rad[br] = r;
-	        if ((divergencePoint==0)&&(abs(sol[br])>maxValue)){
+	        if ((divergencePoint==0)&&(fabs(sol[br])>maxValue)){
 	            divergencePoint = br;
-	            while ((abs(sol[divergencePoint])>abs(sol[divergencePoint+1])) && (divergencePoint<checkPoint)){
+	            while ((fabs(sol[divergencePoint])>fabs(sol[divergencePoint+1])) && (divergencePoint<checkPoint)){
 	                divergencePoint +=1;
 	            }
 	            if (divergencePoint>checkPoint){
@@ -209,8 +209,8 @@ int main(int argc, char** argv) {
 	        r = r-step;
 	        sol[br] = (2*(1-5.0/12.0*step2*kfun2(r))*sol[br+1]-(1+1/12.0*step2*kfun2(r+step))*sol[br+2])/(1+1/12.0*step2*kfun2(r-step));
 	        rad[br] = r;
-	        if (abs(sol[br])>maxValue){
-	            maxValue = abs(sol[br]);
+	        if (fabs(sol[br])>maxValue){
+	            maxValue = fabs(sol[br]);
 	        }
 	        else{
 	            fromLastMax += 1;
@@ -227,9 +227,9 @@ int main(int argc, char** argv) {
 	        r = r-step;
 	        sol[br] = (2*(1-5.0/12.0*step2*kfun2(r))*sol[br+1]-(1+1/12.0*step2*kfun2(r+step))*sol[br+2])/(1+1/12.0*step2*kfun2(r-step));
 	        rad[br] = r;
-	        if ((divergencePoint==0)&&(abs(sol[br])>maxValue)){
+	        if ((divergencePoint==0)&&(fabs(sol[br])>maxValue)){
 	            divergencePoint = br;
-	            while ((abs(sol[divergencePoint])>abs(sol[divergencePoint+1])) && (divergencePoint<checkPoint)){
+	            while ((fabs(sol[divergencePoint])>fabs(sol[divergencePoint+1])) && (divergencePoint<checkPoint)){
 	                divergencePoint +=1;
 	            }
 	            if (divergencePoint>checkPoint){
