@@ -884,33 +884,32 @@ class LevelPlot:
                 want to examine
     """
     
-    atom = 0
-    fig = 0
-    ax = 0
-    listX = [] # list of l
-    listY = [] # list of energies 
-    levelLabel = []
-    width =0.2
-    state1=[0,0,0]
-    state2 =[0,-1,0]
-    transitionMatrix = []
-    nFrom = 0
-    nTo = 0
-    lFrom = 0
-    lTo = 0
-    populations = []
-    transitionMatrixWavelength3 = []
     
-    # characterization of the graph
-    spectraX = []
-    spectraY = []
-    spectraLine = []
-    
-    # evolution parameters
-    cooperativity = 0.0
     
     def __init__(self,atomType ):
         self.atom = atomType
+        self.nFrom = 0
+        self.nTo = 0
+        self.lFrom = 0
+        self.lTo = 0
+        
+        self.listX = [] # list of l
+        self.listY = [] # list of energies 
+        self.levelLabel = []
+        
+        self.fig = 0
+        self.ax = 0
+        self.width =0.2
+        self.state1=[0,0,0]
+        self.state2 =[0,-1,0]
+        self.transitionMatrix = []
+        self.populations = []
+        self.transitionMatrixWavelength3 = []
+    
+        # characterization of the graph
+        self.spectraX = []
+        self.spectraY = []
+        self.spectraLine = []
     
     
     def makeLevels(self,nFrom,nTo,lFrom,lTo):
@@ -934,6 +933,7 @@ class LevelPlot:
         self.lTo = lTo
         
         # find all the levels within this space restrictions
+        nFrom = max(nFrom,self.atom.groundStateN)
         while nFrom<=nTo:
             l = lFrom
             while l<=min(lTo,4,nFrom-1):
@@ -945,9 +945,12 @@ class LevelPlot:
                 self.listY.append(self.atom.getEnergy(nFrom,l,l+0.5))
                 self.levelLabel.append([nFrom, l, l+0.5])
                 l = l+1
-            nFrom = nFrom+1
+            nFrom += 1
+        # if user requested principal quantum nuber below the
+        # ground state principal quantum number
+        # add those L states that are higher in energy then the ground state 
         for state in self.atom.extraLevels:
-            if state[1]<=lTo and state[0]>=nFrom:
+            if state[1]<=lTo and state[0]>=self.nFrom:
                 self.listX.append(state[1])
                 self.listY.append(self.atom.getEnergy(state[0],state[1],state[2]))
                 self.levelLabel.append(state)
