@@ -159,74 +159,72 @@ class AlkaliAtom(object):
         self.preferQuantumDefects = preferQuantumDefects
         
         self._databaseInit()
-        #self.conn = sqlite3.connect(self.dataFolder+self.precalculatedDB)
-        #self.c = self.conn.cursor()
         
         # load dipole matrix elements previously calculated
+        data=[]
         if (self.dipoleMatrixElementFile != ""):
             if (preferQuantumDefects == False):
                 self.dipoleMatrixElementFile  = "NIST_"+self.dipoleMatrixElementFile
+            
             try:
                 data = np.load(os.path.join(self.dataFolder,\
-                                            self.dipoleMatrixElementFile)) 
-                # save to SQLite database
-                try:
-                    self.c.execute('''SELECT COUNT(*) FROM sqlite_master 
-                                    WHERE type='table' AND name='dipoleME';''')
-                    if (self.c.fetchone()[0] == 0):
-                        # create table
-                        self.c.execute('''CREATE TABLE IF NOT EXISTS dipoleME
-                         (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED, j1_x2 TINYINT UNSIGNED,
-                         n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED, j2_x2 TINYINT UNSIGNED,
-                         dme DOUBLE,
-                         PRIMARY KEY (n1,l1,j1_x2,n2,l2,j2_x2)
-                        ) ''')
-                        data[:,2] *= 2  # j1 -> 2 x j1 (bacause database has int values)
-                        data[:,5] *= 2  # j2 -> 2 x j2 (bacause database has int values)
-                        self.c.executemany('INSERT INTO dipoleME VALUES (?,?,?,?,?,?,?)', data)
-                        self.conn.commit()
-                except sqlite3.Error as e:
-                    print("Error while loading precalculated values into the database")
-                    print(e)
-                    exit()  
-                    
+                                            self.dipoleMatrixElementFile))                     
             except IOError as e:
                 print("Error reading dipoleMatrixElement File "+\
                     os.path.join(self.dataFolder,self.dipoleMatrixElementFile))
                 print(e)
+        # save to SQLite database
+        try:
+            self.c.execute('''SELECT COUNT(*) FROM sqlite_master 
+                            WHERE type='table' AND name='dipoleME';''')
+            if (self.c.fetchone()[0] == 0):
+                # create table
+                self.c.execute('''CREATE TABLE IF NOT EXISTS dipoleME
+                 (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED, j1_x2 TINYINT UNSIGNED,
+                 n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED, j2_x2 TINYINT UNSIGNED,
+                 dme DOUBLE,
+                 PRIMARY KEY (n1,l1,j1_x2,n2,l2,j2_x2)
+                ) ''')
+                if (len(data)>0):
+                    self.c.executemany('INSERT INTO dipoleME VALUES (?,?,?,?,?,?,?)', data)
+                self.conn.commit()
+        except sqlite3.Error as e:
+            print("Error while loading precalculated values into the database")
+            print(e)
+            exit()
                
-        # load quadrupole matrix elements previously calculated        
+        # load quadrupole matrix elements previously calculated
+        data=[]     
         if (self.quadrupoleMatrixElementFile != ""):
             if (preferQuantumDefects == False):
                 self.quadrupoleMatrixElementFile  = "NIST_"+self.quadrupoleMatrixElementFile
             try:
                 data = np.load(os.path.join(self.dataFolder,\
                                             self.quadrupoleMatrixElementFile))
-                # save to SQLite database
-                try:
-                    self.c.execute('''SELECT COUNT(*) FROM sqlite_master 
-                                    WHERE type='table' AND name='quadrupoleME';''')
-                    if (self.c.fetchone()[0] == 0):
-                        # create table
-                        self.c.execute('''CREATE TABLE IF NOT EXISTS quadrupoleME
-                         (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED, j1_x2 TINYINT UNSIGNED,
-                         n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED, j2_x2 TINYINT UNSIGNED,
-                         qme DOUBLE,
-                         PRIMARY KEY (n1,l1,j1_x2,n2,l2,j2_x2)
-                        ) ''')
-                        data[:,2] *= 2  # j1 -> 2 x j1 (bacause database has int values)
-                        data[:,5] *= 2  # j2 -> 2 x j2 (bacause database has int values)
-                        self.c.executemany('INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?,?)', data)
-                        self.conn.commit()
-                except sqlite3.Error as e:
-                    print("Error while loading precalculated values into the database")
-                    print(e)
-                    exit() 
                     
             except IOError as e:
                 print("Error reading quadrupoleMatrixElementFile File "+\
                     os.path.join(self.dataFolder,self.quadrupoleMatrixElementFile))
                 print(e)
+        # save to SQLite database
+        try:
+            self.c.execute('''SELECT COUNT(*) FROM sqlite_master 
+                            WHERE type='table' AND name='quadrupoleME';''')
+            if (self.c.fetchone()[0] == 0):
+                # create table
+                self.c.execute('''CREATE TABLE IF NOT EXISTS quadrupoleME
+                 (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED, j1_x2 TINYINT UNSIGNED,
+                 n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED, j2_x2 TINYINT UNSIGNED,
+                 qme DOUBLE,
+                 PRIMARY KEY (n1,l1,j1_x2,n2,l2,j2_x2)
+                ) ''')
+                if (len(data)>0):
+                    self.c.executemany('INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?,?)', data)
+                self.conn.commit()
+        except sqlite3.Error as e:
+            print("Error while loading precalculated values into the database")
+            print(e)
+            exit() 
         
         self.sEnergy = np.array([[0.0]*self.NISTdataLevels]*self.NISTdataLevels)
 
@@ -491,14 +489,13 @@ class AlkaliAtom(object):
         n = 0
         levels = []
         for line in f:
-            #print line
+            
             line = re.sub('[\[\]]', '', line)
             pattern = "\.\d*[spdfgh]"
             pattern2 = "\|\s+\d*/"
             pattern3 = "/\d* \|"
             pattern4 = "\| *\d*\.\d* *\|"
             match = re.search(pattern,line)
-            #print match.start()
             if (match!= None):
                 n = int(line[match.start()+1:match.end()-1])
             if (match!= None):
@@ -526,7 +523,6 @@ class AlkaliAtom(object):
                 br2 = float(line[match.start()+1:match.end()-2])
                 match = re.search(pattern4,line)
                 energyValue = float(line[match.start()+1:match.end()-1])
-                #print n,",",l,",",br1/br2,",",energyValue
                 levels.append([n,l,br1/br2,energyValue])
         f.close()
         return levels
