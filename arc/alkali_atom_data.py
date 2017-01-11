@@ -85,9 +85,17 @@ class Hydrogen(AlkaliAtom):
         *physical_constants["inverse meter-electron volt relationship"][0]
     
     precalculatedDB = "h_precalculated.db"
+    dipoleMatrixElementFile = "h_dipole_matrix_elements.npy"
+    quadrupoleMatrixElementFile = "h_quadrupole_matrix_elements.npy"
     
     groundStateN = 1
     minQuantumDefectN = 0
+    
+    a1 = [0.0, 0.0, 0.0, 0.0]
+    a2 = [0.0, 0.0, 0.0, 0.0]
+    a3 = [0.0, 0.0, 0.0, 0.0]
+    a4 = [0.0, 0.0, 0.0, 0.0]
+    rc = [0.0, 0.0, 0.0, 0.0]
     
     def potential(self,l,s,j,r):
         # Returns total potential that electron feels = core potential + Spin-Orbit interaction
