@@ -28,7 +28,7 @@
     
 """
 
-from __future__ import print_function
+from __future__ import division, print_function, absolute_import
 
 from math import exp,log,sqrt
 import matplotlib.pyplot as plt
@@ -44,7 +44,7 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 
 import numpy as np
 import re
-from wigner import Wigner6j,Wigner3j,CG,wignerDmatrix
+from .wigner import Wigner6j,Wigner3j,CG,wignerDmatrix
 from scipy.constants import physical_constants,pi,k,c,h,epsilon_0,hbar
 from scipy.constants import e as elemCharge
 from scipy.optimize import curve_fit
@@ -60,12 +60,16 @@ from scipy.special.specfun import fcoef
 from scipy import floor
 
 #from scipy.integrate import ode
-from alkali_atom_functions import *
-from alkali_atom_functions import _EFieldCoupling,_atomLightAtomCoupling
-from calculations_atom_single import StarkMap
+from .alkali_atom_functions import *
+from .alkali_atom_functions import _EFieldCoupling,_atomLightAtomCoupling
+from .calculations_atom_single import StarkMap
 
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib
+
+import sys
+if sys.version_info > (2,):
+    xrange = range
 
 import gzip
 

@@ -70,9 +70,9 @@
     ------
 """
 
-from __future__ import print_function
+from __future__ import division, print_function, absolute_import
 
-from alkali_atom_functions import *
+from .alkali_atom_functions import *
 
 
 class Hydrogen(AlkaliAtom):

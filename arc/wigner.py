@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import division, print_function
+from __future__ import division, print_function, absolute_import
 from scipy import floor, sqrt
 from scipy.misc import factorial
 from numpy import arange

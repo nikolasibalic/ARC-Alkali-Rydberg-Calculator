@@ -26,7 +26,7 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import numpy as np
 import re
 #from algebra_nikola import *
-from wigner import Wigner6j,Wigner3j,CG
+from .wigner import Wigner6j,Wigner3j,CG
 from scipy.constants import physical_constants,pi,k,c,h,epsilon_0,hbar
 from scipy.constants import e as elemCharge
 from scipy.optimize import curve_fit
@@ -45,7 +45,9 @@ from scipy.special.specfun import fcoef
 #from scipy.integrate import ode
 
 import sys
-from alkali_atom_functions import printStateString, _EFieldCoupling, printStateLetter,printStateStringLatex
+if sys.version_info > (2,):
+    xrange = range
+from .alkali_atom_functions import printStateString, _EFieldCoupling, printStateLetter,printStateStringLatex
 
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib

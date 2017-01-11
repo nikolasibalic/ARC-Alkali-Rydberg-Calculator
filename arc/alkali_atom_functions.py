@@ -11,7 +11,7 @@ labels etc.
 
 """
 
-from __future__ import print_function
+from __future__ import division, print_function, absolute_import
 
 from math import exp,log,sqrt
 # for web-server execution, uncomment the following two lines
@@ -22,7 +22,7 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import numpy as np
 import re
 #from algebra_nikola import *
-from wigner import Wigner6j,Wigner3j,wignerD,CG,wignerDmatrix
+from .wigner import Wigner6j,Wigner3j,wignerD,CG,wignerDmatrix
 from scipy.constants import physical_constants,pi,k,c,h,epsilon_0,hbar
 from scipy.constants import e as elemCharge
 from scipy.optimize import curve_fit
@@ -42,6 +42,8 @@ from scipy.special.specfun import fcoef
 from scipy import floor
 #from scipy.integrate import ode
 import sys
+if sys.version_info > (2,):
+    xrange = range
 
 # for calling C++ Numerov 
 import shlex
@@ -54,7 +56,10 @@ import datetime
 #from nbconvert.exporters.exporter import FilenameExtension
 # END of modules for online (server) execution 
 
-import cPickle as pickle   # fast, C implementation of the pickle
+try:
+    import cPickle as pickle   # fast, C implementation of the pickle
+except:
+    import pickle
 import gzip
 
 import csv
@@ -707,10 +712,15 @@ class AlkaliAtom(object):
             j1 = j2
             j2 = temp
         
+        n1 = int(n1)
+        n2 = int(n2)
+        l1 = int(l1)
+        l2 = int(l2)
+        j1_x2 = int(round(2*j1))
+        j2_x2 = int(round(2*j2))
+        
         if useLiterature:
             # is there literature value for this DME? If there is, use the best one (smalles error)
-            j1_x2 = 2*j1
-            j2_x2 = 2*j2
             self.c.execute('''SELECT dme FROM literatureDME WHERE
              n1= ? AND l1 = ? AND j1_x2 = ? AND 
              n2 = ? AND l2 = ? AND j2_x2 = ? 
@@ -722,8 +732,6 @@ class AlkaliAtom(object):
 
         
         # was this calculated before? If it was, retrieve from memory
-        j1_x2 = 2*j1
-        j2_x2 = 2*j2
         self.c.execute('''SELECT dme FROM dipoleME WHERE
          n1= ? AND l1 = ? AND j1_x2 = ? AND 
          n2 = ? AND l2 = ? AND j2_x2 = ?''',(n1,l1,j1_x2,n2,l2,j2_x2))
@@ -753,17 +761,6 @@ class AlkaliAtom(object):
         self.c.execute(''' INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?)''',\
                        [n1,l1,j1_x2,n2,l2,j2_x2, dipoleElement] )
         self.conn.commit()
-
-        
-        # with dipoleMatrixElement as numpy array
-        #if (len(self.dipoleMatrixElement)>0):
-        #    self.dipoleMatrixElement = np.concatenate( (self.dipoleMatrixElement,\
-        #                                                np.array([[n1,l1,j1,n2,\
-        #                                                           l2,j2,\
-        #                                                           dipoleElement]])),\
-        #                                              axis=0)
-        #else:
-        #    self.dipoleMatrixElement =  np.array([[n1,l1,j1,n2,l2,j2,dipoleElement]])
         
         return dipoleElement
 
@@ -808,9 +805,14 @@ class AlkaliAtom(object):
             j1 = j2
             j2 = temp
         
+        n1 = int(n1)
+        n2 = int(n2)
+        l1 = int(l1)
+        l2 = int(l2)
+        j1_x2 = int(round(2*j1))
+        j2_x2 = int(round(2*j2))
+        
         # was this calculated before? If yes, retrieve from memory.
-        j1_x2 = 2*j1
-        j2_x2 = 2*j2
         self.c.execute('''SELECT qme FROM quadrupoleME WHERE
          n1= ? AND l1 = ? AND j1_x2 = ? AND 
          n2 = ? AND l2 = ? AND j2_x2 = ?''',(n1,l1,j1_x2,n2,l2,j2_x2))
@@ -847,16 +849,6 @@ class AlkaliAtom(object):
         self.c.execute(''' INSERT INTO quadrupoleME VALUES (?,?,?, ?,?,?, ?)''',\
                        [n1,l1,j1_x2,n2,l2,j2_x2, quadrupoleElement] )
         self.conn.commit()
-        
-        #if (len(self.quadrupoleMatrixElement)>0):
-        #    self.quadrupoleMatrixElement = np.concatenate((self.quadrupoleMatrixElement,
-        #                                                   np.array([[n1,l1,j1,\
-        #                                                              n2,l2,j2,\
-        #                                                    quadrupoleElement]])),\
-        #                                                  axis=0)
-        #else:
-        #    self.quadrupoleMatrixElement =  np.array([[n1,l1,j1,n2,l2,j2,\
-        #                                               quadrupoleElement]])
         
         return quadrupoleElement  
         
