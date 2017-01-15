@@ -4,7 +4,7 @@ Alkali atom functions
 Overview
 --------
 
-.. currentmodule:: alkali_atom_functions
+.. currentmodule:: arc.alkali_atom_functions
 
 .. rubric:: Classes and global methods
 
@@ -53,5 +53,5 @@ Overview
 Detailed documentation
 ----------------------
 
-.. automodule:: alkali_atom_functions
+.. automodule:: arc.alkali_atom_functions
    :members: 

@@ -2,7 +2,7 @@ Alkali atom data
 ================
 
 
-.. currentmodule:: alkali_atom_data
+.. currentmodule:: arc.alkali_atom_data
 
 .. autosummary::
 
@@ -14,8 +14,8 @@ Alkali atom data
     Rubidium
     Caesium
     
-.. currentmodule:: alkali_atom_data 
+.. currentmodule:: arc.alkali_atom_data 
 
-.. automodule:: alkali_atom_data
+.. automodule:: arc.alkali_atom_data
    :members: 
 

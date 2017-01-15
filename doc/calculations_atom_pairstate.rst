@@ -26,7 +26,7 @@ so that :math:`\theta = 0`, and for other angles wignerD matrices are used to ch
 Overview
 --------
 
-.. currentmodule:: calculations_atom_pairstate
+.. currentmodule:: arc.calculations_atom_pairstate
 
 .. rubric:: PairStateInteractions Methods
 
@@ -54,5 +54,5 @@ Overview
 Detailed documentation
 ----------------------
 
-.. automodule:: calculations_atom_pairstate
+.. automodule:: arc.calculations_atom_pairstate
    :members:

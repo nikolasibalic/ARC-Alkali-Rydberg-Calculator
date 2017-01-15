@@ -4,7 +4,7 @@ Single atom calculations
 Overview
 --------
 
-.. currentmodule:: calculations_atom_single
+.. currentmodule:: arc.calculations_atom_single
 
 .. rubric:: StarkMap Methods
 
@@ -29,5 +29,5 @@ Overview
 Detailed documentation
 ----------------------
 
-.. automodule:: calculations_atom_single
+.. automodule:: arc.calculations_atom_single
    :members:
