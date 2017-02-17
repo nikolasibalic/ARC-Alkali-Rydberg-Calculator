@@ -20,7 +20,7 @@ That is all, enjoy using ARC package. Check :ref:`get-started-page` to see some 
 
 
 
-Precompiled modules on unsupported operating systems 
+Precompiled modules on unsupported operating systems
 ----------------------------------------------------
 
 Optimized of the Numerov is provided as the C code `nvwcpp.c`. If you are using 64-bit Windows, Mac or Linux operating system, package will recognize the system and use appropriate precompuled binary provided in the package - i.e. you should not have to do anything additional manually, this is out-of-the box feature.
@@ -31,7 +31,7 @@ If you are using some other operating system, or 32-bit version of the operating
 
 Downlaod and install `MinGW <http://www.mingw.org/>`_ compiler, or some other distribution of GNU C compiler. In the command propt, navigate to the arc folder where `nvwcpp.c` file is located and execute::
 
-    gcc -Wall -Wextra -pedantic -std=c99 -O3 arc\nvwcpp.c -lm -o arc\nvwcpp_win
+    gcc -Wall -Wextra -pedantic -std=c99 -O3 -static-libgcc arc\nvwcpp.c -lm -o arc\nvwcpp_win
 
 **For Linux users**
 
@@ -45,9 +45,9 @@ Download and install GNU C compiler. Then with terminal open, navigate to arc fo
 Download and install GNU C compiler. Then with terminal open, navigate to arc folder where `nvwcpp.c` file is located execute::
 
     gcc -Wall -Wextra -pedantic -std=c99 -O3 arc/nvwcpp.c -lm -o arc/nvwcpp_mac
-    
-** For people who don't want to compile anythig **
-    
+
+**For people who don't want to compile anything**
+
 Alternative solution, if you don't want to compile anything, is to use pure Python implementation of the Numerov, provided in the package. This is done by passing `cpp_numerov = False` flag whenever atoms are initialized, e.g::
 
     atom = Rubidium(cpp_numerov=False)
