@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8" />
-<title>Rydberg atoms with ARC - a primer_online</title>
+<title>Rydberg_atoms_a_primer_notebook</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -11761,7 +11761,7 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Authors: Nikola Šibalić, Jonathan D. Pritchard, Charles S. Adams, Kevin J. Weatherill</p>
-<p>Updated 11/01/2016</p>
+<p>Updated 17/02/2016</p>
 <p>In this notebook:</p>
 <ol>
 <li><a href="#Configure-Notebook">Configure Notebook</a></li>
@@ -14480,7 +14480,7 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 \mathcal{H} = \mathcal{H}_0 + \mathcal{E}\hat{z}, 
 \end{equation}<p>where $\mathcal{H}_0$ is the Hamiltonian for the unperturbed energy levels and $\hat{z}\equiv r_0$ in the spherical basis resulting in a selection rule $\Delta m_j=0$ and a shift dependent on $\vert m_j \vert$. For the low-$\ell$ states, the quantum defects cause the first-order Stark-shift to vanish, resulting in a second-order energy shift $\Delta E = -\frac{1}{2}\alpha_0\mathcal{E}^2$ where the polarizability for state $\vert n \ell j m_j\rangle$ is given by</p>
 \begin{equation}
-\alpha_0 = \displaystyle\sum_{n'\ell'j'\neq n\ell j} \frac{\vert \langle n,\ell,j,m_j\vert r_0 \vert n',\ell',j',m_j' \rangle \vert^2}{E_{n'\ell' j'}-E_{n\ell j}}.
+\alpha_0 = 2 e^2\displaystyle\sum_{n'\ell'j'\neq n\ell j} \frac{\vert \langle n,\ell,j,m_j\vert r_0 \vert n',\ell',j',m_j' \rangle \vert^2}{E_{n'\ell' j'}-E_{n\ell j}}.
 \end{equation}<p>Since the dipole matrix elements scale as $n^{2}$, and the energy difference scales as $n^{-3}$ the scalar polarizability $\alpha_0\propto n^7$. States with $\ell>3$ are degenerate, and therefore experience a linear Stark shift.</p>
 <p>The evaluation of polarisability using second-order perturbation theory is limited, and only valid at weak fields. Instead, Stark maps accurate to all orders can be obtained by direct diagonalisatoin of the Hamiltonian $\mathcal{H}$, taking care to include a large enough set of basis states to achieve divergence. As well as revealing the exact energies of the Stark-coupled states, this permits extraction of the mixed electric field eigenstates which are relevant when considering optical excitation of a given Rydberg state which is now mixed into neighbouring energy levels.</p>
 <p>The code below provides an example Stark map for the $35S_{1/2},\vert m_j\vert=1/2$ state in Cesium. After identifying the target state, a range of basis states are defined before running the diagonalisation for the range of E-fields specified, returning the desired Stark map. To show the effect of state mixing, the levels are coloured proportional to the fraction of the target state present in each eigenstate. This knowledge can also be used to determine the effective polarisability by extracting the energy level of the eigenstate with a contribution of at least 90% of the original target state.</p>
