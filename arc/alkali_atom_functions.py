@@ -18,10 +18,9 @@ from math import exp,log,sqrt
 #import matplotlib
 #matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import numpy as np
 import re
-#from algebra_nikola import *
+
 from .wigner import Wigner6j,Wigner3j,wignerD,CG,wignerDmatrix
 from scipy.constants import physical_constants,pi,k,c,h,epsilon_0,hbar
 from scipy.constants import e as elemCharge
@@ -33,14 +32,12 @@ from numpy.linalg import eigvalsh,eig,eigh
 from numpy.ma import conjugate
 from numpy.lib.polynomial import real
 
-#from wigner_rotation import wignerD
-
 from scipy.sparse import csr_matrix
 from scipy.sparse import kron as kroneckerp
 from scipy.sparse.linalg import eigsh
 from scipy.special.specfun import fcoef
 from scipy import floor
-#from scipy.integrate import ode
+
 import sys
 if sys.version_info > (2,):
     xrange = range
@@ -48,18 +45,16 @@ if sys.version_info > (2,):
 # for calling C++ Numerov
 import shlex
 from subprocess import Popen, PIPE
-#from idlelib import OutputWindow
 
 # START of modules for online (server) execution
 import os,platform
 import datetime
-#from nbconvert.exporters.exporter import FilenameExtension
 # END of modules for online (server) execution
 
 try:
     import cPickle as pickle   # fast, C implementation of the pickle
 except:
-    import pickle
+    import pickle   # Python 3 already has efficient pickle (instead of cPickle)
 import gzip
 
 import csv
@@ -973,7 +968,6 @@ class AlkaliAtom(object):
 
 
         """
-        #q = -mj2+mj1
         if abs(q)>1.1:
             return 0
         return (-1)**(int(j1-mj1))*\
@@ -1862,8 +1856,6 @@ def singleAtomState(j,m):
                                        shape=(round(2.0*j+1.0,0),1))
 
 def compositeState(s1,s2):
-    #return np.kron(s1,s2)#kroneckerp(s1, s2)
-
     a = zeros((s1.shape[0]*s2.shape[0],1),dtype=np.complex128)
     index = 0
     for br1 in xrange(s1.shape[0]):
@@ -2043,7 +2035,6 @@ class _EFieldCoupling:
          ''',(l1,2*j1,j1+mj1,l2,j2*2,j2+mj2))
         answer = self.c.fetchone()
         if (answer):
-            #print("cache hit!")
             return answer[0]
 
         # if it is not calculated before, calculate now
@@ -2078,9 +2069,3 @@ class _EFieldCoupling:
         return coupling
 
 # =================== E FIELD Coupling (END) ===================
-
-# =================== B FIELD Coupling (START) ===================
-
-# only available in dev version
-
-# =================== B FIELD Coupling (END) ===================

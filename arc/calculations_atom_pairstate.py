@@ -40,8 +40,6 @@ mpl.rcParams['ytick.major.size'] = 8
 mpl.rcParams['xtick.minor.size'] = 4
 mpl.rcParams['ytick.minor.size'] = 4
 
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter
-
 import numpy as np
 import re
 from .wigner import Wigner6j,Wigner3j,CG,wignerDmatrix
