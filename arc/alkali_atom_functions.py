@@ -97,7 +97,7 @@ class AlkaliAtom(object):
 
     sEnergy = 0
     NISTdataLevels = 0
-    scaledRydbergConstant = 0
+    scaledRydbergConstant = 0 #: in eV
 
     quantumDefect = [[[0.0,0.0,0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0,0.0,0.0],\
                       [0.0,0.0,0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0,0.0,0.0],\
@@ -1317,7 +1317,7 @@ class AlkaliAtom(object):
 
         transitionRate = 0.
 
-        for nto in xrange(self.groundStateN,includeLevelsUpTo+1):
+        for nto in xrange(max(self.groundStateN,l),includeLevelsUpTo+1):
 
             # sum over all l-1
             if l>0:
@@ -1333,6 +1333,7 @@ class AlkaliAtom(object):
                                                              nto, lto, jto,\
                                                              temperature)
 
+        for nto in xrange(max(self.groundStateN,l+2),includeLevelsUpTo+1):
             # sum over all l+1
             lto = l+1
             if lto -0.5-0.1< j :

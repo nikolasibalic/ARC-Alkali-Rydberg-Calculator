@@ -1030,9 +1030,9 @@ class PairStateInteractions:
             `drivingFromState` is specified as `[n,l,j,mj,q]` coupling between
             the pair-states and the situation where one of the atoms in the pair
             state basis is in :math:`|n,l,j,m_j\\rangle` state due to driving
-            with a laser field that has polarization :math:`q` (+1,0,-1 for
-            :math:`\\sigma^-`, :math:`\pi` and :math:`\\sigma^+` polarizations
-            respectively)  is calculated and marked by the colurmaping these
+            with a laser field that drives :math:`q` transition (+1,0,-1 for
+            :math:`\\sigma^-`, :math:`\pi` and :math:`\\sigma^+` transitions
+            respectively)  is calculated and marked by the colourmaping these
             values on the obtained eigenvectors.
 
             Args:
@@ -1621,6 +1621,12 @@ class PairStateInteractions:
                     energy state necessary for the state to be considered for
                     the adiabatic continuation of the original unperturbed
                     pair state.
+                resonantBranch (int): optional, default +1. For resonant
+                    interactions we have two branches with identical
+                    state contributions. In this case, we will select only
+                    positively detuned branch (for resonantBranch = +1)
+                    or negatively detuned branch (fore resonantBranch = -1)
+                    depending on the value of resonantBranch optional parameter
             Returns:
                 float:
                     :math:`C_3` measured in :math:`\\text{GHz }\\mu\\text{m}^6`
@@ -1635,11 +1641,6 @@ class PairStateInteractions:
         """
 
 
-        # for resonant interactions we have two branches with identical
-        # state contributions. In this case, we will select only
-        # positively detuned branch (for resonantBranch = +1)
-        # or negatively detuned branch (fore resonantBranch = -1)
-        # depending on the value of resonantBranch optional parameter
         selectBranch = False
         if (abs(self.l-self.ll)==1):
             selectBranch = True
