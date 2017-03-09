@@ -976,7 +976,8 @@ class AlkaliAtom(object):
 
     def getRabiFrequency(self,n1,l1,j1,mj1,n2,l2,j2,q,laserPower,laserWaist):
         """
-            Returns a Rabi frequency for resonant excitation
+            Returns a Rabi frequency for resonantly driven atom in a
+            center of TEM00 mode of a driving field
 
             Args:
                 n1,l1,j1,mj1 : state from which we are driving transition
@@ -992,14 +993,33 @@ class AlkaliAtom(object):
                     Frequency in rad :math:`^{-1}`. If you want frequency in Hz,
                     divide by returned value by :math:`2\pi`
         """
+        maxIntensity = 2*laserPower/(pi* laserWaist**2)
+        electricField = sqrt(2.*maxIntensity/(c*epsilon_0))
+        return self.getRabiFrequency2(n1,l1,j1,mj1,n2,l2,j2,q,electricField)
+
+    def getRabiFrequency2(self,n1,l1,j1,mj1,n2,l2,j2,q,electricFieldAmplitude):
+        """
+            Returns a Rabi frequency for resonant excitation with a given
+            electric field amplitude
+
+            Args:
+                n1,l1,j1,mj1 : state from which we are driving transition
+                n2,l2,j2 : state to which we are driving transition
+                q : laser polarization (-1,0,1 correspond to :math:`\sigma^-`,
+                    :math:`\pi` and :math:`\sigma^+` respectively)
+                electricFieldAmplitude : amplitude of electric field driving (V/m)
+
+            Returns:
+                float:
+                    Frequency in rad :math:`^{-1}`. If you want frequency in Hz,
+                    divide by returned value by :math:`2\pi`
+        """
         mj2 = mj1+q
         if abs(mj2)-0.1>j2:
             return 0
         dipole = self.getDipoleMatrixElement(n1,l1,j1,mj1,n2,l2,j2,mj2,q)*\
                 elemCharge*physical_constants["Bohr radius"][0]
-        maxIntensity = 2*laserPower/(pi* laserWaist**2)
-        electricField = sqrt(2.*maxIntensity/(c*epsilon_0))
-        freq = electricField*abs(dipole)/hbar
+        freq = electricFieldAmplitude*abs(dipole)/hbar
         return freq
 
     def getC6term(self,n,l,j,n1,l1,j1,n2,l2,j2):
