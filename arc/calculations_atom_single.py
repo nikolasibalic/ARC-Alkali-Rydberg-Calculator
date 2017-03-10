@@ -2,19 +2,19 @@
 
 """
     This module provides calculations of single-atom properties.
-    
-    Included calculations are Stark maps, level plot visualisations, 
+
+    Included calculations are Stark maps, level plot visualisations,
     lifetimes and radiative decays.
-    
- 
-    
-    
-    
+
+
+
+
+
     Detailed documentation
     ----------------------
-    
-    
-    
+
+
+
 """
 
 from __future__ import print_function
@@ -58,37 +58,37 @@ import datetime
 class StarkMap:
     """
         Calculates Stark maps for single atom in a field
-        
-        This initializes calculation for the atom of a given type. For details 
+
+        This initializes calculation for the atom of a given type. For details
         of calculation see Zimmerman [1]_. For a quick working example
         see `Stark map example snippet`_.
-        
-        
-    
+
+
+
         Args:
-            atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`, 
+            atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
                 :obj:`alkali_atom_data.Lithium6`,
                 :obj:`alkali_atom_data.Sodium`,
                 :obj:`alkali_atom_data.Potassium`,
                 :obj:`alkali_atom_data.Rubidium`,
-                :obj:`alkali_atom_data.Caesium` } 
-                Select the alkali metal for energy level 
+                :obj:`alkali_atom_data.Caesium` }
+                Select the alkali metal for energy level
                 diagram calculation
-            
+
 
 
         Examples:
             State :math:`28~S_{1/2}~|m_j|=0.5` polarizability calculation
-            
+
             >>> from arc import *
             >>> calc = StarkMap(Caesium())
             >>> calc.defineBasis(28, 0, 0.5, 0.5, 23, 32, 20)
             >>> calc.diagonalise(np.linspace(00.,6000,600))
-            >>> print "%.5f MHz cm^2 / V^2 " % calc.getPolarizability()
-            0.76705 MHz cm^2 / V^2 
-            
+            >>> print("%.5f MHz cm^2 / V^2 " % calc.getPolarizability())
+            0.76705 MHz cm^2 / V^2
+
             Stark map calculation
-            
+
             >>> from arc import *
             >>> calc = StarkMap(Caesium())
             >>> calc.defineBasis(28, 0, 0.5, 0.5, 23, 32, 20)
@@ -96,30 +96,30 @@ class StarkMap:
             >>> calc.plotLevelDiagram()
             >>> calc.showPlot()
             << matplotlib plot will open containing a Stark map >>
-            
+
         References:
             .. [1] M. L. Zimmerman et.al, PRA **20**:2251 (1979)
                 https://doi.org/10.1103/PhysRevA.20.2251
-        
+
         .. _`Stark map example snippet`:
             ./Rydberg_atoms_a_primer.html#Rydberg-Atom-Stark-Shifts
     """
 
-    def __init__(self,atom): 
+    def __init__(self,atom):
 
         self.atom = atom
-        
+
         self.basisStates = []
         self.mat1 = []
         self.mat2 = []
         self.indexOfCoupledState = []
-        
-        
+
+
         # finding energy levels
         self.eFieldList = []
         """
-        Saves electric field (in units of V/m) for which energy levels are calculated 
-        
+        Saves electric field (in units of V/m) for which energy levels are calculated
+
         See also:
             :obj:`y`, :obj:`highlight`, :obj:`diagonalise`
         """
@@ -127,89 +127,89 @@ class StarkMap:
         """
         `y[i]` is an array of eigenValues corresponding to the energies of the
         atom states at the electric field `eFieldList[i]`. For example `y[i][j]` is
-        energy of the `j` eigenvalue (energy of the state) measured in 
+        energy of the `j` eigenvalue (energy of the state) measured in
         cm :math:`{}^{-1}` relative to the ionization threshold.
-        
+
         See also:
             :obj:`eFieldList`, :obj:`highlight`, :obj:`diagonalise`
         """
         self.highlight = [] #contribution of initial state there (overlap |<original state | given state>|^2)
         """
-        `highlight[i]` is an array of values measuring highlighted feature in the 
+        `highlight[i]` is an array of values measuring highlighted feature in the
         eigenstates at electric field intensity `eFieldList[i]`. E.g. `highlight[i][j]`
         measures highlighted feature of the state with energy `y[i][j]` at electric
         field `eFieldList[i]`. What will be highlighted feature is defined in the
         call of :obj:`diagonalise` (see that part of documentation for details).
-        
+
         See also:
             :obj:`eFieldList`, :obj:`y`, :obj:`diagonalise`
         """
-        
+
         # pointers towards figure
         self.fig = 0
         self.ax = 0
-        
+
         # values used for fitting polarizability, and fit
         self.fitX = []
         self.fitY = []
         self.fittedCurveY = []
-        
+
         self.drivingFromState = [0,0,0,0,0]
         self.maxCoupling = 0.
-        
+
         # STARK memoization
         self.eFieldCouplingSaved = _EFieldCoupling()
-        
-        
-    
+
+
+
     def _eFieldCouplingDivE(self,n1,l1,j1,mj1,n2,l2,j2,mj2):
         # eFied coupling devided with E (witout actuall multiplication to getE)
         # delta(mj1,mj2') delta(l1,l2+-1)
         if ( (abs(mj1-mj2)>0.1) or (abs(l1-l2) !=1) ):
             return 0
-        
+
         # matrix element
         result = self.atom.getRadialMatrixElement(n1,l1,j1,n2,l2,j2)*\
                 physical_constants["Bohr radius"][0]*elemCharge
 
         sumPart = self.eFieldCouplingSaved.getAngular(l1,j1,mj1,l2,j2,mj2)
-        
+
         return result*sumPart
-    
+
     def _eFieldCoupling(self,n1,l1,j1,mj1,n2,l2,j2,mj2,eField):
         return self._eFieldCouplingDivE(n1,l1,j1,mj1,n2,l2,j2,mj2)*eField
-    
-    
+
+
     def defineBasis(self,n,l,j,mj,nMin,nMax,maxL,progressOutput = False,\
                     debugOutput=False):
         """
             Initializes basis of states around state of interest
-            
-            Defines basis of states for further calculation. :math:`n,l,j,m_j` 
+
+            Defines basis of states for further calculation. :math:`n,l,j,m_j`
             specify state whose neighbourhood and polarizability we want
             to explore. Other parameters specify basis of calculations.
-            
+
             Args:
                 n (int): principal quantum number of the state
                 l (int): angular orbital momentum of the state
                 j (flaot): total angular momentum of the state
                 mj (float): projection of total angular momentum of the state
-                nMin (int): *minimal* principal quantum number of the states to 
+                nMin (int): *minimal* principal quantum number of the states to
                     be included in the basis for calculation
-                nMax (int): *maximal* principal quantum number of the states to 
+                nMax (int): *maximal* principal quantum number of the states to
                     be included in the basis for calculation
-                maxL (int): *maximal* value of orbital angular momentum for the 
+                maxL (int): *maximal* value of orbital angular momentum for the
                     states to be included in the basis for calculation
-                progressOutput (:obj:`bool`, optional): if True prints the 
+                progressOutput (:obj:`bool`, optional): if True prints the
                     progress of calculation; Set to false by default.
-                debugOutput (:obj:`bool`, optional): if True prints additional 
+                debugOutput (:obj:`bool`, optional): if True prints additional
                     information usefull for debuging. Set to false by default.
         """
         global wignerPrecal
         wignerPrecal = True
-        
+
         states = []
-        
+
         # save calculation details START
         self.n = n; self.l =l; self.j=j
         self.mj = mj; self.nMin = nMin; self.nMax = nMax; self.maxL = maxL
@@ -219,7 +219,7 @@ class StarkMap:
         for tn in xrange(nMin,nMax):
 
             for tl in xrange(min(maxL+1,tn)):
-                if (abs(mj)-0.1<=float(tl)+0.5): 
+                if (abs(mj)-0.1<=float(tl)+0.5):
                     states.append([tn,tl,float(tl)+0.5,mj])
 
                 if (tl>0) and  (abs(mj)-0.1<=float(tl)-0.5):
@@ -230,27 +230,27 @@ class StarkMap:
             print("Found ",dimension," states.")
             if debugOutput:
                 print(states)
-        
+
         indexOfCoupledState = 0
         index = 0
         for s in states:
             if (s[0]==n) and (abs(s[1]-l)<0.1) and (abs(s[2]-j)<0.1) and\
                  (abs(s[3]-mj)<0.1):
                 indexOfCoupledState = index
-            index +=1 
+            index +=1
         if debugOutput:
             print("Index of initial state")
             print(indexOfCoupledState)
             print("Initial state = ")
             print(states[indexOfCoupledState])
-        
-        
+
+
         mat1 = np.zeros((dimension,dimension),dtype=np.double)
         mat2 = np.zeros((dimension,dimension),dtype=np.double)
-        
+
         self.basisStates = states
         self.indexOfCoupledState = indexOfCoupledState
-        
+
         if progressOutput:
             print("Generating matrix...")
         progress = 0.
@@ -277,49 +277,49 @@ class StarkMap:
                             1.e-9/h
                 mat2[jj][ii] = coupling
                 mat2[ii][jj] = coupling
-         
+
         if progressOutput:
             print("\n")
         if debugOutput:
             print(mat1+mat2)
             print(mat2[0])
-            
+
         self.mat1 = mat1
         self.mat2 = mat2
-        
+
         self.atom.updateDipoleMatrixElementsFile()
         return 0
         wignerPrecal = False
-    
+
     def diagonalise(self,eFieldList,drivingFromState = [0,0,0,0,0],
                         progressOutput=False,debugOutput=False):
         """
             Finds atom eigenstates in a given electric field
-            
-            Eigenstates are calculated for a list of given electric fields. To 
-            extract polarizability of the originaly stated state see 
-            :obj:`getPolarizability` method. Results are saved in 
+
+            Eigenstates are calculated for a list of given electric fields. To
+            extract polarizability of the originaly stated state see
+            :obj:`getPolarizability` method. Results are saved in
             :obj:`eFieldList`, :obj:`y` and :obj:`highlight`.
-            
+
             Args:
                 eFieldList (array): array of electric field strength (in V/m)
                     for which we want to know energy eigenstates
 
-                progressOutput (:obj:`bool`, optional): if True prints the 
+                progressOutput (:obj:`bool`, optional): if True prints the
                     progress of calculation; Set to false by default.
-                debugOutput (:obj:`bool`, optional): if True prints additional 
+                debugOutput (:obj:`bool`, optional): if True prints additional
                     information usefull for debuging. Set to false by default.
         """
-        
+
         # if we are driving from some state
         # ========= FIND LASER COUPLINGS (START) =======
-        
+
         coupling = []
         dimension = len(self.basisStates)
         self.maxCoupling = 0.
         self.drivingFromState = drivingFromState
         if (self.drivingFromState[0] != 0):
-            if progressOutput: print("Finding coupling strengths")
+            if progressOutput: print("Finding driving field coupling...")
             # get first what was the state we are calculating coupling with
             state1 = drivingFromState
             n1 = int(round(state1[0]))
@@ -327,13 +327,13 @@ class StarkMap:
             j1 = state1[2]
             m1 = state1[3]
             q = state1[4]
-            
-            
+
+
             for i in xrange(dimension):
                 thisCoupling = 0.
-                #if progressOutput:
-                #    sys.stdout.write("\r%d%%" %  (i/float(dimension)*100.))
-                #    sys.stdout.flush()
+                if progressOutput:
+                    sys.stdout.write("\r%d%%" %  (i/float(dimension-1)*100.))
+                    sys.stdout.flush()
                 if (int(abs(self.basisStates[i][1]-l1))==1)and\
                     (int(abs(self.basisStates[i][2]-j1))<=1) and\
                     (int(abs(self.basisStates[i][3]-m1-q))==0):
@@ -345,7 +345,6 @@ class StarkMap:
                     if debugOutput:
                         print(n1," ",l1," ",j1," ",m1," < - ",q," - >",n2," ",\
                             l2," ",j2," ",m2,"\n")
-                        #print(self.basisStates[i])
                     dme = self.atom.getDipoleMatrixElement(n1, l1,j1,m1,\
                                                             n2,l2,j2,m2,\
                                                             q)
@@ -356,7 +355,10 @@ class StarkMap:
                 if (thisCoupling >0.00000001) and debugOutput:
                     print("coupling = ",thisCoupling)
                 coupling.append(thisCoupling)
-        
+
+            if progressOutput:
+                print("\n")
+
             if self.maxCoupling<0.00000001:
                 raise Exception("State that you specified in drivingFromState, for a "+\
                 "given laser polarization, is uncoupled from the specified Stark "+\
@@ -364,10 +366,10 @@ class StarkMap:
                 "remove driveFromState optional argument from call of function "+\
                 "diagonalise. Or specify state and driving that is coupled "+\
                 "to a given manifold to see coupling strengths.")
-        
+
         # ========= FIND LASER COUPLINGS (END) =======
-        
-        
+
+
         mat1 = self.mat1
         mat2 = self.mat2
         indexOfCoupledState = self.indexOfCoupledState
@@ -376,7 +378,7 @@ class StarkMap:
         self.y = []
         self.highlight = []
         self.composition = []
-        
+
         if progressOutput:
             print("Finding eigenvectors...")
         progress = 0.
@@ -386,11 +388,11 @@ class StarkMap:
                 sys.stdout.write("\r%d%%" % \
                                  (float(progress)/float(len(eFieldList))*100))
                 sys.stdout.flush()
-            
+
             m = mat1+mat2*eField
- 
+
             ev,egvector = eigh(m)
-            
+
             self.y.append(ev)
             if (drivingFromState[0]<0.1):
                 sh = []
@@ -412,24 +414,24 @@ class StarkMap:
                     sh.append(sumCoupledStates)
                 self.highlight.append(sh)
                 self.composition.append(comp)
-            
+
 
         if progressOutput:
             print("\n")
-        return 
+        return
 
     def exportData(self,fileBase,exportFormat = "csv"):
         """
             Exports StarkMap calculation data.
-            
-            Only supported format (selected by default) is .csv in a 
-            human-readable form with a header that saves details of calculation. 
-            Function saves three files: 1) `filebase` _eField.csv; 
+
+            Only supported format (selected by default) is .csv in a
+            human-readable form with a header that saves details of calculation.
+            Function saves three files: 1) `filebase` _eField.csv;
             2) `filebase` _energyLevels
             3) `filebase` _highlight
-           
+
             For more details on the format, see header of the saved files.
-           
+
             Args:
                 filebase (string): filebase for the names of the saved files
                     without format extension. Add as a prefix a directory path
@@ -437,10 +439,10 @@ class StarkMap:
                 exportFormat (string): optional. Format of the exported file. Currently
                     only .csv is supported but this can be extended in the future.
         """
-        
+
         fmt='on %Y-%m-%d @ %H:%M:%S'
         ts = datetime.datetime.now().strftime(fmt)
-        
+
         commonHeader = "Export from Alkali Rydberg Calculator (ARC) %s.\n" % ts
         commonHeader += ("\n *** Stark Map for %s %s m_j = %d/2. ***\n\n" % (self.atom.elementName,
                         printStateString(self.n, self.l, self.j), int(round(2.*self.mj)) ) )
@@ -458,16 +460,16 @@ class StarkMap:
              ( printStateString(*self.drivingFromState[0:3]),\
              int(round(2.*self.drivingFromState[3])),
              self.drivingFromState[4]))
-        
-        
+
+
         if exportFormat=="csv":
             print("Exporting StarkMap calculation results as .csv ...")
-            
+
             commonHeader += " - Export consists of three (3) files:\n"
             commonHeader += ("       1) %s,\n" % (fileBase+"_eField."+exportFormat))
             commonHeader += ("       2) %s,\n" % (fileBase+"_energyLevels."+exportFormat))
             commonHeader += ("       3) %s.\n\n" % (fileBase+"_highlight."+exportFormat))
-            
+
             filename = fileBase+"_eField."+exportFormat
             np.savetxt(filename, \
                 self.eFieldList, fmt='%.18e', delimiter=', ',\
@@ -475,7 +477,7 @@ class StarkMap:
                 header=(commonHeader + " - - - eField (V/m) - - -"),\
                 comments='# ')
             print("   Electric field values (V/m) saved in %s" % filename)
-            
+
             filename = fileBase+"_energyLevels."+exportFormat
             headerDetails = " NOTE : Each row corresponds to eigenstates for a single specified electric field"
             np.savetxt(filename, \
@@ -484,7 +486,7 @@ class StarkMap:
                 header=(commonHeader + ' - - - Energy (GHz) - - -\n' + headerDetails),\
                 comments='# ')
             print("   Lists of energies (in GHz relative to ionisation) saved in %s" % filename)
-            
+
             filename = fileBase+"_highlight."+exportFormat
             np.savetxt(filename, \
                 self.highlight, fmt='%.18e', delimiter=', ',\
@@ -492,84 +494,74 @@ class StarkMap:
                 header=(commonHeader + ' - - - Highlight value (rel.units) - - -\n'+ headerDetails),\
                 comments='# ')
             print("   Highlight values saved in %s" % filename)
-            
+
             print("... data export finished!")
         else:
             raise ValueError("Unsupported export format (.%s)." % format)
-    
+
     def plotLevelDiagram(self,units=1,highlighState=True,progressOutput=False,\
-                        debugOutput=False,highlightColour='red'):    
+                        debugOutput=False,highlightColour='red'):
         """
             Makes a plot of a stark map of energy levels
-            
-            To save this plot, see :obj:`savePlot`. To print this plot see 
+
+            To save this plot, see :obj:`savePlot`. To print this plot see
             :obj:`showPlot`.
 
             Args:
-                units (:obj:`int`,optional): possible values {1,2} ; if the 
-                    value is 1 (default) Stark diagram will be plotted in 
-                    energy units cm :math:`{}^{-1}`; if value is 2, Stark 
+                units (:obj:`int`,optional): possible values {1,2} ; if the
+                    value is 1 (default) Stark diagram will be plotted in
+                    energy units cm :math:`{}^{-1}`; if value is 2, Stark
                     diagram will be plotted as energy :math:`/h` in units of GHz
-                highlightState (:obj:`bool`, optional): False by default. If 
-                    True, scatter plot colour map will map in red amount of 
+                highlightState (:obj:`bool`, optional): False by default. If
+                    True, scatter plot colour map will map in red amount of
                     original state for the given eigenState
-                progressOutput (:obj:`bool`, optional): if True prints the 
+                progressOutput (:obj:`bool`, optional): if True prints the
                     progress of calculation; Set to False by default.
-                debugOutput (:obj:`bool`, optional): if True prints additional 
+                debugOutput (:obj:`bool`, optional): if True prints additional
                     information usefull for debuging. Set to False by default.
         """
         rvb = LinearSegmentedColormap.from_list('mymap',\
                                                ['0.9', highlightColour,'black'])
 
         self.units = units
-        
+
         if progressOutput:
             print("plotting...")
-        
-        #eFieldList = self.eFieldList
-        #y = self.y
-        #highlight = self.highlight
 
         originalState = self.basisStates[self.indexOfCoupledState]
         n = originalState[0]
         l = originalState[1]
         j = originalState[2]
-        
+
         existingPlot = False
         if (self.fig == 0):
             self.fig, self.ax = plt.subplots(1,1,figsize=(11.,5))
         else:
             existingPlot = True
 
-        
+
         eFieldList = []
-        y =[] 
+        y =[]
         yState = []
-        
-        
+
+
         for br in xrange(len(self.y)):
 
             for i in xrange(len(self.y[br])):
-                #if self.highlight[br][i]>0.02:
                 eFieldList.append(self.eFieldList[br])
                 y.append(self.y[br][i])
                 yState.append(self.highlight[br][i])
-                    #print(self.highlight[br][i])
-                #else:
-                #    grayX.append(self.x[i])
-                #    grayY.append(self.y[br][i])
-                #    grayColour.append(self.highlight[br][i])
-        
+
         yState = np.array(yState)
         sortOrder = yState.argsort(kind='heapsort')
         eFieldList = np.array(eFieldList)
         y = np.array(y)
-        
+
         eFieldList = eFieldList[sortOrder]
         y = y[sortOrder]
         yState = yState[sortOrder]
 
-        
+
         if (units==1):
             ## in cm^-1
 
@@ -577,7 +569,7 @@ class StarkMap:
             if not highlighState:
                 self.ax.scatter(eFieldList/100.,y*0.03336,s=1,color="k",picker=5)
             else:
-                cm = rvb#plt.get_cmap('coolwarm') 
+                cm = rvb
                 cNorm  = matplotlib.colors.Normalize(vmin=0., vmax=1.)
                 self.ax.scatter(eFieldList/100,y*0.03336,\
                                 c=yState,s=5,norm=cNorm, cmap=cm,lw=0,picker=5)
@@ -596,9 +588,9 @@ class StarkMap:
 
             if not highlighState:
                 self.ax.scatter(eFieldList/100.,y,\
-                                s=1,color="k",picker=5) # in GHz  
+                                s=1,color="k",picker=5) # in GHz
             else:
-                cm = rvb# plt.get_cmap('coolwarm') 
+                cm = rvb
                 cNorm  = matplotlib.colors.Normalize(vmin=0., vmax=1.)
                 self.ax.scatter(eFieldList/100.,y,c=yState,\
                                 s=5,norm=cNorm, cmap=cm,lw=0,picker=5)
@@ -611,10 +603,10 @@ class StarkMap:
                                   printStateStringLatex(n,l,j))
                     else:
                         cb.set_label(r"$(\Omega_\mu / \Omega )^2$")
- 
+
         self.ax.set_xlabel("Electric field (V/cm)")
 
-        
+
         if (units==1):
             ## in cm^{-1}
             uppery = self.atom.getEnergy(n,l,j)*elemCharge/h*1e-9*0.03336+10
@@ -625,8 +617,8 @@ class StarkMap:
             uppery = self.atom.getEnergy(n,l,j)*elemCharge/h*1e-9+5
             lowery = self.atom.getEnergy(n,l,j)*elemCharge/h*1e-9-5
             self.ax.set_ylabel(r"State energy, $E/h$ (GHz)")
-            
-        
+
+
         self.ax.set_ylim(lowery,uppery)
         ##
         self.ax.set_xlim(min(eFieldList)/100.,max(eFieldList)/100.)
@@ -635,9 +627,9 @@ class StarkMap:
     def savePlot(self,filename="StarkMap.pdf"):
         """
             Saves plot made by :obj:`plotLevelDiagram`
-            
+
             Args:
-                filename (:obj:`str`, optional): file location where the plot 
+                filename (:obj:`str`, optional): file location where the plot
                     should be saved
         """
         if (self.fig != 0):
@@ -663,45 +655,45 @@ class StarkMap:
         else:
             print("Error while showing a plot: nothing is plotted yet")
         return 0
-    
+
     def _onPick(self,event):
         if isinstance(event.artist, matplotlib.collections.PathCollection):
             if (self.units==1):
                 scaleFactor = 0.03336
-            
+
             x = event.mouseevent.xdata*100.
             y = event.mouseevent.ydata/scaleFactor
-            
+
             i = np.searchsorted(self.eFieldList,x)
             if ((i>0) and (abs(self.eFieldList[i-1]-x)<abs(self.eFieldList[i]-x))):
                 i -=1
-            
+
             j = 0
             for jj in xrange(len(self.y[i])):
                 if (abs(self.y[i][jj]-y) < abs(self.y[i][j]-y)):
                     j = jj
-            
-            # now choose the most higlighted state in this area        
+
+            # now choose the most higlighted state in this area
             distance = abs(self.y[i][j]-y)*1.5
             for jj in xrange(len(self.y[i])):
                 if (abs(self.y[i][jj]-y) < distance and \
                     (abs(self.highlight[i][jj])>abs(self.highlight[i][j]))):
                     j = jj
-            
+
             if (self.clickedPoint!=0):
                 self.clickedPoint.remove()
-                
+
             self.clickedPoint, = self.ax.plot([self.eFieldList[i]/100.],\
                                                [self.y[i][j]*scaleFactor],"bs",\
                                                  linewidth=0,zorder=3)
-            
+
             self.ax.set_title(("[%s] = " % self.atom.elementName)+\
                               self._stateComposition(self.composition[i][j])+\
                              ("   Colourbar value = %.2f"% self.highlight[i][j]),
                              fontsize=11)
-        
+
             event.canvas.draw()
-            
+
     def _stateComposition(self,stateVector):
         i = 0
         totalContribution = 0
@@ -713,57 +705,57 @@ class StarkMap:
                     self._addState(*self.basisStates[stateVector[i][1]])
             totalContribution += abs(stateVector[i][0])**2
             i += 1
-            
+
         if totalContribution<0.999:
             value+="+\\ldots"
         return value+"$"
-    
+
 
     def _stateComposition2(self,stateVector,upTo=4):
         contribution = np.absolute(stateVector)
         order = np.argsort(contribution,kind='heapsort')
         index = -1
         totalContribution = 0
-        mainStates = []  #[state Value, state index] 
+        mainStates = []  #[state Value, state index]
         while (index>-upTo) and (totalContribution<0.95):
             i = order[index]
             mainStates.append([stateVector[i],i])
             totalContribution += contribution[i]**2
             index -= 1
-        return mainStates    
+        return mainStates
 
     def _addState(self,n1,l1,j1,mj1):
         return "|%s m_j=%d/2\\rangle" %\
              (printStateStringLatex(n1, l1, j1),int(2*mj1))
-             
+
     def getPolarizability(self, maxField=1.e10, showPlot = False,\
                            debugOutput = False, minStateContribution=0.0):
         """
-            Returns the polarizability of the state (set during the 
+            Returns the polarizability of the state (set during the
             initalization process)
-            
+
             Args:
-                maxField (:obj:`float`, optional): maximum field (in V/m) to be 
-                    used for fitting the polarizability. By default, max field 
-                    is very large, so it will use eigenvalues calculated in the 
-                    whole range. 
-                showPlot (:obj:`bool`, optional): shows plot of calculated 
-                    eigenValues of the given state (dots), and the fit (solid 
+                maxField (:obj:`float`, optional): maximum field (in V/m) to be
+                    used for fitting the polarizability. By default, max field
+                    is very large, so it will use eigenvalues calculated in the
+                    whole range.
+                showPlot (:obj:`bool`, optional): shows plot of calculated
+                    eigenValues of the given state (dots), and the fit (solid
                     line) for extracting polarizability
-                debugOutput (:obj:`bool`, optional): if True prints additional 
+                debugOutput (:obj:`bool`, optional): if True prints additional
                     information usefull for debuging. Set to false by default.
-                
-                
+
+
             Returns:
                 float: scalar polarizability in units of MHz cm :math:`^2` / V \
-                :math:`^2` 
+                :math:`^2`
         """
         if (self.drivingFromState[0]!=0):
             raise Exception("Program can only find Polarizability of the original "+\
             "state if you highlight original state. You can do so by NOT "+\
             "specifying drivingFromState in diagonalise function.")
-            
-          
+
+
         eFieldList = self.eFieldList
         yState = self.highlight
         y = self.y
@@ -776,17 +768,17 @@ class StarkMap:
 
         if debugOutput:
             print("finding original state for each electric field value")
-            
+
         stopFitIndex = 0
         while stopFitIndex<len(eFieldList)-1 and \
             eFieldList[stopFitIndex]<maxField:
-            stopFitIndex += 1 
-            
+            stopFitIndex += 1
+
         xOriginalState = []
         yOriginalState = []
 
         for ii in xrange(stopFitIndex):
-            
+
             maxPortion = 0.
             yval = 0.
             jj=0
@@ -797,35 +789,35 @@ class StarkMap:
             # measure state energy relative to the original state
             if (minStateContribution<maxPortion):
                 xOriginalState.append(eFieldList[ii])
-                yOriginalState.append(yval-energyOfOriginalState) 
+                yOriginalState.append(yval-energyOfOriginalState)
 
 
         xOriginalState = np.array(xOriginalState)/100. # converts to V/cm
         yOriginalState = np.array(yOriginalState)   # in GHz
-        
-        
+
+
         ## in GHz
         uppery = 5.0
         lowery = -5.0
 
-        
+
         if debugOutput:
             print("found ",len(xOriginalState))
         if showPlot:
             self.fig, self.ax = plt.subplots(1, 1,figsize=(6.5, 3))
-            self.ax.scatter(xOriginalState,yOriginalState,s=2,color="k")  
-        
+            self.ax.scatter(xOriginalState,yOriginalState,s=2,color="k")
+
             self.ax.set_xlabel("E field (V/cm)")
-    
+
             self.ax.set_ylim(lowery,uppery)
             self.ax.set_ylabel(r"Energy/$h$ (GHz)")
             self.ax.set_xlim(xOriginalState[0],\
                                 xOriginalState[-1])
-        
-        
+
+
         def polarizabilityFit(eField,offset,alpha):
             return offset-0.5*alpha*eField**2
-        
+
         try:
             popt,pcov = curve_fit(polarizabilityFit,\
                               xOriginalState,\
@@ -838,30 +830,30 @@ class StarkMap:
                     that there is only one state with continuous energy change\
                     that has dominant contribution of the initial state.\n\n")
             return 0
-        
+
         if debugOutput:
             print("Scalar polarizability = ",popt[1]*1.e3," MHz cm^2 / V^2 ")
-          
+
         y_fit = []
         for val in xOriginalState:
             y_fit.append(polarizabilityFit(val,popt[0],popt[1]))
         y_fit = np.array(y_fit)
-          
-        if showPlot:            
+
+        if showPlot:
             self.ax.plot(xOriginalState,y_fit,"r--")
             self.ax.legend(("fitted model function","calculated energy level"),\
                       loc=1,fontsize=10)
-            
+
             self.ax.set_ylim(min(yOriginalState),max(yOriginalState))
-            
+
             plt.show()
-            
+
         self.fitX = xOriginalState
         self.fitY = yOriginalState
         self.fittedCurveY = y_fit
-        
-        return popt[1]*1.e3 # returned value is in  MHz cm^2 / V^2 
-    
+
+        return popt[1]*1.e3 # returned value is in  MHz cm^2 / V^2
+
 
 
 # ================= Level plots, decays, cascades etc =======================
@@ -869,36 +861,36 @@ class StarkMap:
 class LevelPlot:
     """
         Single atom level plots and decays
-        
+
         For an example see `Rydberg energy levels example snippet`_.
-        
+
         .. _`Rydberg energy levels example snippet`:
             ./Rydberg_atoms_a_primer.html#Rydberg-Atom-Energy-Levels
-        
+
         Args:
-            atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`, 
+            atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
                 :obj:`alkali_atom_data.Lithium6`,
                 :obj:`alkali_atom_data.Sodium`,
                 :obj:`alkali_atom_data.Potassium`,
                 :obj:`alkali_atom_data.Rubidium`,
-                :obj:`alkali_atom_data.Caesium` } 
+                :obj:`alkali_atom_data.Caesium` }
                 Alkali atom type whose levels we
                 want to examine
     """
-    
-    
-    
+
+
+
     def __init__(self,atomType ):
         self.atom = atomType
         self.nFrom = 0
         self.nTo = 0
         self.lFrom = 0
         self.lTo = 0
-        
+
         self.listX = [] # list of l
-        self.listY = [] # list of energies 
+        self.listY = [] # list of energies
         self.levelLabel = []
-        
+
         self.fig = 0
         self.ax = 0
         self.width =0.2
@@ -907,21 +899,21 @@ class LevelPlot:
         self.transitionMatrix = []
         self.populations = []
         self.transitionMatrixWavelength3 = []
-    
+
         # characterization of the graph
         self.spectraX = []
         self.spectraY = []
         self.spectraLine = []
-    
-    
+
+
     def makeLevels(self,nFrom,nTo,lFrom,lTo):
         """
-            Constructs energy level diagram in a given range 
-            
+            Constructs energy level diagram in a given range
+
             Args:
                 nFrom (int): minimal principal quantum number of the
                     states we are interested in
-                nTo (int): maximal principal quantum number of the 
+                nTo (int): maximal principal quantum number of the
                     states we are interested in
                 lFrom (int): minimal orbital angular momentum
                     of the states we are interested in
@@ -933,7 +925,7 @@ class LevelPlot:
         self.nTo = nTo
         self.lFrom = lFrom
         self.lTo = lTo
-        
+
         # find all the levels within this space restrictions
         nFrom = max(nFrom,self.atom.groundStateN)
         while nFrom<=nTo:
@@ -950,13 +942,13 @@ class LevelPlot:
             nFrom += 1
         # if user requested principal quantum nuber below the
         # ground state principal quantum number
-        # add those L states that are higher in energy then the ground state 
+        # add those L states that are higher in energy then the ground state
         for state in self.atom.extraLevels:
             if state[1]<=lTo and state[0]>=self.nFrom:
                 self.listX.append(state[1])
                 self.listY.append(self.atom.getEnergy(state[0],state[1],state[2]))
                 self.levelLabel.append(state)
-            
+
     def makeTransitionMatrix(self,environmentTemperature = 0.0,printDecays=True):
         self.transitionMatrix =[]
 
@@ -966,29 +958,28 @@ class LevelPlot:
 
             # decay of the stay
             decay = 0.0
-        
-            for state2 in self.levelLabel:                
+
+            for state2 in self.levelLabel:
                 dipoleAllowed = (abs(state1[1]-state2[1])==1)and\
                                 (abs(state1[2]-state2[2])<=1.01)
                 if (dipoleAllowed):
-                    #print(state1," ",state2)
-                    # decay to thius state
+                    # decay to this state
                     rate = self.atom.getTransitionRate(state2[0],state2[1],state2[2],\
                                                     state1[0],state1[1],state1[2],\
                                                     temperature=environmentTemperature)
-                    
-                                       
+
+
                     transitionVector.append(rate)
-                    
+
                     # decay from this state
                     rate = self.atom.getTransitionRate(state1[0],state1[1],state1[2],\
                                                     state2[0],state2[1],state2[2],\
                                                     temperature=environmentTemperature)
-                    
+
                     decay = decay-rate
                 else:
                     transitionVector.append(0.0)
-                    
+
             transitionVector[i] = decay
             if printDecays:
                 print("Decay time of ")
@@ -996,14 +987,14 @@ class LevelPlot:
                 if decay < -1e-20:
                     print("\t is\t",-1.e9/decay," ns")
             self.transitionMatrix.append(transitionVector)
-        
+
         np.array(self.transitionMatrix)
 
-        self.transitionMatrix = np.transpose(self.transitionMatrix)    
-        
+        self.transitionMatrix = np.transpose(self.transitionMatrix)
+
     def drawSpectra(self):
         self.fig, self.ax = plt.subplots(1, 1,figsize=(16, 5))
-        
+
         lineWavelength = []
         lineStrength = []
         lineName = []
@@ -1017,12 +1008,12 @@ class LevelPlot:
                                      self.levelLabel[i][1],self.levelLabel[i][2],
                                     self.levelLabel[j][0],\
                                     self.levelLabel[j][1],self.levelLabel[j][2])
-                    
+
                     intensity = self.atom.getTransitionRate(self.levelLabel[i][0],\
                                      self.levelLabel[i][1],self.levelLabel[i][2],\
                                      self.levelLabel[j][0],\
                                      self.levelLabel[j][1],self.levelLabel[j][2])
-                
+
                     lineWavelength.append(abs(wavelength)*1.e9)
                     lineStrength.append(abs(intensity))
                     lineName.append(printStateString(self.levelLabel[i][0],\
@@ -1032,14 +1023,14 @@ class LevelPlot:
                                         printStateString(self.levelLabel[j][0],\
                                                          self.levelLabel[j][1],\
                                                          self.levelLabel[j][2]))
-                    
+
                 j = j+1
-            i = i+1   
-        
+            i = i+1
+
         self.spectraX = np.copy(lineWavelength)
         self.spectraY = np.copy(lineStrength)
         self.spectraLine = np.copy(lineName)
-        
+
     def drawSpectraConvoluted(self,lowerWavelength, higherWavelength,points,gamma):
         wavelengths = linspace(lowerWavelength,higherWavelength,points)
         spectra = np.zeros(points)
@@ -1054,7 +1045,7 @@ class LevelPlot:
             spectra[i] = value
             i = i+1
         self.ax.plot(wavelengths,spectra,"g-")
-    
+
     def showSpectra(self,saveInFile="",showTransitionPoints=True):
         if showTransitionPoints:
             self.ax.plot(self.spectraX,self.spectraY,"ro",picker=5)
@@ -1066,23 +1057,23 @@ class LevelPlot:
         if (saveInFile != ""):
             self.fig.savefig(saveInFile)
         plt.show()
-        
-    
+
+
     def drawLevels(self):
         """
             Draws a level diagram plot
         """
         self.fig, self.ax = plt.subplots(1, 1,figsize=(9.0, 11.5))
-   
+
         i = 0
         while i<len(self.listX):
             self.ax.plot([self.listX[i]-self.width,self.listX[i]+self.width], \
                          [self.listY[i],self.listY[i]],"b-",picker=4)
             if (i<len(self.populations) and (self.populations[i]>1e-3)):
-                self.ax.plot([self.listX[i]],[self.listY[i]],"ro",alpha=self.populations[i])#alpha=1./(1-log(2.7*self.populations[i])))  
-                
+                self.ax.plot([self.listX[i]],[self.listY[i]],"ro",alpha=self.populations[i])
+
             i = i+1
-        
+
 
     def showPlot(self):
         """
@@ -1090,19 +1081,18 @@ class LevelPlot:
         """
         self.ax.set_ylabel("Energy (eV)")
         self.ax.set_xlim(-0.5+self.lFrom,self.lTo+0.5)
-        
+
         # X AXIS
         majorLocator   = MultipleLocator(1)
-        
+
         self.ax.xaxis.set_major_locator(majorLocator)
         tickNames = [" "]
         for l in xrange(self.lFrom,self.lTo+1):
             tickNames.append(printStateLetter(l))
         tickNum = len(self.ax.get_xticklabels())
-        
+
         self.fig.canvas.draw()
         self.ax.set_xticklabels(tickNames)
-        #ax[1].xaxis.set_major_formatter(majorFormatter)
         self.fig.canvas.mpl_connect('pick_event', self.onpick2)
         plt.show()
 
@@ -1129,7 +1119,7 @@ class LevelPlot:
                 (abs(self.levelLabel[i][2] - state[2])<0.01):
                 return i
             i = i+1
-            
+
         print("Error: requested state ")
         print(state)
         print("could not be found!")
@@ -1182,7 +1172,7 @@ class LevelPlot:
                                                                      state[2])*1e-9))
                     self.ax.set_title(title)
                     self.state1=[0,0,0]
-                   
+
                 self.state2[1] = state[1]
             event.canvas.draw()
 
@@ -1201,34 +1191,29 @@ class LevelPlot:
 
 def printState(n,l,j):
     """
-        Prints state spectroscopic label for numeric :math:`n`, 
+        Prints state spectroscopic label for numeric :math:`n`,
         :math:`l`, :math:`s` label of the state
-        
+
         Args:
             n (int): principal quantum number
             l (int): orbital angular momentum
             j (float): total angular momentum
     """
-        
+
     print(n," ",printStateLetter(l),(" %.0d/2" % (j*2)))
 
 def printStateString(n,l,j):
     """
-        Returns state spectroscopic label for numeric :math:`n`, 
+        Returns state spectroscopic label for numeric :math:`n`,
         :math:`l`, :math:`s` label of the state
-        
+
         Args:
             n (int): principal quantum number
             l (int): orbital angular momentum
             j (float): total angular momentum
-            
+
         Returns:
             string: label for the state in standard spectroscopic notation
     """
 
     return str(n)+" "+printStateLetter(l)+(" %.0d/2" % (j*2))
-
-
-# =============== Atom in E and B FIELDS ==================
-
-#class AtomInEandBfields():

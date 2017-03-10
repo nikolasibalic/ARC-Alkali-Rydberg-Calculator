@@ -10,9 +10,9 @@ Preliminaries
     :height: 265px
     :alt: atom orientation
     :figclass: align-right
-    
 
-Relative orientation of the two atoms can be descrived with two polar angles
+
+Relative orientation of the two atoms can be described with two polar angles
 :math:`\theta` and :math:`\phi` giving polar and azimuth angle. The :math:`\hat{z}`
 axis is here specified relative to the laser driving. For circularly polarized
 laser light, this is the direction of laser beam propagation. For linearly
