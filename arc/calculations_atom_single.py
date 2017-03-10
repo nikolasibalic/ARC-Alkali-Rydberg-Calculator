@@ -97,6 +97,23 @@ class StarkMap:
             >>> calc.showPlot()
             << matplotlib plot will open containing a Stark map >>
 
+        Examples:
+            **Incorporating Stark map matrix in other projects.** Here we show
+            one easy way to obtain the Stark matrix and basis states,
+            if this middle-product of the calculation is needed for some
+            other states.
+
+            >>> from arc import *
+            >>> calc = StarkMap(Caesium())
+            >>> calc.defineBasis(28, 0, 0.5, 0.5, 23, 32, 20)
+            >>> # Let's say we want Stark map at electric field of 0.2 V/m
+            >>> eField = 0.2 # V/m
+            >>> # We can easily extract Stark matrix
+            >>> matrix = calc.mat1+calc.mat2*eField
+            >>> # and the basis states as array [ [n,l,j,mj] , ...]
+            >>> basisStates = calc.basisStates
+            >>> # you can do your own calculation now...
+
         References:
             .. [1] M. L. Zimmerman et.al, PRA **20**:2251 (1979)
                 https://doi.org/10.1103/PhysRevA.20.2251
@@ -110,9 +127,22 @@ class StarkMap:
         self.atom = atom
 
         self.basisStates = []
-        self.mat1 = []
+        """
+            List of basis states for calculation in the form [ [n,l,j,mj], ...]
+        """
+        self.mat1 = []  #: diagonal elements of Stark-matrix (detuning of states)
         self.mat2 = []
+        """
+            off-diagonal elements of Stark-matrix divided by electric
+            field value. To get off diagonal elemements multiply this matrix
+            with electric field value. Full stark matrix is obtained as
+            `fullStarkMatrix` = `self.mat1`+`self.mat2*eField`
+        """
         self.indexOfCoupledState = []
+        """
+            Index of coupled state (initial state passed to `defineBasis`)
+            in `self.basisStates` list of basisStates
+        """
 
 
         # finding energy levels
@@ -245,8 +275,8 @@ class StarkMap:
             print(states[indexOfCoupledState])
 
 
-        mat1 = np.zeros((dimension,dimension),dtype=np.double)
-        mat2 = np.zeros((dimension,dimension),dtype=np.double)
+        self.mat1 = np.zeros((dimension,dimension),dtype=np.double)
+        self.mat2 = np.zeros((dimension,dimension),dtype=np.double)
 
         self.basisStates = states
         self.indexOfCoupledState = indexOfCoupledState
@@ -262,7 +292,7 @@ class StarkMap:
                 sys.stdout.flush()
 
             # add diagonal element
-            mat1[ii][ii] = self.atom.getEnergy(states[ii][0],\
+            self.mat1[ii][ii] = self.atom.getEnergy(states[ii][0],\
                                                states[ii][1],states[ii][2])\
                             *elemCharge/h*1e-9
             # add off-diagonal element
@@ -275,21 +305,17 @@ class StarkMap:
                                                     states[jj][1],\
                                                     states[jj][2],mj)*\
                             1.e-9/h
-                mat2[jj][ii] = coupling
-                mat2[ii][jj] = coupling
+                self.mat2[jj][ii] = coupling
+                self.mat2[ii][jj] = coupling
 
         if progressOutput:
             print("\n")
         if debugOutput:
-            print(mat1+mat2)
-            print(mat2[0])
-
-        self.mat1 = mat1
-        self.mat2 = mat2
+            print(self.mat1+self.mat2)
+            print(self.mat2[0])
 
         self.atom.updateDipoleMatrixElementsFile()
         return 0
-        wignerPrecal = False
 
     def diagonalise(self,eFieldList,drivingFromState = [0,0,0,0,0],
                         progressOutput=False,debugOutput=False):
@@ -370,8 +396,6 @@ class StarkMap:
         # ========= FIND LASER COUPLINGS (END) =======
 
 
-        mat1 = self.mat1
-        mat2 = self.mat2
         indexOfCoupledState = self.indexOfCoupledState
         self.eFieldList = eFieldList
 
@@ -389,7 +413,7 @@ class StarkMap:
                                  (float(progress)/float(len(eFieldList))*100))
                 sys.stdout.flush()
 
-            m = mat1+mat2*eField
+            m = self.mat1+self.mat2*eField
 
             ev,egvector = eigh(m)
 
