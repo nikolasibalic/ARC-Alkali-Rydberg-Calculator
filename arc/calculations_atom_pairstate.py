@@ -84,7 +84,7 @@ class PairStateInteractions:
 
         Args:
             atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-                :obj:`alkali_atom_data.Lithium6`,
+                :obj:`alkali_atom_data.Lithium7`,
                 :obj:`alkali_atom_data.Sodium`,
                 :obj:`alkali_atom_data.Potassium`,
                 :obj:`alkali_atom_data.Rubidium`,
@@ -109,6 +109,34 @@ class PairStateInteractions:
             .. [1] T. G Walker, M. Saffman, PRA **77**, 032723 (2008)
                 https://doi.org/10.1103/PhysRevA.77.032723
 
+        Examples:
+            **Advanced interfacing of pair-state interactions calculations
+            (PairStateInteractions class).** This
+            is an advanced example intended for building up extensions to the
+            existing code. If you want to directly access the pair-state
+            interaction matrix, constructed by :obj:`defineBasis`,
+            you can assemble it easily from diagonal part
+            (stored in :obj:`matDiagonal` ) and off-diagonal matrices whose
+            spatial dependence is :math:`R^{-3},R^{-4},R^{-5}` stored in that
+            order in :obj:`matR`. Basis states are stored in :obj:`basisStates` array.
+
+            >>> from arc import *
+            >>> calc = PairStateInteractions(Rubidium(), 60,0,0.5, 60,0,0.5, 0.5,0.5,interactionsUpTo = 1)
+            >>> # theta=0, phi = 0, range of pqn, range of l, deltaE = 25e9
+            >>> calc.defineBasis(0 ,0 , 5, 5, 25e9, progressOutput=True)
+            >>> # now calc stores interaction matrix and relevant basis
+            >>> # we can access this directly and generate interaction matrix
+            >>> # at distance rval :
+            >>> rval = 4  # in mum
+            >>> matrix = calc.matDiagonal
+            >>> rX = (rval*1.e-6)**3
+            >>> for matRX in self.matR:
+            >>>     matrix = matrix + matRX/rX
+            >>>     rX *= (rval*1.e-6)
+            >>> # matrix variable now holds full interaction matrix for
+            >>> # interacting atoms at distance rval calculated in
+            >>> # pair-state basis states can be accessed as
+            >>> basisStates = calc.basisStates
     """
 
     dataFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),\
@@ -154,17 +182,19 @@ class PairStateInteractions:
 
         # ======================= Full basis (resolving mj) =======================
 
-        self.states = []
+        self.basisStates = []
         """
-            List of pair-states for calculation. Each state is array
-            [n1,l1,j1,mj1,n2,l2,j2,mj2] corresponding to
-            :math:`|n_1,l_1,j_1,m_{j1},n_2,l_2,j_2,m_{j2}\\rangle` state
+            List of pair-states for calculation. In the form
+            [[n1,l1,j1,mj1,n2,l2,j2,mj2], ...].
+            Each state is an array [n1,l1,j1,mj1,n2,l2,j2,mj2] corresponding to
+            :math:`|n_1,l_1,j_1,m_{j1},n_2,l_2,j_2,m_{j2}\\rangle` state.
+            Calculated by :obj:`defineBasis`.
         """
         self.matrixElement = []
         """
             `matrixElement[i]` gives index of state in :obj:`channel` basis (that
             doesn't resolve :obj:`m_j` states), for the given index `i` of the
-            state in :obj:`states`  ( :math:`m_j` resolving) basis.
+            state in :obj:`basisStates`  ( :math:`m_j` resolving) basis.
         """
 
         # variuos parts of interaction matrix in pair-state basis
@@ -173,33 +203,24 @@ class PairStateInteractions:
             Part of interaction matrix in pair-state basis that doesn't depend
             on inter-atomic distance. E.g. diagonal elements of the interaction
             matrix, that describe energies of the pair states in unperturbed basis,
-            will be stored here. Calculated by :obj:`defineBasis`.
+            will be stored here. Basis states are stored in :obj:`basisStates`.
+            Calculated by :obj:`defineBasis`.
         """
-        self.matR3 = []
+        self.matR = []
         """
-            Part of the interaction matrix in pair-state basis that scales as
-            :math:`1/R^3` with distance. E.g. dipole-dipole interaction
-            coefficients ( :math:`C_3`) will be stored here.
-            will be stored here. Calculated by :obj:`defineBasis`.
-        """
-        self.matR4 = []
-        """
-            Part of the interaction matrix in pair-state basis that scales as
-            :math:`1/R^3` with distance. E.g. dipole-quadrupole interaction
-            coefficients ( :math:`C_4`) will be stored here.
-            will be stored here. Calculated by :obj:`defineBasis`.
-        """
-        self.matR5 = []
-        """
-            Part of the interaction matrix in pair-state basis that scales as
-            :math:`1/R^5` with distance. E.g. quadrupole-quadrupole interaction
-            coefficients ( :math:`C_5`) will be stored here.
-            will be stored here
+            Stores interaction matrices in pair-state basis
+            that scale as :math:`1/R^3`, :math:`1/R^4` and :math:`1/R^5`
+            with distance in  :obj:`matR[0]`, :obj:`matR[1]` and :obj:`matR[2]`
+            respectively. These matrices correspond to dipole-dipole
+            ( :math:`C_3`), dipole-quadrupole ( :math:`C_4`) and
+            quadrupole-quadrupole ( :math:`C_5`) interactions
+            coefficients. Basis states are stored in :obj:`basisStates`.
+            Calculated by :obj:`defineBasis`.
         """
         self.originalPairStateIndex = 0
         """
             index of the original n,l,j,m1,nn,ll,jj,m2 pair-state in the
-            :obj:`states` basis.
+            :obj:`basisStates` basis.
         """
 
         self.matE = []
@@ -821,10 +842,17 @@ class PairStateInteractions:
             Finds relevant states in the vicinity of the given pair-state
 
             Finds relevant pair-state basis and calculates interaction matrix.
-            Pair-state basis is saved in `states`.
+            Pair-state basis is saved in :obj:`basisStates`.
             Interaction matrix is saved in parts depending on the scaling with
-            distance in :obj:`matDiagonal`, :obj:`matR3`, :obj:`matR4`,
-            :obj:`matR5`.
+            distance. Diagonal elements :obj:`matDiagonal`, correponding to
+            relative energy defects of the pair-states, don't change with
+            interatomic separation. Off diagonal elements can depend
+            on distance as :math:`R^{-3}, R^{-4}` or :math:`R^{-5}`, corresponding
+            to dipole-dipole (:math:`C_3` ), dipole-qudrupole (:math:`C_4` ) and
+            quadrupole-quadrupole coupling (:math:`C_5` ) respectively. These
+            parts of the matrix are stored in :obj:`matR` in that order. I.e.
+            :obj:`matR[0]` stores dipole-dipole coupling (:math:`\propto R^{-3}`),
+            :obj:`matR[0]` stores dipole-quadrupole couplings etc.
 
             Args:
                 theta (float): relative orientation of the two atoms (ADD FIGURE)
@@ -881,7 +909,7 @@ class PairStateInteractions:
         self.index = np.zeros(len(self.channel)+1,dtype=np.int16)
 
         for i in xrange(len(self.channel)):
-            self.index[i] = len(self.states)
+            self.index[i] = len(self.basisStates)
 
             stateCoupled=self.channel[i]
 
@@ -890,7 +918,7 @@ class PairStateInteractions:
                 for m2c in np.linspace(stateCoupled[5],-stateCoupled[5],\
                                        round(1+2*stateCoupled[5])):
                     if ((not limitBasisToMj) or (abs(originalMj-m1c-m2c)==0) ):
-                        self.states.append([stateCoupled[0],stateCoupled[1],stateCoupled[2],m1c,
+                        self.basisStates.append([stateCoupled[0],stateCoupled[1],stateCoupled[2],m1c,
                                         stateCoupled[3],stateCoupled[4],stateCoupled[5],m2c])
                         self.matrixElement.append(i)
 
@@ -902,14 +930,14 @@ class PairStateInteractions:
                             abs(stateCoupled[4]-self.ll)<0.1 and \
                             abs(stateCoupled[5]-self.jj)<0.1 and \
                             abs(m2c-self.m2)<0.1):
-                            opi = len(self.states)-1
-            if (self.index[i] == len(self.states)):
+                            opi = len(self.basisStates)-1
+            if (self.index[i] == len(self.basisStates)):
                 print(stateCoupled)
-        self.index[-1] = len(self.states)
+        self.index[-1] = len(self.basisStates)
 
         print("\nCalculating Hamiltonian matrix...\n")
 
-        dimension = len(self.states)
+        dimension = len(self.basisStates)
         print("\n\tmatrix (dimension ",dimension,")\n")
 
         # INITIALIZING MATICES
@@ -929,21 +957,21 @@ class PairStateInteractions:
                     progress += ((dim-ii)*2-1)
                     sys.stdout.write( "\rMatrix R%d %.1f %% (state %d of %d)"%\
                                       (matRIndex+3,float(progress)/float(dim**2)*100.,\
-                                                   ii,len(self.channel)))
+                                                   ii+1,len(self.channel)))
                     sys.stdout.flush()
 
                 ed = self.channel[ii][6]
 
-                # solves problems with exactly degenerate states
+                # solves problems with exactly degenerate basisStates
                 degeneracyOffset = 0.000001
 
                 i = self.index[ii]
-                dMatrix1 = wgd.get(self.states[i][2])
-                dMatrix2 = wgd.get(self.states[i][6])
+                dMatrix1 = wgd.get(self.basisStates[i][2])
+                dMatrix2 = wgd.get(self.basisStates[i][6])
 
                 for i in xrange(self.index[ii],self.index[ii+1]):
-                    statePart1 = singleAtomState(self.states[i][2], self.states[i][3])
-                    statePart2 = singleAtomState(self.states[i][6], self.states[i][7])
+                    statePart1 = singleAtomState(self.basisStates[i][2], self.basisStates[i][3])
+                    statePart2 = singleAtomState(self.basisStates[i][6], self.basisStates[i][7])
                     # rotate individual states
 
                     statePart1 = dMatrix1.dot(statePart1)
@@ -963,14 +991,14 @@ class PairStateInteractions:
                         radialPart = c.data[dataIndex]
 
                         j = self.index[jj]
-                        dMatrix3 = wgd.get(self.states[j][2])
-                        dMatrix4 = wgd.get(self.states[j][6])
+                        dMatrix3 = wgd.get(self.basisStates[j][2])
+                        dMatrix4 = wgd.get(self.basisStates[j][6])
 
                         if (self.index[jj]!=self.index[jj+1]):
-                            d = self.__getAngularMatrix_M(self.states[i][1],self.states[i][2],
-                                                        self.states[i][5],self.states[i][6],
-                                                        self.states[j][1],self.states[j][2],
-                                                        self.states[j][5],self.states[j][6],
+                            d = self.__getAngularMatrix_M(self.basisStates[i][1],self.basisStates[i][2],
+                                                        self.basisStates[i][5],self.basisStates[i][6],
+                                                        self.basisStates[j][1],self.basisStates[j][2],
+                                                        self.basisStates[j][5],self.basisStates[j][6],
                                                         self.atom)
                             secondPart = d.dot(stateCom)
                         else:
@@ -978,8 +1006,8 @@ class PairStateInteractions:
 
 
                         for j in xrange(self.index[jj],self.index[jj+1]):
-                            statePart1 = singleAtomState(self.states[j][2], self.states[j][3])
-                            statePart2 = singleAtomState(self.states[j][6], self.states[j][7])
+                            statePart1 = singleAtomState(self.basisStates[j][2], self.basisStates[j][3])
+                            statePart2 = singleAtomState(self.basisStates[j][6], self.basisStates[j][7])
                             # rotate individual states
 
                             statePart1 = dMatrix3.dot(statePart1)
@@ -1020,7 +1048,9 @@ class PairStateInteractions:
 
 
     def diagonalise(self,rangeR,noOfEigenvectors,
-                         drivingFromState = [0,0,0,0,0], progressOutput = False,\
+                         drivingFromState = [0,0,0,0,0],
+                         eigenvectorsDetuning = 0.,
+                         progressOutput = False,\
                          debugOutput = False):
         """
             Finds eigenstates in atom pair basis.
@@ -1042,6 +1072,9 @@ class PairStateInteractions:
                 noOfEigenvectors (int): number of eigen vectors closest to the
                     energy of the original (unperturbed) pair state. Has to be
                     smaller then the total number of states.
+                eigenvectorsDetuning (float, optional): Default is 0. This
+                    specifies detuning from the initial pair-state (in Hz) around which we want to find `noOfEigenvectors` eigenvectors.
+                    This is useful when looking only for couple of off-resonant features.
                 drivingFromState ([int,int,float,float,int]): Optional. State
                     of the one of the atoms from the original pair-state basis
                     from which we try to dribe to the excited pair-basis
@@ -1057,7 +1090,7 @@ class PairStateInteractions:
         """
 
         self.r = rangeR
-        dimension = len(self.states)
+        dimension = len(self.basisStates)
 
         self.noOfEigenvectors = noOfEigenvectors
 
@@ -1095,37 +1128,37 @@ class PairStateInteractions:
                 #if progressOutput:
                 #    sys.stdout.write("\r%d%%" %  (i/float(dimension)*100.))
                 #    sys.stdout.flush()
-                if int(abs(self.states[i][1]-l1))==1 and \
-                   abs(self.states[i][4]-self.states[self.originalPairStateIndex][4])<0.1 and \
-                   abs(self.states[i][5]-self.states[self.originalPairStateIndex][5])<0.1 and \
-                   abs(self.states[i][6]-self.states[self.originalPairStateIndex][6])<0.1 and \
-                   abs(self.states[i][7]-self.states[self.originalPairStateIndex][7])<0.1 :
-                    state2 = self.states[i]
+                if int(abs(self.basisStates[i][1]-l1))==1 and \
+                   abs(self.basisStates[i][4]-self.basisStates[self.originalPairStateIndex][4])<0.1 and \
+                   abs(self.basisStates[i][5]-self.basisStates[self.originalPairStateIndex][5])<0.1 and \
+                   abs(self.basisStates[i][6]-self.basisStates[self.originalPairStateIndex][6])<0.1 and \
+                   abs(self.basisStates[i][7]-self.basisStates[self.originalPairStateIndex][7])<0.1 :
+                    state2 = self.basisStates[i]
                     n2 = int(state2[0])
                     l2 = int(state2[1])
                     j2 = state2[2]
                     m2 = state2[3]
                     if debugOutput:
                         print(n1," ",l1," ",j1," ",m1," ",n2," ",l2," ",j2," ",m2," q=",q)
-                        print(self.states[i])
+                        print(self.basisStates[i])
                     dme = self.atom.getDipoleMatrixElement(n1, l1,j1,m1,\
                                                             n2,l2,j2,m2,\
                                                             q)
                     thisCoupling += dme
 
-                if int(abs(self.states[i][5]-l1))==1 and \
-                    abs(self.states[i][0]-self.states[self.originalPairStateIndex][0])<0.1 and\
-                    abs(self.states[i][1]-self.states[self.originalPairStateIndex][1])<0.1 and \
-                    abs(self.states[i][2]-self.states[self.originalPairStateIndex][2])<0.1 and \
-                    abs(self.states[i][3]-self.states[self.originalPairStateIndex][3])<0.1 :
-                    state2 = self.states[i]
+                if int(abs(self.basisStates[i][5]-l1))==1 and \
+                    abs(self.basisStates[i][0]-self.basisStates[self.originalPairStateIndex][0])<0.1 and\
+                    abs(self.basisStates[i][1]-self.basisStates[self.originalPairStateIndex][1])<0.1 and \
+                    abs(self.basisStates[i][2]-self.basisStates[self.originalPairStateIndex][2])<0.1 and \
+                    abs(self.basisStates[i][3]-self.basisStates[self.originalPairStateIndex][3])<0.1 :
+                    state2 = self.basisStates[i]
                     n2 = int(state2[0+4])
                     l2 = int(state2[1+4])
                     j2 = state2[2+4]
                     m2 = state2[3+4]
                     if debugOutput:
                         print(n1," ",l1," ",j1," ",m1," ",n2," ",l2," ",j2," ",m2," q=",q)
-                        print(self.states[i])
+                        print(self.basisStates[i])
                     dme = self.atom.getDipoleMatrixElement(n1, l1,j1,m1,\
                                                             n2,l2,j2,m2,\
                                                             q)
@@ -1138,7 +1171,7 @@ class PairStateInteractions:
                 if (thisCoupling >0.000001) and debugOutput:
                     print("original pairstate index = ",self.originalPairStateIndex)
                     print("this pairstate index = ",i)
-                    print("state itself ", self.states[i])
+                    print("state itself ", self.basisStates[i])
                     print("coupling = ",thisCoupling)
                 coupling.append(thisCoupling)
 
@@ -1152,7 +1185,7 @@ class PairStateInteractions:
         rvalIndex = 0.
         for rval in self.r:
             if progressOutput:
-                sys.stdout.write("\r%d%%" %  (rvalIndex/len(self.r)*100.))
+                sys.stdout.write("\r%d%%" %  (rvalIndex/len(self.r-1)*100.))
                 sys.stdout.flush()
             rvalIndex += 1.
 
@@ -1165,8 +1198,9 @@ class PairStateInteractions:
                 m = m + matRX/rX
                 rX *= (rval*1.e-6)
 
-            # uses ARPACK algorithm to find only X eigenvectors
-            ev, egvector = eigsh(m, noOfEigenvectors, sigma=0., which='LM',tol=1E-6)
+            # uses ARPACK algorithm to find only noOfEigenvectors eigenvectors
+            # sigma specifies center frequency (in GHz)
+            ev, egvector = eigsh(m, noOfEigenvectors, sigma= eigenvectorsDetuning*1.e-9, which='LM',tol=1E-6)
 
             self.y.append(ev)
 
@@ -1313,7 +1347,7 @@ class PairStateInteractions:
             i = order[index]
             if (index!=-1 and stateVector[i]>0):
                 value+= "+"
-            value = value+ ("%.2f" % stateVector[i])+self._addState(*self.states[i])
+            value = value+ ("%.2f" % stateVector[i])+self._addState(*self.basisStates[i])
             totalContribution += contribution[i]**2
             index -= 1
 
@@ -1918,7 +1952,7 @@ class StarkMapResonances:
 
         Args:
             atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-                :obj:`alkali_atom_data.Lithium6`,
+                :obj:`alkali_atom_data.Lithium7`,
                 :obj:`alkali_atom_data.Sodium`,
                 :obj:`alkali_atom_data.Potassium`,
                 :obj:`alkali_atom_data.Rubidium`,
@@ -1927,7 +1961,7 @@ class StarkMapResonances:
             state1 ([int,int,float,float]): specification of the state
                 of the first state as an array of values :math:`[n,l,j,m_j]`
             atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-                :obj:`alkali_atom_data.Lithium6`,
+                :obj:`alkali_atom_data.Lithium7`,
                 :obj:`alkali_atom_data.Sodium`,
                 :obj:`alkali_atom_data.Potassium`,
                 :obj:`alkali_atom_data.Rubidium`,
@@ -2092,7 +2126,8 @@ class StarkMapResonances:
                         self.y[i].extend(yList)
                         self.composition[i].extend(compositionList)
 
-                print("\n")
+                if progressOutput:
+                    print("\n")
 
 
         for i in xrange(len(sm1.eFieldList)):

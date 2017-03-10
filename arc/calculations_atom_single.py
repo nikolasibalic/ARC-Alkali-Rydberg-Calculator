@@ -6,26 +6,15 @@
     Included calculations are Stark maps, level plot visualisations,
     lifetimes and radiative decays.
 
-
-
-
-
-    Detailed documentation
-    ----------------------
-
-
-
 """
 
 from __future__ import print_function
 
 from math import exp,log,sqrt
-#from pylab import *
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import numpy as np
 import re
-#from algebra_nikola import *
 from .wigner import Wigner6j,Wigner3j,CG
 from scipy.constants import physical_constants,pi,k,c,h,epsilon_0,hbar
 from scipy.constants import e as elemCharge
@@ -37,12 +26,9 @@ from numpy.linalg import eigvalsh,eig,eigh
 from numpy.ma import conjugate
 from numpy.lib.polynomial import real
 
-#from wigner_rotation import wignerD
-
 from scipy.sparse import lil_matrix,csr_matrix
 from scipy.sparse.linalg import eigsh
 from scipy.special.specfun import fcoef
-#from scipy.integrate import ode
 
 import sys
 if sys.version_info > (2,):
@@ -67,7 +53,7 @@ class StarkMap:
 
         Args:
             atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-                :obj:`alkali_atom_data.Lithium6`,
+                :obj:`alkali_atom_data.Lithium7`,
                 :obj:`alkali_atom_data.Sodium`,
                 :obj:`alkali_atom_data.Potassium`,
                 :obj:`alkali_atom_data.Rubidium`,
@@ -98,17 +84,22 @@ class StarkMap:
             << matplotlib plot will open containing a Stark map >>
 
         Examples:
-            **Incorporating Stark map matrix in other projects.** Here we show
-            one easy way to obtain the Stark matrix and basis states,
-            if this middle-product of the calculation is needed for some
-            other states.
+            **Advanced interfacing of Stark map calculations (StarkMap class)**
+            Here we show one easy way to obtain the Stark matrix (from diagonal
+            :obj:`mat1` and off-diagonal part :obj:`mat2` ) and basis states
+            (stored in :obj:`basisStates` ), if this middle-product of the
+            calculation is needed for some code build on top of the existing
+            ARC package.
 
             >>> from arc import *
             >>> calc = StarkMap(Caesium())
             >>> calc.defineBasis(28, 0, 0.5, 0.5, 23, 32, 20)
+            >>> # Now we have matrix and basis states, that we can used in our own code
             >>> # Let's say we want Stark map at electric field of 0.2 V/m
             >>> eField = 0.2 # V/m
             >>> # We can easily extract Stark matrix
+            >>> # as diagonal matrix (state detunings)
+            >>> #  + off-diagonal matrix (propotional to electric field)
             >>> matrix = calc.mat1+calc.mat2*eField
             >>> # and the basis states as array [ [n,l,j,mj] , ...]
             >>> basisStates = calc.basisStates
@@ -128,20 +119,26 @@ class StarkMap:
 
         self.basisStates = []
         """
-            List of basis states for calculation in the form [ [n,l,j,mj], ...]
+            List of basis states for calculation in the form [ [n,l,j,mj], ...].
+            Calculated by :obj:`defineBasis` .
         """
-        self.mat1 = []  #: diagonal elements of Stark-matrix (detuning of states)
+        self.mat1 = []
+        """
+            diagonal elements of Stark-matrix (detuning of states) calculated by
+            :obj:`defineBasis` in the basis :obj:`basisStates`.
+        """
         self.mat2 = []
         """
             off-diagonal elements of Stark-matrix divided by electric
             field value. To get off diagonal elemements multiply this matrix
-            with electric field value. Full stark matrix is obtained as
-            `fullStarkMatrix` = `self.mat1`+`self.mat2*eField`
+            with electric field value. Full Stark matrix is obtained as
+            `fullStarkMatrix` = :obj:`mat1` + :obj:`mat2` *`eField`. Calculated by
+            :obj:`defineBasis` in the basis :obj:`basisStates`.
         """
         self.indexOfCoupledState = []
         """
-            Index of coupled state (initial state passed to `defineBasis`)
-            in `self.basisStates` list of basisStates
+            Index of coupled state (initial state passed to :obj:`defineBasis`)
+            in :obj:`basisStates` list of basis states
         """
 
 
@@ -218,6 +215,13 @@ class StarkMap:
             Defines basis of states for further calculation. :math:`n,l,j,m_j`
             specify state whose neighbourhood and polarizability we want
             to explore. Other parameters specify basis of calculations.
+            This method stores basis in :obj:`basisStates`, while corresponding
+            interaction matrix is stored in two parts. First part is diagonal
+            electric-field independent part stored in :obj:`mat1`, while the
+            second part :obj:`mat2` corresponds to off-diagonal elements that are
+            propotional to electric field. Overall interaction matrix for
+            electric field `eField` can be then obtained as
+            `fullStarkMatrix` = :obj:`mat1` + :obj:`mat2` *`eField`
 
             Args:
                 n (int): principal quantum number of the state
@@ -893,7 +897,7 @@ class LevelPlot:
 
         Args:
             atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-                :obj:`alkali_atom_data.Lithium6`,
+                :obj:`alkali_atom_data.Lithium7`,
                 :obj:`alkali_atom_data.Sodium`,
                 :obj:`alkali_atom_data.Potassium`,
                 :obj:`alkali_atom_data.Rubidium`,
