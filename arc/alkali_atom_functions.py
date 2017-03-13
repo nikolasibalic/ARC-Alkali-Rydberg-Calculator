@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import re
 
+from .arc_c_extensions import NumerovWavefunction
 from .wigner import Wigner6j,Wigner3j,wignerD,CG,wignerDmatrix
 from scipy.constants import physical_constants,pi,k,c,h,epsilon_0,hbar
 from scipy.constants import e as elemCharge
@@ -413,55 +414,26 @@ class AlkaliAtom(object):
         """
 
         if self.cpp_numerov:
-            # efficiant implementation in c++; wavefunctions are also memorized
-            today =  datetime.datetime.now()
+            # efficiant implementation in C
 
-            timestamp = '{:%d%S%f}'.format(today)
-            filename = os.path.join(os.path.dirname(os.path.realpath(__file__)),\
-                "temp",\
-                ("%s_rwf_%.0f_%.1f_%.1f_r" %(self.elementName,l,s,j)+timestamp))
-
-            # integration parameters
-            cmd1 = ('%.15e %.15e %.15e %.15e %.15e "%s" '% (innerLimit,outerLimit,\
-                                                          step,0.01,0.01,filename))
             if (l<4):
-                cmd2 = "%d %.1f %.1f %.15e %.15e %.15e %d %.15e %.15e %.15e %.15e %.15e" %\
-                        (l,s,j,stateEnergy,self.alphaC,self.alpha,self.Z,\
-                        self.a1[l],self.a2[l],self.a3[l],self.a4[l],self.rc[l])
+                b = NumerovWavefunction(innerLimit,outerLimit,\
+                                        step,0.01,0.01,\
+                                        l,s,j,stateEnergy,self.alphaC,self.alpha,\
+                                        self.Z,
+                                        self.a1[l],self.a2[l],self.a3[l],self.a4[l],\
+                                        self.rc[l])
             else:
-                cmd2 = "%d %.1f %.1f %.15e %.15e %.15e %d %.15e %.15e %.15e %.15e %.15e" %\
-                        (l,s,j,stateEnergy,self.alphaC,self.alpha,self.Z,0.,0.,0.,0.,0.)
+                b = NumerovWavefunction(innerLimit,outerLimit,\
+                                        step,0.01,0.01,\
+                                        l,s,j,stateEnergy,self.alphaC,self.alpha,\
+                                        self.Z,0.,0.,0.,0.,0.)
 
-            cmd = os.path.join('"'+os.path.dirname(os.path.realpath(__file__)),\
-                    self.numerovExec+'" '+cmd1+" "+cmd2)
-            args = shlex.split( cmd.replace("\\", "\\\\") )
-            proc = Popen(args, stdout=PIPE, stderr=PIPE, \
-                         shell = (self.numerovExec == "nvwcpp_win.exe"))
-            out, err = proc.communicate()
-            exitcode = proc.returncode
-            if (exitcode!=0):
-                print("ERROR: C++ implementation of Numerov calculation of the \
-                        wavefunction doesn't work. Error is:")
-                print(err)
-                print("Try recompiling C++ code, or initialize atoms with cpp_numerov=False")
-                print("e.g. atom = Rubidium(cpp_numerov=False)")
-                print("NOTE: this will significantly slow down calculation of new \
-                        dipole matrix elements. Recommended option is compilation\
-                        of the C++ code. See documentation for more details")
-                exit()
 
-            fileRoot = ""
-            a = np.fromfile(filename+"_rad.dat", dtype=np.dtype('f8'), count=-1, sep='')
-            b = np.fromfile(filename+"_sol.dat", dtype=np.dtype('f8'), count=-1, sep='')
-            divergence = np.fromfile(filename+"_divergnece.dat",\
-                                     dtype=np.dtype('i4'), count=-1, sep='')[0]
-
-            os.remove(filename+"_rad.dat")
-            os.remove(filename+"_sol.dat")
-            os.remove(filename+"_divergnece.dat")
-
-            btemp = b[divergence:]
-            suma = step*sum(btemp**2)
+            totalSteps = (outerLimit - innerLimit)//step
+            a = np.linspace(outerLimit-totalSteps*step,outerLimit,totalSteps)
+            divergence = 0
+            suma = step*sum(b**2)
             b = b/(sqrt(suma))
         else:
             # full implementation in Python

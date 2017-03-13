@@ -23,28 +23,28 @@ That is all, enjoy using ARC package. Check :ref:`get-started-page` to see some 
 Precompiled modules on unsupported operating systems
 ----------------------------------------------------
 
-Optimized of the Numerov is provided as the C code `nvwcpp.c`. If you are using 64-bit Windows, Mac or Linux operating system, package will recognize the system and use appropriate precompiled binary provided in the package - i.e. you should not have to do anything additional manually, this is out-of-the box feature.
+Optimized version of the Numerov is provided as the C code `arc_c_extensions.c`. If you are using 64-bit Windows, Mac or Linux operating system, package will recognize the system and use appropriate precompiled binary provided in the package - i.e. you should not have to do anything additional manually, this is out-of-the box feature.
 
 If you are using some other operating system, or 32-bit version of the operating systems above, to run the optimized precompiled version (recommended) do the following:
 
 **For Windows users**
 
-Download and install `MinGW <http://www.mingw.org/>`_ compiler, or some other distribution of GNU C compiler. In the command prompt, navigate to the arc folder where `nvwcpp.c` file is located and execute::
+Download and install `MinGW <http://www.mingw.org/>`_ compiler, or some other distribution of GNU C compiler. In the command prompt, navigate to the arc folder where `setupc.py` file is located and execute::
 
-    gcc -Wall -Wextra -pedantic -std=c99 -O3 -static-libgcc arc\nvwcpp.c -lm -o arc\nvwcpp_win
+    python setupc.py build_ext --inplace
 
 **For Linux users**
 
-Download and install GNU C compiler. Then with terminal open, navigate to arc folder where `nvwcpp.c` file is located execute::
+Download and install GNU C compiler. Then with terminal open, navigate to arc folder where `setupc.py` file is located execute::
 
-    gcc -Wall -Wextra -pedantic -std=c99 -O3 arc/nvwcpp.c -lm -o arc/nvwcpp_linux
+    python setupc.py build_ext --inplace
 
 
 **For MAC users**
 
-Download and install GNU C compiler. Then with terminal open, navigate to arc folder where `nvwcpp.c` file is located execute::
+Download and install GNU C compiler. Then with terminal open, navigate to arc folder where `setupc.py` file is located execute::
 
-    gcc -Wall -Wextra -pedantic -std=c99 -O3 arc/nvwcpp.c -lm -o arc/nvwcpp_mac
+    python setupc.py build_ext --inplace
 
 **For people who don't want to compile anything**
 
