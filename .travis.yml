@@ -8,4 +8,5 @@ addons:
 script:
 - python  -m compileall -f arc/*.py
 - python3 -m compileall -f arc/*.py
-- gcc -Wall -Wextra -pedantic -std=c99 -O3 arc/nvwcpp.c -lm
+- python arc/setupc.py build_ext --inplace
+- python3 arc/setupc.py build_ext --inplace

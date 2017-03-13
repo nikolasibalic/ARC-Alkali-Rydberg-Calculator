@@ -23,9 +23,9 @@ That is all, enjoy using ARC package. Check :ref:`get-started-page` to see some 
 Precompiled modules on unsupported operating systems
 ----------------------------------------------------
 
-Optimized version of the Numerov is provided as the C code `arc_c_extensions.c`. If you are using 64-bit Windows, Mac or Linux operating system, package will recognize the system and use appropriate precompiled binary provided in the package - i.e. you should not have to do anything additional manually, this is out-of-the box feature.
-
-If you are using some other operating system, or 32-bit version of the operating systems above, to run the optimized precompiled version (recommended) do the following:
+Optimized version of the Numerov is provided as the C code `arc_c_extensions.c`.
+Note that path to arc directory **should not contain spaces** in order
+to setupc.py script to work.
 
 **For Windows users**
 
