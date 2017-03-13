@@ -5,6 +5,12 @@ addons:
     packages:
     - python3
 
+before_script:
+  - pip uninstall numpy -y
+  - pip install -I numpy==1.8.2
+  - pip3 uninstall numpy -y
+  - pip3 install -I numpy==1.8.2
+
 script:
 - python  -m compileall -f arc/*.py
 - python3 -m compileall -f arc/*.py
