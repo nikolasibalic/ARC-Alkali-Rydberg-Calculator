@@ -5,9 +5,10 @@ before_script:
   - chmod +x miniconda.sh
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH=/home/travis/miniconda/bin:$PATH
-  
+
 script:
 - conda install --yes numpy=1.8
 - conda install --yes scipy=0.18.1
 - python  -m compileall -f arc/*.py
-- python arc/setupc.py build_ext --inplace
+- cd arc
+- python setupc.py build_ext --inplace
