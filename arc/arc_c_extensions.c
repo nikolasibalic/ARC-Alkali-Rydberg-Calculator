@@ -22,7 +22,7 @@ double alpha;
 int Z;
 double a1,a2,a3,a4,rc; // depends on l - determined by Python in advance
 
-#define DEBUG_OUTPUT
+//#define DEBUG_OUTPUT
 
 static PyObject *NumerovWavefunction(PyObject *self, PyObject *args);
 
@@ -84,8 +84,7 @@ inline double kfun2(double r){
 static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
 	// Numerov arguments: innerLimit,outerLimit,kfun,step,init1,init2
 	double innerLimit,outerLimit,step,init1,init2;
-	//char* outputFile;
-printf("sa");
+
 
     if (!(PyArg_ParseTuple(args, "dddddidddddiddddd", &innerLimit, &outerLimit, &step,
       &init1, &init2,
