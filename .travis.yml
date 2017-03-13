@@ -1,16 +1,12 @@
-language: generic
-
-addons:
-  apt:
-    packages:
-    - python3
+language: python
 
 before_script:
-  - pip install -I numpy==1.8.2
-  - pip3 install -I numpy==1.8.2
+  - wget http://repo.continuum.io/miniconda/Miniconda-3.8.3-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - export PATH=/home/travis/miniconda/bin:$PATH
+  - conda install --yes numpy=1.8
+  - conda install --yes scipy=0.18.1
 
 script:
 - python  -m compileall -f arc/*.py
-- python3 -m compileall -f arc/*.py
 - python arc/setupc.py build_ext --inplace
-- python3 arc/setupc.py build_ext --inplace
