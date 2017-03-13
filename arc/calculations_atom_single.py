@@ -16,8 +16,11 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import numpy as np
 import re
 from .wigner import Wigner6j,Wigner3j,CG
-from scipy.constants import physical_constants,pi,k,c,h,epsilon_0,hbar
-from scipy.constants import e as elemCharge
+from scipy.constants import physical_constants, pi , epsilon_0, hbar
+from scipy.constants import k as C_k
+from scipy.constants import c as C_c
+from scipy.constants import h as C_h
+from scipy.constants import e as C_e
 from scipy.optimize import curve_fit
 
 # for matrices
@@ -197,7 +200,7 @@ class StarkMap:
 
         # matrix element
         result = self.atom.getRadialMatrixElement(n1,l1,j1,n2,l2,j2)*\
-                physical_constants["Bohr radius"][0]*elemCharge
+                physical_constants["Bohr radius"][0]*C_e
 
         sumPart = self.eFieldCouplingSaved.getAngular(l1,j1,mj1,l2,j2,mj2)
 
@@ -298,7 +301,7 @@ class StarkMap:
             # add diagonal element
             self.mat1[ii][ii] = self.atom.getEnergy(states[ii][0],\
                                                states[ii][1],states[ii][2])\
-                            *elemCharge/h*1e-9
+                            *C_e/C_h*1e-9
             # add off-diagonal element
 
             for jj in xrange(ii+1,dimension):
@@ -308,7 +311,7 @@ class StarkMap:
                                                     states[jj][0],\
                                                     states[jj][1],\
                                                     states[jj][2],mj)*\
-                            1.e-9/h
+                            1.e-9/C_h
                 self.mat2[jj][ii] = coupling
                 self.mat2[ii][jj] = coupling
 
@@ -637,13 +640,13 @@ class StarkMap:
 
         if (units==1):
             ## in cm^{-1}
-            uppery = self.atom.getEnergy(n,l,j)*elemCharge/h*1e-9*0.03336+10
-            lowery = self.atom.getEnergy(n,l,j)*elemCharge/h*1e-9*0.03336-10
+            uppery = self.atom.getEnergy(n,l,j)*C_e/C_h*1e-9*0.03336+10
+            lowery = self.atom.getEnergy(n,l,j)*C_e/C_h*1e-9*0.03336-10
             self.ax.set_ylabel("State energy, $E/(h c)$ (cm$^{-1}$)")
         else:
             ## in GHz
-            uppery = self.atom.getEnergy(n,l,j)*elemCharge/h*1e-9+5
-            lowery = self.atom.getEnergy(n,l,j)*elemCharge/h*1e-9-5
+            uppery = self.atom.getEnergy(n,l,j)*C_e/C_h*1e-9+5
+            lowery = self.atom.getEnergy(n,l,j)*C_e/C_h*1e-9-5
             self.ax.set_ylabel(r"State energy, $E/h$ (GHz)")
 
 
@@ -792,7 +795,7 @@ class StarkMap:
         n = originalState[0]
         l = originalState[1]
         j = originalState[2]
-        energyOfOriginalState = self.atom.getEnergy(n,l,j)*elemCharge/h*1e-9 # in  GHz
+        energyOfOriginalState = self.atom.getEnergy(n,l,j)*C_e/C_h*1e-9 # in  GHz
 
         if debugOutput:
             print("finding original state for each electric field value")

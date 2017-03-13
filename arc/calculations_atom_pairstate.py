@@ -43,8 +43,11 @@ mpl.rcParams['ytick.minor.size'] = 4
 import numpy as np
 import re
 from .wigner import Wigner6j,Wigner3j,CG,wignerDmatrix
-from scipy.constants import physical_constants,pi,k,c,h,epsilon_0,hbar
-from scipy.constants import e as elemCharge
+from scipy.constants import physical_constants, pi , epsilon_0, hbar
+from scipy.constants import k as C_k
+from scipy.constants import c as C_c
+from scipy.constants import h as C_h
+from scipy.constants import e as C_e
 from scipy.optimize import curve_fit
 
 # for matrices
@@ -422,7 +425,7 @@ class PairStateInteractions:
 
 
     def __isCoupled(self,n,l,j,nn,ll,jj,n1,l1,j1,n2,l2,j2,limit):
-        if (abs(self.atom.getEnergyDefect2(n,l,j,nn,ll,jj,n1,l1,j1,n2,l2,j2))/h<limit) and\
+        if (abs(self.atom.getEnergyDefect2(n,l,j,nn,ll,jj,n1,l1,j1,n2,l2,j2))/C_h<limit) and\
                 not (n==n1 and nn==n2 and l==l1 and ll==l2 and j==j1 and jj==j2) \
                 and not ((abs(l1-l)!=1 and abs(j-0.5)<0.1 and abs(j1-0.5)<0.1) or
                          (abs(l2-ll)!=1 and abs(jj-0.5)<0.1 and abs(j2-0.5)<0.1)):
@@ -495,7 +498,7 @@ class PairStateInteractions:
                                 ed = self.atom.getEnergyDefect2(n,l,j,\
                                                                nn,ll,jj,\
                                                                n1,l1,j1,\
-                                                               n2,l2,j2)/h
+                                                               n2,l2,j2)/C_h
                                 if  (abs(ed)<limit  \
                                     and (not (self.interactionsUpTo==1) or\
                                          (Lmod2 == ((l1+l2)%2) ) )
@@ -544,7 +547,7 @@ class PairStateInteractions:
             ed =  self.atom.getEnergyDefect2(states[opi][0],states[opi][1],states[opi][2],
                                           states[opi][3],states[opi][4],states[opi][5],
                                           states[i][0],states[i][1],states[i][2],
-                                          states[i][3],states[i][4],states[i][5])/h*1.0e-9
+                                          states[i][3],states[i][4],states[i][5])/C_h*1.0e-9
 
             pairState1 = "|"+printStateString(states[i][0],states[i][1],states[i][2])+\
                         ","+printStateString(states[i][3],states[i][4],states[i][5])+">"
@@ -575,7 +578,7 @@ class PairStateInteractions:
                     couplingStregth = _atomLightAtomCoupling(states[i][0],states[i][1],states[i][2],
                                             states[i][3],states[i][4],states[i][5],
                                             states[j][0],states[j][1],states[j][2],
-                                             states[j][3],states[j][4],states[j][5],self.atom)/h*1.0e-9
+                                             states[j][3],states[j][4],states[j][5],self.atom)/C_h*1.0e-9
 
                     couplingMatConstructor[coupled-2][0].append(couplingStregth)
                     couplingMatConstructor[coupled-2][1].append(i)
@@ -785,7 +788,7 @@ class PairStateInteractions:
                                 getEnergyDefect = self.atom.getEnergyDefect2(self.n,self.l,self.j,\
                                                                   self.nn,self.ll,self.jj,\
                                                                   n1,l1,j1,\
-                                                                  n2,l2,j2)/h
+                                                                  n2,l2,j2)/C_h
                                 if abs(getEnergyDefect)<energyDelta  \
                                     and (not (self.interactionsUpTo==1) or\
                                          (Lmod2 == ((l1+l2)%2) )) :
@@ -795,7 +798,7 @@ class PairStateInteractions:
                                     couplingStregth = _atomLightAtomCoupling(self.n,self.l,self.j,
                                             self.nn,self.ll,self.jj,
                                             n1,l1,j1,
-                                            n2,l2,j2,self.atom)*(1.0e-9*(1.e6)**3/h) # GHz / mum^3
+                                            n2,l2,j2,self.atom)*(1.0e-9*(1.e6)**3/C_h) # GHz / mum^3
 
 
                                     pairState2 = "|"+printStateString(n1,l1,j1)+\
@@ -1990,7 +1993,7 @@ class StarkMapResonances:
 
         self.pairStateEnergy = (atom1.getEnergy(*state1[0:3])+\
                                 atom2.getEnergy(*state2[0:3]))\
-                            *elemCharge/h*1e-9
+                            *C_e/C_h*1e-9
 
     def findResonances(self,nMin,nMax,maxL,eFieldList,energyRange=[-5.e9,+5.e9],\
              progressOutput = False):

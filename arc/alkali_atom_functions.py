@@ -23,8 +23,11 @@ import re
 
 from .arc_c_extensions import NumerovWavefunction
 from .wigner import Wigner6j,Wigner3j,wignerD,CG,wignerDmatrix
-from scipy.constants import physical_constants,pi,k,c,h,epsilon_0,hbar
-from scipy.constants import e as elemCharge
+from scipy.constants import physical_constants, pi , epsilon_0, hbar
+from scipy.constants import k as C_k
+from scipy.constants import c as C_c
+from scipy.constants import h as C_h
+from scipy.constants import e as C_e
 from scipy.optimize import curve_fit
 
 # for matrices
@@ -292,7 +295,7 @@ class AlkaliAtom(object):
             Returns:
                 float: atom concentration in :math:`1/m^3`
         """
-        return self.getPressure(temperature)/(k*temperature)
+        return self.getPressure(temperature)/(C_k*temperature)
 
     def getAverageInteratomicSpacing(self,temperature):
         """
@@ -535,7 +538,7 @@ class AlkaliAtom(object):
                     level from which we are going is **above** the level to which we are
                     going.
         """
-        return (h*c)/((self.getEnergy(n2, l2, j2)-self.getEnergy(n1, l1, j1))*elemCharge)
+        return (C_h*C_c)/((self.getEnergy(n2, l2, j2)-self.getEnergy(n1, l1, j1))*C_e)
 
     def getTransitionFrequency(self,n1,l1,j1,n2,l2,j2):
         """
@@ -555,7 +558,7 @@ class AlkaliAtom(object):
                     level from which we are going is **above** the level to which we are
                     going.
         """
-        return (self.getEnergy(n2, l2, j2)-self.getEnergy(n1, l1, j1))*elemCharge/h
+        return (self.getEnergy(n2, l2, j2)-self.getEnergy(n1, l1, j1))*C_e/C_h
 
 
     def getEnergy(self,n,l,j):
@@ -966,7 +969,7 @@ class AlkaliAtom(object):
                     divide by returned value by :math:`2\pi`
         """
         maxIntensity = 2*laserPower/(pi* laserWaist**2)
-        electricField = sqrt(2.*maxIntensity/(c*epsilon_0))
+        electricField = sqrt(2.*maxIntensity/(C_c*epsilon_0))
         return self.getRabiFrequency2(n1,l1,j1,mj1,n2,l2,j2,q,electricField)
 
     def getRabiFrequency2(self,n1,l1,j1,mj1,n2,l2,j2,q,electricFieldAmplitude):
@@ -990,7 +993,7 @@ class AlkaliAtom(object):
         if abs(mj2)-0.1>j2:
             return 0
         dipole = self.getDipoleMatrixElement(n1,l1,j1,mj1,n2,l2,j2,mj2,q)*\
-                elemCharge*physical_constants["Bohr radius"][0]
+                C_e*physical_constants["Bohr radius"][0]
         freq = electricFieldAmplitude*abs(dipole)/hbar
         return freq
 
@@ -1068,9 +1071,9 @@ class AlkaliAtom(object):
         """
         d1 = self.getRadialMatrixElement(n,l,j,n1,l1,j1)
         d2 = self.getRadialMatrixElement(n,l,j,n2,l2,j2)
-        d1d2 = 1/(4.0*pi*epsilon_0)*d1*d2*elemCharge**2*\
+        d1d2 = 1/(4.0*pi*epsilon_0)*d1*d2*C_e**2*\
                 (physical_constants["Bohr radius"][0])**2
-        return -d1d2**2/(elemCharge*(self.getEnergy(n1,l1,j1)+\
+        return -d1d2**2/(C_e*(self.getEnergy(n1,l1,j1)+\
                                      self.getEnergy(n2,l2,j2)-\
                                      2*self.getEnergy(n,l,j)))
 
@@ -1099,7 +1102,7 @@ class AlkaliAtom(object):
         """
         d1 = self.getRadialMatrixElement(n,l,j,n1,l1,j1)
         d2 = self.getRadialMatrixElement(n,l,j,n2,l2,j2)
-        d1d2 = 1/(4.0*pi*epsilon_0)*d1*d2*elemCharge**2*\
+        d1d2 = 1/(4.0*pi*epsilon_0)*d1*d2*C_e**2*\
                 (physical_constants["Bohr radius"][0])**2
         return d1d2
 
@@ -1125,7 +1128,7 @@ class AlkaliAtom(object):
             Returns:
                 float:  energy defect (SI units: J)
         """
-        return elemCharge*(self.getEnergy(n1,l1,j1)+self.getEnergy(n2,l2,j2)-\
+        return C_e*(self.getEnergy(n1,l1,j1)+self.getEnergy(n2,l2,j2)-\
                            2*self.getEnergy(n,l,j))
 
     def getEnergyDefect2(self,n,l,j,nn,ll,jj,n1,l1,j1,n2,l2,j2):
@@ -1158,7 +1161,7 @@ class AlkaliAtom(object):
             Returns:
                 float:  energy defect (SI units: J)
         """
-        return elemCharge*(self.getEnergy(n1,l1,j1)+self.getEnergy(n2,l2,j2)-\
+        return C_e*(self.getEnergy(n1,l1,j1)+self.getEnergy(n2,l2,j2)-\
                            self.getEnergy(n,l,j)-self.getEnergy(nn,ll,jj))
 
     def updateDipoleMatrixElementsFile(self):
@@ -1243,12 +1246,12 @@ class AlkaliAtom(object):
         if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2)>0):
             dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(n1, l1, j1,\
                                                                         n2, l2, j2)*\
-                                elemCharge*(physical_constants["Bohr radius"][0])
+                                C_e*(physical_constants["Bohr radius"][0])
 
         else:
             dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(n2, l2, j2,\
                                                                         n1, l1, j1)*\
-                                elemCharge*(physical_constants["Bohr radius"][0])
+                                C_e*(physical_constants["Bohr radius"][0])
             degeneracyTerm = (2.*j2+1.0)/(2.*j1+1.)
 
         omega = abs(2.0*pi*self.getTransitionFrequency(n1, l1, j1, n2, l2, j2))
@@ -1258,11 +1261,11 @@ class AlkaliAtom(object):
             modeOccupationTerm = 1.
 
         # only possible by absorbing thermal photons ?
-        if (hbar*omega < 100*k*temperature):
-            modeOccupationTerm += 1./(exp(hbar*omega/(k*temperature))-1.)
+        if (hbar*omega < 100*C_k*temperature):
+            modeOccupationTerm += 1./(exp(hbar*omega/(C_k*temperature))-1.)
 
         return omega**3*dipoleRadialPart**2/\
-            (3*pi*epsilon_0*hbar*c**3)\
+            (3*pi*epsilon_0*hbar*C_c**3)\
             *degeneracyTerm*modeOccupationTerm
 
     def getStateLifetime(self,n,l,j,temperature=0,includeLevelsUpTo = 0):
@@ -1387,7 +1390,7 @@ class AlkaliAtom(object):
             Returns:
                 float: average 1D speed (m/s)
         """
-        return sqrt(2.*k*temperature/self.mass)
+        return sqrt(2.*C_k*temperature/self.mass)
 
     def _readLiteratureValues(self):
         # clear previously saved results, since literature file
@@ -1720,7 +1723,7 @@ def _atomLightAtomCoupling(n,l,j,nn,ll,jj,n1,l1,j1,n2,l2,j2,atom):
 
     ## TO-DO: check exponent of the Boht radius (from where it comes?!)
 
-    coupling = elemCharge**2/(4.0*pi*epsilon_0)*radial1*radial2*\
+    coupling = C_e**2/(4.0*pi*epsilon_0)*radial1*radial2*\
                 (physical_constants["Bohr radius"][0])**(c1+c2)
     return coupling
 
