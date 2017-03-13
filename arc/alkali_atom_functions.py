@@ -42,25 +42,15 @@ from scipy.sparse.linalg import eigsh
 from scipy.special.specfun import fcoef
 from scipy import floor
 
-import sys
+import sys, os
 if sys.version_info > (2,):
     xrange = range
-
-# for calling C++ Numerov
-import shlex
-from subprocess import Popen, PIPE
-
-# START of modules for online (server) execution
-import os,platform
-import datetime
-# END of modules for online (server) execution
 
 try:
     import cPickle as pickle   # fast, C implementation of the pickle
 except:
     import pickle   # Python 3 already has efficient pickle (instead of cPickle)
 import gzip
-
 import csv
 import sqlite3
 
@@ -152,9 +142,6 @@ class AlkaliAtom(object):
     # SQLite connection and cursor
     conn = False
     c = False
-
-    # Name of precompiled executable for C/C++ module for Numerov integration
-    numerovExec = ""
 
     def __init__(self,preferQuantumDefects=True,cpp_numerov=True):
 
@@ -251,17 +238,6 @@ class AlkaliAtom(object):
 
         # read Literature values for dipole matrix elements
         self._readLiteratureValues()
-
-        # set correct executable for Numerov precompiled C/C++ module
-        # for the given operating system
-        if (self.numerovExec == ""):
-            ostype = [platform.linux_distribution(),\
-                      platform.mac_ver(),\
-                      platform.win32_ver()]
-            ostypelett = ["linux","mac","win.exe"]
-            for i in xrange(3):
-                if ostype[i][0]:
-                    self.numerovExec = "nvwcpp_"+ostypelett[i]
 
         return
 
