@@ -26,8 +26,9 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
             return MagicMock()
 
-MOCK_MODULES = ['arc_c_extensions', '.arc_c_extensions','.arc_c_extensions.NumerovWavefunction','arc_c_extensions.NumerovWavefunction']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+#MOCK_MODULES = ['arc_c_extensions', '.arc_c_extensions','.arc_c_extensions.NumerovWavefunction','arc_c_extensions.NumerovWavefunction']
+#sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+sys.modules['arc_c_extensions'] = Mock()
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
