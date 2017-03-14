@@ -33,7 +33,7 @@ Overview
 .. autosummary::
 
     PairStateInteractions.defineBasis
-    PairStateInteractions.getC6pertubatively
+    PairStateInteractions.getC6perturbatively
     PairStateInteractions.getLeRoyRadius
     PairStateInteractions.diagonalise
     PairStateInteractions.plotLevelDiagram
