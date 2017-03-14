@@ -30,7 +30,7 @@ sys.modules['arc_c_extensions'] = Mock()
 
 filep = os.path.abspath('..')+"/arc/arc_c_extensions.py"
 f= open(filep,"w+")
-f.write("def NumerovWavefunction(*args):"+\
+f.write("def NumerovWavefunction(*args):\n"+\
        "    pass")
 f.close()
 
