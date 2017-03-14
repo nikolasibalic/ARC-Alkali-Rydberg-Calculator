@@ -58,8 +58,11 @@ class StarkMap:
             atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
                 :obj:`alkali_atom_data.Lithium7`,
                 :obj:`alkali_atom_data.Sodium`,
-                :obj:`alkali_atom_data.Potassium`,
-                :obj:`alkali_atom_data.Rubidium`,
+                :obj:`alkali_atom_data.Potassium39`,
+                :obj:`alkali_atom_data.Potassium40`,
+                :obj:`alkali_atom_data.Potassium41`,
+                :obj:`alkali_atom_data.Rubidium85`,
+                :obj:`alkali_atom_data.Rubidium87`,
                 :obj:`alkali_atom_data.Caesium` }
                 Select the alkali metal for energy level
                 diagram calculation
@@ -902,8 +905,11 @@ class LevelPlot:
             atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
                 :obj:`alkali_atom_data.Lithium7`,
                 :obj:`alkali_atom_data.Sodium`,
-                :obj:`alkali_atom_data.Potassium`,
-                :obj:`alkali_atom_data.Rubidium`,
+                :obj:`alkali_atom_data.Potassium39`,
+                :obj:`alkali_atom_data.Potassium40`,
+                :obj:`alkali_atom_data.Potassium41`,
+                :obj:`alkali_atom_data.Rubidium85`,
+                :obj:`alkali_atom_data.Rubidium87`,
                 :obj:`alkali_atom_data.Caesium` }
                 Alkali atom type whose levels we
                 want to examine
