@@ -460,7 +460,7 @@ class PairStateInteractions:
         # k defines range of n' = [n-k, n+k]
         dimension = 0
 
-        # which states/channels contribute significantly in the second order pertubation?
+        # which states/channels contribute significantly in the second order perturbation?
         states = []
 
         # original pairstate index
@@ -671,9 +671,9 @@ class PairStateInteractions:
 
         return 2.*(r1+r2)*(physical_constants["Bohr radius"][0]*1.e6)
 
-    def getC6pertubatively(self,theta,phi,nRange,energyDelta):
+    def getC6perturbatively(self,theta,phi,nRange,energyDelta):
         """
-            Calculates :math:`C_6` from second order pertubation theory.
+            Calculates :math:`C_6` from second order perturbation theory.
 
             This calculation is faster then full diagonalization, but it is valid
             only far from the so called spaghetti region that occurs when atoms

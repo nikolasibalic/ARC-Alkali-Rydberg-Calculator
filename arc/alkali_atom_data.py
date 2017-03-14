@@ -5,6 +5,22 @@
     If you want to change e.g. coefficients used for model potential, \
     quantum defects, or other numerical values, this is the place to look at.
 
+    **How to delete precalculated dipole/quadrupole matrix elements values
+    and/or start a new database?** To delete precalculated values, simply
+    delete files, whose names are stated in `dipoleMatrixElementFile`,
+    `quadrupoleMatrixElementFile` and `precalculatedDB` variables for the
+    corresponding atom type, from data/ folder. Alternatively, if you
+    want to keep old values, but want to also start completely new
+    calculation of dipole matrix elements (e.g. because you changed
+    parameters of energy levels significantly or model potential parameters),
+    simply set new values for `dipoleMatrixElementFile`,
+    `quadrupoleMatrixElementFile` and `precalculatedDB` variables.
+
+    Note that by default isotopes of Rubidium and Potassium
+    are sharing precalculated dipole and quadrupole matrix elements. This is
+    because the small energy level differences typically don't change this
+    matrix elements within a typical accuracy.
+
     Data sources
     -------------
 
@@ -48,10 +64,6 @@
 
     .. [#c7] C. -J. Lorenzen, and K. Niemax, *Physica Scripta* **27**, 300 (1983)
 
-    .. [#Baugh1998] J. F. Baugh, C. E. Burkhardt, J. J. Leventhal,
-        and T. Bergeman, **Phys. Rev. A** *58*, 1585 (1998).
-        https://doi.org/10.1103/PhysRevA.58.1585
-
     .. [#c8] NIST, P. Mohr and S. Kotochigova, unpublished calculations (2000).
         The wavelengths for the Balmer-alpha and Balmer-beta transitions at 6563
         and 4861 :math:`\\unicode{xC5}` include only the stronger components of
@@ -59,12 +71,14 @@
 
     .. [#c11] R. L. Kelly, *J. Phys. Chem. Ref. Data* **16**, Suppl. 1 (1987).
 
-    .. [#c12] J. F. Baugh, C. E. Burkhardt, J. J. Leventhal, and T. Bergeman,
-        *Phys. Rev. A* **58**, 1585 (1998).
-        https://doi.org/10.1103/PhysRevA.58.1585
+    .. [#c14] J. S. Coursey, D. J. Schwab, J. J. Tsai, and R. A. Dragoset,
+        (2015), Atomic Weights and Isotopic Compositions (version 4.1).
+        Online Available: http://physics.nist.gov/Comp (2017, March, 14).
+        National Institute of Standards and Technology, Gaithersburg, MD.
 
-    .. [#c13] J. Sugar and C. Corliss, *J. Phys. Chem. Ref. Data* **14**,\
-         Suppl. 2 (1985).
+    .. [#Sanguinetti2009] B. Sanguinetti, H. O. Majeed, M. L. Jones and
+        B. T. H. Varcoe, *J. Phys. B* **42**, 165004 (2009)
+        http://iopscience.iop.org/article/10.1088/0953-4075/42/16/165004/meta
 
     Module
     ------
@@ -74,6 +88,8 @@ from __future__ import division, print_function, absolute_import
 
 from .alkali_atom_functions import *
 
+from scipy.constants import Rydberg as C_Rydberg
+from scipy.constants import m_e as C_m_e
 
 class Hydrogen(AlkaliAtom):
     """
@@ -176,9 +192,7 @@ class Caesium(AlkaliAtom):
 
     minQuantumDefectN =  9
 
-    #: from [#jd2016]_.
-    scaledRydbergConstant = 109736.8627339*1.e2\
-        *physical_constants["inverse meter-electron volt relationship"][0]
+
 
     levelDataFromNIST = "cs_NIST_level_data.ascii"
 
@@ -195,8 +209,12 @@ class Caesium(AlkaliAtom):
 
     groundStateN = 6
 
-    mass = 132.905429*physical_constants["atomic mass constant"][0]
+    mass = 132.9054519610*physical_constants["atomic mass constant"][0]
     abundance = 1.000
+
+    #: in eV
+    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+        *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Cs133"
 
@@ -250,9 +268,130 @@ class Caesium(AlkaliAtom):
                     (limits of experimental interpolation)")
             return 0
 
-class Rubidium(AlkaliAtom):
+class Rubidium85(AlkaliAtom):
     """
         Properites of rubidium 85 atoms
+    """
+
+    # ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)
+    alphaC  = 9.0760
+    """
+        model potential parameters from [#c1]_
+
+    """
+
+    a1 = [3.69628474, 4.44088978, 3.78717363, 2.39848933]
+    """
+        model potential parameters from [#c1]_
+
+    """
+    a2 = [1.64915255, 1.92828831, 1.57027864, 1.76810544]
+    """
+        model potential parameters from [#c1]_
+
+    """
+    a3 = [-9.86069196, -16.79597770, -11.65588970, -12.07106780]
+    """
+        model potential parameters from [#c1]_
+
+    """
+    a4 = [0.19579987, -0.8163314, 0.52942835, 0.77256589]
+    """
+        model potential parameters from [#c1]_
+
+    """
+    rc = [1.66242117, 1.50195124, 4.86851938, 4.79831327]
+    """
+        model potential parameters from [#c1]_
+
+    """
+    Z = 37
+
+    NISTdataLevels = 77
+
+    #: (eV) Ref. [#Sanguinetti2009]_
+    ionisationEnergy = (1010.024700e12)/C_c \
+        *physical_constants["inverse meter-electron volt relationship"][0]
+
+    quantumDefect = [[[3.1311804,0.1784,0.0,0.0,0.0,0.0],\
+                      [2.6548849,0.2900,0.0,0.0,0.0,0.0],\
+                      [1.34809171,-0.60286,0.0,0.0,0.0,0.0],\
+                      [0.0165192,-0.085,0.0,0.0,0.0,0.0],\
+                      [0.00405,0.0,0.0,0.0,0.0,0.0]],
+                     [[3.1311804,0.1784,0.0,0.0,0.0,0.0],\
+                      [2.6416737,0.2950,0.0,0.0,0.0,0.0],\
+                      [1.34646572,-0.59600,0.0,0.0,0.0,0.0],\
+                      [0.0165437,-0.086,0.0,0.0,0.0,0.0],\
+                      [0.00405,0.0,0.0,0.0,0.0,0.0]]]
+    """
+        quantum defects for :math:`nF` states are
+        from [#c5]_. Quantum defects for :math:`nG` states are
+        from [#Afrousheh2006a]_. All other quantum defects are from from [#c4]_
+
+    """
+
+
+    levelDataFromNIST = "rb_NIST_level_data.ascii"
+    dipoleMatrixElementFile = "rb_dipole_matrix_elements.npy"
+    quadrupoleMatrixElementFile = "rb_quadrupole_matrix_elements.npy"
+
+    minQuantumDefectN = 8
+
+    precalculatedDB = "rb_precalculated.db"
+
+    literatureDMEfilename = 'rubidium_literature_dme.csv'
+
+    #: levels that are for smaller n than ground level, but are above in energy due to angular part
+    extraLevels = [[4,2,2+0.5],[4,2,2-0.5],[4,3,3+0.5],[4,3,3-0.5]]
+
+    groundStateN = 5
+
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    mass = 84.9117897379*physical_constants["atomic mass constant"][0]
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    abundance =  0.7217
+
+    #:  in eV
+    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+        *physical_constants["inverse meter-electron volt relationship"][0]
+
+    elementName = "Rb85"
+
+    def getPressure(self,temperature):
+        """
+            Pressure of atomic vapour at given temperature.
+
+            Uses equation and values from [#c3]_. Values from table 2.
+            (accuracy +- 5%) are used for Rb in solid phase. Values from table 3.
+            (accuracy +-1 %) are used for Rb in liquid phase.
+
+        """
+
+        if temperature<39.3+273.15:
+            # Rb is in solid phase (from table 2. for recommended equations / +-5%)
+            return 10.0**(2.881+4.857-4215./temperature)*133.322368
+
+        elif temperature<550.+273.15:
+            # Rb is in liquid phase (from table 3. of the cited reference "precisely fitted equations / +- 1%)
+            return 10.0**(2.881+8.316-4275./temperature-\
+                          1.3102*log(temperature)/log(10.))*133.322368
+        else:
+            print("ERROR: Rb vapour pressure above 550 C is unknown \
+                    (limits of experimental interpolation)")
+            return 0
+
+class Rubidium(Rubidium85):
+    """
+        backward compatibility:
+        before there was only one Rubidium class, and that one corresponded
+        to Rubidium85
+    """
+    pass
+
+
+class Rubidium87(AlkaliAtom):
+    """
+        Properites of rubidium 87 atoms
     """
 
     # ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)
@@ -311,9 +450,6 @@ class Rubidium(AlkaliAtom):
         from [#Afrousheh2006a]_. All other quantum defects are from from [#c4]_
 
     """
-    #:  in eV
-    scaledRydbergConstant = 109736.605*1.e2 \
-        *physical_constants["inverse meter-electron volt relationship"][0]
 
     levelDataFromNIST = "rb_NIST_level_data.ascii"
     dipoleMatrixElementFile = "rb_dipole_matrix_elements.npy"
@@ -330,9 +466,18 @@ class Rubidium(AlkaliAtom):
 
     groundStateN = 5
 
-    mass = 85.4678*physical_constants["atomic mass constant"][0]
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    mass = 86.9091805310*physical_constants["atomic mass constant"][0]
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    abundance = 0.2783
 
-    elementName = "Rb"
+    #:  in eV
+    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+        *physical_constants["inverse meter-electron volt relationship"][0]
+    #109736.605*1.e2 \
+#        *physical_constants["inverse meter-electron volt relationship"][0]
+
+    elementName = "Rb87"
 
     def getPressure(self,temperature):
         """
@@ -422,9 +567,6 @@ class Lithium6(AlkaliAtom): # Li
 
     """
 
-    scaledRydbergConstant = 3.289541926*1.e15/\
-                physical_constants["electron volt-hertz relationship"][0]
-
     levelDataFromNIST = "li_NIST_level_data.ascii"
     dipoleMatrixElementFile = "li6_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "li6_quadrupole_matrix_elements.npy"
@@ -439,8 +581,13 @@ class Lithium6(AlkaliAtom): # Li
 
     groundStateN = 2
 
-    mass = 6.015121*physical_constants["atomic mass constant"][0]
-    abundance = 0.075
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    mass = 6.0151228874*physical_constants["atomic mass constant"][0]
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    abundance = 0.0759
+
+    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+        *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Li6"
 
@@ -529,11 +676,6 @@ class Lithium7(AlkaliAtom): # Li
 
     """
 
-    scaledRydbergConstant = 3.289584728*1.e15/\
-                physical_constants["electron volt-hertz relationship"][0]
-
-
-
     levelDataFromNIST = "li_NIST_level_data.ascii"
     dipoleMatrixElementFile = "li7_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "li7_quadrupole_matrix_elements.npy"
@@ -548,8 +690,13 @@ class Lithium7(AlkaliAtom): # Li
 
     groundStateN = 2
 
-    mass = 7.016003*physical_constants["atomic mass constant"][0]
-    abundance = 0.925
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    mass = 7.0160034366*physical_constants["atomic mass constant"][0]
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    abundance = 0.9241
+
+    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+        *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Li7"
 
@@ -641,12 +788,6 @@ class Sodium(AlkaliAtom): #Na23
         page 301. of Ref. [#c7]_.
     """
 
-
-    #: (eV) from Ref. [#c7]_
-    scaledRydbergConstant = 109734.69*1.e2\
-        *physical_constants["inverse meter-electron volt relationship"][0]
-
-
     levelDataFromNIST = "na_NIST_level_data.ascii"
     dipoleMatrixElementFile = "na23_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "na23_quadrupole_matrix_elements.npy"
@@ -661,8 +802,14 @@ class Sodium(AlkaliAtom): #Na23
 
     groundStateN = 3
 
-    mass = 22.989767*physical_constants["atomic mass constant"][0]
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    mass = 22.9897692820*physical_constants["atomic mass constant"][0]
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 1.00
+
+    #: (eV)
+    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+        *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Na23"
 
@@ -691,7 +838,7 @@ class Sodium(AlkaliAtom): #Na23
                     (limits of experimental interpolation)")
             return 0
 
-class Potassium(AlkaliAtom): # K39
+class Potassium39(AlkaliAtom):
     """
         Properties of potassium 39 atoms
     """
@@ -751,9 +898,122 @@ class Potassium(AlkaliAtom): # K39
         quantum defects from Ref. [#c7]_.
     """
 
-    scaledRydbergConstant = 109735.774*1.e2\
+    levelDataFromNIST = "k_NIST_level_data.ascii"
+    dipoleMatrixElementFile = "k_dipole_matrix_elements.npy"
+    quadrupoleMatrixElementFile = "k_quadrupole_matrix_elements.npy"
+
+    precalculatedDB = "k_precalculated.db"
+
+    literatureDMEfilename = 'potassium_literature_dme.csv'
+
+    #: levels that are for smaller n than ground level, but are above in energy due to angular part
+    extraLevels = [[3,2,2+0.5],[3,2,2-0.5]]
+
+    groundStateN = 4
+
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    mass = 38.9637064864*physical_constants["atomic mass constant"][0]
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    abundance = 0.932581
+
+    # in eV
+    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
         *physical_constants["inverse meter-electron volt relationship"][0]
 
+    elementName = "K39"
+
+    def getPressure(self,temperature):
+        """
+            Pressure of atomic vapour at given temperature.
+
+            Uses equation and values from [#c3]_. Values from table 2.
+            (accuracy +- 5%) are used for Na in solid phase. Values from table 3.
+            (accuracy +-1 %) are used for Na in liquid phase.
+
+        """
+
+        if temperature<63.5+273.15:
+            # K is in solid phase (from table 2. of the cited reference  / +- 5%)
+            return 10.0**(2.881+4.961-4646./temperature)*133.322368
+
+        elif temperature<600.+273.15:
+            # K is in liquid phase (from table 3. of the cited reference
+            # "precisely fitted equations / +- 1%)
+            return 10.0**(2.881+8.233-4693./temperature-\
+                          1.2403*log(temperature)/log(10.))*133.322368
+        else:
+            print("ERROR: K vapour pressure above 600 C is unknown \
+                (limits of experimental interpolation)")
+            return 0
+
+class Potassium(Potassium39):
+    """
+      backward compatibility:
+      before only one class for Potassium existed and
+      it corresponded to Potassium 39
+    """
+    pass
+
+
+class Potassium40(AlkaliAtom):
+    """
+        Properties of potassium 40 atoms
+    """
+    # ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)
+    alphaC  = 5.3310
+    """
+        model potential parameters from [#c1]_
+
+    """
+    a1 = [3.56079437, 3.65670429, 4.12713694, 1.42310446]
+    """
+        model potential parameters from [#c1]_
+
+    """
+    a2 = [1.83909642, 1.67520788, 1.79837462, 1.27861156]
+    """
+        model potential parameters from [#c1]_
+
+    """
+    a3 = [-1.74701102, -2.07416615, -1.69935174, 4.77441476]
+    """
+        model potential parameters from [#c1]_
+
+    """
+    a4 = [-1.03237313, -0.89030421, -0.98913582, -0.94829262]
+    """
+        model potential parameters from [#c1]_
+
+    """
+    rc = [0.83167545, 0.85235381, 0.83216907, 6.50294371]
+    """
+        model potential parameters from [#c1]_
+
+    """
+
+
+    Z = 19
+
+    NISTdataLevels = 46
+
+    #: (eV), weighted average of values in Ref. [#c7]_.
+    ionisationEnergy = 35009.8139375*1.e2\
+        *physical_constants["inverse meter-electron volt relationship"][0]
+
+    # quantum defects from Physica Scripta 27:300 (1983)
+    quantumDefect = [[[2.1801985,0.13558,0.0759,0.117,-0.206,0.0],\
+                      [1.713892,0.233294,0.16137,0.5345,-0.234,0.0],\
+                      [0.27697,-1.024911,-0.709174,11.839,-26.689,0.0],\
+                      [0.010098,-0.100224,1.56334,-12.6851,0.0,0.0],\
+                      [0.0,0.0,0.0,0.0,0.0,0.0]],
+                     [[2.1801985,0.13558,0.0759,0.117,-0.206,0.0],\
+                      [1.710848,0.235437,0.11551,1.1015,-2.0356,0.0],\
+                      [0.2771580,-1.025635,-0.59201,10.0053,-19.0244,0.0],\
+                      [0.010098,-0.100224,1.56334,-12.6851,0.0,0.0],\
+                      [0.0,0.0,0.0,0.0,0.0,0.0]]]
+    """
+        quantum defects from Ref. [#c7]_.
+    """
 
     levelDataFromNIST = "k_NIST_level_data.ascii"
     dipoleMatrixElementFile = "k_dipole_matrix_elements.npy"
@@ -768,10 +1028,124 @@ class Potassium(AlkaliAtom): # K39
 
     groundStateN = 4
 
-    mass = 38.963707*physical_constants["atomic mass constant"][0]
-    abundance = 0.932581
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    mass =  39.963998166*physical_constants["atomic mass constant"][0]
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    abundance = 0.000117
 
-    elementName = "K39"
+    #: in eV
+    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+        *physical_constants["inverse meter-electron volt relationship"][0]
+
+    elementName = "K40"
+
+    def getPressure(self,temperature):
+        """
+            Pressure of atomic vapour at given temperature.
+
+            Uses equation and values from [#c3]_. Values from table 2.
+            (accuracy +- 5%) are used for Na in solid phase. Values from table 3.
+            (accuracy +-1 %) are used for Na in liquid phase.
+
+        """
+
+        if temperature<63.5+273.15:
+            # K is in solid phase (from table 2. of the cited reference  / +- 5%)
+            return 10.0**(2.881+4.961-4646./temperature)*133.322368
+
+        elif temperature<600.+273.15:
+            # K is in liquid phase (from table 3. of the cited reference
+            # "precisely fitted equations / +- 1%)
+            return 10.0**(2.881+8.233-4693./temperature-\
+                          1.2403*log(temperature)/log(10.))*133.322368
+        else:
+            print("ERROR: K vapour pressure above 600 C is unknown \
+                (limits of experimental interpolation)")
+            return 0
+
+class Potassium41(AlkaliAtom):
+    """
+        Properties of potassium 41 atoms
+    """
+    # ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)
+    alphaC  = 5.3310
+    """
+        model potential parameters from [#c1]_
+
+    """
+    a1 = [3.56079437, 3.65670429, 4.12713694, 1.42310446]
+    """
+        model potential parameters from [#c1]_
+
+    """
+    a2 = [1.83909642, 1.67520788, 1.79837462, 1.27861156]
+    """
+        model potential parameters from [#c1]_
+
+    """
+    a3 = [-1.74701102, -2.07416615, -1.69935174, 4.77441476]
+    """
+        model potential parameters from [#c1]_
+
+    """
+    a4 = [-1.03237313, -0.89030421, -0.98913582, -0.94829262]
+    """
+        model potential parameters from [#c1]_
+
+    """
+    rc = [0.83167545, 0.85235381, 0.83216907, 6.50294371]
+    """
+        model potential parameters from [#c1]_
+
+    """
+
+
+    Z = 19
+
+    NISTdataLevels = 46
+
+    #: (eV), weighted average of values in Ref. [#c7]_.
+    ionisationEnergy = 35009.8139375*1.e2\
+        *physical_constants["inverse meter-electron volt relationship"][0]
+
+    # quantum defects from Physica Scripta 27:300 (1983)
+    quantumDefect = [[[2.1801985,0.13558,0.0759,0.117,-0.206,0.0],\
+                      [1.713892,0.233294,0.16137,0.5345,-0.234,0.0],\
+                      [0.27697,-1.024911,-0.709174,11.839,-26.689,0.0],\
+                      [0.010098,-0.100224,1.56334,-12.6851,0.0,0.0],\
+                      [0.0,0.0,0.0,0.0,0.0,0.0]],
+                     [[2.1801985,0.13558,0.0759,0.117,-0.206,0.0],\
+                      [1.710848,0.235437,0.11551,1.1015,-2.0356,0.0],\
+                      [0.2771580,-1.025635,-0.59201,10.0053,-19.0244,0.0],\
+                      [0.010098,-0.100224,1.56334,-12.6851,0.0,0.0],\
+                      [0.0,0.0,0.0,0.0,0.0,0.0]]]
+    """
+        quantum defects from Ref. [#c7]_.
+    """
+
+    levelDataFromNIST = "k_NIST_level_data.ascii"
+    dipoleMatrixElementFile = "k_dipole_matrix_elements.npy"
+    quadrupoleMatrixElementFile = "k_quadrupole_matrix_elements.npy"
+
+    precalculatedDB = "k_precalculated.db"
+
+    literatureDMEfilename = 'potassium_literature_dme.csv'
+
+    #: levels that are for smaller n than ground level, but are above in energy due to angular part
+    extraLevels = [[3,2,2+0.5],[3,2,2-0.5]]
+
+    groundStateN = 4
+
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    mass = 40.9618252579*physical_constants["atomic mass constant"][0]
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    abundance = 0.067302
+
+    #: in eV
+    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+        *physical_constants["inverse meter-electron volt relationship"][0]
+
+    elementName = "K41"
 
     def getPressure(self,temperature):
         """

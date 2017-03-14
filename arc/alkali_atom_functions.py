@@ -500,6 +500,9 @@ class AlkaliAtom(object):
         """
             Calculated transition wavelength (in vacuum) in m.
 
+            Returned values is given relative to the centre of gravity of the
+            hyperfine-split states.
+
             Args:
                 n1 (int): principal quantum number of the state **from** which we are going
                 l1 (int): orbital angular momentum of the state **from** which we are going
@@ -519,6 +522,9 @@ class AlkaliAtom(object):
     def getTransitionFrequency(self,n1,l1,j1,n2,l2,j2):
         """
             Calculated transition frequency in Hz
+
+            Returned values is given relative to the centre of gravity of the
+            hyperfine-split states.
 
             Args:
                 n1 (int): principal quantum number of the state **from** which we are going
@@ -541,6 +547,8 @@ class AlkaliAtom(object):
         """
             Energy of the level relative to the ionisation level (in eV)
 
+            Returned energies are with respect to the center of gravity of the
+            hyperfine-split states.
             If `preferQuantumDefects` =False (set during initialization) program
             will try use NIST energy value, if such exists, falling back to energy
             calculation with quantum defects if the measured value doesn't exist.
