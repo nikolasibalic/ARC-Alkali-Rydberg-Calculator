@@ -28,6 +28,12 @@ class Mock(MagicMock):
 
 sys.modules['arc_c_extensions'] = Mock()
 
+filep = os.path.abspath('..')+"/arc/arc_c_extensions.py"
+f= open(filep,"w+")
+f.write("def NumerovWavefunction(args*):"+\
+       "    pass")
+f.close()
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
