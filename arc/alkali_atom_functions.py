@@ -18,13 +18,16 @@ from math import exp,log,sqrt
 #import matplotlib
 #matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import numpy as np
 import re
-#from algebra_nikola import *
+
+from .arc_c_extensions import NumerovWavefunction
 from .wigner import Wigner6j,Wigner3j,wignerD,CG,wignerDmatrix
-from scipy.constants import physical_constants,pi,k,c,h,epsilon_0,hbar
-from scipy.constants import e as elemCharge
+from scipy.constants import physical_constants, pi , epsilon_0, hbar
+from scipy.constants import k as C_k
+from scipy.constants import c as C_c
+from scipy.constants import h as C_h
+from scipy.constants import e as C_e
 from scipy.optimize import curve_fit
 
 # for matrices
@@ -33,35 +36,21 @@ from numpy.linalg import eigvalsh,eig,eigh
 from numpy.ma import conjugate
 from numpy.lib.polynomial import real
 
-#from wigner_rotation import wignerD
-
 from scipy.sparse import csr_matrix
 from scipy.sparse import kron as kroneckerp
 from scipy.sparse.linalg import eigsh
 from scipy.special.specfun import fcoef
 from scipy import floor
-#from scipy.integrate import ode
-import sys
+
+import sys, os
 if sys.version_info > (2,):
     xrange = range
-
-# for calling C++ Numerov
-import shlex
-from subprocess import Popen, PIPE
-#from idlelib import OutputWindow
-
-# START of modules for online (server) execution
-import os,platform
-import datetime
-#from nbconvert.exporters.exporter import FilenameExtension
-# END of modules for online (server) execution
 
 try:
     import cPickle as pickle   # fast, C implementation of the pickle
 except:
-    import pickle
+    import pickle   # Python 3 already has efficient pickle (instead of cPickle)
 import gzip
-
 import csv
 import sqlite3
 
@@ -102,7 +91,7 @@ class AlkaliAtom(object):
 
     sEnergy = 0
     NISTdataLevels = 0
-    scaledRydbergConstant = 0
+    scaledRydbergConstant = 0 #: in eV
 
     quantumDefect = [[[0.0,0.0,0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0,0.0,0.0],\
                       [0.0,0.0,0.0,0.0,0.0,0.0],[0.0,0.0,0.0,0.0,0.0,0.0],\
@@ -153,9 +142,6 @@ class AlkaliAtom(object):
     # SQLite connection and cursor
     conn = False
     c = False
-
-    # Name of precompiled executable for C/C++ module for Numerov integration
-    numerovExec = ""
 
     def __init__(self,preferQuantumDefects=True,cpp_numerov=True):
 
@@ -253,17 +239,6 @@ class AlkaliAtom(object):
         # read Literature values for dipole matrix elements
         self._readLiteratureValues()
 
-        # set correct executable for Numerov precompiled C/C++ module
-        # for the given operating system
-        if (self.numerovExec == ""):
-            ostype = [platform.linux_distribution(),\
-                      platform.mac_ver(),\
-                      platform.win32_ver()]
-            ostypelett = ["linux","mac","win.exe"]
-            for i in xrange(3):
-                if ostype[i][0]:
-                    self.numerovExec = "nvwcpp_"+ostypelett[i]
-
         return
 
     def _databaseInit(self):
@@ -296,7 +271,7 @@ class AlkaliAtom(object):
             Returns:
                 float: atom concentration in :math:`1/m^3`
         """
-        return self.getPressure(temperature)/(k*temperature)
+        return self.getPressure(temperature)/(C_k*temperature)
 
     def getAverageInteratomicSpacing(self,temperature):
         """
@@ -418,55 +393,26 @@ class AlkaliAtom(object):
         """
 
         if self.cpp_numerov:
-            # efficiant implementation in c++; wavefunctions are also memorized
-            today =  datetime.datetime.now()
+            # efficiant implementation in C
 
-            timestamp = '{:%d%S%f}'.format(today)
-            filename = os.path.join(os.path.dirname(os.path.realpath(__file__)),\
-                "temp",\
-                ("%s_rwf_%.0f_%.1f_%.1f_r" %(self.elementName,l,s,j)+timestamp))
-
-            # integration parameters
-            cmd1 = ('%.15e %.15e %.15e %.15e %.15e "%s" '% (innerLimit,outerLimit,\
-                                                          step,0.01,0.01,filename))
             if (l<4):
-                cmd2 = "%d %.1f %.1f %.15e %.15e %.15e %d %.15e %.15e %.15e %.15e %.15e" %\
-                        (l,s,j,stateEnergy,self.alphaC,self.alpha,self.Z,\
-                        self.a1[l],self.a2[l],self.a3[l],self.a4[l],self.rc[l])
+                b = NumerovWavefunction(innerLimit,outerLimit,\
+                                        step,0.01,0.01,\
+                                        l,s,j,stateEnergy,self.alphaC,self.alpha,\
+                                        self.Z,
+                                        self.a1[l],self.a2[l],self.a3[l],self.a4[l],\
+                                        self.rc[l])
             else:
-                cmd2 = "%d %.1f %.1f %.15e %.15e %.15e %d %.15e %.15e %.15e %.15e %.15e" %\
-                        (l,s,j,stateEnergy,self.alphaC,self.alpha,self.Z,0.,0.,0.,0.,0.)
+                b = NumerovWavefunction(innerLimit,outerLimit,\
+                                        step,0.01,0.01,\
+                                        l,s,j,stateEnergy,self.alphaC,self.alpha,\
+                                        self.Z,0.,0.,0.,0.,0.)
 
-            cmd = os.path.join('"'+os.path.dirname(os.path.realpath(__file__)),\
-                    self.numerovExec+'" '+cmd1+" "+cmd2)
-            args = shlex.split( cmd.replace("\\", "\\\\") )
-            proc = Popen(args, stdout=PIPE, stderr=PIPE, \
-                         shell = (self.numerovExec == "nvwcpp_win.exe"))
-            out, err = proc.communicate()
-            exitcode = proc.returncode
-            if (exitcode!=0):
-                print("ERROR: C++ implementation of Numerov calculation of the \
-                        wavefunction doesn't work. Error is:")
-                print(err)
-                print("Try recompiling C++ code, or initialize atoms with cpp_numerov=False")
-                print("e.g. atom = Rubidium(cpp_numerov=False)")
-                print("NOTE: this will significantly slow down calculation of new \
-                        dipole matrix elements. Recommended option is compilation\
-                        of the C++ code. See documentation for more details")
-                exit()
 
-            fileRoot = ""
-            a = np.fromfile(filename+"_rad.dat", dtype=np.dtype('f8'), count=-1, sep='')
-            b = np.fromfile(filename+"_sol.dat", dtype=np.dtype('f8'), count=-1, sep='')
-            divergence = np.fromfile(filename+"_divergnece.dat",\
-                                     dtype=np.dtype('i4'), count=-1, sep='')[0]
-
-            os.remove(filename+"_rad.dat")
-            os.remove(filename+"_sol.dat")
-            os.remove(filename+"_divergnece.dat")
-
-            btemp = b[divergence:]
-            suma = step*sum(btemp**2)
+            totalSteps = (outerLimit - innerLimit)//step
+            a = np.linspace(outerLimit-totalSteps*step,outerLimit,totalSteps)
+            divergence = 0
+            suma = step*sum(b**2)
             b = b/(sqrt(suma))
         else:
             # full implementation in Python
@@ -554,6 +500,9 @@ class AlkaliAtom(object):
         """
             Calculated transition wavelength (in vacuum) in m.
 
+            Returned values is given relative to the centre of gravity of the
+            hyperfine-split states.
+
             Args:
                 n1 (int): principal quantum number of the state **from** which we are going
                 l1 (int): orbital angular momentum of the state **from** which we are going
@@ -568,11 +517,14 @@ class AlkaliAtom(object):
                     level from which we are going is **above** the level to which we are
                     going.
         """
-        return (h*c)/((self.getEnergy(n2, l2, j2)-self.getEnergy(n1, l1, j1))*elemCharge)
+        return (C_h*C_c)/((self.getEnergy(n2, l2, j2)-self.getEnergy(n1, l1, j1))*C_e)
 
     def getTransitionFrequency(self,n1,l1,j1,n2,l2,j2):
         """
             Calculated transition frequency in Hz
+
+            Returned values is given relative to the centre of gravity of the
+            hyperfine-split states.
 
             Args:
                 n1 (int): principal quantum number of the state **from** which we are going
@@ -588,13 +540,15 @@ class AlkaliAtom(object):
                     level from which we are going is **above** the level to which we are
                     going.
         """
-        return (self.getEnergy(n2, l2, j2)-self.getEnergy(n1, l1, j1))*elemCharge/h
+        return (self.getEnergy(n2, l2, j2)-self.getEnergy(n1, l1, j1))*C_e/C_h
 
 
     def getEnergy(self,n,l,j):
         """
             Energy of the level relative to the ionisation level (in eV)
 
+            Returned energies are with respect to the center of gravity of the
+            hyperfine-split states.
             If `preferQuantumDefects` =False (set during initialization) program
             will try use NIST energy value, if such exists, falling back to energy
             calculation with quantum defects if the measured value doesn't exist.
@@ -973,7 +927,6 @@ class AlkaliAtom(object):
 
 
         """
-        #q = -mj2+mj1
         if abs(q)>1.1:
             return 0
         return (-1)**(int(j1-mj1))*\
@@ -982,7 +935,8 @@ class AlkaliAtom(object):
 
     def getRabiFrequency(self,n1,l1,j1,mj1,n2,l2,j2,q,laserPower,laserWaist):
         """
-            Returns a Rabi frequency for resonant excitation
+            Returns a Rabi frequency for resonantly driven atom in a
+            center of TEM00 mode of a driving field
 
             Args:
                 n1,l1,j1,mj1 : state from which we are driving transition
@@ -998,14 +952,33 @@ class AlkaliAtom(object):
                     Frequency in rad :math:`^{-1}`. If you want frequency in Hz,
                     divide by returned value by :math:`2\pi`
         """
+        maxIntensity = 2*laserPower/(pi* laserWaist**2)
+        electricField = sqrt(2.*maxIntensity/(C_c*epsilon_0))
+        return self.getRabiFrequency2(n1,l1,j1,mj1,n2,l2,j2,q,electricField)
+
+    def getRabiFrequency2(self,n1,l1,j1,mj1,n2,l2,j2,q,electricFieldAmplitude):
+        """
+            Returns a Rabi frequency for resonant excitation with a given
+            electric field amplitude
+
+            Args:
+                n1,l1,j1,mj1 : state from which we are driving transition
+                n2,l2,j2 : state to which we are driving transition
+                q : laser polarization (-1,0,1 correspond to :math:`\sigma^-`,
+                    :math:`\pi` and :math:`\sigma^+` respectively)
+                electricFieldAmplitude : amplitude of electric field driving (V/m)
+
+            Returns:
+                float:
+                    Frequency in rad :math:`^{-1}`. If you want frequency in Hz,
+                    divide by returned value by :math:`2\pi`
+        """
         mj2 = mj1+q
         if abs(mj2)-0.1>j2:
             return 0
         dipole = self.getDipoleMatrixElement(n1,l1,j1,mj1,n2,l2,j2,mj2,q)*\
-                elemCharge*physical_constants["Bohr radius"][0]
-        maxIntensity = 2*laserPower/(pi* laserWaist**2)
-        electricField = sqrt(2.*maxIntensity/(c*epsilon_0))
-        freq = electricField*abs(dipole)/hbar
+                C_e*physical_constants["Bohr radius"][0]
+        freq = electricFieldAmplitude*abs(dipole)/hbar
         return freq
 
     def getC6term(self,n,l,j,n1,l1,j1,n2,l2,j2):
@@ -1082,9 +1055,9 @@ class AlkaliAtom(object):
         """
         d1 = self.getRadialMatrixElement(n,l,j,n1,l1,j1)
         d2 = self.getRadialMatrixElement(n,l,j,n2,l2,j2)
-        d1d2 = 1/(4.0*pi*epsilon_0)*d1*d2*elemCharge**2*\
+        d1d2 = 1/(4.0*pi*epsilon_0)*d1*d2*C_e**2*\
                 (physical_constants["Bohr radius"][0])**2
-        return -d1d2**2/(elemCharge*(self.getEnergy(n1,l1,j1)+\
+        return -d1d2**2/(C_e*(self.getEnergy(n1,l1,j1)+\
                                      self.getEnergy(n2,l2,j2)-\
                                      2*self.getEnergy(n,l,j)))
 
@@ -1113,7 +1086,7 @@ class AlkaliAtom(object):
         """
         d1 = self.getRadialMatrixElement(n,l,j,n1,l1,j1)
         d2 = self.getRadialMatrixElement(n,l,j,n2,l2,j2)
-        d1d2 = 1/(4.0*pi*epsilon_0)*d1*d2*elemCharge**2*\
+        d1d2 = 1/(4.0*pi*epsilon_0)*d1*d2*C_e**2*\
                 (physical_constants["Bohr radius"][0])**2
         return d1d2
 
@@ -1139,7 +1112,7 @@ class AlkaliAtom(object):
             Returns:
                 float:  energy defect (SI units: J)
         """
-        return elemCharge*(self.getEnergy(n1,l1,j1)+self.getEnergy(n2,l2,j2)-\
+        return C_e*(self.getEnergy(n1,l1,j1)+self.getEnergy(n2,l2,j2)-\
                            2*self.getEnergy(n,l,j))
 
     def getEnergyDefect2(self,n,l,j,nn,ll,jj,n1,l1,j1,n2,l2,j2):
@@ -1172,7 +1145,7 @@ class AlkaliAtom(object):
             Returns:
                 float:  energy defect (SI units: J)
         """
-        return elemCharge*(self.getEnergy(n1,l1,j1)+self.getEnergy(n2,l2,j2)-\
+        return C_e*(self.getEnergy(n1,l1,j1)+self.getEnergy(n2,l2,j2)-\
                            self.getEnergy(n,l,j)-self.getEnergy(nn,ll,jj))
 
     def updateDipoleMatrixElementsFile(self):
@@ -1257,12 +1230,12 @@ class AlkaliAtom(object):
         if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2)>0):
             dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(n1, l1, j1,\
                                                                         n2, l2, j2)*\
-                                elemCharge*(physical_constants["Bohr radius"][0])
+                                C_e*(physical_constants["Bohr radius"][0])
 
         else:
             dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(n2, l2, j2,\
                                                                         n1, l1, j1)*\
-                                elemCharge*(physical_constants["Bohr radius"][0])
+                                C_e*(physical_constants["Bohr radius"][0])
             degeneracyTerm = (2.*j2+1.0)/(2.*j1+1.)
 
         omega = abs(2.0*pi*self.getTransitionFrequency(n1, l1, j1, n2, l2, j2))
@@ -1272,11 +1245,11 @@ class AlkaliAtom(object):
             modeOccupationTerm = 1.
 
         # only possible by absorbing thermal photons ?
-        if (hbar*omega < 100*k*temperature):
-            modeOccupationTerm += 1./(exp(hbar*omega/(k*temperature))-1.)
+        if (hbar*omega < 100*C_k*temperature):
+            modeOccupationTerm += 1./(exp(hbar*omega/(C_k*temperature))-1.)
 
         return omega**3*dipoleRadialPart**2/\
-            (3*pi*epsilon_0*hbar*c**3)\
+            (3*pi*epsilon_0*hbar*C_c**3)\
             *degeneracyTerm*modeOccupationTerm
 
     def getStateLifetime(self,n,l,j,temperature=0,includeLevelsUpTo = 0):
@@ -1323,7 +1296,7 @@ class AlkaliAtom(object):
 
         transitionRate = 0.
 
-        for nto in xrange(self.groundStateN,includeLevelsUpTo+1):
+        for nto in xrange(max(self.groundStateN,l),includeLevelsUpTo+1):
 
             # sum over all l-1
             if l>0:
@@ -1339,6 +1312,7 @@ class AlkaliAtom(object):
                                                              nto, lto, jto,\
                                                              temperature)
 
+        for nto in xrange(max(self.groundStateN,l+2),includeLevelsUpTo+1):
             # sum over all l+1
             lto = l+1
             if lto -0.5-0.1< j :
@@ -1400,7 +1374,7 @@ class AlkaliAtom(object):
             Returns:
                 float: average 1D speed (m/s)
         """
-        return sqrt(2.*k*temperature/self.mass)
+        return sqrt(2.*C_k*temperature/self.mass)
 
     def _readLiteratureValues(self):
         # clear previously saved results, since literature file
@@ -1733,7 +1707,7 @@ def _atomLightAtomCoupling(n,l,j,nn,ll,jj,n1,l1,j1,n2,l2,j2,atom):
 
     ## TO-DO: check exponent of the Boht radius (from where it comes?!)
 
-    coupling = elemCharge**2/(4.0*pi*epsilon_0)*radial1*radial2*\
+    coupling = C_e**2/(4.0*pi*epsilon_0)*radial1*radial2*\
                 (physical_constants["Bohr radius"][0])**(c1+c2)
     return coupling
 
@@ -1862,8 +1836,6 @@ def singleAtomState(j,m):
                                        shape=(round(2.0*j+1.0,0),1))
 
 def compositeState(s1,s2):
-    #return np.kron(s1,s2)#kroneckerp(s1, s2)
-
     a = zeros((s1.shape[0]*s2.shape[0],1),dtype=np.complex128)
     index = 0
     for br1 in xrange(s1.shape[0]):
@@ -2043,7 +2015,6 @@ class _EFieldCoupling:
          ''',(l1,2*j1,j1+mj1,l2,j2*2,j2+mj2))
         answer = self.c.fetchone()
         if (answer):
-            #print("cache hit!")
             return answer[0]
 
         # if it is not calculated before, calculate now
@@ -2078,9 +2049,3 @@ class _EFieldCoupling:
         return coupling
 
 # =================== E FIELD Coupling (END) ===================
-
-# =================== B FIELD Coupling (START) ===================
-
-# only available in dev version
-
-# =================== B FIELD Coupling (END) ===================
