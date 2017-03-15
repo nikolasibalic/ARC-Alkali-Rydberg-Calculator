@@ -144,7 +144,7 @@ class AlkaliAtom(object):
 
     def __init__(self,preferQuantumDefects=True,cpp_numerov=True):
 
-        # should the wavefunction be calculated with Numerov algorithm implemented in C++; if false, it uses Python implementation that is much slower
+        # should the wavefunction be calculated with Numerov algorithm implemented in C; if false, it uses Python implementation that is much slower
         self.cpp_numerov = cpp_numerov
         self.preferQuantumDefects = preferQuantumDefects
 
