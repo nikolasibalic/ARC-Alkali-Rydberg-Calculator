@@ -21,7 +21,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import re
 
-from .arc_c_extensions import NumerovWavefunction
 from .wigner import Wigner6j,Wigner3j,wignerD,CG,wignerDmatrix
 from scipy.constants import physical_constants, pi , epsilon_0, hbar
 from scipy.constants import k as C_k
@@ -150,6 +149,9 @@ class AlkaliAtom(object):
         self.preferQuantumDefects = preferQuantumDefects
 
         self._databaseInit()
+
+        if self.cpp_numerov:
+            from .arc_c_extensions import NumerovWavefunction
 
         # load dipole matrix elements previously calculated
         data=[]

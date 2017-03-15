@@ -16,12 +16,10 @@ Download the ARC library/package
 
 It is important that package is stored somewhere where user has write permissions, so that it can update the databases with atomic properties.
 
-That is all, enjoy using ARC package. Check :ref:`get-started-page` to see some ideas where to start. If you are **not** using 64-bit Windows/Mac/Linux, please continue reading below.
 
 
-
-Precompiled modules on unsupported operating systems
-----------------------------------------------------
+Compiling C extension
+---------------------
 
 Optimized version of the Numerov is provided as the C code `arc_c_extensions.c`.
 Note that path to arc directory **should not contain spaces** in order
@@ -53,3 +51,7 @@ Alternative solution, if you don't want to compile anything, is to use pure Pyth
     atom = Rubidium(cpp_numerov=False)
 
 This is not recommended option for complex calculations, since it will run much more slowly then optimized C version, but is fine if you need just a few numbers.
+
+**Finally...**
+
+That is all, enjoy using ARC package. Check :ref:`get-started-page` to see some ideas where to start.
