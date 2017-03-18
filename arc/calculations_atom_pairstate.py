@@ -861,10 +861,12 @@ class PairStateInteractions:
             :obj:`matR[0]` stores dipole-quadrupole couplings etc.
 
             Args:
-                theta (float): relative orientation of the two atoms (ADD FIGURE)
-                phi (float): relative orientation of the two atoms (ADD FIGURE)
+                theta (float):  relative orientation of the two atoms
+                    (see figure on top of the page)
+                phi (float): relative orientation of the two atoms (see figure
+                    on top of the page)
                 nRange (int): how much below and above the given principal quantum number
-                    of the pair state we should be looking? (CORRECT THIS FOR TWO DIFFERNET STATES)
+                    of the pair state we should be looking?
                 lrange (int): what is the maximum angular orbital momentum state that we are including
                     in calculation
                 energyDelta (float): what is maximum energy difference ( :math:`\\Delta E/h` in Hz)
