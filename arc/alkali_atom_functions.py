@@ -152,6 +152,7 @@ class AlkaliAtom(object):
 
         if self.cpp_numerov:
             from .arc_c_extensions import NumerovWavefunction
+            self.NumerovWavefunction = NumerovWavefunction
 
         # load dipole matrix elements previously calculated
         data=[]
@@ -398,14 +399,14 @@ class AlkaliAtom(object):
             # efficiant implementation in C
 
             if (l<4):
-                b = NumerovWavefunction(innerLimit,outerLimit,\
+                b = self.NumerovWavefunction(innerLimit,outerLimit,\
                                         step,0.01,0.01,\
                                         l,s,j,stateEnergy,self.alphaC,self.alpha,\
                                         self.Z,
                                         self.a1[l],self.a2[l],self.a3[l],self.a4[l],\
                                         self.rc[l])
             else:
-                b = NumerovWavefunction(innerLimit,outerLimit,\
+                b = self.NumerovWavefunction(innerLimit,outerLimit,\
                                         step,0.01,0.01,\
                                         l,s,j,stateEnergy,self.alphaC,self.alpha,\
                                         self.Z,0.,0.,0.,0.,0.)
