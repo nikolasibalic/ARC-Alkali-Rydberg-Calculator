@@ -1057,7 +1057,7 @@ class PairStateInteractions:
 
     def diagonalise(self,rangeR,noOfEigenvectors,
                          drivingFromState = [0,0,0,0,0],
-                         eigenvectorsDetuning = 0.,
+                         eigenstateDetuning = 0.,
                          progressOutput = False,\
                          debugOutput = False):
         """
@@ -1080,7 +1080,7 @@ class PairStateInteractions:
                 noOfEigenvectors (int): number of eigen vectors closest to the
                     energy of the original (unperturbed) pair state. Has to be
                     smaller then the total number of states.
-                eigenvectorsDetuning (float, optional): Default is 0. This
+                eigenstateDetuning (float, optional): Default is 0. This
                     specifies detuning from the initial pair-state (in Hz) around which we want to find `noOfEigenvectors` eigenvectors.
                     This is useful when looking only for couple of off-resonant features.
                 drivingFromState ([int,int,float,float,int]): Optional. State
@@ -1184,7 +1184,7 @@ class PairStateInteractions:
                 coupling.append(thisCoupling)
 
             print("Maximal coupling from a state")
-            print("is to a state ",self.maxCoupledStateIndex)
+            print("is to a state ",self.basisStates[self.maxCoupledStateIndex])
             print("is equal to %.3e a_0 e" % self.maxCoupling)
 
         if progressOutput:
@@ -1208,7 +1208,7 @@ class PairStateInteractions:
 
             # uses ARPACK algorithm to find only noOfEigenvectors eigenvectors
             # sigma specifies center frequency (in GHz)
-            ev, egvector = eigsh(m, noOfEigenvectors, sigma= eigenvectorsDetuning*1.e-9, which='LM',tol=1E-6)
+            ev, egvector = eigsh(m, noOfEigenvectors, sigma= eigenstateDetuning*1.e-9, which='LM',tol=1E-6)
 
             self.y.append(ev)
 
