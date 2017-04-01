@@ -34,10 +34,10 @@ If precompiled binaries don't work, please contact developers. Compiling Numpy C
 extensions on Windows is a bit complicated due to use of C89 standard. Procedure
 (just to outline approach, althought we recommend contacting ARC developers) is
 the following.
-One needs to use `MSVC compiler <http://www.microsoft.com/en-us/download/details.aspx?id=44266>_`
+One needs to use `MSVC compiler <http://www.microsoft.com/en-us/download/details.aspx?id=44266>`_
 in order to compile Numpy extension on Python 2.7 under Windows.
 After installation of the compiler, find in Start menu "Visual C++ 2008 32-bit Command Prompt"
- (for 32-bit Python) or "Visual C++ 2008 64-bit Command Prompt" (for 64-bit Python).
+(for 32-bit Python) or "Visual C++ 2008 64-bit Command Prompt" (for 64-bit Python).
 Set the following variables set in the command prompt environment::
 
   SET DISTUTILS_USE_SDK=1
