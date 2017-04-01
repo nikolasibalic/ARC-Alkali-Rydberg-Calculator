@@ -9,7 +9,7 @@ Install Python and packages for scientific computing in Python (scipy, numpy, ma
 Download the ARC library/package
 --------------------------------
 
-`Download the module from the main site <https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator>`_, unzip the archive and set the folder somewhere within the Python package search path or directly in your project directory. Simply import and use the module::
+`Download latest release for your operating system <https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/releases>`_, unzip the archive and set the folder somewhere within the Python package search path or directly in your project directory. Simply import and use the module::
 
     >>> from arc import *
     >>> # write your code that uses ARC then.
@@ -22,14 +22,32 @@ Compiling C extension
 ---------------------
 
 Optimized version of the Numerov is provided as the C code `arc_c_extensions.c`.
+**You don't need to perform this step** of manual compilation of that code if you
+followed recommended installation instruction by downloading **precompiled
+binary distribution** for the latest `release <https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/releases>`_ .
 Note that path to arc directory **should not contain spaces** in order
 to setupc.py script to work.
 
 **For Windows users**
 
-Download and install `MinGW <http://www.mingw.org/>`_ compiler, or some other distribution of GNU C compiler. In the command prompt, navigate to the arc folder where `setupc.py` file is located and execute::
+If precompiled binaries don't work, please contact developers. Compiling Numpy C
+extensions on Windows is a bit complicated due to use of C89 standard. Procedure
+(just to outline approach, althought we recommend contacting ARC developers) is
+the following.
+One needs to use `MSVC compiler <http://www.microsoft.com/en-us/download/details.aspx?id=44266>_`
+in order to compile Numpy extension on Python 2.7 under Windows.
+After installation of the compiler, find in Start menu "Visual C++ 2008 32-bit Command Prompt"
+ (for 32-bit Python) or "Visual C++ 2008 64-bit Command Prompt" (for 64-bit Python).
+Set the following variables set in the command prompt environment::
 
-    python setupc.py build_ext --inplace
+  SET DISTUTILS_USE_SDK=1
+  SET MSSdk=1
+  python setupc.py build_ext --inplace
+
+However, since this compiler follows only C89, not C99 stadard, C code has to be
+adjusted. Please contact ARC developers if you want to get C89 code, and adjusted
+setupc.py script.
+
 
 **For Linux users**
 
