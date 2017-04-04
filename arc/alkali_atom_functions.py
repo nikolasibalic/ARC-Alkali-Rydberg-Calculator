@@ -839,7 +839,7 @@ class AlkaliAtom(object):
             Returns:
                 float:
                     reduced dipole matrix element in Steck notation
-                    :math:`\\langle j || er || j' \\rangle` (:math:`a_0 e`).
+                    :math:`( j || er || j' )` (:math:`a_0 e`).
 
             .. [1] Daniel A. Steck, "Cesium D Line Data," (revision 2.0.1, 2 May 2008).
                 http://steck.us/alkalidata
@@ -877,7 +877,7 @@ class AlkaliAtom(object):
             Returns:
                 float:
                     reduced dipole matrix element in :math:`L` basis
-                    :math:`( l || er || l' )` (:math:`a_0 e`).
+                    :math:`\\langle l || er || l' \\rangle` (:math:`a_0 e`).
         """
 
         return (-1)**l1*sqrt((2.0*l1+1.0)*(2.0*l2+1.0))*\
