@@ -325,8 +325,8 @@ class wignerDmatrix:
         jrange = np.linspace(-j,j,int(2*j)+1)
         maxIndex = int(2*j)+1
 
-        for index1 in range(maxIndex):
-            for index2 in range(maxIndex):
+        for index1 in xrange(maxIndex):
+            for index2 in xrange(maxIndex):
                 mat[index1,index2] = wignerD(j,jrange[index1],jrange[index2])\
                                             (self.phi,self.theta,self.gamma)
 

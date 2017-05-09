@@ -40,13 +40,14 @@ mpl.rcParams['ytick.major.size'] = 8
 mpl.rcParams['xtick.minor.size'] = 4
 mpl.rcParams['ytick.minor.size'] = 4
 
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter
-
 import numpy as np
 import re
 from .wigner import Wigner6j,Wigner3j,CG,wignerDmatrix
-from scipy.constants import physical_constants,pi,k,c,h,epsilon_0,hbar
-from scipy.constants import e as elemCharge
+from scipy.constants import physical_constants, pi , epsilon_0, hbar
+from scipy.constants import k as C_k
+from scipy.constants import c as C_c
+from scipy.constants import h as C_h
+from scipy.constants import e as C_e
 from scipy.optimize import curve_fit
 
 # for matrices
@@ -59,7 +60,6 @@ from scipy.sparse.linalg import eigsh
 from scipy.special.specfun import fcoef
 from scipy import floor
 
-#from scipy.integrate import ode
 from .alkali_atom_functions import *
 from .alkali_atom_functions import _EFieldCoupling,_atomLightAtomCoupling
 from .calculations_atom_single import StarkMap
@@ -87,10 +87,13 @@ class PairStateInteractions:
 
         Args:
             atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-                :obj:`alkali_atom_data.Lithium6`,
+                :obj:`alkali_atom_data.Lithium7`,
                 :obj:`alkali_atom_data.Sodium`,
-                :obj:`alkali_atom_data.Potassium`,
-                :obj:`alkali_atom_data.Rubidium`,
+                :obj:`alkali_atom_data.Potassium39`,
+                :obj:`alkali_atom_data.Potassium40`,
+                :obj:`alkali_atom_data.Potassium41`,
+                :obj:`alkali_atom_data.Rubidium85`,
+                :obj:`alkali_atom_data.Rubidium87`,
                 :obj:`alkali_atom_data.Caesium` }
                 Select the alkali metal for energy level
                 diagram calculation
@@ -112,6 +115,34 @@ class PairStateInteractions:
             .. [1] T. G Walker, M. Saffman, PRA **77**, 032723 (2008)
                 https://doi.org/10.1103/PhysRevA.77.032723
 
+        Examples:
+            **Advanced interfacing of pair-state interactions calculations
+            (PairStateInteractions class).** This
+            is an advanced example intended for building up extensions to the
+            existing code. If you want to directly access the pair-state
+            interaction matrix, constructed by :obj:`defineBasis`,
+            you can assemble it easily from diagonal part
+            (stored in :obj:`matDiagonal` ) and off-diagonal matrices whose
+            spatial dependence is :math:`R^{-3},R^{-4},R^{-5}` stored in that
+            order in :obj:`matR`. Basis states are stored in :obj:`basisStates` array.
+
+            >>> from arc import *
+            >>> calc = PairStateInteractions(Rubidium(), 60,0,0.5, 60,0,0.5, 0.5,0.5,interactionsUpTo = 1)
+            >>> # theta=0, phi = 0, range of pqn, range of l, deltaE = 25e9
+            >>> calc.defineBasis(0 ,0 , 5, 5, 25e9, progressOutput=True)
+            >>> # now calc stores interaction matrix and relevant basis
+            >>> # we can access this directly and generate interaction matrix
+            >>> # at distance rval :
+            >>> rval = 4  # in mum
+            >>> matrix = calc.matDiagonal
+            >>> rX = (rval*1.e-6)**3
+            >>> for matRX in self.matR:
+            >>>     matrix = matrix + matRX/rX
+            >>>     rX *= (rval*1.e-6)
+            >>> # matrix variable now holds full interaction matrix for
+            >>> # interacting atoms at distance rval calculated in
+            >>> # pair-state basis states can be accessed as
+            >>> basisStates = calc.basisStates
     """
 
     dataFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),\
@@ -157,17 +188,19 @@ class PairStateInteractions:
 
         # ======================= Full basis (resolving mj) =======================
 
-        self.states = []
+        self.basisStates = []
         """
-            List of pair-states for calculation. Each state is array
-            [n1,l1,j1,mj1,n2,l2,j2,mj2] corresponding to
-            :math:`|n_1,l_1,j_1,m_{j1},n_2,l_2,j_2,m_{j2}\\rangle` state
+            List of pair-states for calculation. In the form
+            [[n1,l1,j1,mj1,n2,l2,j2,mj2], ...].
+            Each state is an array [n1,l1,j1,mj1,n2,l2,j2,mj2] corresponding to
+            :math:`|n_1,l_1,j_1,m_{j1},n_2,l_2,j_2,m_{j2}\\rangle` state.
+            Calculated by :obj:`defineBasis`.
         """
         self.matrixElement = []
         """
             `matrixElement[i]` gives index of state in :obj:`channel` basis (that
             doesn't resolve :obj:`m_j` states), for the given index `i` of the
-            state in :obj:`states`  ( :math:`m_j` resolving) basis.
+            state in :obj:`basisStates`  ( :math:`m_j` resolving) basis.
         """
 
         # variuos parts of interaction matrix in pair-state basis
@@ -176,33 +209,24 @@ class PairStateInteractions:
             Part of interaction matrix in pair-state basis that doesn't depend
             on inter-atomic distance. E.g. diagonal elements of the interaction
             matrix, that describe energies of the pair states in unperturbed basis,
-            will be stored here. Calculated by :obj:`defineBasis`.
+            will be stored here. Basis states are stored in :obj:`basisStates`.
+            Calculated by :obj:`defineBasis`.
         """
-        self.matR3 = []
+        self.matR = []
         """
-            Part of the interaction matrix in pair-state basis that scales as
-            :math:`1/R^3` with distance. E.g. dipole-dipole interaction
-            coefficients ( :math:`C_3`) will be stored here.
-            will be stored here. Calculated by :obj:`defineBasis`.
-        """
-        self.matR4 = []
-        """
-            Part of the interaction matrix in pair-state basis that scales as
-            :math:`1/R^3` with distance. E.g. dipole-quadrupole interaction
-            coefficients ( :math:`C_4`) will be stored here.
-            will be stored here. Calculated by :obj:`defineBasis`.
-        """
-        self.matR5 = []
-        """
-            Part of the interaction matrix in pair-state basis that scales as
-            :math:`1/R^5` with distance. E.g. quadrupole-quadrupole interaction
-            coefficients ( :math:`C_5`) will be stored here.
-            will be stored here
+            Stores interaction matrices in pair-state basis
+            that scale as :math:`1/R^3`, :math:`1/R^4` and :math:`1/R^5`
+            with distance in  :obj:`matR[0]`, :obj:`matR[1]` and :obj:`matR[2]`
+            respectively. These matrices correspond to dipole-dipole
+            ( :math:`C_3`), dipole-quadrupole ( :math:`C_4`) and
+            quadrupole-quadrupole ( :math:`C_5`) interactions
+            coefficients. Basis states are stored in :obj:`basisStates`.
+            Calculated by :obj:`defineBasis`.
         """
         self.originalPairStateIndex = 0
         """
             index of the original n,l,j,m1,nn,ll,jj,m2 pair-state in the
-            :obj:`states` basis.
+            :obj:`basisStates` basis.
         """
 
         self.matE = []
@@ -309,11 +333,8 @@ class PairStateInteractions:
                             sumPol = sumPol + fcp[c1,c2,p+2]*CG(j,m,c1,p,j1,m1)*CG(jj,mm,c2,-p,j2,m2)
                         am[index1,index2] = elem*sumPol
 
-        #am = csr_matrix(am)
         index = len(self.savedAngularMatrix_matrix)
 
-        #print("inserting")
-        #print([l,j*2,ll,jj*2,l1,j1*2,l2,j2*2,index])
         self.c.execute(''' INSERT INTO pair_angularMatrix
                             VALUES (?,?, ?,?, ?,?, ?,?, ?)''',\
                        (l,j*2,ll,jj*2,l1,j1*2,l2,j2*2,index) )
@@ -364,11 +385,9 @@ class PairStateInteractions:
 
     def __loadAngularMatrixElementsFile(self):
 
-        fileHandle = gzip.GzipFile(os.path.join(self.dataFolder,
+        fileHandle =  gzip.GzipFile(os.path.join(self.dataFolder,\
                                                  self.angularMatrixFile_meta),'rb')
-
-        data = pickle.load(fileHandle, encoding='bytes')
-        #print('data = ', data)
+        data = pickle.load(fileHandle)
         fileHandle.close()
 
         data[:,1] *= 2  # j1 -> 2 r j1
@@ -401,7 +420,7 @@ class PairStateInteractions:
         try:
             fileHandle =  gzip.GzipFile(os.path.join(self.dataFolder,\
                                                     self.angularMatrixFile),'rb')
-            self.savedAngularMatrix_matrix = pickle.load(fileHandle, encoding='bytes')
+            self.savedAngularMatrix_matrix = pickle.load(fileHandle)
             fileHandle.close()
         except :
             print("Note: No saved angular matrix files to be loaded.")
@@ -409,7 +428,7 @@ class PairStateInteractions:
 
 
     def __isCoupled(self,n,l,j,nn,ll,jj,n1,l1,j1,n2,l2,j2,limit):
-        if (abs(self.atom.getEnergyDefect2(n,l,j,nn,ll,jj,n1,l1,j1,n2,l2,j2))/h<limit) and\
+        if (abs(self.atom.getEnergyDefect2(n,l,j,nn,ll,jj,n1,l1,j1,n2,l2,j2))/C_h<limit) and\
                 not (n==n1 and nn==n2 and l==l1 and ll==l2 and j==j1 and jj==j2) \
                 and not ((abs(l1-l)!=1 and abs(j-0.5)<0.1 and abs(j1-0.5)<0.1) or
                          (abs(l2-ll)!=1 and abs(jj-0.5)<0.1 and abs(j2-0.5)<0.1)):
@@ -444,13 +463,11 @@ class PairStateInteractions:
         # k defines range of n' = [n-k, n+k]
         dimension = 0
 
-
-        # which states/channels contribute significantly in the second order pertubation?
+        # which states/channels contribute significantly in the second order perturbation?
         states = []
 
         # original pairstate index
         opi = 0
-
 
         # this numbers are conserved if we use only dipole-dipole interactions
         Lmod2 = ((l+ll) % 2)
@@ -484,7 +501,7 @@ class PairStateInteractions:
                                 ed = self.atom.getEnergyDefect2(n,l,j,\
                                                                nn,ll,jj,\
                                                                n1,l1,j1,\
-                                                               n2,l2,j2)/h
+                                                               n2,l2,j2)/C_h
                                 if  (abs(ed)<limit  \
                                     and (not (self.interactionsUpTo==1) or\
                                          (Lmod2 == ((l1+l2)%2) ) )
@@ -506,9 +523,6 @@ class PairStateInteractions:
                                     dimension = dimension +1
                                 j2 = j2+1.0
                             j1 = j1+1.0
-
-        #print(opi)
-        #print(states[opi])
 
         if debugOutput:
             print("\tMatrix dimension\t=\t",dimension)
@@ -536,16 +550,12 @@ class PairStateInteractions:
             ed =  self.atom.getEnergyDefect2(states[opi][0],states[opi][1],states[opi][2],
                                           states[opi][3],states[opi][4],states[opi][5],
                                           states[i][0],states[i][1],states[i][2],
-                                          states[i][3],states[i][4],states[i][5])/h*1.0e-9
+                                          states[i][3],states[i][4],states[i][5])/C_h*1.0e-9
 
             pairState1 = "|"+printStateString(states[i][0],states[i][1],states[i][2])+\
                         ","+printStateString(states[i][3],states[i][4],states[i][5])+">"
 
             states[i].append(ed)  # energy defect of given state
-            #m[i,i] = ed
-            #m_value.append(ed)
-            #m_row.append(i)
-            #m_column.append(j)
 
             for j in xrange(i+1,dimension):
 
@@ -571,7 +581,7 @@ class PairStateInteractions:
                     couplingStregth = _atomLightAtomCoupling(states[i][0],states[i][1],states[i][2],
                                             states[i][3],states[i][4],states[i][5],
                                             states[j][0],states[j][1],states[j][2],
-                                             states[j][3],states[j][4],states[j][5],self.atom)/h*1.0e-9 # /h*1.0e9
+                                             states[j][3],states[j][4],states[j][5],self.atom)/C_h*1.0e-9
 
                     couplingMatConstructor[coupled-2][0].append(couplingStregth)
                     couplingMatConstructor[coupled-2][1].append(i)
@@ -664,9 +674,9 @@ class PairStateInteractions:
 
         return 2.*(r1+r2)*(physical_constants["Bohr radius"][0]*1.e6)
 
-    def getC6pertubatively(self,theta,phi,nRange,energyDelta):
+    def getC6perturbatively(self,theta,phi,nRange,energyDelta):
         """
-            Calculates :math:`C_6` from second order pertubation theory.
+            Calculates :math:`C_6` from second order perturbation theory.
 
             This calculation is faster then full diagonalization, but it is valid
             only far from the so called spaghetti region that occurs when atoms
@@ -769,7 +779,6 @@ class PairStateInteractions:
             for n2 in xrange(max(self.nn-nRange,1),self.nn+nRange+1):
                 for l1 in xrange(lmin1,self.l+2,2):
                     for l2 in xrange(lmin2,self.ll+2,2):
-                        #print(n1," ",n2," --- ",l1," ",l2)
                         j1 = l1-0.5
                         if l1 == 0:
                             j1 = 0.5
@@ -782,7 +791,7 @@ class PairStateInteractions:
                                 getEnergyDefect = self.atom.getEnergyDefect2(self.n,self.l,self.j,\
                                                                   self.nn,self.ll,self.jj,\
                                                                   n1,l1,j1,\
-                                                                  n2,l2,j2)/h
+                                                                  n2,l2,j2)/C_h
                                 if abs(getEnergyDefect)<energyDelta  \
                                     and (not (self.interactionsUpTo==1) or\
                                          (Lmod2 == ((l1+l2)%2) )) :
@@ -792,12 +801,11 @@ class PairStateInteractions:
                                     couplingStregth = _atomLightAtomCoupling(self.n,self.l,self.j,
                                             self.nn,self.ll,self.jj,
                                             n1,l1,j1,
-                                            n2,l2,j2,self.atom)*(1.0e-9*(1.e6)**3/h) # GHz / mum^3
-                                    #print("cs = ",couplingStregth)
+                                            n2,l2,j2,self.atom)*(1.0e-9*(1.e6)**3/C_h) # GHz / mum^3
+
 
                                     pairState2 = "|"+printStateString(n1,l1,j1)+\
                                         ","+printStateString(n2,l2,j2)+">"
-                                    #print("---> "+pairState2)
 
                                     # include relevant mj and add contributions
                                     for m1c in np.linspace(j1,-j1,round(1+2*j1)):
@@ -823,8 +831,6 @@ class PairStateInteractions:
                                                 angularFactor = conjugate(stateCom2.T).dot(d.dot(stateCom))
                                                 angularFactor = real(angularFactor[0,0])
 
-                                                #print("%.5f" % angularFactor)
-
                                                 C6 += ((couplingStregth*angularFactor)**2/getEnergyDefect)
 
                                 j2 = j2+1.0
@@ -842,16 +848,25 @@ class PairStateInteractions:
             Finds relevant states in the vicinity of the given pair-state
 
             Finds relevant pair-state basis and calculates interaction matrix.
-            Pair-state basis is saved in `states`.
+            Pair-state basis is saved in :obj:`basisStates`.
             Interaction matrix is saved in parts depending on the scaling with
-            distance in :obj:`matDiagonal`, :obj:`matR3`, :obj:`matR4`,
-            :obj:`matR5`.
+            distance. Diagonal elements :obj:`matDiagonal`, correponding to
+            relative energy defects of the pair-states, don't change with
+            interatomic separation. Off diagonal elements can depend
+            on distance as :math:`R^{-3}, R^{-4}` or :math:`R^{-5}`, corresponding
+            to dipole-dipole (:math:`C_3` ), dipole-qudrupole (:math:`C_4` ) and
+            quadrupole-quadrupole coupling (:math:`C_5` ) respectively. These
+            parts of the matrix are stored in :obj:`matR` in that order. I.e.
+            :obj:`matR[0]` stores dipole-dipole coupling (:math:`\propto R^{-3}`),
+            :obj:`matR[0]` stores dipole-quadrupole couplings etc.
 
             Args:
-                theta (float): relative orientation of the two atoms (ADD FIGURE)
-                phi (float): relative orientation of the two atoms (ADD FIGURE)
+                theta (float):  relative orientation of the two atoms
+                    (see figure on top of the page)
+                phi (float): relative orientation of the two atoms (see figure
+                    on top of the page)
                 nRange (int): how much below and above the given principal quantum number
-                    of the pair state we should be looking? (CORRECT THIS FOR TWO DIFFERNET STATES)
+                    of the pair state we should be looking?
                 lrange (int): what is the maximum angular orbital momentum state that we are including
                     in calculation
                 energyDelta (float): what is maximum energy difference ( :math:`\\Delta E/h` in Hz)
@@ -893,9 +908,6 @@ class PairStateInteractions:
                                                     debugOutput=debugOutput)
 
         self.atom.updateDipoleMatrixElementsFile()
-        #print(self.coupling[0])
-        #print(self.channel[0])
-        #exit()
         # generate all the states (with mj principal quantum number)
 
         # opi = original pairstate index
@@ -905,7 +917,7 @@ class PairStateInteractions:
         self.index = np.zeros(len(self.channel)+1,dtype=np.int16)
 
         for i in xrange(len(self.channel)):
-            self.index[i] = len(self.states)
+            self.index[i] = len(self.basisStates)
 
             stateCoupled=self.channel[i]
 
@@ -914,7 +926,7 @@ class PairStateInteractions:
                 for m2c in np.linspace(stateCoupled[5],-stateCoupled[5],\
                                        round(1+2*stateCoupled[5])):
                     if ((not limitBasisToMj) or (abs(originalMj-m1c-m2c)==0) ):
-                        self.states.append([stateCoupled[0],stateCoupled[1],stateCoupled[2],m1c,
+                        self.basisStates.append([stateCoupled[0],stateCoupled[1],stateCoupled[2],m1c,
                                         stateCoupled[3],stateCoupled[4],stateCoupled[5],m2c])
                         self.matrixElement.append(i)
 
@@ -926,18 +938,14 @@ class PairStateInteractions:
                             abs(stateCoupled[4]-self.ll)<0.1 and \
                             abs(stateCoupled[5]-self.jj)<0.1 and \
                             abs(m2c-self.m2)<0.1):
-                            opi = len(self.states)-1
-            if (self.index[i] == len(self.states)):
+                            opi = len(self.basisStates)-1
+            if (self.index[i] == len(self.basisStates)):
                 print(stateCoupled)
-        self.index[-1] = len(self.states)
-
-        #print(self.states)
-        #print("Original state = ")
-        #print(self.states[opi])
+        self.index[-1] = len(self.basisStates)
 
         print("\nCalculating Hamiltonian matrix...\n")
 
-        dimension = len(self.states)
+        dimension = len(self.basisStates)
         print("\n\tmatrix (dimension ",dimension,")\n")
 
         # INITIALIZING MATICES
@@ -957,25 +965,21 @@ class PairStateInteractions:
                     progress += ((dim-ii)*2-1)
                     sys.stdout.write( "\rMatrix R%d %.1f %% (state %d of %d)"%\
                                       (matRIndex+3,float(progress)/float(dim**2)*100.,\
-                                                   ii,len(self.channel)))
+                                                   ii+1,len(self.channel)))
                     sys.stdout.flush()
-                #print(("%.1f %% (state %d of %d)"%(float(ii)/len(self.channel)*100.,\
-                #                                   ii,len(self.channel))))
-                ed = self.channel[ii][6]
-                #print(ed)
-                #print(self.index[ii]," - ",self.index[ii+1])
 
-                # solves problems with exactly degenerate states
+                ed = self.channel[ii][6]
+
+                # solves problems with exactly degenerate basisStates
                 degeneracyOffset = 0.000001
 
                 i = self.index[ii]
-                dMatrix1 = wgd.get(self.states[i][2])
-                dMatrix2 = wgd.get(self.states[i][6])
+                dMatrix1 = wgd.get(self.basisStates[i][2])
+                dMatrix2 = wgd.get(self.basisStates[i][6])
 
                 for i in xrange(self.index[ii],self.index[ii+1]):
-                    #print("i=",i)
-                    statePart1 = singleAtomState(self.states[i][2], self.states[i][3])
-                    statePart2 = singleAtomState(self.states[i][6], self.states[i][7])
+                    statePart1 = singleAtomState(self.basisStates[i][2], self.basisStates[i][3])
+                    statePart2 = singleAtomState(self.basisStates[i][6], self.basisStates[i][7])
                     # rotate individual states
 
                     statePart1 = dMatrix1.dot(statePart1)
@@ -990,20 +994,19 @@ class PairStateInteractions:
                         matDiagonalConstructor[2].append(i)
 
                     for dataIndex in xrange(c.indptr[ii],c.indptr[ii+1]):
-                        #print(ii, c.indices[dataIndex], c.data[dataIndex])
 
                         jj = c.indices[dataIndex]
                         radialPart = c.data[dataIndex]
 
                         j = self.index[jj]
-                        dMatrix3 = wgd.get(self.states[j][2])
-                        dMatrix4 = wgd.get(self.states[j][6])
+                        dMatrix3 = wgd.get(self.basisStates[j][2])
+                        dMatrix4 = wgd.get(self.basisStates[j][6])
 
                         if (self.index[jj]!=self.index[jj+1]):
-                            d = self.__getAngularMatrix_M(self.states[i][1],self.states[i][2],
-                                                        self.states[i][5],self.states[i][6],
-                                                        self.states[j][1],self.states[j][2],
-                                                        self.states[j][5],self.states[j][6],
+                            d = self.__getAngularMatrix_M(self.basisStates[i][1],self.basisStates[i][2],
+                                                        self.basisStates[i][5],self.basisStates[i][6],
+                                                        self.basisStates[j][1],self.basisStates[j][2],
+                                                        self.basisStates[j][5],self.basisStates[j][6],
                                                         self.atom)
                             secondPart = d.dot(stateCom)
                         else:
@@ -1011,8 +1014,8 @@ class PairStateInteractions:
 
 
                         for j in xrange(self.index[jj],self.index[jj+1]):
-                            statePart1 = singleAtomState(self.states[j][2], self.states[j][3])
-                            statePart2 = singleAtomState(self.states[j][6], self.states[j][7])
+                            statePart1 = singleAtomState(self.basisStates[j][2], self.basisStates[j][3])
+                            statePart2 = singleAtomState(self.basisStates[j][6], self.basisStates[j][7])
                             # rotate individual states
 
                             statePart1 = dMatrix3.dot(statePart1)
@@ -1053,7 +1056,9 @@ class PairStateInteractions:
 
 
     def diagonalise(self,rangeR,noOfEigenvectors,
-                         drivingFromState = [0,0,0,0,0], progressOutput = False,\
+                         drivingFromState = [0,0,0,0,0],
+                         eigenstateDetuning = 0.,
+                         progressOutput = False,\
                          debugOutput = False):
         """
             Finds eigenstates in atom pair basis.
@@ -1063,9 +1068,9 @@ class PairStateInteractions:
             `drivingFromState` is specified as `[n,l,j,mj,q]` coupling between
             the pair-states and the situation where one of the atoms in the pair
             state basis is in :math:`|n,l,j,m_j\\rangle` state due to driving
-            with a laser field that has polarization :math:`q` (+1,0,-1 for
-            :math:`\\sigma^-`, :math:`\pi` and :math:`\\sigma^+` polarizations
-            respectively)  is calculated and marked by the colurmaping these
+            with a laser field that drives :math:`q` transition (+1,0,-1 for
+            :math:`\\sigma^-`, :math:`\pi` and :math:`\\sigma^+` transitions
+            respectively)  is calculated and marked by the colourmaping these
             values on the obtained eigenvectors.
 
             Args:
@@ -1075,6 +1080,9 @@ class PairStateInteractions:
                 noOfEigenvectors (int): number of eigen vectors closest to the
                     energy of the original (unperturbed) pair state. Has to be
                     smaller then the total number of states.
+                eigenstateDetuning (float, optional): Default is 0. This
+                    specifies detuning from the initial pair-state (in Hz) around which we want to find `noOfEigenvectors` eigenvectors.
+                    This is useful when looking only for couple of off-resonant features.
                 drivingFromState ([int,int,float,float,int]): Optional. State
                     of the one of the atoms from the original pair-state basis
                     from which we try to dribe to the excited pair-basis
@@ -1090,7 +1098,7 @@ class PairStateInteractions:
         """
 
         self.r = rangeR
-        dimension = len(self.states)
+        dimension = len(self.basisStates)
 
         self.noOfEigenvectors = noOfEigenvectors
 
@@ -1123,44 +1131,42 @@ class PairStateInteractions:
             m1 = state1[3]
             q = state1[4]
 
-            ##i=0
-            ##while i<dimension:
             for i in xrange(dimension):
                 thisCoupling = 0.
                 #if progressOutput:
                 #    sys.stdout.write("\r%d%%" %  (i/float(dimension)*100.))
                 #    sys.stdout.flush()
-                if int(abs(self.states[i][1]-l1))==1 and \
-                   abs(self.states[i][4]-self.states[self.originalPairStateIndex][4])<0.1 and \
-                   abs(self.states[i][5]-self.states[self.originalPairStateIndex][5])<0.1 and \
-                   abs(self.states[i][6]-self.states[self.originalPairStateIndex][6])<0.1 and \
-                   abs(self.states[i][7]-self.states[self.originalPairStateIndex][7])<0.1 :
-                    state2 = self.states[i]
+                if int(abs(self.basisStates[i][1]-l1))==1 and \
+                   abs(self.basisStates[i][4]-self.basisStates[self.originalPairStateIndex][4])<0.1 and \
+                   abs(self.basisStates[i][5]-self.basisStates[self.originalPairStateIndex][5])<0.1 and \
+                   abs(self.basisStates[i][6]-self.basisStates[self.originalPairStateIndex][6])<0.1 and \
+                   abs(self.basisStates[i][7]-self.basisStates[self.originalPairStateIndex][7])<0.1 :
+                    state2 = self.basisStates[i]
                     n2 = int(state2[0])
                     l2 = int(state2[1])
                     j2 = state2[2]
                     m2 = state2[3]
                     if debugOutput:
                         print(n1," ",l1," ",j1," ",m1," ",n2," ",l2," ",j2," ",m2," q=",q)
-                        print(self.states[i])
+                        print(self.basisStates[i])
                     dme = self.atom.getDipoleMatrixElement(n1, l1,j1,m1,\
                                                             n2,l2,j2,m2,\
                                                             q)
                     thisCoupling += dme
 
-                if int(abs(self.states[i][5]-l1))==1 and \
-                    abs(self.states[i][0]-self.states[self.originalPairStateIndex][0])<0.1 and\
-                    abs(self.states[i][1]-self.states[self.originalPairStateIndex][1])<0.1 and \
-                    abs(self.states[i][2]-self.states[self.originalPairStateIndex][2])<0.1 and \
-                    abs(self.states[i][3]-self.states[self.originalPairStateIndex][3])<0.1 :
-                    state2 = self.states[i]
+                if int(abs(self.basisStates[i][5]-l1))==1 and \
+                    abs(self.basisStates[i][0]-self.basisStates[self.originalPairStateIndex][0])<0.1 and\
+                    abs(self.basisStates[i][1]-self.basisStates[self.originalPairStateIndex][1])<0.1 and \
+                    abs(self.basisStates[i][2]-self.basisStates[self.originalPairStateIndex][2])<0.1 and \
+                    abs(self.basisStates[i][3]-self.basisStates[self.originalPairStateIndex][3])<0.1 :
+                    state2 = self.basisStates[i]
                     n2 = int(state2[0+4])
                     l2 = int(state2[1+4])
                     j2 = state2[2+4]
                     m2 = state2[3+4]
                     if debugOutput:
                         print(n1," ",l1," ",j1," ",m1," ",n2," ",l2," ",j2," ",m2," q=",q)
-                        print(self.states[i])
+                        print(self.basisStates[i])
                     dme = self.atom.getDipoleMatrixElement(n1, l1,j1,m1,\
                                                             n2,l2,j2,m2,\
                                                             q)
@@ -1173,15 +1179,13 @@ class PairStateInteractions:
                 if (thisCoupling >0.000001) and debugOutput:
                     print("original pairstate index = ",self.originalPairStateIndex)
                     print("this pairstate index = ",i)
-                    print("state itself ", self.states[i])
+                    print("state itself ", self.basisStates[i])
                     print("coupling = ",thisCoupling)
                 coupling.append(thisCoupling)
 
             print("Maximal coupling from a state")
-            print("is to a state ",self.maxCoupledStateIndex)
+            print("is to a state ",self.basisStates[self.maxCoupledStateIndex])
             print("is equal to %.3e a_0 e" % self.maxCoupling)
-            #print("Coupling strengths calculated for each pair-state")
-            #print(coupling)
 
         if progressOutput:
             print("\n\nDiagonalizing interaction matrix...\n")
@@ -1189,7 +1193,7 @@ class PairStateInteractions:
         rvalIndex = 0.
         for rval in self.r:
             if progressOutput:
-                sys.stdout.write("\r%d%%" %  (rvalIndex/len(self.r)*100.))
+                sys.stdout.write("\r%d%%" %  (rvalIndex/len(self.r-1)*100.))
                 sys.stdout.flush()
             rvalIndex += 1.
 
@@ -1202,8 +1206,9 @@ class PairStateInteractions:
                 m = m + matRX/rX
                 rX *= (rval*1.e-6)
 
-            # uses ARPACK algorithm to find only X eigenvectors
-            ev, egvector = eigsh(m, noOfEigenvectors, sigma=0., which='LM',tol=1E-6)
+            # uses ARPACK algorithm to find only noOfEigenvectors eigenvectors
+            # sigma specifies center frequency (in GHz)
+            ev, egvector = eigsh(m, noOfEigenvectors, sigma= eigenstateDetuning*1.e-9, which='LM',tol=1E-6)
 
             self.y.append(ev)
 
@@ -1350,7 +1355,7 @@ class PairStateInteractions:
             i = order[index]
             if (index!=-1 and stateVector[i]>0):
                 value+= "+"
-            value = value+ ("%.2f" % stateVector[i])+self._addState(*self.states[i])
+            value = value+ ("%.2f" % stateVector[i])+self._addState(*self.basisStates[i])
             totalContribution += contribution[i]**2
             index -= 1
 
@@ -1381,7 +1386,7 @@ class PairStateInteractions:
         cNorm  = matplotlib.colors.Normalize(vmin=0., vmax=1.)
 
         print(" Now we are plotting...")
-        self.fig, self.ax = plt.subplots(1, 1,figsize=(11.5,5.0)) #figsize=(15.5,7.0)
+        self.fig, self.ax = plt.subplots(1, 1,figsize=(11.5,5.0))
 
         self.y = np.array(self.y)
         self.highlight = np.array(self.highlight)
@@ -1423,20 +1428,8 @@ class PairStateInteractions:
             # colouring is based on the coupling to different states
             cb.set_label(r"$(\Omega_\mu/\Omega)^2$" )
 
-        #self.ax.scatter(grayX,grayY,s=10,linewidth=0,color="0.9",zorder=1)
-        #self.ax.scatter(colorfulX,colorfulY,s=10,c=colorfulState,linewidth=0,cmap=rvb,zorder=2)#mpl.cm.Blues)
-
-
-        ##for br in xrange(len(self.y[0])):
-        ##    sumStates = 0.0
-        ##    for br2 in xrange(len(self.y)):
-        ##        sumStates = sumStates+self.highlight[br2][br]
-        ##    print(sumStates)
-
         self.ax.set_xlabel(r"Interatomic distance, $R$ ($\mu$m)")
         self.ax.set_ylabel(r"Pair-state relative energy, $\Delta E/h$ (GHz)")
-        #self.ax.set_xscale("log", nonposy='clip')
-        #self.ax.set_yscale("log", nonposy='clip')
 
     def savePlot(self,filename="PairStateInteractions.pdf"):
         """
@@ -1573,9 +1566,7 @@ class PairStateInteractions:
         if (fromRindex == -1):
             print("\nERROR: could not find data for energy levels for interatomic")
             print("distances between %2.f and %.2f mu m.\n\n" % (rStart,rStop))
-            return 0;
-        # print(fromRindex," ",toRindex)
-
+            return 0
 
         for br in xrange(fromRindex,toRindex+1):
             index = -1
@@ -1616,11 +1607,6 @@ class PairStateInteractions:
                       "b-",lw=2,zorder=1)
             ax.loglog(initialStateDetuningX,np.exp(y_fit),\
                       "r--",lw=2,zorder=2)
-            #loglog(initialStateDetuningX[150:250],y_theory,"k:")
-            #xlim(0.9,10)
-            #ylim(1e2,1e12)
-            #ax.grid()
-            #ax.grid(which='minor', color='0.5', linestyle=':')
 
             ax.legend(("calculated energy level","fitted model function"),\
                       loc=1,fontsize=10)
@@ -1677,6 +1663,12 @@ class PairStateInteractions:
                     energy state necessary for the state to be considered for
                     the adiabatic continuation of the original unperturbed
                     pair state.
+                resonantBranch (int): optional, default +1. For resonant
+                    interactions we have two branches with identical
+                    state contributions. In this case, we will select only
+                    positively detuned branch (for resonantBranch = +1)
+                    or negatively detuned branch (fore resonantBranch = -1)
+                    depending on the value of resonantBranch optional parameter
             Returns:
                 float:
                     :math:`C_3` measured in :math:`\\text{GHz }\\mu\\text{m}^6`
@@ -1691,11 +1683,6 @@ class PairStateInteractions:
         """
 
 
-        # for resonant interactions we have two branches with identical
-        # state contributions. In this case, we will select only
-        # positively detuned branch (for resonantBranch = +1)
-        # or negatively detuned branch (fore resonantBranch = -1)
-        # depending on the value of resonantBranch optional parameter
         selectBranch = False
         if (abs(self.l-self.ll)==1):
             selectBranch = True
@@ -1718,7 +1705,6 @@ class PairStateInteractions:
             print("\nERROR: could not find data for energy levels for interatomic")
             print("distances between %2.f and %.2f mu m.\n\n" % (rStart,rStop))
             return False
-        # print(fromRindex," ",toRindex)
 
         discontinuityDetected = False
         for br in xrange(toRindex,fromRindex-1,-1):
@@ -1749,7 +1735,6 @@ class PairStateInteractions:
         def c3fit(r,c3,offset):
             return np.log(c3/r**3+offset)
 
-        # print(len(initialStateDetuningX))
         try:
             popt,pcov = curve_fit(c3fit,\
                               initialStateDetuningX,\
@@ -1781,11 +1766,6 @@ class PairStateInteractions:
             ymin = np.min(initialStateDetuning)
             ymax = np.max(initialStateDetuning)
             ax.set_ylim( exp(ymin),exp(ymax))
-
-
-
-            #ax.grid()
-            #ax.grid(which='minor', color='0.5', linestyle=':')
 
             minorLocator = mpl.ticker.MultipleLocator(1)
             minorFormatter = mpl.ticker.FormatStrFormatter('%d')
@@ -1910,8 +1890,8 @@ class PairStateInteractions:
             popt,pcov = curve_fit(vdwFit,\
                               initialStateDetuningX,\
                               initialStateDetuning,\
-                              [0,initialStateDetuning[noOfPoints/2],\
-                               initialStateDetuningX[noOfPoints/2]])
+                              [0,initialStateDetuning[noOfPoints//2],\
+                               initialStateDetuningX[noOfPoints//2]])
         except:
             print("ERROR: unable to find a fit for van der Waals distance.")
             return False
@@ -1933,15 +1913,8 @@ class PairStateInteractions:
             fig,ax = plt.subplots(1,1,figsize=(8.0,5.0))
             ax.loglog(initialStateDetuningX,np.exp(initialStateDetuning),\
                       "b-",lw=2,zorder=1)
-            #ax.loglog(initialStateDetuningX,initialStateDetuning,\
-            #          "b-",lw=2,zorder=1)
             ax.loglog(initialStateDetuningX,np.exp(y_fit),\
                       "r--",lw=2,zorder=2)
-            #ax.loglog(initialStateDetuningX,y_fit,\
-            #          "r--",lw=2,zorder=2)
-            #loglog(initialStateDetuningX[150:250],y_theory,"k:")
-            #xlim(0.9,10)
-            #ylim(1e2,1e12)
 
             ax.set_xlim(np.min(self.r),\
                         np.max(self.r) )
@@ -1951,11 +1924,6 @@ class PairStateInteractions:
 
             ax.axvline(x=popt[2],color="k")
             ax.text(popt[2],exp((ymin+ymax)/2.),r"$R_{vdw} = %.1f$ $\mu$m" % popt[2])
-
-            #ax.grid()
-            #ax.grid(which='minor', color='0.5', linestyle=':')
-
-
 
             minorLocator = mpl.ticker.MultipleLocator(1)
             minorFormatter = mpl.ticker.FormatStrFormatter('%d')
@@ -1992,19 +1960,25 @@ class StarkMapResonances:
 
         Args:
             atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-                :obj:`alkali_atom_data.Lithium6`,
+                :obj:`alkali_atom_data.Lithium7`,
                 :obj:`alkali_atom_data.Sodium`,
-                :obj:`alkali_atom_data.Potassium`,
-                :obj:`alkali_atom_data.Rubidium`,
+                :obj:`alkali_atom_data.Potassium39`,
+                :obj:`alkali_atom_data.Potassium40`,
+                :obj:`alkali_atom_data.Potassium41`,
+                :obj:`alkali_atom_data.Rubidium85`,
+                :obj:`alkali_atom_data.Rubidium87`,
                 :obj:`alkali_atom_data.Caesium` }
                  the first atom in the pair-state
             state1 ([int,int,float,float]): specification of the state
                 of the first state as an array of values :math:`[n,l,j,m_j]`
             atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-                :obj:`alkali_atom_data.Lithium6`,
+                :obj:`alkali_atom_data.Lithium7`,
                 :obj:`alkali_atom_data.Sodium`,
-                :obj:`alkali_atom_data.Potassium`,
-                :obj:`alkali_atom_data.Rubidium`,
+                :obj:`alkali_atom_data.Potassium39`,
+                :obj:`alkali_atom_data.Potassium40`,
+                :obj:`alkali_atom_data.Potassium41`,
+                :obj:`alkali_atom_data.Rubidium85`,
+                :obj:`alkali_atom_data.Rubidium87`,
                 :obj:`alkali_atom_data.Caesium` }
                  the second atom in the pair-state
             state2 ([int,int,float,float]): specification of the state
@@ -2030,7 +2004,7 @@ class StarkMapResonances:
 
         self.pairStateEnergy = (atom1.getEnergy(*state1[0:3])+\
                                 atom2.getEnergy(*state2[0:3]))\
-                            *elemCharge/h*1e-9
+                            *C_e/C_h*1e-9
 
     def findResonances(self,nMin,nMax,maxL,eFieldList,energyRange=[-5.e9,+5.e9],\
              progressOutput = False):
@@ -2166,11 +2140,11 @@ class StarkMapResonances:
                         self.y[i].extend(yList)
                         self.composition[i].extend(compositionList)
 
-                print("\n")
+                if progressOutput:
+                    print("\n")
 
 
         for i in xrange(len(sm1.eFieldList)):
-            #print(" plotting %d" % i)
             self.y[i] = np.array(self.y[i])
             self.composition[i] = np.array(self.composition[i])
             self.ax.scatter([sm1.eFieldList[i]/100.]*len(self.y[i]),\
@@ -2183,8 +2157,6 @@ class StarkMapResonances:
                          max(self.eFieldList)/100.)
         self.ax.set_xlabel("Electric field (V/cm)")
         self.ax.set_ylabel("Pair-state relative energy, $\Delta E/h$ (GHz)")
-        #plt.show()
-        #return 0
 
     def showPlot(self,interactive = True):
         """
@@ -2203,8 +2175,6 @@ class StarkMapResonances:
                 self.clickedPoint = 0
                 self.fig.canvas.draw()
                 self.fig.canvas.mpl_connect('pick_event', self._onPick)
-                #self._onPick2(0.18,0.02)
-                #plt.savefig("foster.pdf", bbox_inches='tight')
             plt.show()
         else:
             print("Error while showing a plot: nothing is plotted yet")
