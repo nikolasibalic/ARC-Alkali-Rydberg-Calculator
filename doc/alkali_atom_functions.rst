@@ -25,6 +25,7 @@ Overview
     AlkaliAtom.getTransitionWavelength
     AlkaliAtom.getTransitionFrequency
     AlkaliAtom.getRabiFrequency
+    AlkaliAtom.getRabiFrequency2
     AlkaliAtom.getStateLifetime
     AlkaliAtom.getTransitionRate
     AlkaliAtom.getReducedMatrixElementJ_asymmetric
@@ -46,7 +47,7 @@ Overview
     AlkaliAtom.getEnergyDefect
     AlkaliAtom.getEnergyDefect2
     AlkaliAtom.updateDipoleMatrixElementsFile
-    AlkaliAtom.getRadialCoupling   
+    AlkaliAtom.getRadialCoupling
     AlkaliAtom.getAverageSpeed
     AlkaliAtom.getLiteratureDME
 
@@ -54,4 +55,4 @@ Detailed documentation
 ----------------------
 
 .. automodule:: arc.alkali_atom_functions
-   :members: 
+   :members:

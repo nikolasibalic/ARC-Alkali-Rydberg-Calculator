@@ -1,3 +1,9 @@
+*.pyc
+*.DS_Store
+arc/build/
+*.ipynb_checkpoints/
+
+# Standard python .gitignore
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
