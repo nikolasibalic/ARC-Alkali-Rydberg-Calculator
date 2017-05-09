@@ -17,7 +17,7 @@ wignerPrecal6j = np.load(os.path.join(os.path.dirname(os.path.realpath(__file__)
                          "data","precalculated6j.npy"))
 
 def Wigner3j(j1,j2,j3,m1,m2,m3):
-    
+
     # use precalculated values
     if wignerPrecal and ((j2<2.1) and abs(m2)<2.1 and (j1<wignerPrecalJmax)):
         # we shoud have precalculated value
@@ -28,22 +28,22 @@ def Wigner3j(j1,j2,j3,m1,m2,m3):
         else:
             # that value is 0
             return 0
-        
+
     ##print "unknown %.1f %.1f %.1f %.1f %.1f %.1f " % (j1,j2,j3,m1,m2,m3)
 #======================================================================
 # Wigner3j.m by David Terr, Raytheon, 6-17-04
 #
-# Compute the Wigner 3j symbol using the Racah formula [1]. 
+# Compute the Wigner 3j symbol using the Racah formula [1].
 #
-# Usage: 
+# Usage:
 # from wigner import Wigner3j
 # wigner = Wigner3j(j1,j2,j3,m1,m2,m3)
 #
 #  / j1 j2 j3 \
-#  |          |  
+#  |          |
 #  \ m1 m2 m3 /
 #
-# Reference: Wigner 3j-Symbol entry of Eric Weinstein's Mathworld: 
+# Reference: Wigner 3j-Symbol entry of Eric Weinstein's Mathworld:
 # http://mathworld.wolfram.com/Wigner3j-Symbol.html
 #======================================================================
 
@@ -62,7 +62,7 @@ def Wigner3j(j1,j2,j3,m1,m2,m3):
     if ( j1 - m1 != floor ( j1 - m1 ) ):
         print('2*j1 and 2*m1 must have the same parity')
         return 0
-    
+
     if ( j2 - m2 != floor ( j2 - m2 ) ):
         print('2*j2 and 2*m2 must have the same parity')
         return; 0
@@ -70,7 +70,7 @@ def Wigner3j(j1,j2,j3,m1,m2,m3):
     if ( j3 - m3 != floor ( j3 - m3 ) ):
         print('2*j3 and 2*m3 must have the same parity')
         return 0
-    
+
     if ( j3 > j1 + j2)  | ( j3 < abs(j1 - j2) ):
         print('j3 is out of bounds.')
         return 0
@@ -81,7 +81,7 @@ def Wigner3j(j1,j2,j3,m1,m2,m3):
 
     if abs(m2) > j2:
         print('m2 is out of bounds.')
-        return 0 
+        return 0
 
     if abs(m3) > j3:
         print('m3 is out of bounds.')
@@ -124,21 +124,21 @@ def Wigner6j(j1,j2,j3,J1,J2,J3):
         return wignerPrecal6j[j1,J3,int(round(0.5 +j1-j3)),\
                               int(round(0.5+J3-J1)),J2-1]
     ##print("not in database %1.f %1.f %1.f %1.f %1.f %1.f" % (j1,j2,j3,J1,J2,J3))
-    
+
 #======================================================================
-# Calculating the Wigner6j-Symbols using the Racah-Formula                
-# Author: Ulrich Krohn                                            
+# Calculating the Wigner6j-Symbols using the Racah-Formula
+# Author: Ulrich Krohn
 # Date: 13th November 2009
-#                                                                         
-# Based upon Wigner3j.m from David Terr, Raytheon                         
-# Reference: http://mathworld.wolfram.com/Wigner6j-Symbol.html            
 #
-# Usage: 
+# Based upon Wigner3j.m from David Terr, Raytheon
+# Reference: http://mathworld.wolfram.com/Wigner6j-Symbol.html
+#
+# Usage:
 # from wigner import Wigner6j
 # WignerReturn = Wigner6j(j1,j2,j3,J1,J2,J3)
 #
 #  / j1 j2 j3 \
-# <            >  
+# <            >
 #  \ J1 J2 J3 /
 #
 #======================================================================
@@ -147,17 +147,17 @@ def Wigner6j(j1,j2,j3,J1,J2,J3):
     if ( ( 2*j1 != round(2*j1) ) | ( 2*j2 != round(2*j2) ) | ( 2*j2 != round(2*j2) ) | ( 2*J1 != round(2*J1) ) | ( 2*J2 != round(2*J2) ) | ( 2*J3 != round(2*J3) ) ):
         print('All arguments must be integers or half-integers.')
         return -1
-    
+
 # Check if the 4 triads ( (j1 j2 j3), (j1 J2 J3), (J1 j2 J3), (J1 J2 j3) ) satisfy the triangular inequalities
     if ( ( abs(j1-j2) > j3 ) | ( j1+j2 < j3 ) | ( abs(j1-J2) > J3 ) | ( j1+J2 < J3 ) | ( abs(J1-j2) > J3 ) | ( J1+j2 < J3 ) | ( abs(J1-J2) > j3 ) | ( J1+J2 < j3 ) ):
         print('6j-Symbol is not triangular!')
         return 0
-    
+
     # Check if the sum of the elements of each traid is an integer
     if ( ( 2*(j1+j2+j3) != round(2*(j1+j2+j3)) ) | ( 2*(j1+J2+J3) != round(2*(j1+J2+J3)) ) | ( 2*(J1+j2+J3) != round(2*(J1+j2+J3)) ) | ( 2*(J1+J2+j3) != round(2*(J1+J2+j3)) ) ):
         print('6j-Symbol is not triangular!')
         return 0
-    
+
     # Arguments for the factorials
     t1 = j1+j2+j3
     t2 = j1+J2+J3
@@ -171,7 +171,7 @@ def Wigner6j(j1,j2,j3,J1,J2,J3):
     tmin = max(0, max(t1, max(t2, max(t3,t4))))
     tmax = min(t5, min(t6,t7))
     tvec = arange(tmin,tmax+1,1)
-        
+
     # Calculation the sum part of the 6j-Symbol
     WignerReturn = 0
     for t in tvec:
@@ -293,13 +293,13 @@ def wignerD(j,m,n=0,approx_lim=10):
 
 def CG(j1,m1,j2,m2,j3,m3):
     """
-        returns < j1,m1,j2,m2 | j1,j2, j3, m3 > 
+        returns < j1,m1,j2,m2 | j1,j2, j3, m3 >
     """
     return Wigner3j(j1,j2,j3,m1,m2,-m3)*sqrt(2*j3+1)*(-1)**(j1-j2+m3)
 
 
 class wignerDmatrix:
-    
+
     def __init__(self,theta,phi,gamma=0.):
         self.matSaved = []
         self.matLoc = np.zeros(100,dtype=np.int8)
@@ -311,27 +311,26 @@ class wignerDmatrix:
             self.trivial = True
         else:
             self.trivial = False
-        
+
     def get(self,j):
         if self.trivial:
             return np.eye(int(round(2.*j+1.,0)),int(round(2.*j+1.,0)), dtype=np.complex128)
         savedIndex = self.matLoc[int(round(2*j,0))]
         if savedIndex != 0:
-            return self.matSaved[savedIndex-1] 
+            return self.matSaved[savedIndex-1]
             # bacause 0 marks no entry; but matrix numbers starts from zero,
             # saved Index array is actually offsetted by 1
         # else
         mat = np.zeros((int(round(2.*j+1.,0)),int(round(2.*j+1.,0))),dtype=np.complex128)
         jrange = np.linspace(-j,j,int(2*j)+1)
         maxIndex = int(2*j)+1
-         
-        for index1 in xrange(maxIndex):
-            for index2 in xrange(maxIndex):
+
+        for index1 in range(maxIndex):
+            for index2 in range(maxIndex):
                 mat[index1,index2] = wignerD(j,jrange[index1],jrange[index2])\
                                             (self.phi,self.theta,self.gamma)
-        
+
         mat = csr_matrix(mat)
         self.matSaved.append(mat)
         self.matLoc[int(round(2*j,0))] = len(self.matSaved)
         return mat
-    
