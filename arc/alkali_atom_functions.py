@@ -909,7 +909,7 @@ class AlkaliAtom(object):
 
     def getDipoleMatrixElement(self,n1,l1,j1,mj1,n2,l2,j2,mj2,q):
         """
-            Reduced dipole matrix element
+            Dipole matrix element
             :math:`\\langle n_1 l_1 j_1 m_{j_1} |e\\mathbf{r}|n_2 l_2 j_2 m_{j_2}\\rangle`
             in units of :math:`a_0 e`
 
