@@ -33,7 +33,7 @@ static PyMethodDef module_methods[] = {
 
 #if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef moduledef = {
-  PyModuleDef_HEAD_INIT, "arc_c_extensions", 
+  PyModuleDef_HEAD_INIT, "arc_c_extensions",
   "C extensions of ARC (Numerov integration)", -1, module_methods, };
 
 PyMODINIT_FUNC PyInit_arc_c_extensions(void) {
@@ -78,8 +78,8 @@ inline double Potenital(double r){
 
 inline double Potenital2(double r){
 	// l>=4
-    // act as if it is a Hydrogen atom
-    return -1./r;
+    // act as if it is a Hydrogen atom, include spin-orbit coupling
+    return -1./r+pow(alpha,2)/(2.0*pow(r,3))*commonTerm1;
 }
 
 double commonTerm2;

@@ -32,7 +32,7 @@ to setupc.py script to work.
 
 If precompiled binaries don't work, please contact developers. Compiling Numpy C
 extensions on Windows is a bit complicated due to use of C89 standard. Procedure
-(just to outline approach, althought we recommend contacting ARC developers) is
+(just to outline approach, although we recommend contacting ARC developers) is
 the following.
 One needs to use `MSVC compiler <http://www.microsoft.com/en-us/download/details.aspx?id=44266>`_
 in order to compile Numpy extension on Python 2.7 under Windows.

@@ -31,6 +31,6 @@ Calculations of pair-state interactions :obj:`PairStateInteractions` and Stark m
 
 If you want to export results e.g. for analysis and plotting in other programs, you can use :obj:`calculations_atom_pairstate.PairStateInteractions.exportData` and :obj:`calculations_atom_single.StarkMap.exportData` to export results of Stark map and Pair-state interaction calculations in **.csv** format. See documentation of corresponding functions for more details.
 
-**3. Calculation is not outputing anything? How long does it take for calculation to finish?**
+**3. Calculation is not outputting anything? How long does it take for calculation to finish?**
 
-Most of the functions have `progressOutput` and `debugOutput` as an optional parameter (by default set to False) - check documentation of individual functions for details. We recommend setting at least `progressOutput=True` so that you have minimum output about the status of calculations. This often displays percatege of the current calculation that is finished, that you can use to estimate total time. Setting `debugOutput=True` outputs even more verbose output, like states in the selected basis, and individual coupling strenghts etc.
+Most of the functions have `progressOutput` and `debugOutput` as an optional parameter (by default set to False) - check documentation of individual functions for details. We recommend setting at least `progressOutput=True` so that you have minimum output about the status of calculations. This often displays percentage of the current calculation that is finished, that you can use to estimate total time. Setting `debugOutput=True` outputs even more verbose output, like states in the selected basis, and individual coupling strengths etc.
