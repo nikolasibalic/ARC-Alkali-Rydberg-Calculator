@@ -1369,15 +1369,15 @@ class AlkaliAtom(object):
 
     def getAverageSpeed(self,temperature):
         """
-            Average one-dimensional speed at a given temperature
+            Average (mean) speed at a given temperature
 
             Args:
                 temperature (float): temperature (K)
 
             Returns:
-                float: average 1D speed (m/s)
+                float: mean speed (m/s)
         """
-        return sqrt(2.*C_k*temperature/self.mass)
+        return sqrt( 8.*C_k*temperature/(pi*self.mass) )
 
     def _readLiteratureValues(self):
         # clear previously saved results, since literature file
