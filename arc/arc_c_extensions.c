@@ -21,6 +21,7 @@ double alphaC;
 double alpha;
 int Z;
 double a1,a2,a3,a4,rc; // depends on l - determined by Python in advance
+double mu;
 
 //#define DEBUG_OUTPUT
 
@@ -84,14 +85,16 @@ inline double Potenital2(double r){
 
 double commonTerm2;
 
-inline double kfun(double r){
+inline double kfun(double x){
 	// with potential for l<4
-	return 2.*(stateEnergy-Potenital(r))-commonTerm2/pow(r,2);
+  double r = x*x;   // x = sqrt(r)
+	return -3./(4.*r)+4*r*( 2.*mu*(stateEnergy-Potenital(r))-commonTerm2/pow(r,2) );
 }
 
-inline double kfun2(double r){
+inline double kfun2(double x){
 	// with potential for l>4
-	return 2.*(stateEnergy-Potenital2(r))-commonTerm2/pow(r,2);
+  double r = x*x;  // x = sqrt(r)
+	return -3./(4.*r)+4*r*( 2.*mu*(stateEnergy-Potenital2(r))-commonTerm2/pow(r,2) );
 }
 
 static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
@@ -99,10 +102,10 @@ static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
 	double innerLimit,outerLimit,step,init1,init2;
 
 
-    if (!(PyArg_ParseTuple(args, "dddddidddddiddddd", &innerLimit, &outerLimit, &step,
+    if (!(PyArg_ParseTuple(args, "dddddidddddidddddd", &innerLimit, &outerLimit, &step,
       &init1, &init2,
       &l, &s, &j, &stateEnergy, &alphaC,  &alpha,
-      &Z, &a1, &a2, &a3, &a4, &rc))) return NULL;
+      &Z, &a1, &a2, &a3, &a4, &rc, &mu))) return NULL;
 
 
 #ifdef DEBUG_OUTPUT
@@ -110,8 +113,8 @@ static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
 		printf("l\t=\t%i\ns\t=\t%.1f\nj\t=\t%.1f\n",l,s,j);
 		printf("stateEnergy\t=\t%.7f\nalphaC\t=\t%.3f\nalpha\t=\t%.3f\nZ\t=\t%i\n",stateEnergy,alphaC,alpha,Z);
 		printf("a1\t\t%.4f\na2\t\t%.4f\na3\t\t%.4f\na4\t\t%.4f\nrc\t\t%.4f\n",a1,a2,a3,a4,rc);
+    printf("mu\t\t%.4f",mu);
 #endif
-
 
 	// let's speed up calculation by calculating some common terms beforehand
 	commonTerm1 = (j*(j+1.0)-((double)l)*(l+1.0)-s*(s+1.))/2.0;
@@ -119,15 +122,15 @@ static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
 
 	int divergencePoint;
 
-	int totalLength =  (int)((outerLimit-innerLimit)/step);
+	int totalLength =  (int)((sqrt(outerLimit)-sqrt(innerLimit))/step);
 
 #ifdef DEBUG_OUTPUT
 	printf("Index = %i\n",totalLength);
-	printf("Index should be about = %.2f\n",((outerLimit-innerLimit)/step));
+	printf("Index should be about = %.2f\n",(sqrt(outerLimit)-sqrt(innerLimit)/step));
 #endif
 
 	int br = totalLength;
-	double* sol = (double*) malloc(br*sizeof(double));
+	double* sol = (double*) malloc(2*br*sizeof(double));
 
 	if (!sol){
   #ifdef DEBUG_OUTPUT
@@ -141,94 +144,103 @@ static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
 	if (l<4){
 
 		br = br-1;
-	    double r = outerLimit;
-	    double step2 = step*step;
-	    sol[br] = (2*(1-5.0/12.0*step2*kfun(r))*init1-(1+1/12.0*step2*kfun(r+step))*init2)/(1+1/12.0*step2*kfun(r-step));
-
-		r = r-step;
+    double x = sqrt(innerLimit)+step*(totalLength-1);
+	  double step2 = step*step;
+	  sol[br] = (2*(1-5.0/12.0*step2*kfun(x))*init1-(1+1/12.0*step2*kfun(x+step))*init2)/(1+1/12.0*step2*kfun(x-step));
+    sol[br+totalLength]=x;
+		x = x-step;
 		br = br-1;
 
-		sol[br] = (2*(1-5.0/12.0*step2*kfun(r))*sol[br+1]-(1+1/12.0*step2*kfun(r+step))*init1)/(1+1/12.0*step2*kfun(r-step));
+		sol[br] = (2*(1-5.0/12.0*step2*kfun(x))*sol[br+1]-(1+1/12.0*step2*kfun(x+step))*init1)/(1+1/12.0*step2*kfun(x-step));
+    sol[br+totalLength]=x;
 
 		double maxValue = 0;
 
-	    double checkPoint = 0;
-	    double fromLastMax = 0;
+	  double checkPoint = 0;
+	  double fromLastMax = 0;
 
-	    while (br>checkPoint){
-	        br = br-1;
-	        r = r-step;
-	        sol[br] = (2*(1-5.0/12.0*step2*kfun(r))*sol[br+1]-(1+1/12.0*step2*kfun(r+step))*sol[br+2])/(1+1/12.0*step2*kfun(r-step));
-	        if (fabs(sol[br])>maxValue){
-	            maxValue = fabs(sol[br]);
-	        }
-	        else{
-	            fromLastMax += 1;
-	            if (fromLastMax>50){
-	                checkPoint = br;
-	            }
-	        }
-	    }
+	  while (br>checkPoint){
+	      br = br-1;
+	      x = x-step;
+	      sol[br] = (2*(1-5.0/12.0*step2*kfun(x))*sol[br+1]-(1+1/12.0*step2*kfun(x+step))*sol[br+2])/(1+1/12.0*step2*kfun(x-step));
+        sol[br+totalLength]=x;
+	      if (fabs(sol[br]*sqrt(x))>maxValue){
+	          maxValue = fabs(sol[br]*sqrt(x));
+        }
+        else{
+	          fromLastMax += 1;
+            if (fromLastMax>50){
+	              checkPoint = br;
+	          }
+	      }
+	  }
 
-	    divergencePoint = 0;
-	    while ((br>0)&&(divergencePoint == 0)){
-	        br = br-1;
-	        r = r-step;
-	        sol[br] = (2*(1-5.0/12.0*step2*kfun(r))*sol[br+1]-(1+1/12.0*step2*kfun(r+step))*sol[br+2])/(1+1/12.0*step2*kfun(r-step));
-	        if ((divergencePoint==0)&&(fabs(sol[br])>maxValue)){
-	            divergencePoint = br;
-	            while ((fabs(sol[divergencePoint])>fabs(sol[divergencePoint+1])) && (divergencePoint<checkPoint)){
-	                divergencePoint +=1;
-	            }
-	            if (divergencePoint>checkPoint){
+	  divergencePoint = 0;
+	  while ((br>0)&&(divergencePoint == 0)){
+	      br = br-1;
+	      x = x-step;
+	      sol[br] = (2*(1-5.0/12.0*step2*kfun(x))*sol[br+1]-(1+1/12.0*step2*kfun(x+step))*sol[br+2])/(1+1/12.0*step2*kfun(x-step));
+        sol[br+totalLength]=x;
+
+	      if ((divergencePoint==0)&&(fabs(sol[br]*sqrt(x))>maxValue)){
+	          divergencePoint = br;
+	          while ((fabs(sol[divergencePoint])>fabs(sol[divergencePoint+1])) && (divergencePoint<checkPoint)){
+	              divergencePoint +=1;
+	          }
+	          if (divergencePoint>checkPoint){
 #ifdef DEBUG_OUTPUT
 	                printf("ERROR: Numerov error\n");
 #endif
 	                return NULL;
-	            }
-	        }
-	    }
+	          }
+	      }
+	  }
 
 
 	} // end of if l<4
 	else{ //l>=4
 
-		br = br-1;
-	    double r = outerLimit;
+		  br = br-1;
+	    double x = sqrt(innerLimit)+step*(totalLength-1);
 	    double step2 = step*step;
-	    sol[br] = (2*(1-5.0/12.0*step2*kfun2(r))*init1-(1+1/12.0*step2*kfun2(r+step))*init2)/(1+1/12.0*step2*kfun2(r-step));
+	    sol[br] = (2*(1-5.0/12.0*step2*kfun2(x))*init1-(1+1/12.0*step2*kfun2(x+step))*init2)/(1+1/12.0*step2*kfun2(x-step));
+      sol[br+totalLength]=x;
+		  x = x-step;
+		  br = br-1;
 
-		r = r-step;
-		br = br-1;
+		  sol[br] = (2*(1-5.0/12.0*step2*kfun2(x))*sol[br+1]-(1+1/12.0*step2*kfun2(x+step))*init1)/(1+1/12.0*step2*kfun2(x-step));
+      sol[br+totalLength]=x;
 
-		sol[br] = (2*(1-5.0/12.0*step2*kfun2(r))*sol[br+1]-(1+1/12.0*step2*kfun2(r+step))*init1)/(1+1/12.0*step2*kfun2(r-step));
-
-		double maxValue = 0;
+		  double maxValue = 0;
 
 	    double checkPoint = 0;
 	    double fromLastMax = 0;
 
 	    while (br>checkPoint){
 	        br = br-1;
-	        r = r-step;
-	        sol[br] = (2*(1-5.0/12.0*step2*kfun2(r))*sol[br+1]-(1+1/12.0*step2*kfun2(r+step))*sol[br+2])/(1+1/12.0*step2*kfun2(r-step));
-	        if (fabs(sol[br])>maxValue){
-	            maxValue = fabs(sol[br]);
-	        }
-	        else{
-	            fromLastMax += 1;
-	            if (fromLastMax>50){
-	                checkPoint = br;
-	            }
+	        x = x-step;
+	        sol[br] = (2*(1-5.0/12.0*step2*kfun2(x))*sol[br+1]-(1+1/12.0*step2*kfun2(x+step))*sol[br+2])/(1+1/12.0*step2*kfun2(x-step));
+          sol[br+totalLength]=x;
+
+    	    if (fabs(sol[br]*sqrt(x))>maxValue){
+    	        maxValue = fabs(sol[br]*sqrt(x));
+    	    }
+    	    else{
+    	         fromLastMax += 1;
+    	         if (fromLastMax>50){
+    	             checkPoint = br;
+    	         }
 	        }
 	    }
 
 	    divergencePoint = 0;
 	    while ((br>0)&&(divergencePoint == 0)){
 	        br = br-1;
-	        r = r-step;
-	        sol[br] = (2*(1-5.0/12.0*step2*kfun2(r))*sol[br+1]-(1+1/12.0*step2*kfun2(r+step))*sol[br+2])/(1+1/12.0*step2*kfun2(r-step));
-	        if ((divergencePoint==0)&&(fabs(sol[br])>maxValue)){
+	        x = x-step;
+	        sol[br] = (2*(1-5.0/12.0*step2*kfun2(x))*sol[br+1]-(1+1/12.0*step2*kfun2(x+step))*sol[br+2])/(1+1/12.0*step2*kfun2(x-step));
+          sol[br+totalLength]=x;
+
+	        if ((divergencePoint==0)&&(fabs(sol[br]*sqrt(x))>maxValue)){
 	            divergencePoint = br;
 	            while ((fabs(sol[divergencePoint])>fabs(sol[divergencePoint+1])) && (divergencePoint<checkPoint)){
 	                divergencePoint +=1;
@@ -246,10 +258,17 @@ static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
 
   // RETURN RESULT - but set to zero divergent part (to prevent integration there)
   for (int i =0; i<divergencePoint; i++) sol[i] = 0;
+  // same for radial part
+  for (int i = 0; i < divergencePoint; i++) sol[i+totalLength] = 0;
+
+  // convert sol that is at the moment R(r)*r^{3/4} into R(r)*r
+  for (int i=0; i<totalLength; i++)  sol[i]=sol[i]*sqrt(sol[i+totalLength]);
+  // convert coordinates from sqrt(r) into r
+  for (int i=totalLength; i<2*totalLength; i++)  sol[i]=sol[i]*sol[i];
 
   // return the array as a numpy array (numpy will free it later)
-  npy_intp dims[1] = {totalLength};
-  PyObject *narray = PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE, sol);
+  npy_intp dims[2] = {totalLength,totalLength};
+  PyObject *narray = PyArray_SimpleNewFromData(2, dims, NPY_DOUBLE, sol);
   //free(sol); # freeing of solution array should be done from Numpy
   // this is the critical line - tell numpy it has to free the data
   PyArray_ENABLEFLAGS((PyArrayObject*)narray, NPY_ARRAY_OWNDATA);

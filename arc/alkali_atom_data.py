@@ -96,7 +96,7 @@ class Hydrogen(AlkaliAtom):
         Properties of hydrogen atoms
     """
     ionisationEnergy = 13.598433  #: (eV), Ref. [#c8]_.
-    Z = 1.0
+    Z = 1
     scaledRydbergConstant = 109677.5834*1.e2\
         *physical_constants["inverse meter-electron volt relationship"][0]
 
@@ -107,6 +107,9 @@ class Hydrogen(AlkaliAtom):
     groundStateN = 1
     minQuantumDefectN = 0
 
+    #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
+    mass = 1.00782503223*physical_constants["atomic mass constant"][0]
+
     a1 = [0.0, 0.0, 0.0, 0.0]
     a2 = [0.0, 0.0, 0.0, 0.0]
     a3 = [0.0, 0.0, 0.0, 0.0]
@@ -115,7 +118,7 @@ class Hydrogen(AlkaliAtom):
 
     def potential(self,l,s,j,r):
         # Returns total potential that electron feels = core potential + Spin-Orbit interaction
-        return -self.Z/r
+        return -self.Z/r+self.alpha**2/(2.0*r**3)*(j*(j+1.0)-l*(l+1.0)-s*(s+1))/2.0
 
     def stateQuantumDefect(self,n,l,j):
         defect = 0.
@@ -213,7 +216,7 @@ class Caesium(AlkaliAtom):
     abundance = 1.000
 
     #: in eV
-    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+    scaledRydbergConstant = (mass-C_m_e)/(mass)*C_Rydberg\
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Cs133"
@@ -352,7 +355,7 @@ class Rubidium85(AlkaliAtom):
     abundance =  0.7217
 
     #:  in eV
-    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+    scaledRydbergConstant = (mass-C_m_e)/(mass)*C_Rydberg\
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Rb85"
@@ -471,8 +474,8 @@ class Rubidium87(AlkaliAtom):
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 0.2783
 
-    #:  in eV
-    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+    #:  in eV  (M_ion core = m_atomic - m_electron)
+    scaledRydbergConstant = (mass-C_m_e)/(mass)*C_Rydberg\
         *physical_constants["inverse meter-electron volt relationship"][0]
     #109736.605*1.e2 \
 #        *physical_constants["inverse meter-electron volt relationship"][0]
@@ -586,7 +589,7 @@ class Lithium6(AlkaliAtom): # Li
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 0.0759
 
-    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+    scaledRydbergConstant = (mass-C_m_e)/(mass)*C_Rydberg\
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Li6"
@@ -695,7 +698,7 @@ class Lithium7(AlkaliAtom): # Li
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 0.9241
 
-    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+    scaledRydbergConstant = (mass-C_m_e)/(mass)*C_Rydberg\
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Li7"
@@ -808,7 +811,7 @@ class Sodium(AlkaliAtom): #Na23
     abundance = 1.00
 
     #: (eV)
-    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+    scaledRydbergConstant = (mass-C_m_e)/(mass)*C_Rydberg\
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Na23"
@@ -917,7 +920,7 @@ class Potassium39(AlkaliAtom):
     abundance = 0.932581
 
     # in eV
-    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+    scaledRydbergConstant = (mass-C_m_e)/(mass)*C_Rydberg\
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "K39"
@@ -1034,7 +1037,7 @@ class Potassium40(AlkaliAtom):
     abundance = 0.000117
 
     #: in eV
-    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+    scaledRydbergConstant = (mass-C_m_e)/(mass)*C_Rydberg\
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "K40"
@@ -1142,7 +1145,7 @@ class Potassium41(AlkaliAtom):
     abundance = 0.067302
 
     #: in eV
-    scaledRydbergConstant = (mass)/(mass+C_m_e)*C_Rydberg\
+    scaledRydbergConstant = (mass-C_m_e)/(mass)*C_Rydberg\
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "K41"

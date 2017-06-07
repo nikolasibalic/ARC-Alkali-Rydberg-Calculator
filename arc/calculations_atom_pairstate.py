@@ -648,8 +648,8 @@ class PairStateInteractions:
                 .. [#leroy] R.J. Le Roy, Can. J. Phys. **52**, 246 (1974)
                     http://www.nrcresearchpress.com/doi/abs/10.1139/p74-035
         """
-        step = 0.01
-        a1,b1,start1 = self.atom.radialWavefunction(self.l,0.5,self.j,\
+        step = 0.001
+        a1,b1 = self.atom.radialWavefunction(self.l,0.5,self.j,\
                                                self.atom.getEnergy(self.n, self.l, self.j)/27.211,\
                                                self.atom.alphaC**(1/3.0),\
                                                2.0*self.n*(self.n+15.0), step)
@@ -660,7 +660,7 @@ class PairStateInteractions:
         r1 = sqrt(np.sum(np.multiply(np.multiply(b1,b1),\
                                                np.multiply(a1,a1)*step)))
 
-        a2,b2,start2 = self.atom.radialWavefunction(self.ll,0.5,self.jj,\
+        a2,b2 = self.atom.radialWavefunction(self.ll,0.5,self.jj,\
                                                self.atom.getEnergy(self.nn, self.ll, self.jj)/27.211,\
                                                self.atom.alphaC**(1/3.0),\
                                                2.0*self.nn*(self.nn+15.0), step)

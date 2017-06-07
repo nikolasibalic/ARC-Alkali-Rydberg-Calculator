@@ -27,6 +27,7 @@ from scipy.constants import k as C_k
 from scipy.constants import c as C_c
 from scipy.constants import h as C_h
 from scipy.constants import e as C_e
+from scipy.constants import m_e as C_m_e
 from scipy.optimize import curve_fit
 
 # for matrices
@@ -78,7 +79,7 @@ class AlkaliAtom(object):
 
     """
     # ALL PARAMETERS ARE IN ATOMIC UNITS (Hatree)
-    alpha = 1.0/137.0   #: Hyperfine constant
+    alpha = physical_constants["fine-structure constant"][0]
 
     a1,a2,a3,a4,rc = [0],[0],[0],[0],[0]
     """
@@ -345,7 +346,7 @@ class AlkaliAtom(object):
             return self.corePotential(l,r)+self.alpha**2/(2.0*r**3)*(j*(j+1.0)-l*(l+1.0)-s*(s+1))/2.0
         else:
             # act as if it is a Hydrogen atom
-            return -1./r
+            return -1./r+self.alpha**2/(2.0*r**3)*(j*(j+1.0)-l*(l+1.0)-s*(s+1))/2.0
 
     def radialWavefunction(self,l,s,j,stateEnergy,innerLimit,outerLimit,step):
         """
@@ -378,10 +379,6 @@ class AlkaliAtom(object):
 
                 :math:`R(r)\cdot r`
 
-                divergence index of array - smallest index
-                of returned lists where there is no divergence (0 if divergence didn't occured).
-                This is important for high :math:`l` wavefunction calculations.
-
         .. note::
             Radial wavefunction is not scaled to unity! This normalization
             condition means that we are using spherical harmonics which are
@@ -399,37 +396,40 @@ class AlkaliAtom(object):
             # efficiant implementation in C
 
             if (l<4):
-                b = self.NumerovWavefunction(innerLimit,outerLimit,\
+                d = self.NumerovWavefunction(innerLimit,outerLimit,\
                                         step,0.01,0.01,\
                                         l,s,j,stateEnergy,self.alphaC,self.alpha,\
                                         self.Z,
                                         self.a1[l],self.a2[l],self.a3[l],self.a4[l],\
-                                        self.rc[l])
+                                        self.rc[l],\
+                                        (self.mass-C_m_e)/self.mass)
             else:
-                b = self.NumerovWavefunction(innerLimit,outerLimit,\
+                d = self.NumerovWavefunction(innerLimit,outerLimit,\
                                         step,0.01,0.01,\
                                         l,s,j,stateEnergy,self.alphaC,self.alpha,\
-                                        self.Z,0.,0.,0.,0.,0.)
+                                        self.Z,0.,0.,0.,0.,0.,\
+                                        (self.mass-C_m_e)/self.mass)
 
-
-            totalSteps = (outerLimit - innerLimit)//step
-            a = np.linspace(outerLimit-totalSteps*step,outerLimit,totalSteps)
-            divergence = 0
-            suma = step*sum(b**2)
-            b = b/(sqrt(suma))
+            psi_r  = d[0]
+            r = d[1]
+            suma = np.trapz(psi_r**2, x=r)
+            psi_r = psi_r/(sqrt(suma))
         else:
             # full implementation in Python
-            def potential(r):
-                return 2*(stateEnergy-self.potential(l, s, j, r))-l*(l+1)/(r**2)
+            mu = (self.mass-C_m_e)/self.mass
+            def potential(x):
+                r = x*x
+                return -3./(4.*r)+4.*r*(\
+                      2.*mu*(stateEnergy-self.potential(l, s, j, r))-l*(l+1)/(r**2)\
+                    )
 
-            a,b,divergence = NumerovBack(innerLimit,outerLimit,potential,\
+            r,psi_r = NumerovBack(innerLimit,outerLimit,potential,\
                                          step,0.01,0.01)
 
-            btemp = b[divergence:]
-            suma = step*sum(btemp**2)
-            b = b/(sqrt(suma))
+            suma = np.trapz(psi_r**2, x=r)
+            psi_r = psi_r/(sqrt(suma))
 
-        return a,b,divergence
+        return r,psi_r
 
     def _parseLevelsFromNIST(self,fileData):
         """
@@ -696,24 +696,21 @@ class AlkaliAtom(object):
         if (dme):
             return dme[0]
 
-        step = 0.01
-        a1,b1,start1 = self.radialWavefunction(l1,0.5,j1,\
+        step = 0.0001
+        r1,psi1_r1 = self.radialWavefunction(l1,0.5,j1,\
                                                self.getEnergy(n1, l1, j1)/27.211,\
                                                self.alphaC**(1/3.0),\
                                                 2.0*n1*(n1+15.0), step)
-        a2,b2,start2 = self.radialWavefunction(l2,0.5,j2,\
+        r2,psi2_r2 = self.radialWavefunction(l2,0.5,j2,\
                                                self.getEnergy(n2, l2, j2)/27.211,\
                                                self.alphaC**(1/3.0),\
                                                 2.0*n2*(n2+15.0), step)
 
-        br = max(start1,start2)
-        upTo = min(len(a1),len(a2))
+        upTo = min(len(r1),len(r2))
 
-        b1 = b1[br:upTo]
-        b2 = b2[br:upTo]
-        a1 = a1[br:upTo]
-
-        dipoleElement = np.sum(np.multiply(np.multiply(b1,b2),a1*step))
+        # note that r1 and r2 change in same staps, starting from the same value
+        dipoleElement = np.trapz(np.multiply(np.multiply(psi1_r1[0:upTo],psi2_r2[0:upTo]),\
+                                           r1[0:upTo]), x = r1[0:upTo])
 
         self.c.execute(''' INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?)''',\
                        [n1,l1,j1_x2,n2,l2,j2_x2, dipoleElement] )
@@ -779,27 +776,22 @@ class AlkaliAtom(object):
 
         # if it wasn't, calculate now
 
-        step = 0.01
-        a1,b1,start1 = self.radialWavefunction(l1,0.5,j1,\
+        step = 0.0001
+        r1, psi1_r1 = self.radialWavefunction(l1,0.5,j1,\
                                                self.getEnergy(n1, l1, j1)/27.211,\
                                                self.alphaC**(1/3.0), \
                                                2.0*n1*(n1+15.0), step)
-        a2,b2,start2 = self.radialWavefunction(l2,0.5,j2,\
+        r2, psi2_r2 = self.radialWavefunction(l2,0.5,j2,\
                                                self.getEnergy(n2, l2, j2)/27.211,\
                                                self.alphaC**(1/3.0), \
                                                2.0*n2*(n2+15.0), step)
 
+        upTo = min(len(r1),len(r2))
 
-        br = max(start1,start2)
-        # START of the new way of summing
-        upTo = min(len(a1),len(a2))
-
-        b1 = b1[br:upTo]
-        b2 = b2[br:upTo]
-        a1 = a1[br:upTo]
-
-        quadrupoleElement = np.sum(np.multiply(np.multiply(b1,b2),\
-                                               np.multiply(a1,a1)*step))
+        # note that r1 and r2 change in same staps, starting from the same value
+        quadrupoleElement = np.trapz(np.multiply(np.multiply(psi1_r1[0:upTo],psi2_r2[0:upTo]),\
+                                               np.multiply(r1[0:upTo],r1[0:upTo])),\
+                                     x = r1[0:upTo])
 
 
 
@@ -1592,44 +1584,37 @@ def NumerovBack(innerLimit,outerLimit,kfun,step,init1,init2):
 
         Returns:
             numpy array of float , numpy array of float, int : :math:`r` (a.u),
-            :math:`rad(r)`, divergencePoint;
-                divergencePoint is zero if no divergence occurred before reaching
-                `innerLimit`. Otherwise, if divergence occurred before
-                reaching `innerLimit`, divergencePoint is index of the first
-                element in the returned array which is outside the divergence
-                region.
+            :math:`rad(r)`;
 
         Note:
             Returned function is not normalized!
 
         Note:
             If :obj:`AlkaliAtom.cpp_numerov` swich is set to True (default option),
-            much faster C++ algorithm will be used instead. That is recommended
-            option. Just make sure that there is executabeble nvwcpp located in
-            the package folder. You can build this executable, e.g. by using
-            the GNU C++ compiler yourself by calling from the command line::
+            much faster C implementation of the algorithm will be used instead.
+            That is recommended option. See documentation installation
+            instructions for more details.
 
-                g++ -O3 nwvcpp.cpp -o nvwcpp
     """
 
-    br = int((outerLimit-innerLimit)/step)
-    sol = np.zeros(br,dtype=np.dtype('d'))
-    rad = np.zeros(br,dtype=np.dtype('d'))
+    br = int((sqrt(outerLimit)-sqrt(innerLimit))/step)
+    sol = np.zeros(br,dtype=np.dtype('d'))  # integrated wavefunction R(r)*r^{3/4}
+    rad = np.zeros(br,dtype=np.dtype('d'))  # radial coordinate for integration \sqrt(r)
 
     br = br-1
-    r = outerLimit
-    sol[br] = (2.*(1.-5.0/12.0*step**2*kfun(r))*init1-\
-               (1.+1./12.0*step**2*kfun(r+step))*init2)/\
-               (1+1/12.0*step**2*kfun(r-step))
-    rad[br] = r
+    x = sqrt(innerLimit)+step*(br-1)
+    sol[br] = (2.*(1.-5.0/12.0*step**2*kfun(x))*init1-\
+               (1.+1./12.0*step**2*kfun(x+step))*init2)/\
+               (1+1/12.0*step**2*kfun(x-step))
+    rad[br] = x
 
-    r = r-step
+    x = x-step
     br = br-1
 
-    sol[br] = (2.*(1.-5.0/12.0*step**2*kfun(r))*sol[br+1]-\
-               (1.+1./12.0*step**2*kfun(r+step))*init1)/\
-               (1+1/12.0*step**2*kfun(r-step))
-    rad[br] = r
+    sol[br] = (2.*(1.-5.0/12.0*step**2*kfun(x))*sol[br+1]-\
+               (1.+1./12.0*step**2*kfun(x+step))*init1)/\
+               (1+1/12.0*step**2*kfun(x-step))
+    rad[br] = x
 
     # check if the function starts diverging  before the innerLimit
     # -> in that case break integration earlier
@@ -1641,13 +1626,13 @@ def NumerovBack(innerLimit,outerLimit,kfun,step,init1,init2):
 
     while br>checkPoint:
         br = br-1
-        r = r-step
-        sol[br] = (2.*(1.-5.0/12.0*step**2*kfun(r))*sol[br+1]-\
-                   (1.+1./12.0*step**2*kfun(r+step))*sol[br+2])/\
-                   (1.+1./12.0*step**2*kfun(r-step))
-        rad[br] = r
-        if abs(sol[br])>maxValue:
-            maxValue = abs(sol[br])
+        x = x-step
+        sol[br] = (2.*(1.-5.0/12.0*step**2*kfun(x))*sol[br+1]-\
+                   (1.+1./12.0*step**2*kfun(x+step))*sol[br+2])/\
+                   (1.+1./12.0*step**2*kfun(x-step))
+        rad[br] = x
+        if abs(sol[br]*sqrt(x))>maxValue:
+            maxValue = abs(sol[br]*sqrt(x))
         else:
             fromLastMax += 1
             if fromLastMax>50:
@@ -1659,12 +1644,12 @@ def NumerovBack(innerLimit,outerLimit,kfun,step,init1,init2):
 
     while (br>0)and(divergencePoint==0):
         br = br-1
-        r = r-step
-        sol[br] = (2.*(1.-5.0/12.0*step**2*kfun(r))*sol[br+1]-\
-                   (1.+1./12.0*step**2*kfun(r+step))*sol[br+2])/\
-                   (1.+1./12.0*step**2*kfun(r-step))
-        rad[br] = r
-        if (divergencePoint==0)and(abs(sol[br])>maxValue):
+        x = x-step
+        sol[br] = (2.*(1.-5.0/12.0*step**2*kfun(x))*sol[br+1]-\
+                   (1.+1./12.0*step**2*kfun(x+step))*sol[br+2])/\
+                   (1.+1./12.0*step**2*kfun(x-step))
+        rad[br] = x
+        if (divergencePoint==0)and(abs(sol[br]*sqrt(x))>maxValue):
             divergencePoint = br
             while( abs(sol[divergencePoint])>abs(sol[divergencePoint+1])) and \
                 (divergencePoint<checkPoint):
@@ -1673,7 +1658,16 @@ def NumerovBack(innerLimit,outerLimit,kfun,step,init1,init2):
                 print("Numerov error")
                 exit()
 
-    return rad,sol,divergencePoint
+    for i in xrange(divergencePoint):
+        rad[i]=0;
+        sol[i]=0;
+
+    # convert R(r)*r^{3/4} to  R(r)*r
+    sol = np.multiply(sol,np.sqrt(rad))
+    # convert \sqrt(r) to r
+    rad = np.multiply(rad,rad)
+
+    return rad,sol
 
 
 def _atomLightAtomCoupling(n,l,j,nn,ll,jj,n1,l1,j1,n2,l2,j2,atom):
