@@ -53,47 +53,55 @@ PyMODINIT_FUNC initarc_c_extensions(void) {
 #endif
 
 
+// =========== variable definition ===========
+int divergencePoint;
+int totalLength;
+int br ;
+double* sol;
+double x,step2,maxValue,checkPoint,fromLastMax,r;
+int i;
+npy_intp dims[2];
+PyObject* narray;
 
+double commonTerm1=0;
+double commonTerm2=0;
 
+// =========== Numerov integration implementation ===========
 
-// numerov
-
-inline double EffectiveCharge(double r){
+__inline double EffectiveCharge(double r){
 	// returns effective charge of the core
 	return 1.0+((double)Z-1.)*exp(-a1*r)-r*(a3+a4*r)*exp(-a2*r);
 }
 
-inline double CorePotential(double r){
+__inline  double CorePotential(double r){
     // l dependent core potential (angular momentum of e) at radius r
     // returns Core potential
     return -EffectiveCharge(r)/r-alphaC/(2.*pow(r,4))*(1.-exp(-pow(r/rc,6)));
 }
 
-double commonTerm1;
 
-inline double Potenital(double r){
+__inline double Potenital(double r){
 	// l<4
     return CorePotential(r)+pow(alpha,2)/(2.0*pow(r,3))*commonTerm1;
 
 }
 
-inline double Potenital2(double r){
+__inline double Potenital2(double r){
 	// l>=4
     // act as if it is a Hydrogen atom, include spin-orbit coupling
     return -1./r+pow(alpha,2)/(2.0*pow(r,3))*commonTerm1;
 }
 
-double commonTerm2;
 
-inline double kfun(double x){
+__inline double kfun(double x){
 	// with potential for l<4
-  double r = x*x;   // x = sqrt(r)
+  r = x*x;   // x = sqrt(r)
 	return -3./(4.*r)+4*r*( 2.*mu*(stateEnergy-Potenital(r))-commonTerm2/pow(r,2) );
 }
 
-inline double kfun2(double x){
+__inline double kfun2(double x){
 	// with potential for l>4
-  double r = x*x;  // x = sqrt(r)
+  r = x*x;  // x = sqrt(r)
 	return -3./(4.*r)+4*r*( 2.*mu*(stateEnergy-Potenital2(r))-commonTerm2/pow(r,2) );
 }
 
@@ -120,17 +128,15 @@ static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
 	commonTerm1 = (j*(j+1.0)-((double)l)*(l+1.0)-s*(s+1.))/2.0;
 	commonTerm2 = ((double)l)*(l+1.);
 
-	int divergencePoint;
-
-	int totalLength =  (int)((sqrt(outerLimit)-sqrt(innerLimit))/step);
+	totalLength =  (int)((sqrt(outerLimit)-sqrt(innerLimit))/step);
 
 #ifdef DEBUG_OUTPUT
 	printf("Index = %i\n",totalLength);
 	printf("Index should be about = %.2f\n",(sqrt(outerLimit)-sqrt(innerLimit)/step));
 #endif
 
-	int br = totalLength;
-	double* sol = (double*) malloc(2*br*sizeof(double));
+	br = totalLength;
+	sol = (double*) malloc(2*br*sizeof(double));
 
 	if (!sol){
   #ifdef DEBUG_OUTPUT
@@ -144,8 +150,8 @@ static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
 	if (l<4){
 
 		br = br-1;
-    double x = sqrt(innerLimit)+step*(totalLength-1);
-	  double step2 = step*step;
+    x = sqrt(innerLimit)+step*(totalLength-1);
+	  step2 = step*step;
 	  sol[br] = (2*(1-5.0/12.0*step2*kfun(x))*init1-(1+1/12.0*step2*kfun(x+step))*init2)/(1+1/12.0*step2*kfun(x-step));
     sol[br+totalLength]=x;
 		x = x-step;
@@ -154,10 +160,10 @@ static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
 		sol[br] = (2*(1-5.0/12.0*step2*kfun(x))*sol[br+1]-(1+1/12.0*step2*kfun(x+step))*init1)/(1+1/12.0*step2*kfun(x-step));
     sol[br+totalLength]=x;
 
-		double maxValue = 0;
+		maxValue = 0;
 
-	  double checkPoint = 0;
-	  double fromLastMax = 0;
+	  checkPoint = 0;
+	  fromLastMax = 0;
 
 	  while (br>checkPoint){
 	      br = br-1;
@@ -201,8 +207,8 @@ static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
 	else{ //l>=4
 
 		  br = br-1;
-	    double x = sqrt(innerLimit)+step*(totalLength-1);
-	    double step2 = step*step;
+	    x = sqrt(innerLimit)+step*(totalLength-1);
+	    step2 = step*step;
 	    sol[br] = (2*(1-5.0/12.0*step2*kfun2(x))*init1-(1+1/12.0*step2*kfun2(x+step))*init2)/(1+1/12.0*step2*kfun2(x-step));
       sol[br+totalLength]=x;
 		  x = x-step;
@@ -211,10 +217,10 @@ static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
 		  sol[br] = (2*(1-5.0/12.0*step2*kfun2(x))*sol[br+1]-(1+1/12.0*step2*kfun2(x+step))*init1)/(1+1/12.0*step2*kfun2(x-step));
       sol[br+totalLength]=x;
 
-		  double maxValue = 0;
+		  maxValue = 0;
 
-	    double checkPoint = 0;
-	    double fromLastMax = 0;
+	    checkPoint = 0;
+	    fromLastMax = 0;
 
 	    while (br>checkPoint){
 	        br = br-1;
@@ -257,14 +263,14 @@ static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
 	}
 
   // RETURN RESULT - but set to zero divergent part (to prevent integration there)
-  for (int i =0; i<divergencePoint; i++) sol[i] = 0;
+  for (i =0; i<divergencePoint; i++) sol[i] = 0;
   // same for radial part
-  for (int i = 0; i < divergencePoint; i++) sol[i+totalLength] = 0;
+  for (i = 0; i < divergencePoint; i++) sol[i+totalLength] = 0;
 
   // convert sol that is at the moment R(r)*r^{3/4} into R(r)*r
-  for (int i=0; i<totalLength; i++)  sol[i]=sol[i]*sqrt(sol[i+totalLength]);
+  for (i=0; i<totalLength; i++)  sol[i]=sol[i]*sqrt(sol[i+totalLength]);
   // convert coordinates from sqrt(r) into r
-  for (int i=totalLength; i<2*totalLength; i++)  sol[i]=sol[i]*sol[i];
+  for (i=totalLength; i<2*totalLength; i++)  sol[i]=sol[i]*sol[i];
 
   // return the array as a numpy array (numpy will free it later)
   npy_intp dims[2] = {totalLength,totalLength};
