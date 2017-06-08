@@ -53,7 +53,10 @@ except:
 import gzip
 import csv
 import sqlite3
-
+sqlite3.register_adapter(np.float64, float)
+sqlite3.register_adapter(np.float32, float)
+sqlite3.register_adapter(np.int64, int)
+sqlite3.register_adapter(np.int32, int)
 
 
 class AlkaliAtom(object):
@@ -163,7 +166,8 @@ class AlkaliAtom(object):
 
             try:
                 data = np.load(os.path.join(self.dataFolder,\
-                                            self.dipoleMatrixElementFile))
+                                            self.dipoleMatrixElementFile),\
+                               encoding = 'latin1')
             except IOError as e:
                 print("Error reading dipoleMatrixElement File "+\
                     os.path.join(self.dataFolder,self.dipoleMatrixElementFile))
@@ -195,7 +199,8 @@ class AlkaliAtom(object):
                 self.quadrupoleMatrixElementFile  = "NIST_"+self.quadrupoleMatrixElementFile
             try:
                 data = np.load(os.path.join(self.dataFolder,\
-                                            self.quadrupoleMatrixElementFile))
+                                            self.quadrupoleMatrixElementFile),\
+                               encoding = 'latin1')
 
             except IOError as e:
                 print("Error reading quadrupoleMatrixElementFile File "+\

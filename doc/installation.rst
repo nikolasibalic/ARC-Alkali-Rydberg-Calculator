@@ -3,7 +3,7 @@ Installation instructions
 Prerequisite: Python
 --------------------
 
-Install Python and packages for scientific computing in Python (scipy, numpy, matplotlib). The package is tested with Python 2.* version, and currently is not supported for Python 3.* version.  We recommend installing Python distributions that comes with Numpy that is connected to the optimized numeric libraries like ATLAS. One such distribution is `Anaconda <https://www.continuum.io/downloads>`_, that provides `ATLAS <https://anaconda.org/anaconda/atlas>`_ support and optimized math kernel.
+Install Python and packages for scientific computing in Python (scipy, numpy, matplotlib). The package is tested and works with **both Python 2.7 and Python 3.5**.  We recommend installing Python distributions that comes with Numpy that is connected to the optimized numeric libraries like ATLAS. One such distribution is `Anaconda <https://www.continuum.io/downloads>`_, that provides `ATLAS <https://anaconda.org/anaconda/atlas>`_ support and optimized math kernel.
 
 
 Download the ARC library/package

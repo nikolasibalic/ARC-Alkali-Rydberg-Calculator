@@ -7,14 +7,17 @@ from numpy import arange
 import numpy as np
 import os
 from scipy.sparse import csr_matrix
+import sys
+if sys.version_info > (2,):
+    xrange = range
 
 wignerPrecal = True  # use precalculated values - tested only for the main algorithm calls
 wignerPrecalJmax = 23
 wignerPrecal3j = np.load(os.path.join(os.path.dirname(os.path.realpath(__file__)),\
-                                      "data","precalculated3j.npy"))
+                                      "data","precalculated3j.npy"), encoding = 'latin1')
 
 wignerPrecal6j = np.load(os.path.join(os.path.dirname(os.path.realpath(__file__)),\
-                         "data","precalculated6j.npy"))
+                         "data","precalculated6j.npy"), encoding = 'latin1')
 
 def Wigner3j(j1,j2,j3,m1,m2,m3):
 

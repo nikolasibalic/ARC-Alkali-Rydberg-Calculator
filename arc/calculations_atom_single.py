@@ -42,6 +42,10 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib
 
 import sqlite3
+sqlite3.register_adapter(np.float64, float)
+sqlite3.register_adapter(np.float32, float)
+sqlite3.register_adapter(np.int64, int)
+sqlite3.register_adapter(np.int32, int)
 import datetime
 
 class StarkMap:

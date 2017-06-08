@@ -250,8 +250,8 @@ class PairStateInteractions:
         self.drivingFromState = [0,0,0,0,0]  # n,l,j,mj, drive polarization q
 
         #sam = saved angular matrix metadata
-        self.angularMatrixFile = "angularMatrix.pkl"
-        self.angularMatrixFile_meta = "angularMatrix_meta.pkl"
+        self.angularMatrixFile = "angularMatrix.npy"
+        self.angularMatrixFile_meta = "angularMatrix_meta.npy"
         #self.sam = []
         self.savedAngularMatrix_matrix = []
 
@@ -365,8 +365,7 @@ class PairStateInteractions:
 
             fileHandle = gzip.GzipFile(os.path.join(self.dataFolder,\
                                                     self.angularMatrixFile_meta), 'wb')
-            pickle.dump(data,fileHandle,\
-                        pickle.HIGHEST_PROTOCOL)
+            np.save(fileHandle,data)
             fileHandle.close()
         except IOError as e:
             print("Error while updating angularMatrix \
@@ -375,8 +374,7 @@ class PairStateInteractions:
         try:
             fileHandle = gzip.GzipFile(os.path.join(self.dataFolder,\
                                                     self.angularMatrixFile),'wb')
-            pickle.dump(self.savedAngularMatrix_matrix,fileHandle,
-                        pickle.HIGHEST_PROTOCOL)
+            np.save(fileHandle,self.savedAngularMatrix_matrix)
             fileHandle.close()
         except IOError as e:
             print("Error while updating angularMatrix \
@@ -387,7 +385,7 @@ class PairStateInteractions:
 
         fileHandle =  gzip.GzipFile(os.path.join(self.dataFolder,\
                                                  self.angularMatrixFile_meta),'rb')
-        data = pickle.load(fileHandle)
+        data = np.load(fileHandle, encoding = 'latin1')
         fileHandle.close()
 
         data[:,1] *= 2  # j1 -> 2 r j1
@@ -420,7 +418,8 @@ class PairStateInteractions:
         try:
             fileHandle =  gzip.GzipFile(os.path.join(self.dataFolder,\
                                                     self.angularMatrixFile),'rb')
-            self.savedAngularMatrix_matrix = pickle.load(fileHandle)
+            self.savedAngularMatrix_matrix = np.load(fileHandle,\
+                                                     encoding = 'latin1').tolist()
             fileHandle.close()
         except :
             print("Note: No saved angular matrix files to be loaded.")
@@ -649,30 +648,28 @@ class PairStateInteractions:
                     http://www.nrcresearchpress.com/doi/abs/10.1139/p74-035
         """
         step = 0.001
-        a1,b1 = self.atom.radialWavefunction(self.l,0.5,self.j,\
+        r1,psi1_r1 = self.atom.radialWavefunction(self.l,0.5,self.j,\
                                                self.atom.getEnergy(self.n, self.l, self.j)/27.211,\
                                                self.atom.alphaC**(1/3.0),\
                                                2.0*self.n*(self.n+15.0), step)
-        upTo = len(a1)
-        a1 = a1[start1:upTo]
-        b1 = b1[start1:upTo]
 
-        r1 = sqrt(np.sum(np.multiply(np.multiply(b1,b1),\
-                                               np.multiply(a1,a1)*step)))
+        sqrt_r1_on2 = np.trapz(np.multiply(np.multiply(psi1_r1,psi1_r1),\
+                                               np.multiply(r1,r1)),\
+                                     x = r1)
 
-        a2,b2 = self.atom.radialWavefunction(self.ll,0.5,self.jj,\
+        r2,psi2_r2 = self.atom.radialWavefunction(self.ll,0.5,self.jj,\
                                                self.atom.getEnergy(self.nn, self.ll, self.jj)/27.211,\
                                                self.atom.alphaC**(1/3.0),\
                                                2.0*self.nn*(self.nn+15.0), step)
-        upTo2 = len(a2)
-        a2 = a2[start2:upTo2]
-        b2 = b2[start2:upTo2]
 
-        r2 = sqrt(np.sum(np.multiply(np.multiply(b2,b2),\
-                                               np.multiply(a2,a2)*step)))
+        sqrt_r2_on2 = np.trapz(np.multiply(np.multiply(psi2_r2,psi2_r2),\
+                                               np.multiply(r2,r2)),\
+                                     x = r2)
 
 
-        return 2.*(r1+r2)*(physical_constants["Bohr radius"][0]*1.e6)
+
+        return 2.*(sqrt(sqrt_r1_on2)+sqrt(sqrt_r2_on2))\
+                *(physical_constants["Bohr radius"][0]*1.e6)
 
     def getC6perturbatively(self,theta,phi,nRange,energyDelta):
         """

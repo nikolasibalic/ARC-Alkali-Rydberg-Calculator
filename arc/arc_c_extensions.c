@@ -35,19 +35,19 @@ static PyMethodDef module_methods[] = {
 #if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef moduledef = {
   PyModuleDef_HEAD_INIT, "arc_c_extensions",
-  "C extensions of ARC (Numerov integration)", -1, module_methods, };
+  "C extensions of ARC (Numerov integration)", -1, module_methods, NULL, NULL, NULL, NULL, };
 
 PyMODINIT_FUNC PyInit_arc_c_extensions(void) {
-  return PyModule_Create(&moduledef);
-
-  // something to do with numpy
+  // import Numpy API
   import_array();
+
+  return PyModule_Create(&moduledef);
 }
 #else
 PyMODINIT_FUNC initarc_c_extensions(void) {
   if (!(Py_InitModule3("arc_c_extensions", module_methods,
                        "C extensions of ARC (Numerov integration)"))) return;
-  // something to do with numpy
+  //  import Numpy API
   import_array();
 }
 #endif
