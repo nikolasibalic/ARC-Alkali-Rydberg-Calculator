@@ -701,7 +701,7 @@ class AlkaliAtom(object):
         if (dme):
             return dme[0]
 
-        step = 0.0001
+        step = 0.001
         r1,psi1_r1 = self.radialWavefunction(l1,0.5,j1,\
                                                self.getEnergy(n1, l1, j1)/27.211,\
                                                self.alphaC**(1/3.0),\
@@ -781,7 +781,7 @@ class AlkaliAtom(object):
 
         # if it wasn't, calculate now
 
-        step = 0.0001
+        step = 0.001
         r1, psi1_r1 = self.radialWavefunction(l1,0.5,j1,\
                                                self.getEnergy(n1, l1, j1)/27.211,\
                                                self.alphaC**(1/3.0), \
