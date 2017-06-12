@@ -61,4 +61,4 @@ Credits
 
 :Licence: BSD 3-Clause
 
-:Version: 0.9.1 of 2017/03/10
+:Version: 1.2.0 of 2017/06/10
