@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 import numpy as np
-from alkali_atom_functions import printStateString,elemCharge,h,pi
+from alkali_atom_functions import printStateString,C_e,C_h,pi
 
 
 def htmlLiteratureOutput(v,ref):
@@ -14,7 +14,7 @@ def htmlLiteratureOutput(v,ref):
 
 def rabiFrequencyWidget(atom,n1,l1,j1,n2,l2,j2,laserPower,laserWaist):
     sol = []
-    inputMj = '<p>Rabi frequency: <span id="rabival">0</span><p><form id="polarization" onchange="myFunction()">'
+    inputMj = '<p>Rabi frequency $=$ <span id="rabival">0</span><p><form id="polarization" onchange="myFunction()">'
     inputMj +=  '<p>for driving from <select id="mj" onchange="myFunction()">'
     index = 0
     for mj1 in np.linspace(-j1,j1,int(round(2*j1+1))):
@@ -25,7 +25,7 @@ def rabiFrequencyWidget(atom,n1,l1,j1,n2,l2,j2,laserPower,laserWaist):
                 rabiFreq = atom.getRabiFrequency(n1, l1, j1, mj1, n2, l2, j2,\
                                                   q, laserPower,\
                                                    laserWaist)/(2*pi)
-                arr.append("2 pi x"+printValueString(rabiFreq,"Hz",decimalPlaces=2))
+                arr.append("$2 \\pi \\times$"+printValueString(rabiFreq,"Hz",decimalPlaces=2))
             else:
                 arr.append("not coupled")
         sol.append(arr)
@@ -35,7 +35,7 @@ def rabiFrequencyWidget(atom,n1,l1,j1,n2,l2,j2,laserPower,laserWaist):
 <input type="radio" name="colors" id="pi" value="1" checked>$\pi$ |\
 <input type="radio" name="colors" id="sigma+" value="2" >$\sigma^+$\
  transition</p></form>'
-    
+
     script = "<script id='returnscript' type='text/javascript'>"
     script = script+ "var rabiFreq ="+str(sol)+"; "
     script += 'function myFunction() {\
@@ -65,7 +65,7 @@ def printValueString(value,unit,decimalPlaces=3):
     if value<0: sg = -1.
     value = abs(value)
     formatString = "%%.%df %%s%%s" % decimalPlaces
-    
+
     if value>1000:
         while (value>1000)and(i<9):
             value = value*1.e-3
@@ -80,7 +80,7 @@ def printValueString(value,unit,decimalPlaces=3):
         return formatString % (sg*value,"",unit)
 
 def plotStarkMap(calc,units=1,xlim=[],ylim=[],filename=""):
-    
+
     originalState = calc.basisStates[calc.indexOfCoupledState]
     n = originalState[0]
     l = originalState[1]
@@ -91,9 +91,9 @@ def plotStarkMap(calc,units=1,xlim=[],ylim=[],filename=""):
     x = []
     y = []
     yState = []
-    
+
     ax.xlabel = "E field (V/cm)"
-    
+
     coeff = 1.0
     ax.ylabel = "Energy/h (GHz)"
 
@@ -103,8 +103,8 @@ def plotStarkMap(calc,units=1,xlim=[],ylim=[],filename=""):
         coeff = 0.03336 # conversion factor from GHz to cm^{-1}
         ax.ylabel = "Energy/(h c) (cm^{-1})"
     if (ylim == []):
-        ylim = [calc.atom.getEnergy(n,l,j)*elemCharge/h*1e-9*coeff-10,\
-                calc.atom.getEnergy(n,l,j)*elemCharge/h*1e-9*coeff+10]
+        ylim = [calc.atom.getEnergy(n,l,j)*C_e/h*1e-9*coeff-10,\
+                calc.atom.getEnergy(n,l,j)*C_e/h*1e-9*coeff+10]
 
     for br in xrange(len(calc.y)):
         for i in xrange(len(calc.y[br])):
@@ -113,7 +113,7 @@ def plotStarkMap(calc,units=1,xlim=[],ylim=[],filename=""):
                 x.append(calc.eFieldList[i])
                 y.append(yt)
                 yState.append(calc.highlight[br][i])
-    
+
 
     yState = np.array(yState)
     sortOrder = yState.argsort(kind='heapsort')
@@ -123,30 +123,30 @@ def plotStarkMap(calc,units=1,xlim=[],ylim=[],filename=""):
     x = x[sortOrder]
     y = y[sortOrder]
     yState = yState[sortOrder]
-    
+
     ct = "|< %s | \mu > |^2" %  printStateString(n,l,j)
-    
+
     ax.scatter(x/100.,y,c=yState,cmin=0,cmax=1,ctitle=ct)
 
     if (xlim==[]):
         xlim = [min(x)/100.,max(x)/100.]
-    
+
     ax.printPlot(xlim=xlim,ylim=ylim,filename=filename,name="starkdiv1",\
                  height=600)
-    
 
-         
+
+
     return 0
 
 
 def plotInteractionLevels(calc,xlim=[],ylim=[],filename=""):
 
-    
+
     ax = webPlot()
     ax.xlabel = "R (\mu m)"
     ax.ylabel = "\Delta E (GHz)"
-    
-    
+
+
     if (calc.drivingFromState[0] == 0):
         # colouring is based on the contribution of the original pair state here
         ct = r"|< %s %.1f , %s %.1f | \mu > |^2$" % \
@@ -156,8 +156,8 @@ def plotInteractionLevels(calc,xlim=[],ylim=[],filename=""):
                               calc.m1)
     else:
         # colouring is based on the coupling to different states
-        ct = "\Omega_\mu/\Omega" 
-    
+        ct = "\Omega_\mu/\Omega"
+
     x=[]
     y=[]
     yState=[]
@@ -166,26 +166,26 @@ def plotInteractionLevels(calc,xlim=[],ylim=[],filename=""):
             x.append(calc.r[i])
             y.append(calc.y[br][i])
             yState.append(calc.highlight[br][i])
-    
+
     yState = np.array(yState)
     sortOrder = yState.argsort(kind='heapsort')
     x = np.array(x)
     y = np.array(y)
-    
+
     x = x[sortOrder]
     y = y[sortOrder]
     yState = yState[sortOrder]
-    
+
     ax.scatter(x,y,c=yState,cmin=0,cmax=1,ctitle=ct)
-    
+
     ax.printPlot(xlim=xlim,ylim=ylim,filename=filename,name="levelintdiv")
     return
-    
+
 
 class webPlot:
-    
-    
-    
+
+
+
     def __init__(self):
         self.traces = []
         self.layout = []
@@ -195,8 +195,8 @@ class webPlot:
         self.layoutx = ""
         self.layouty = ""
         self.title =""
-    
-    
+
+
     def plot(self,x,y,type,name=""):
         np.set_printoptions(threshold=1e10)
         self.traceNo += 1
@@ -209,7 +209,7 @@ class webPlot:
         temp += "name: '%s'" % name
         temp += "}"
         self.traces.append(temp)
-        
+
     def semilogx(self,x,y,type,name=""):
         self.layoutx = "type:'log' ,\n\
         tickformat :'.1e',\n        "
@@ -219,7 +219,7 @@ class webPlot:
         self.layouty = "type:'log' ,\n\
         tickformat :'.1e',\n        "
         self.plot(x,y,type,name)
-    
+
     def scatter(self,x,y,c=[],cmin=0,cmax=1,ctitle="",name=""):
         np.set_printoptions(threshold=1e10)
         self.traceNo += 1
@@ -239,16 +239,16 @@ class webPlot:
                     title:'"% (cmin,cmax)+str(ctitle)+"',\n\
                 },\n\
                 size:5\n\
-                 },\n" 
+                 },\n"
         else:
             temp = temp+"marker:{\n\
                 size:5\n\
-                 },\n" 
+                 },\n"
         temp += "}"
         self.traces.append(temp)
-        
-        
-    
+
+
+
     def printPlot(self,name="",width=600,height=363,xlim=[],ylim=[],filename="",\
                   scriptName="returnscript"):
         d = ""
@@ -259,14 +259,14 @@ class webPlot:
             d += self.traces[i]
             i += 1
         d = "data=[" + d + "];\n"
-        
+
         xLimData = ""
         if (not xlim==[]):
             xLimData = "range: [%.2E,%.2E],\n"%(xlim[0],xlim[1])
         yLimData = ""
         if (not ylim==[]):
             yLimData = "range: [%.2E,%.2E],\n"%(ylim[0],ylim[1])
-        
+
         # now layout
 
         l = "layout = {\n\
@@ -288,9 +288,9 @@ title: '"+self.ylabel+"',\n\
         showline: true  \n\
         }\n\
     };\n"
-        
+
         if filename=="":
-    
+
             if name == "":
                 name = 'plotdiv'
             if (self.title != ""):
@@ -316,4 +316,3 @@ title: '"+self.ylabel+"',\n\
             f.write("Plotly.plot(plotarea, data, layout);\n")
             f.write("</script>\n")
             f.close()
- 
