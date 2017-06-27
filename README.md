@@ -20,10 +20,11 @@ Authors
 
 [Nikola Šibalić](http://www.jqc.org.uk/people/nikola-sibalic/104/), [Jonathan D. Pritchard](http://photonics.phys.strath.ac.uk/people/dr-jonathan-pritchard/), [Charles S. Adams](http://www.jqc.org.uk/people/charles-adams/44/), [Kevin J. Weatherill](http://www.jqc.org.uk/people/kevin-weatherill/18/)
 
-Please cite as: N. Šibalić, J. D. Pritchard, K. J. Weatherill, C. S. Adams,
+**Please cite as:** N. Šibalić, J. D. Pritchard, K. J. Weatherill, C. S. Adams,
 ARC: An open-source library for calculating properties of alkali Rydberg atoms,
-(submitted to Computer Physics Communications), [arXiv:1612.05529](http://arxiv.org/abs/1612.05529)
+(Computer Physics Communications, accepted for publication), [arXiv:1612.05529](http://arxiv.org/abs/1612.05529)
 
+**Who are the users of this library?** [Check papers that cite us](http://adsabs.harvard.edu/cgi-bin/nph-ref_query?bibcode=2016arXiv161205529S&amp;refs=CITATIONS&amp;db_key=PRE).
 
 -------
 License
