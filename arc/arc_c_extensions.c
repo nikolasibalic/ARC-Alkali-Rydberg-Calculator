@@ -274,7 +274,7 @@ static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
 
   // return the array as a numpy array (numpy will free it later)
   dims[0] = totalLength;
-  dims[0] = totalLength;
+  dims[1] = totalLength;
   narray = PyArray_SimpleNewFromData(2, dims, NPY_DOUBLE, sol);
   //free(sol); # freeing of solution array should be done from Numpy
   // this is the critical line - tell numpy it has to free the data
