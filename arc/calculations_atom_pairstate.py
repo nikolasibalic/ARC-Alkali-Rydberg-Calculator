@@ -73,6 +73,8 @@ if sys.version_info > (2,):
 
 import gzip
 
+DPATH = os.path.join(os.path.expanduser('~'), '.arc-data')
+
 class PairStateInteractions:
     """
         Calculates Rydberg level diagram (spaghetti) for the given pair state
@@ -145,8 +147,7 @@ class PairStateInteractions:
             >>> basisStates = calc.basisStates
     """
 
-    dataFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),\
-                              "data")
+    dataFolder = DPATH
 
     # =============================== Methods ===============================
 

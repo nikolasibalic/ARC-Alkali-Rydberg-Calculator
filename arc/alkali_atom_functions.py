@@ -20,6 +20,7 @@ from math import exp,log,sqrt
 import matplotlib.pyplot as plt
 import numpy as np
 import re
+import shutil
 
 from .wigner import Wigner6j,Wigner3j,wignerD,CG,wignerDmatrix
 from scipy.constants import physical_constants, pi , epsilon_0, hbar
@@ -57,6 +58,19 @@ sqlite3.register_adapter(np.float64, float)
 sqlite3.register_adapter(np.float32, float)
 sqlite3.register_adapter(np.int64, int)
 sqlite3.register_adapter(np.int32, int)
+
+DPATH = os.path.join(os.path.expanduser('~'), '.arc-data')
+
+def setup_data_folder():
+    """ Setup the data folder in the users home directory.
+
+    """
+    if not os.path.exists(DPATH):
+        os.makedirs(DPATH)
+        dataFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),"data")
+        for fn in os.listdir(dataFolder):
+            if os.path.isfile(os.path.join(dataFolder, fn)):
+                shutil.copy(os.path.join(dataFolder, fn), DPATH)
 
 
 class AlkaliAtom(object):
@@ -110,7 +124,7 @@ class AlkaliAtom(object):
     dipoleMatrixElementFile = ""            #: location of hard-disk stored dipole matrix elements
     quadrupoleMatrixElementFile = ""        #: location of hard-disk stored dipole matrix elements
 
-    dataFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),"data")
+    dataFolder = DPATH
 
     # now additional literature sources of dipole matrix elements
 
@@ -1924,7 +1938,7 @@ def printStateLetter(l):
 # =================== E FIELD Coupling (START) ===================
 
 class _EFieldCoupling:
-    dataFolder = os.path.join(os.path.dirname(os.path.realpath(__file__)),"data")
+    dataFolder = DPATH
 
     def __init__(self, theta=0., phi=0.):
         self.theta = theta
@@ -2051,3 +2065,8 @@ class _EFieldCoupling:
         return coupling
 
 # =================== E FIELD Coupling (END) ===================
+
+# we copy the data files to the user home at first run. This avoids
+# permission trouble.
+
+setup_data_folder()
