@@ -21,8 +21,10 @@ setup(
     version="1.2.1",
     description="Alkali Rydberg Calculator",
     license="BSD3",
-    keywords=["rydberg", "physics"],
-    url="http://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/",
+    keywords=["rydberg", "physics", "stark maps", "atom interactions"],
+    url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator",
+    author = 'Nikola Sibalic, Jonathan D. Pritchard, Charles S. Adams, Kevin J. Weatherill',
+    author_email = 'nikolasibalic@physics.org',
 
     packages=['arc'],
 
