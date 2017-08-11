@@ -10,5 +10,7 @@ script:
 - conda install --yes numpy=1.8
 - conda install --yes scipy=0.18.1
 - python  -m compileall -f arc/*.py
+- python setup.py build
+- python setup.py install
 - cd arc
 - python setupc.py build_ext --inplace
