@@ -19,7 +19,7 @@ arc_ext = Extension(
 setup(
     name="arc",
     version="1.2.1",
-    description="Alcali Rydberg Calculator",
+    description="Alkali Rydberg Calculator",
     license="BSD3",
     keywords=["rydberg", "physics"],
     url="http://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/",
