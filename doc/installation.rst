@@ -11,16 +11,30 @@ Download the ARC library/package
 
 `Download latest release for your operating system <https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/releases>`_, unzip the archive and set the folder somewhere within the Python package search path or directly in your project directory. Simply import and use the module::
 
-    >>> from arc import *
-    >>> # write your code that uses ARC then.
+    from arc import *
+    # write your code that uses ARC then.
 
 It is important that package is stored somewhere where user has write permissions, so that it can update the databases with atomic properties.
 
 
+Installation of the package globally with setup.py
+--------------------------------------------------
+
+**This is tested on Linux so far**
+
+Make sure you have C compiler and `python development headers <[https://anaconda.org/StatisKit/python-dev>`_ installed. To compile and install for local user ARC call from terminal::
+
+    python setup.py build
+    python setup.py install
+
+Databases that have to be changed with new values will be locally copied from package data location to `~.arc-data` folder when arc is used for the first time.
 
 Compiling C extension
----------------------
+----------------------
 
+If you do need to compile C extension yourself, this is how to do it without 
+installing globally the package (as in the previos section 
+"Installation of the package globally with setup.py").
 Optimized version of the Numerov is provided as the C code `arc_c_extensions.c`.
 **You don't need to perform this step** of manual compilation of that code if you
 followed recommended installation instruction by downloading **precompiled
