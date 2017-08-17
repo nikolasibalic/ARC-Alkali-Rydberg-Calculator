@@ -14,7 +14,7 @@ Download the ARC library/package
     from arc import *
     # write your code that uses ARC then.
 
-It is important that package is stored somewhere where user has write permissions, so that it can update the databases with atomic properties.
+It is important that package is stored somewhere where user has write permissions, so that it can update the databases with atomic properties. **This is the end of the standard installation for majority of the users.**
 
 
 Installation of the package globally with setup.py
@@ -22,6 +22,7 @@ Installation of the package globally with setup.py
 
 **This is tested on Linux so far**
 
+Do this only if you have Linux/UNIX (as it is tested on it) and you are sure that you don't want to change underlying ARC code. 
 Make sure you have C compiler and `python development headers <[https://anaconda.org/StatisKit/python-dev>`_ installed. To compile and install for local user ARC call from terminal::
 
     python setup.py build
