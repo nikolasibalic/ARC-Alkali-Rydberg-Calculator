@@ -16,6 +16,7 @@ import sys
 import os
 
 sys.path.insert(0,os.path.abspath('..'))
+autodoc_mock_imports = ["_tkinter"]
 
 html_extra_path = ['./_static/']
 
