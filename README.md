@@ -22,7 +22,7 @@ Authors
 
 **Please cite as:** N. Šibalić, J. D. Pritchard, K. J. Weatherill, C. S. Adams,
 ARC: An open-source library for calculating properties of alkali Rydberg atoms,
-*Computer Physics Communications* (2017), [https://doi.org/10.1016/j.cpc.2017.06.015](https://doi.org/10.1016/j.cpc.2017.06.015)
+*Computer Physics Communications* **220**, 319 (2017), [https://doi.org/10.1016/j.cpc.2017.06.015](https://doi.org/10.1016/j.cpc.2017.06.015)
 
 **Who are the users of this library?** [Check papers that cite us](http://adsabs.harvard.edu/cgi-bin/nph-ref_query?bibcode=2016arXiv161205529S&amp;refs=CITATIONS&amp;db_key=PRE).
 
