@@ -16,7 +16,10 @@ import sys
 import os
 
 sys.path.insert(0,os.path.abspath('..'))
+# resolve problem with not having _tkinter on server used for documentation building 
 autodoc_mock_imports = ["_tkinter"]
+import matplotlib
+matplotlib.use('agg')
 
 html_extra_path = ['./_static/']
 
