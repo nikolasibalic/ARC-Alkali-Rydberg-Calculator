@@ -17,7 +17,7 @@ arc_ext = Extension(
 
 
 setup(
-    name="arc",
+    name="ARC-Alkali-Rydberg-Calculator",
     version="1.3",
     description="Alkali Rydberg Calculator",
     license="BSD3",
