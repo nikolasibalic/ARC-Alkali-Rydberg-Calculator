@@ -18,20 +18,22 @@ arc_ext = Extension(
 
 setup(
     name="arc",
-    version="1.2.1",
+    version="1.3",
     description="Alkali Rydberg Calculator",
     license="BSD3",
-    keywords=["rydberg", "physics", "stark maps", "atom interactions"],
+    keywords=["rydberg", "physics", "stark maps", "atom interactions", "quantum optics", "van der Waals", "scientific"],
     url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator",
+    download_url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/archive/1.3.tar.gz",
     author = 'Nikola Sibalic, Jonathan D. Pritchard, Charles S. Adams, Kevin J. Weatherill',
     author_email = 'nikolasibalic@physics.org',
 
     packages=['arc'],
 
     package_data={'arc': ['data/*', 'arc_c_extensions.c']},
-
+    
     include_package_data=True,
     zip_safe=False,
     ext_modules=[arc_ext],
+    
 )
 
