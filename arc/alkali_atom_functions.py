@@ -1578,6 +1578,27 @@ class AlkaliAtom(object):
         # if we are here, we were unsucessfull in literature search for this value
         return False,0,[]
 
+    def getZeemanEnergyShift(self, l, j, mj, magneticFieldBz):
+        """
+            Retuns linear (paramagnetic) Zeeman shift.
+
+            :math:`\mathcal{H}_P=\frac{\mu_B B_z}{\hbar}(\hat{L}_{\rm z}+g_{\rm S}S_{\rm z})`
+
+            Returns:
+                float: energy offset of the state (in J)
+        """
+        prefactor = physical_constants["Bohr magneton"][0] * magneticFieldBz
+        gs = - physical_constants["electron g factor"][0]
+        sumOverMl = 0
+        if (mj+0.5 < l + 0.1):
+            # include ml = mj + 1/2
+            sumOverMl = (mj + 0.5 - gs * 0.5) * \
+                        abs(CG(l, mj + 0.5, 0.5, -0.5, j, mj))**2
+        if (mj -0.5 > -l - 0.1):
+            # include ml = mj - 1/2
+            sumOverMl += (mj - 0.5 + gs * 0.5) * \
+                         abs(CG(l, mj - 0.5, 0.5, 0.5, j, mj))**2
+        return prefactor * sumOverMl
 
 
 def NumerovBack(innerLimit,outerLimit,kfun,step,init1,init2):

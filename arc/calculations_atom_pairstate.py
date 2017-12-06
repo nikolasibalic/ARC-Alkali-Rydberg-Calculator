@@ -39,6 +39,11 @@ mpl.rcParams['xtick.major.size'] = 8
 mpl.rcParams['ytick.major.size'] = 8
 mpl.rcParams['xtick.minor.size'] = 4
 mpl.rcParams['ytick.minor.size'] = 4
+mpl.rcParams['xtick.direction'] = 'in'
+mpl.rcParams['ytick.direction'] = 'in'
+mpl.rcParams['xtick.top'] = True
+mpl.rcParams['ytick.right'] = True
+mpl.rcParams['font.family'] = 'serif'
 
 import numpy as np
 import re
@@ -534,7 +539,12 @@ class PairStateInteractions:
                                   for i in xrange(2*self.interactionsUpTo-1) ]
 
 
-
+        opiZeemanShift = (self.atom.getZeemanEnergyShift(
+                              self.l, self.j, self.m1,
+                              self.Bz) + \
+                         self.atom.getZeemanEnergyShift(
+                              self.ll, self.jj, self.m2,
+                              self.Bz)) / C_h * 1.0e-9  # in GHz
 
         if debugOutput:
             print("\n ======= Coupling strengths (radial part only) =======\n")
@@ -550,7 +560,8 @@ class PairStateInteractions:
             ed =  self.atom.getEnergyDefect2(states[opi][0],states[opi][1],states[opi][2],
                                           states[opi][3],states[opi][4],states[opi][5],
                                           states[i][0],states[i][1],states[i][2],
-                                          states[i][3],states[i][4],states[i][5])/C_h*1.0e-9
+                                          states[i][3],states[i][4],states[i][5]) / C_h * 1.0e-9\
+                 - opiZeemanShift
 
             pairState1 = "|"+printStateString(states[i][0],states[i][1],states[i][2])+\
                         ","+printStateString(states[i][3],states[i][4],states[i][5])+">"
@@ -841,7 +852,7 @@ class PairStateInteractions:
 
 
     def defineBasis(self,theta,phi,nRange,lrange,energyDelta,\
-                         progressOutput=False,debugOutput=False):
+                         Bz=0, progressOutput=False,debugOutput=False):
         """
             Finds relevant states in the vicinity of the given pair-state
 
@@ -870,6 +881,10 @@ class PairStateInteractions:
                 energyDelta (float): what is maximum energy difference ( :math:`\\Delta E/h` in Hz)
                     between the original pair state and the other pair states that we are including in
                     calculation
+                Bz (float): optional, magnetic field directed along z-axis in
+                    units of Tesla. Calculation will be correct only for weak
+                    magnetic fields, where paramagnetic term is much stronger
+                    then diamagnetic term. Diamagnetic term is neglected.
                 progressOutput (bool): optional, False by default. If true, prints
                     information about the progress of the calculation.
                 debugOutput (bool): optional, False by default. If true, similar
@@ -887,6 +902,7 @@ class PairStateInteractions:
         # save call parameters
         self.theta = theta; self.phi = phi; self.nRange = nRange;
         self.lrange = lrange; self.energyDelta = energyDelta
+        self.Bz = Bz
 
         # wignerDmatrix
         wgd = wignerDmatrix(theta,phi)
@@ -969,7 +985,7 @@ class PairStateInteractions:
                 ed = self.channel[ii][6]
 
                 # solves problems with exactly degenerate basisStates
-                degeneracyOffset = 0.000001
+                degeneracyOffset = 0.00000001
 
                 i = self.index[ii]
                 dMatrix1 = wgd.get(self.basisStates[i][2])
@@ -986,8 +1002,19 @@ class PairStateInteractions:
                     stateCom = compositeState(statePart1, statePart2)
 
                     if (matRIndex==0):
-                        matDiagonalConstructor[0].append(ed+degeneracyOffset)
-                        degeneracyOffset +=  0.000001
+                        zeemanShift = (self.atom.getZeemanEnergyShift(
+                                           self.basisStates[i][1],
+                                           self.basisStates[i][2],
+                                           self.basisStates[i][3],
+                                           self.Bz) + \
+                                       self.atom.getZeemanEnergyShift(
+                                           self.basisStates[i][5],
+                                           self.basisStates[i][6],
+                                           self.basisStates[i][7],
+                                           self.Bz)) / C_h * 1.0e-9   # in GHz
+                        matDiagonalConstructor[0].append(ed + zeemanShift +
+                                                         degeneracyOffset)
+                        degeneracyOffset +=  0.00000001
                         matDiagonalConstructor[1].append(i)
                         matDiagonalConstructor[2].append(i)
 
