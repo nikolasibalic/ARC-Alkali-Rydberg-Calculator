@@ -643,6 +643,12 @@ class PairStateInteractions:
         self.__loadAngularMatrixElementsFile()
         self.savedAngularMatrixChanged = False
 
+    def __closeDatabaseForMemoization(self):
+        self.conn.commit()
+        self.conn.close()
+        self.conn = False
+        self.c = False
+
     def getLeRoyRadius(self):
         """
             Returns Le Roy radius for initial pair-state.
@@ -849,7 +855,7 @@ class PairStateInteractions:
 
 
         # ========= END OF THE MAIN CODE ===========
-
+        self.__closeDatabaseForMemoization()
         return C6
 
 
@@ -1079,7 +1085,7 @@ class PairStateInteractions:
         self.originalPairStateIndex = opi
 
         self.__updateAngularMatrixElementsFile()
-
+        self.__closeDatabaseForMemoization()
 
 
     def diagonalise(self,rangeR,noOfEigenvectors,

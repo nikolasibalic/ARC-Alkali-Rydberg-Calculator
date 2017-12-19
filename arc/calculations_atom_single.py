@@ -195,7 +195,7 @@ class StarkMap:
         self.maxCoupling = 0.
 
         # STARK memoization
-        self.eFieldCouplingSaved = _EFieldCoupling()
+        self.eFieldCouplingSaved = False
 
 
 
@@ -251,6 +251,7 @@ class StarkMap:
         """
         global wignerPrecal
         wignerPrecal = True
+        self.eFieldCouplingSaved = _EFieldCoupling()
 
         states = []
 
@@ -329,6 +330,8 @@ class StarkMap:
             print(self.mat2[0])
 
         self.atom.updateDipoleMatrixElementsFile()
+        self.eFieldCouplingSaved._closeDatabase()
+        self.eFieldCouplingSaved = False
         return 0
 
     def diagonalise(self,eFieldList,drivingFromState = [0,0,0,0,0],

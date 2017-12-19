@@ -413,7 +413,6 @@ class AlkaliAtom(object):
 
         if self.cpp_numerov:
             # efficiant implementation in C
-
             if (l<4):
                 d = self.NumerovWavefunction(innerLimit,outerLimit,\
                                         step,0.01,0.01,\
@@ -1814,6 +1813,12 @@ def saveCalculation(calculation,fileName):
         calculation.ax = 0
         calculation.fig = 0
 
+        # close database connections
+        calculation.atom.conn.commit()
+        calculation.atom.conn.close()
+        calculation.atom.conn = False
+        calculation.atom.c = False
+
         output = gzip.GzipFile(fileName, 'wb')
         pickle.dump(calculation, output, pickle.HIGHEST_PROTOCOL)
         output.close()
@@ -2084,6 +2089,12 @@ class _EFieldCoupling:
         # return result
 
         return coupling
+
+    def _closeDatabase(self):
+        self.conn.commit()
+        self.conn.close()
+        self.conn = False
+        self.c = False
 
 # =================== E FIELD Coupling (END) ===================
 
