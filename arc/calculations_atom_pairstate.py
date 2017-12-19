@@ -72,6 +72,8 @@ from .calculations_atom_single import StarkMap
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib
 
+import datetime
+
 import sys
 if sys.version_info > (2,):
     xrange = range
