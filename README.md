@@ -18,13 +18,13 @@ If you want to contribute to the project, [check this page](http://arc-alkali-ry
 Authors
 -------
 
-[Nikola Šibalić](http://www.jqc.org.uk/people/nikola-sibalic/104/), [Jonathan D. Pritchard](http://photonics.phys.strath.ac.uk/people/dr-jonathan-pritchard/), [Charles S. Adams](http://www.jqc.org.uk/people/charles-adams/44/), [Kevin J. Weatherill](http://www.jqc.org.uk/people/kevin-weatherill/18/)
+[Nikola Šibalić](https://www.mas.ncl.ac.uk/old_jqc/people/nikola-%C5%A0ibali%C4%87/104/index.html), [Jonathan D. Pritchard](http://photonics.phys.strath.ac.uk/people/dr-jonathan-pritchard/), [Charles S. Adams](https://www.mas.ncl.ac.uk/old_jqc/people/charles-adams/44/index.html), [Kevin J. Weatherill](https://www.mas.ncl.ac.uk/old_jqc/people/kevin-weatherill/18/index.html)
 
 **Please cite as:** N. Šibalić, J. D. Pritchard, K. J. Weatherill, C. S. Adams,
 ARC: An open-source library for calculating properties of alkali Rydberg atoms,
 *Computer Physics Communications* **220**, 319 (2017), [https://doi.org/10.1016/j.cpc.2017.06.015](https://doi.org/10.1016/j.cpc.2017.06.015)
 
-**Who are the users of this library?** [Check papers that cite us](http://adsabs.harvard.edu/cgi-bin/nph-ref_query?bibcode=2017CoPhC.220..319S&amp;refs=CITATIONS&amp;db_key=PHY).
+**Who are the users of this library?** Check papers that cite us in [ADS](http://adsabs.harvard.edu/cgi-bin/nph-ref_query?bibcode=2017CoPhC.220..319S&amp;refs=CITATIONS&amp;db_key=PHY) and [Google Scholar](https://scholar.google.com/scholar?cites=17451096747440945721&as_sdt=2005&sciodt=0,5&hl=en).
 
 -------
 License
