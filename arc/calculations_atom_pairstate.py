@@ -540,8 +540,8 @@ class PairStateInteractions:
         couplingMatConstructor = [ [[],[],[]] \
                                   for i in xrange(2*self.interactionsUpTo-1) ]
 
-
-        opiZeemanShift = (self.atom.getZeemanEnergyShift(
+        # original pair-state (i.e. target pair state) Zeeman Shift
+        opZeemanShift = (self.atom.getZeemanEnergyShift(
                               self.l, self.j, self.m1,
                               self.Bz) + \
                          self.atom.getZeemanEnergyShift(
@@ -563,7 +563,7 @@ class PairStateInteractions:
                                           states[opi][3],states[opi][4],states[opi][5],
                                           states[i][0],states[i][1],states[i][2],
                                           states[i][3],states[i][4],states[i][5]) / C_h * 1.0e-9\
-                 - opiZeemanShift
+                 - opZeemanShift
 
             pairState1 = "|"+printStateString(states[i][0],states[i][1],states[i][2])+\
                         ","+printStateString(states[i][3],states[i][4],states[i][5])+">"
@@ -700,9 +700,9 @@ class PairStateInteractions:
             are close to each other. In that region multiple levels are strongly
             coupled, and one needs to use full diagonalization.
 
-            See `pertubative C6 calculations example snippet`_.
+            See `perturbative C6 calculations example snippet`_.
 
-            .. _`pertubative C6 calculations example snippet`:
+            .. _`perturbative C6 calculations example snippet`:
                 ./Rydberg_atoms_a_primer.html#Dispersion-Coefficients
 
             Args:
@@ -728,7 +728,7 @@ class PairStateInteractions:
 
                     from arc import *
                     calculation = PairStateInteractions(Rubidium(), 62, 2, 1.5, 62, 2, 1.5, 1.5, 1.5)
-                    c6 = calculation.getC6pertubatively(0,0, 5, 25e9)
+                    c6 = calculation.getC6perturbatively(0,0, 5, 25e9)
                     print "C_6 = %.0f GHz (mu m)^6" % c6
 
                 Which returns::
@@ -745,7 +745,7 @@ class PairStateInteractions:
                     # do calculation of C6 pertubatively for all atom orientations
                     c6 = []
                     for theta in thetaList:
-                        value = calculation1.getC6pertubatively(theta,0,5,25e9)
+                        value = calculation1.getC6perturbatively(theta,0,5,25e9)
                         c6.append(value)
                         print ("theta = %.2f * pi \tC6 = %.2f GHz  mum^6" % (theta/pi,value))
                     # plot results
@@ -965,10 +965,12 @@ class PairStateInteractions:
                 print(stateCoupled)
         self.index[-1] = len(self.basisStates)
 
-        print("\nCalculating Hamiltonian matrix...\n")
+        if progressOutput or debugOutput:
+            print("\nCalculating Hamiltonian matrix...\n")
 
         dimension = len(self.basisStates)
-        print("\n\tmatrix (dimension ",dimension,")\n")
+        if progressOutput or debugOutput:
+            print("\n\tmatrix (dimension ",dimension,")\n")
 
         # INITIALIZING MATICES
         # all (sparce) matrices will be saved in csr format
@@ -1068,7 +1070,8 @@ class PairStateInteractions:
                                 matRConstructor[matRIndex][1].append(j)
                                 matRConstructor[matRIndex][2].append(i)
             matRIndex += 1
-            print("\n")
+            if progressOutput or debugOutput:
+                print("\n")
 
         self.matDiagonal = csr_matrix((matDiagonalConstructor[0], \
                                     (matDiagonalConstructor[1], matDiagonalConstructor[2])),
