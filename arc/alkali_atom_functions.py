@@ -1814,8 +1814,8 @@ def saveCalculation(calculation,fileName):
         calculation.fig = 0
 
         # close database connections
-        calculation.atom.conn.commit()
-        calculation.atom.conn.close()
+        atomDatabaseConn = calculation.atom.conn
+        atomDatabaseC = calculation.atom.c
         calculation.atom.conn = False
         calculation.atom.c = False
 
@@ -1825,6 +1825,8 @@ def saveCalculation(calculation,fileName):
 
         calculation.ax = ax
         calculation.fig = fig
+        calculation.atom.conn = atomDatabaseConn
+        calculation.atom.c = atomDatabaseC
     except:
         print("ERROR: saving of the calculation failed.")
         print(sys.exc_info())
