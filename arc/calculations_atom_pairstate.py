@@ -2043,7 +2043,7 @@ class StarkMapResonances:
                             *C_e/C_h*1e-9
 
     def findResonances(self,nMin,nMax,maxL,eFieldList,energyRange=[-5.e9,+5.e9],\
-             progressOutput = False):
+             Bz=0, progressOutput=False):
         """
             Finds near-resonant dipole-coupled pair-states
 
@@ -2063,13 +2063,20 @@ class StarkMapResonances:
                     to be included in the calculation
                 eFieldList ([float]): list of the electric fields (in V/m) for
                     which to calculate level diagram (StarkMap)
+                Bz (float): optional, magnetic field directed along z-axis in
+                    units of Tesla. Calculation will be correct only for weak
+                    magnetic fields, where paramagnetic term is much stronger
+                    then diamagnetic term. Diamagnetic term is neglected.
                 energyRange ([float,float]): optinal argument. Minimal and maximal
                     energy of that some dipole-coupled state should have in order
                     to keep it in the plot (in units of Hz). By default it finds
                     states that are :math:`\pm 5` GHz
+                progressOutput (:obj:`bool`, optional): if True prints the
+                    progress of calculation; Set to false by default.
         """
 
         self.eFieldList = eFieldList
+        self.Bz = Bz
         eMin = energyRange[0]*1.e-9  # in GHz
         eMax = energyRange[1]*1.e-9
 
@@ -2077,7 +2084,7 @@ class StarkMapResonances:
 
         sm1 = StarkMap(self.atom1)
         sm1.defineBasis(self.state1[0],self.state1[1],self.state1[2],\
-                        self.state1[3], nMin, nMax, maxL, \
+                        self.state1[3], nMin, nMax, maxL, Bz=self.Bz,\
                         progressOutput = progressOutput)
         sm1.diagonalise(eFieldList,  progressOutput = progressOutput)
         if (self.atom2 is self.atom1) and \
@@ -2089,7 +2096,7 @@ class StarkMapResonances:
         else:
             sm2 = StarkMap(self.atom2)
             sm2.defineBasis(self.state2[0],self.state2[1],self.state2[2],\
-                            self.state2[3], nMin, nMax, maxL, \
+                            self.state2[3], nMin, nMax, maxL, Bz=self.Bz,\
                             progressOutput = progressOutput)
             sm2.diagonalise(eFieldList,  progressOutput = progressOutput)
 
@@ -2139,12 +2146,12 @@ class StarkMapResonances:
         self.composition = []
 
         for dm1 in dmlist1:
-            sm1.defineBasis(n1,l1,j1,mj1+dm1, nMin, nMax, maxL, \
+            sm1.defineBasis(n1,l1,j1,mj1+dm1, nMin, nMax, maxL, Bz=self.Bz,\
                         progressOutput = progressOutput)
             sm1.diagonalise(eFieldList,  progressOutput = progressOutput)
 
             for dm2 in dmlist2:
-                sm2.defineBasis(n2,l2,j2,mj2+dm2, nMin, nMax, maxL, \
+                sm2.defineBasis(n2,l2,j2,mj2+dm2, nMin, nMax, maxL, Bz=self.Bz,\
                             progressOutput = progressOutput)
                 sm2.diagonalise(eFieldList,  progressOutput = progressOutput)
 
