@@ -1517,6 +1517,8 @@ class PairStateInteractions:
             y = event.mouseevent.ydata
 
             i = np.searchsorted(self.r,x)
+            if i == len(self.r):
+                i -= 1
             if ((i>0) and (abs(self.r[i-1]-x)<abs(self.r[i]-x))):
                 i -=1
 
@@ -2229,6 +2231,8 @@ class StarkMapResonances:
             y = event.mouseevent.ydata
 
             i = np.searchsorted(self.eFieldList,x)
+            if i == len(self.eFieldList):
+                i -= 1
             if ((i>0) and (abs(self.eFieldList[i-1]-x)<\
                            abs(self.eFieldList[i]-x))):
                 i -=1
@@ -2263,6 +2267,8 @@ class StarkMapResonances:
             y = ydata
 
             i = np.searchsorted(self.eFieldList,x)
+            if i == len(self.eFieldList):
+                i -= 1
             if ((i>0) and (abs(self.eFieldList[i-1]-x)<\
                            abs(self.eFieldList[i]-x))):
                 i -=1

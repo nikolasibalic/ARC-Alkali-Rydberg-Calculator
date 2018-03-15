@@ -716,6 +716,8 @@ class StarkMap:
             y = event.mouseevent.ydata/scaleFactor
 
             i = np.searchsorted(self.eFieldList,x)
+            if i == len(self.eFieldList):
+                i -= 1
             if ((i>0) and (abs(self.eFieldList[i-1]-x)<abs(self.eFieldList[i]-x))):
                 i -=1
 
