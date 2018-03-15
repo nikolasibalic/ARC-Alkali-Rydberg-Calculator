@@ -1094,7 +1094,8 @@ class PairStateInteractions:
     def diagonalise(self,rangeR,noOfEigenvectors,
                          drivingFromState = [0,0,0,0,0],
                          eigenstateDetuning = 0.,
-                         progressOutput = False,\
+                         sortEigenvectors = False,
+                         progressOutput = False,
                          debugOutput = False):
         """
             Finds eigenstates in atom pair basis.
@@ -1126,6 +1127,10 @@ class PairStateInteractions:
                     contribution of the original pair-state in the eigenstates
                     obtained by diagonalization, and will highlight it's
                     admixure by colour mapping the obtained eigenstates plot.
+                sortEigenvectors(bool): optional, False by default. Tries to sort
+                    eigenvectors so that given eigen vector index corresponds
+                    to adiabatically changing eigenstate, as detirmined by
+                    maximising overlap between old and new eigenvectors.
                 progressOutput (bool): optional, False by default. If true, prints
                     information about the progress of the calculation.
                 debugOutput (bool): optional, False by default. If true, similar
@@ -1133,7 +1138,7 @@ class PairStateInteractions:
                     progress of calculations, but with more verbose output.
         """
 
-        self.r = rangeR
+        self.r = np.sort(rangeR)
         dimension = len(self.basisStates)
 
         self.noOfEigenvectors = noOfEigenvectors
@@ -1227,6 +1232,8 @@ class PairStateInteractions:
             print("\n\nDiagonalizing interaction matrix...\n")
 
         rvalIndex = 0.
+        previousEigenvectors = []
+
         for rval in self.r:
             if progressOutput:
                 sys.stdout.write("\r%d%%" %  (rvalIndex/len(self.r-1)*100.))
@@ -1246,8 +1253,41 @@ class PairStateInteractions:
             # sigma specifies center frequency (in GHz)
             ev, egvector = eigsh(m, noOfEigenvectors, sigma= eigenstateDetuning*1.e-9, which='LM',tol=1E-6)
 
-            self.y.append(ev)
+            if sortEigenvectors:
+                # Find which eigenvectors overlap most with eigenvectors from
+                # previous diagonalisatoin, in order to find "adiabatic"
+                # continuation for the respective states
 
+                if previousEigenvectors==[]:
+                    previousEigenvectors = np.copy(egvector)
+                    previousEigenvalues = np.copy(ev)
+                rowPicked = [False for i in range(len(ev))]
+                columnPicked = [False for i in range(len(ev))]
+
+                stateOverlap = np.zeros((len(ev),len(ev)))
+                for i in range(len(ev)):
+                    for j in range(len(ev)):
+                        stateOverlap[i,j] = np.vdot(egvector[:, i],
+                                                    previousEigenvectors[:, j])**2
+
+                sortedOverlap = np.dstack(np.unravel_index(np.argsort(stateOverlap.ravel()),
+                                                           (len(ev), len(ev))))[0]
+
+                sortedEigenvaluesOrder = np.zeros(len(ev), dtype=np.int32)
+                j = len(ev)**2 - 1
+                for i in range(len(ev)):
+                    while rowPicked[sortedOverlap[j, 0]] or \
+                        columnPicked[sortedOverlap[j, 1]]:
+                        j -= 1
+                    rowPicked[sortedOverlap[j, 0]] = True
+                    columnPicked[sortedOverlap[j, 1]] = True
+                    sortedEigenvaluesOrder[sortedOverlap[j, 1]] = sortedOverlap[j, 0]
+
+                egvector = egvector[:,sortedEigenvaluesOrder]
+                ev = ev[sortedEigenvaluesOrder]
+                previousEigenvectors = np.copy(egvector)
+
+            self.y.append(ev)
 
             if (drivingFromState[0] < 0.1):
                 # if we've defined from which state we are driving
