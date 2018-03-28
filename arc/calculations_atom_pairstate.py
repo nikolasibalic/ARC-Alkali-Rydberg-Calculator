@@ -860,9 +860,9 @@ class PairStateInteractions:
 
             Args:
                 theta (float):  relative orientation of the two atoms
-                    (see figure on top of the page)
+                    (see figure on top of the page), range 0 to :math:`\pi`
                 phi (float): relative orientation of the two atoms (see figure
-                    on top of the page)
+                    on top of the page), range 0 to :math:`2\pi`
                 nRange (int): how much below and above the given principal quantum number
                     of the pair state we should be looking?
                 lrange (int): what is the maximum angular orbital momentum state that we are including

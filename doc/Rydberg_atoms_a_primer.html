@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8" />
-<title>Rydberg_atoms_a_primer_notebook</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>Rydberg_atoms_a_primer_notebook</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
 <style type="text/css">
@@ -13,8 +11,8 @@
 *
 */
 /*!
- * Bootstrap v3.3.6 (http://getbootstrap.com)
- * Copyright 2011-2015 Twitter, Inc.
+ * Bootstrap v3.3.7 (http://getbootstrap.com)
+ * Copyright 2011-2016 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
@@ -1109,7 +1107,6 @@ a:focus {
   text-decoration: underline;
 }
 a:focus {
-  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -2538,7 +2535,6 @@ select[size] {
 input[type="file"]:focus,
 input[type="radio"]:focus,
 input[type="checkbox"]:focus {
-  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -3029,7 +3025,6 @@ select[multiple].input-lg {
 .btn.focus,
 .btn:active.focus,
 .btn.active.focus {
-  outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
@@ -8760,6 +8755,9 @@ body > #header .header-bar {
     margin-left: 10px;
   }
 }
+[dir="rtl"] #ipython_notebook {
+  float: right !important;
+}
 #noscript {
   width: auto;
   padding-top: 16px;
@@ -8962,8 +8960,14 @@ span#login_widget > .button .badge,
  *
  * Author: Jupyter Development Team
  */
+[dir="rtl"] #tabs li {
+  float: right;
+}
 ul#tabs {
   margin-bottom: 4px;
+}
+[dir="rtl"] ul#tabs {
+  margin-right: 0px;
 }
 ul#tabs a {
   padding-top: 6px;
@@ -8986,6 +8990,16 @@ ul.breadcrumb span {
 }
 .list_toolbar .tree-buttons {
   padding-top: 1px;
+}
+[dir="rtl"] .list_toolbar .tree-buttons {
+  float: left !important;
+}
+[dir="rtl"] .list_toolbar .pull-right {
+  padding-top: 1px;
+  float: left !important;
+}
+[dir="rtl"] .list_toolbar .pull-left {
+  float: right !important;
 }
 .dynamic-buttons {
   padding-top: 3px;
@@ -9122,6 +9136,9 @@ ul.breadcrumb span {
 #tree-selector {
   padding-right: 0px;
 }
+[dir="rtl"] #tree-selector a {
+  float: right;
+}
 #button-select-all {
   min-width: 50px;
 }
@@ -9211,6 +9228,9 @@ ul#new-menu {
   left: auto;
   right: 0;
 }
+[dir="rtl"] #new-menu {
+  text-align: right;
+}
 .kernel-menu-icon {
   padding-right: 12px;
   width: 24px;
@@ -9255,6 +9275,9 @@ ul#new-menu {
 }
 #running .panel-group .panel .panel-body .list_container .list_item:last-child {
   border-bottom: 0px;
+}
+[dir="rtl"] #running .col-sm-8 {
+  float: right !important;
 }
 .delete-button {
   display: none;
@@ -9551,6 +9574,7 @@ div.cell.selected.jupyter-soft-selected {
   }
 }
 div.inner_cell {
+  min-width: 0;
   /* Old browsers */
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -9571,11 +9595,6 @@ div.inner_cell {
   box-flex: 1;
   /* Modern browsers */
   flex: 1;
-}
-@-moz-document url-prefix() {
-  div.inner_cell {
-    overflow-x: hidden;
-  }
 }
 /* input_area and input_prompt must match in top border and margin for alignment */
 div.input_area {
@@ -11246,7 +11265,7 @@ div#pager .ui-resizable-handle::after {
 }
 .shortcut_key {
   display: inline-block;
-  width: 20ex;
+  width: 21ex;
   text-align: right;
   font-family: monospace;
 }
@@ -11558,6 +11577,7 @@ ul.typeahead-list > li > a {
   box-shadow: 0px 0px 12px 1px rgba(87, 87, 87, 0.2);
 }
 .terminal-app .terminal {
+  width: 100%;
   float: left;
   font-family: monospace;
   color: white;
@@ -11571,6 +11591,9 @@ ul.typeahead-list > li > a {
 .terminal-app .terminal dummy-screen {
   line-height: 1em;
   font-size: 14px;
+}
+.terminal-app .terminal .xterm-rows {
+  padding: 10px;
 }
 .terminal-app .terminal-cursor {
   color: black;
@@ -11631,8 +11654,10 @@ ul.typeahead-list > li > a {
 .highlight .mh { color: #666666 } /* Literal.Number.Hex */
 .highlight .mi { color: #666666 } /* Literal.Number.Integer */
 .highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sa { color: #BA2121 } /* Literal.String.Affix */
 .highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
 .highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
 .highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
 .highlight .s2 { color: #BA2121 } /* Literal.String.Double */
 .highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
@@ -11643,9 +11668,11 @@ ul.typeahead-list > li > a {
 .highlight .s1 { color: #BA2121 } /* Literal.String.Single */
 .highlight .ss { color: #19177C } /* Literal.String.Symbol */
 .highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #0000FF } /* Name.Function.Magic */
 .highlight .vc { color: #19177C } /* Name.Variable.Class */
 .highlight .vg { color: #19177C } /* Name.Variable.Global */
 .highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .vm { color: #19177C } /* Name.Variable.Magic */
 .highlight .il { color: #666666 } /* Literal.Number.Integer.Long */
     </style>
 <style type="text/css">
@@ -11699,9 +11726,7 @@ body {
 div#notebook {
   overflow: visible;
   border-top: none;
-}
-
-@media print {
+}@media print {
   div.cell {
     display: block;
     page-break-inside: avoid;
@@ -11722,7 +11747,7 @@ div#notebook {
 
 <!-- Loading mathjax macro -->
 <!-- Load mathjax -->
-    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
     <!-- MathJax configuration -->
     <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
@@ -11746,8 +11771,7 @@ div#notebook {
   <div tabindex="-1" id="notebook" class="border-box-sizing">
     <div class="container" id="notebook-container">
 
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -11755,8 +11779,7 @@ div#notebook {
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -11799,8 +11822,7 @@ div#notebook {
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -11836,22 +11858,24 @@ div#notebook {
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Rydberg-Atom-Energy-Levels">Rydberg Atom Energy Levels<a class="anchor-link" href="#Rydberg-Atom-Energy-Levels">&#182;</a></h1><p>Rydberg states are highly excited states of the outer valence electron where the properties can be scaled in terms of the principal quantum number, $n$. Originally observed in the spectral lines of hydrogen, the binding energy of the Rydberg series are given by</p>
-\begin{equation}
+<p>\begin{equation}
 E_{n\ell j} = - \frac{\mathrm{Ry}}{(n-\delta_{n\ell j})^2},
-\end{equation}<p>where $n,\ell,j$ are the quantum numbers, $\mathrm{Ry}$ is the Rydberg constant and $\delta_{n\ell j}$ is the quantum defect. This defect describes the increase in binding energy for an alkali atom with respect to Hydrogen due to penetration and polarisation of the closed inner electron shells, which is most significant for the $\ell=0$ states with highly elliptical orbits, and can be neglected for states with $\ell>3$. The quantum defects are parameterised via</p>
-\begin{equation}
+\end{equation}</p>
+<p>where $n,\ell,j$ are the quantum numbers, $\mathrm{Ry}$ is the Rydberg constant and $\delta_{n\ell j}$ is the quantum defect. This defect describes the increase in binding energy for an alkali atom with respect to Hydrogen due to penetration and polarisation of the closed inner electron shells, which is most significant for the $\ell=0$ states with highly elliptical orbits, and can be neglected for states with $\ell&gt;3$. The quantum defects are parameterised via</p>
+<p>\begin{equation}
 \delta_{n\ell j} = \delta_0 + \frac{\delta_2}{(n-\delta_0)^2}+\frac{\delta_4}{(n-\delta_0)^4}+ \ldots,
-\end{equation}<p>with coefficients $\delta_{0,2,...}$ taken from measured energy levels.</p>
+\end{equation}</p>
+<p>with coefficients $\delta_{0,2,...}$ taken from measured energy levels.</p>
 <p>The mass-corrected Rydberg constant is given by $\mathrm{Ry}=\mathrm{Ry}_\infty\times M/(M+m_e)$ where $m_e$ is the electron mass and $M$ is the atomic mass of the nucleus, with</p>
-\begin{equation}
+<p>\begin{equation}
 \mathrm{Ry}_\infty=\frac{e^4m_e}{16\pi^2\epsilon_0^2\hbar^2}.
-\end{equation}<p>To demonstrate the effect of quantum defects, the graph below shows the energy levels of Cesium highlighting the effect of the quantum defect between the different $\ell$ manifolds.</p>
+\end{equation}</p>
+<p>To demonstrate the effect of quantum defects, the graph below shows the energy levels of Cesium highlighting the effect of the quantum defect between the different $\ell$ manifolds.</p>
 
 </div>
 </div>
@@ -11885,7 +11909,11 @@ E_{n\ell j} = - \frac{\mathrm{Ry}}{(n-\delta_{n\ell j})^2},
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -12208,7 +12236,11 @@ AACgIxIAAICOSAAAADoiAQAA6Pw/ZAeItuvaOToAAAAASUVORK5CYII=
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[3]:</div>
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[3]:</div>
+
+
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -12217,7 +12249,11 @@ AACgIxIAAICOSAAAADoiAQAA6Pw/ZAeItuvaOToAAAAASUVORK5CYII=
 
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -12560,22 +12596,23 @@ EjgBuKOecCRpB2+UkCRJagHP1EmSJLWARZ0kSVILWNRJkiS1gEWdJElSC1jUSZIktYBFnSRJUgtY
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Rydberg-atom-wavefunctions">Rydberg atom wavefunctions<a class="anchor-link" href="#Rydberg-atom-wavefunctions">&#182;</a></h2><p>Rydberg atom wavefunctions can be obtained from Schrödinger's equation,</p>
-\begin{equation}
+<p>\begin{equation}
 \left[-\frac{1}{2\mu}\left(\frac{\mathrm{d}^2}{\mathrm{d} r^2} +\frac{2}{r}\frac{\mathrm{d}}{\mathrm{d} r}\right) + \frac{\ell(\ell+1)}{2\mu r^2} + V(r)\right]R(r)= E_{n\ell j}R(r),
-\end{equation}<p>with reduced mass $\mu=Mm_e/(M+m_e)$ and $V(r)$ a model potential given by</p>
-\begin{equation}
+\end{equation}</p>
+<p>with reduced mass $\mu=Mm_e/(M+m_e)$ and $V(r)$ a model potential given by</p>
+<p>\begin{equation}
 V(r) = -\frac{Z_{n\ell}(r)}{r}-\frac{\alpha_c}{2r^4}(1-e^{-(r/r_c)^6})+V_{\rm so},
-\end{equation}<p></p>
+\end{equation}</p>
 <p>which at long range gives a $-1/r$ Colomb potential and at short range accounts for the finite size of the core, with radial charge given by</p>
-\begin{equation}
+<p>\begin{equation}
 Z_{n\ell}(r) = 1+(Z-1)e^{-a_1r}-r(a_3+a_4r)e^{-a_2r}.
-\end{equation}<p>Wavefunctions are calculated by numerical intergration of the model potential using parameters $a_{1..4},r_c$ and $\alpha_c$ taken from <a href="https://doi.org/10.1103/PhysRevA.49.982">Marinescu et.al</a>. Potential includes spin-orbit interaction $V_{\rm so}(r) = \alpha ~\mathbf{L}\cdot\mathbf{S}/(2r^3)$, where $\alpha$ is fine structure constant.</p>
+\end{equation}</p>
+<p>Wavefunctions are calculated by numerical intergration of the model potential using parameters $a_{1..4},r_c$ and $\alpha_c$ taken from <a href="https://doi.org/10.1103/PhysRevA.49.982">Marinescu et.al</a>. Potential includes spin-orbit interaction $V_{\rm so}(r) = \alpha ~\mathbf{L}\cdot\mathbf{S}/(2r^3)$, where $\alpha$ is fine structure constant.</p>
 <p>Rydberg atoms are large, with an average size $\langle r \rangle\propto n^2ea_0$, which leads to extremely large dipole matrix elements making them ideal for exploitng strong long range interactions. To illustrate this point, the probabiltiy distribution $\vert rR(r)\vert^2$ for $nS_{1/2}$ atomic wavefunctions are plotted below for increasing $n$ which highlights the dramatic scaling with atoms approaching $1~\mu$m in size for $n=100$ compared to $1~\unicode{x212B}$ for the groundstate!</p>
 
 </div>
@@ -12605,8 +12642,8 @@ Z_{n\ell}(r) = 1+(Z-1)e^{-a_1r}-r(a_3+a_4r)e^{-a_2r}.
     <span class="n">plotLegend</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">legendInfo</span><span class="p">)</span>
     
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">plotLegend</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">r&quot;Distance from nucleus $r$ ($a_0$)&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">r&quot;$\vert rR(r)\vert^2$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Distance from nucleus $r$ ($a_0$)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\vert rR(r)\vert^2$&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 
@@ -12618,7 +12655,11 @@ Z_{n\ell}(r) = 1+(Z-1)e^{-a_1r}-r(a_3+a_4r)e^{-a_2r}.
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -13041,33 +13082,38 @@ QmCC
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Matrix-Elements">Matrix Elements<a class="anchor-link" href="#Matrix-Elements">&#182;</a></h2><h4 id="Dipole-Matrix-Elements">Dipole Matrix Elements<a class="anchor-link" href="#Dipole-Matrix-Elements">&#182;</a></h4><p>Relevant properties of the Rydberg states can be derived through evaluation of dipole matrix elements. Recalling the separability of the atomic wavefunctions into radial and spherical components $\psi(r,\theta,\phi)=Y_{\ell,m_\ell}(\theta,\phi)R_{n\ell}(r)$ in the uncoupled basis, the dipole matrix elements can be expressed as</p>
-\begin{equation}
-\langle n,\ell,m_\ell\vert r_q \vert n',\ell',m_\ell' \rangle = (-1)^{\ell-m_\ell}\begin{pmatrix}\ell&1&\ell'\\-m_\ell&q&m_\ell'\end{pmatrix}\langle\ell \vert\vert r\vert\vert\ell'\rangle,
-\end{equation}<p>where $q=-1,0,1$ corresponds to $\sigma^+,\pi$ and $\sigma^-$ transitions respectively with the reduced matrix element</p>
-\begin{equation}
-\langle\ell\vert\vert r\vert\vert\ell'\rangle = (-1)^\ell\sqrt{(2\ell+1)(2\ell'+1)}\begin{pmatrix}\ell&1&\ell\\0&0&0\end{pmatrix}\mathcal{R}_{n\ell\rightarrow n'\ell'},
-\end{equation}<p>where round braces denote Wigner-$3j$ symbols and the radial matrix element is evaluated from</p>
-\begin{equation}
+<p>\begin{equation}
+\langle n,\ell,m_\ell\vert r_q \vert n',\ell',m_\ell' \rangle = (-1)^{\ell-m_\ell}\begin{pmatrix}\ell&amp;1&amp;\ell'\\-m_\ell&amp;q&amp;m_\ell'\end{pmatrix}\langle\ell \vert\vert r\vert\vert\ell'\rangle,
+\end{equation}</p>
+<p>where $q=-1,0,1$ corresponds to $\sigma^+,\pi$ and $\sigma^-$ transitions respectively with the reduced matrix element</p>
+<p>\begin{equation}
+\langle\ell\vert\vert r\vert\vert\ell'\rangle = (-1)^\ell\sqrt{(2\ell+1)(2\ell'+1)}\begin{pmatrix}\ell&amp;1&amp;\ell\\0&amp;0&amp;0\end{pmatrix}\mathcal{R}_{n\ell\rightarrow n'\ell'},
+\end{equation}</p>
+<p>where round braces denote Wigner-$3j$ symbols and the radial matrix element is evaluated from</p>
+<p>\begin{equation}
 \mathcal{R}_{n\ell\rightarrow n'\ell'} = \int_{r_{\rm i}}^{r_{\rm o}} R_{n,\ell}(r)rR_{n',\ell'}(r)r^2\mathrm{d} r.
-\end{equation}<p>For highly excited states the hyperfine-structure splitting becomes negligible, however the fine-structure splitting $\hat{\mathcal{H}}=\beta \bf\hat{L}\cdot\hat{S}$ means the relevant basis is then fine structure basis ($j,m_j$) with matrix elements</p>
-\begin{equation}
-\langle n,\ell,j,m_j\vert r_q \vert n',\ell',j',m_j' \rangle = (-1)^{j-m_j}\begin{pmatrix}j&1&j'\\-m_j&q&m_j'\end{pmatrix}\langle j \vert\vert r\vert\vert j'\rangle,
-\end{equation}<p>and the reduced matrix element equal to</p>
-\begin{equation}
+\end{equation}</p>
+<p>For highly excited states the hyperfine-structure splitting becomes negligible, however the fine-structure splitting $\hat{\mathcal{H}}=\beta \bf\hat{L}\cdot\hat{S}$ means the relevant basis is then fine structure basis ($j,m_j$) with matrix elements</p>
+<p>\begin{equation}
+\langle n,\ell,j,m_j\vert r_q \vert n',\ell',j',m_j' \rangle = (-1)^{j-m_j}\begin{pmatrix}j&amp;1&amp;j'\\-m_j&amp;q&amp;m_j'\end{pmatrix}\langle j \vert\vert r\vert\vert j'\rangle,
+\end{equation}</p>
+<p>and the reduced matrix element equal to</p>
+<p>\begin{equation}
 \langle j \vert\vert r\vert\vert j'\rangle = (-1)^{\ell+s+j'+1}\delta_{s,s'}\sqrt{(2j+1)(2j'+1)}
-\begin{Bmatrix}j&1&j'\\\ell'&s&\ell\end{Bmatrix}\langle \ell\vert\vert r\vert\vert\ell'\rangle, 
-\end{equation}<p>where the curly braces denote a Wigner-$6j$ symbol.</p>
-<p>The cell below demonstrates how to extract the relevent matrix elements for different transitions and highlights the extremely large matrix elements of the Rydberg states for transitions to neighbouring states, which scale $\propto n^2$ due to the large electron radius shown above. Thus whilst the alkali $D$ line transitions have elements of order $~e a_0$, the Rydberg states can have $>1000~e a_0$ making them ideally suited for exploiting strong, long range interactions as will be explored below.</p>
+\begin{Bmatrix}j&amp;1&amp;j'\\\ell'&amp;s&amp;\ell\end{Bmatrix}\langle \ell\vert\vert r\vert\vert\ell'\rangle, 
+\end{equation}</p>
+<p>where the curly braces denote a Wigner-$6j$ symbol.</p>
+<p>The cell below demonstrates how to extract the relevent matrix elements for different transitions and highlights the extremely large matrix elements of the Rydberg states for transitions to neighbouring states, which scale $\propto n^2$ due to the large electron radius shown above. Thus whilst the alkali $D$ line transitions have elements of order $~e a_0$, the Rydberg states can have $&gt;1000~e a_0$ making them ideally suited for exploiting strong, long range interactions as will be explored below.</p>
 <h4 id="Quadrupole-Matrix-Elements">Quadrupole Matrix Elements<a class="anchor-link" href="#Quadrupole-Matrix-Elements">&#182;</a></h4><p>For accurate interaction potentials at short range, it is necessary to also consider quadrupole matrix elements for the Rydberg atoms. getQuadrupoleMatrixElement</p>
-\begin{equation}
+<p>\begin{equation}
 \mathcal{R}^Q_{n\ell\rightarrow n'\ell'} = \int_{r_{\rm i}}^{r_{\rm o}} R_{n',\ell}(r)r^2R_{n,\ell'}(r)r^2\mathrm{d} r.
-\end{equation}
+\end{equation}</p>
+
 </div>
 </div>
 </div>
@@ -13130,7 +13176,11 @@ QmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Cs D2 Transition 6S_{1/2}--&gt;6P_{3/2}
 ====================================
@@ -13154,8 +13204,7 @@ R_{nlj-n&#39;l&#39;j&#39;} = 3563.326 ea_0
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -13189,7 +13238,11 @@ R_{nlj-n&#39;l&#39;j&#39;} = 3563.326 ea_0
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>5.61 ea_0
  source = theory
@@ -13205,8 +13258,7 @@ R_{nlj-n&#39;l&#39;j&#39;} = 3563.326 ea_0
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -13232,7 +13284,11 @@ R_{nlj-n&#39;l&#39;j&#39;} = 3563.326 ea_0
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>2.43e-05 s
 </pre>
@@ -13243,19 +13299,20 @@ R_{nlj-n&#39;l&#39;j&#39;} = 3563.326 ea_0
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The radiative lifetime is calculated from the Einstein-A coefficients as $1/\tau_0=\sum_{n'\ell'}A_{n\ell\rightarrow n'\ell'}$, with the summation over all dipole coupled states with energy $E_{n'\ell'}<E_{n\ell}$ and the A-coefficient calculated as</p>
-\begin{equation}
+<p>The radiative lifetime is calculated from the Einstein-A coefficients as $1/\tau_0=\sum_{n'\ell'}A_{n\ell\rightarrow n'\ell'}$, with the summation over all dipole coupled states with energy $E_{n'\ell'}&lt;E_{n\ell}$ and the A-coefficient calculated as</p>
+<p>\begin{equation}
 A_{n\ell\rightarrow n'\ell'}=\frac{4\omega_{nn'}^3}{3c^3}\frac{\ell_\mathrm{max}}{2\ell+1}\mathcal{R}^2_{n\ell\rightarrow n'\ell'}.
-\end{equation}<p>Here the prefactor of $\omega_{nn'}^3$ means that although the dipole matrix element for transitions to nearby $n$ states is much larger than that for transitions to the ground state (e.g. Cs $\langle 60 S_{1/2}|er| 60 P_{3/2}\rangle = 4114 ~ea_0$ compared to $\langle 6 S_{1/2}|er| 60 P_{3/2}\rangle = 0.0038 ~ea_0$), the A-coefficients for these two transitions are $1.9\mathrm{s}^{-1}$ and $224\mathrm{s}^{-1}$ respectively, resulting in the lowest energy transitions being the dominant decay pathways for radiative decay from the Rydberg states.</p>
+\end{equation}</p>
+<p>Here the prefactor of $\omega_{nn'}^3$ means that although the dipole matrix element for transitions to nearby $n$ states is much larger than that for transitions to the ground state (e.g. Cs $\langle 60 S_{1/2}|er| 60 P_{3/2}\rangle = 4114 ~ea_0$ compared to $\langle 6 S_{1/2}|er| 60 P_{3/2}\rangle = 0.0038 ~ea_0$), the A-coefficients for these two transitions are $1.9\mathrm{s}^{-1}$ and $224\mathrm{s}^{-1}$ respectively, resulting in the lowest energy transitions being the dominant decay pathways for radiative decay from the Rydberg states.</p>
 <p>At finite temperature, the black-body excitation spectrum causes a reduction in the lifetime due to driving transitions in the GHz and THz region to neighbouring Rydberg states both above and below the energy of the original Rydberg state. The black body loss is given by</p>
-\begin{equation}
+<p>\begin{equation}
 \frac{1}{\tau_\mathrm{BBR}}=\displaystyle\sum_{n'\ell'} \frac{A_{n\ell\rightarrow n'\ell'}}{\exp(\omega_{nn'}/k_\mathrm{B}T)-1},
-\end{equation}<p>with the effective lifetime $1/\tau_\mathrm{eff}=1/\tau_0+1/\tau_\mathrm{BBR}$.</p>
+\end{equation}</p>
+<p>with the effective lifetime $1/\tau_\mathrm{eff}=1/\tau_0+1/\tau_\mathrm{BBR}$.</p>
 <p>The figure below demonstrates the finite temperature effects by showing the strength of the diffent decay pathways for the $30S_{1/2}$ state in Rb at 300K showing the contribution from radiative decay (red columns) and black-body induced transitions (green). The effective lifetime is reduced by around a factor of 2 at room temperature compared to the natural lifetime.</p>
 
 </div>
@@ -13289,7 +13346,7 @@ A_{n\ell\rightarrow n'\ell'}=\frac{4\omega_{nn'}^3}{3c^3}\frac{\ell_\mathrm{max}
 <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">pqn</span><span class="o">-</span><span class="n">width</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">pqn</span><span class="o">+</span><span class="n">width</span><span class="o">/</span><span class="mf">2.</span><span class="p">,</span><span class="n">ybb</span><span class="p">,</span><span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s2">&quot;g&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Principal quantum number, $n$&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">r&quot;Transition rate (s$</span><span class="si">{}</span><span class="s2">^{-1}$)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Transition rate (s$</span><span class="si">{}</span><span class="s2">^{-1}$)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Transition from 30 $S_{1/2}$ to $n$ $P_{1/2,3/2}$&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">((</span><span class="s2">&quot;Spontaneous decays&quot;</span><span class="p">,</span><span class="s2">&quot;Black-body induced transitions&quot;</span><span class="p">),</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">40</span><span class="p">)</span>
@@ -13309,7 +13366,11 @@ A_{n\ell\rightarrow n'\ell'}=\frac{4\omega_{nn'}^3}{3c^3}\frac{\ell_\mathrm{max}
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -13707,7 +13768,11 @@ zErFwY2ZmZmVioMbMzMzKxUHN2ZmZlYq/w9BUS2KXbzZcAAAAABJRU5ErkJggg==
 
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 <div class="output_html rendered_html output_subarea ">
 Lifetime (0 K) &tau;<sub>0</sub> = 24.27 &mu;s
@@ -13715,7 +13780,11 @@ Lifetime (0 K) &tau;<sub>0</sub> = 24.27 &mu;s
 
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 <div class="output_html rendered_html output_subarea ">
 Lifetime (300 K) &tau;<sub>eff</sub> = 15.54 &mu;s
@@ -13727,8 +13796,7 @@ Lifetime (300 K) &tau;<sub>eff</sub> = 15.54 &mu;s
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -13752,8 +13820,8 @@ Lifetime (300 K) &tau;<sub>eff</sub> = 15.54 &mu;s
     <span class="n">BBRdepopulationRate</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">withBBR</span><span class="o">-</span><span class="n">noBBR</span><span class="p">)</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nList</span><span class="p">,</span><span class="n">BBRdepopulationRate</span><span class="p">,</span><span class="s2">&quot;r.:&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">r&quot;Principal quantum number, $n$&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">r&quot;BBR induced depopulation rate (s$^{-1}$)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Principal quantum number, $n$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;BBR induced depopulation rate (s$^{-1}$)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 
@@ -13765,7 +13833,11 @@ Lifetime (300 K) &tau;<sub>eff</sub> = 15.54 &mu;s
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -14161,8 +14233,7 @@ AAAAAElFTkSuQmCC
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -14211,9 +14282,9 @@ AAAAAElFTkSuQmCC
 <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">nstar2</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">func5</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">nstar2</span><span class="p">),</span><span class="o">*</span><span class="n">popt</span><span class="p">)),</span><span class="s2">&quot;r:&quot;</span><span class="p">)</span>
 
 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Lifetime scaling&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s2">r&quot;$|n,P,j=3/2\rangle$ states&quot;</span><span class="p">,</span><span class="s2">r&quot;$|n,\ell=n-1,j=n-0.5\rangle$ circular states&quot;</span><span class="p">],</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="s2">r&quot;$\propto n_*^5$&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mi">3</span><span class="n">e</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="s2">r&quot;$\propto n_*^3$&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="sa">r</span><span class="s2">&quot;$|n,P,j=3/2\rangle$ states&quot;</span><span class="p">,</span><span class="sa">r</span><span class="s2">&quot;$|n,\ell=n-1,j=n-0.5\rangle$ circular states&quot;</span><span class="p">],</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mf">1e-3</span><span class="p">,</span><span class="sa">r</span><span class="s2">&quot;$\propto n_*^5$&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span><span class="mf">3e-5</span><span class="p">,</span><span class="sa">r</span><span class="s2">&quot;$\propto n_*^3$&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">61</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Scaled principal quantum number, $n_*$&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;State lifetime (s$^{-1}$)&quot;</span><span class="p">)</span>
@@ -14228,7 +14299,11 @@ AAAAAElFTkSuQmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -14705,8 +14780,7 @@ ERGROJQkiYiIiMShJElEREQkDiVJIiIiInH8H6DvHpvBmKl9AAAAAElFTkSuQmCC
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -14724,8 +14798,8 @@ ERGROJQkiYiIiMShJElEREQkDiVJIiIiInH8H6DvHpvBmKl9AAAAAElFTkSuQmCC
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cs Excitation 6S_{1/2} -&gt; 60P_{3/2}&quot;</span><span class="p">)</span>
 <span class="n">n1</span><span class="o">=</span><span class="mi">6</span><span class="p">;</span><span class="n">l1</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j1</span><span class="o">=</span><span class="mf">0.5</span><span class="p">;</span> <span class="c1">#Initial State</span>
 <span class="n">n2</span><span class="o">=</span><span class="mi">60</span><span class="p">;</span><span class="n">l2</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">j2</span><span class="o">=</span><span class="mf">1.5</span><span class="p">;</span> <span class="c1">#Final State</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lambda = </span><span class="si">%.3f</span><span class="s2"> nm&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n2</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e9</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;omega/2pi = </span><span class="si">%.3f</span><span class="s2"> THz&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n2</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">12</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lambda = </span><span class="si">%.3f</span><span class="s2"> nm&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n2</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">*</span><span class="mf">1e9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;omega/2pi = </span><span class="si">%.3f</span><span class="s2"> THz&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n2</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-12</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -14736,7 +14810,11 @@ ERGROJQkiYiIiMShJElEREQkDiVJIiIiInH8H6DvHpvBmKl9AAAAAElFTkSuQmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Cs Excitation 6S_{1/2} -&gt; 60P_{3/2}
 lambda = 318.755 nm
@@ -14749,8 +14827,7 @@ omega/2pi = 940.509 THz
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -14759,9 +14836,10 @@ omega/2pi = 940.509 THz
 I=\frac{2P}{\pi w_0^2},
 \end{equation}
 which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\vert ^2$, resulting in the Rabi frequency of</p>
-\begin{equation}
+<p>\begin{equation}
 \Omega = \sqrt{\frac{4P}{\epsilon_0c\pi w_0^2}}\frac{\langle n,\ell,j,m_j\vert r_q \vert n',\ell',j',m_j' \rangle}{\hbar}.
-\end{equation}<p>Due to the weak overlap between the ground and highly excited Rydberg states (which scales as $\sim n^{*-3/2}$), the resulting matrix elements are relatively small meaning large intensities are required. As an example, consider a 1 W UV laser driving the transition above with a $1/e^2$ waist of 50 $\mu$m. The resulting Rabi frequency is only $\Omega/2\pi=10$ MHz!</p>
+\end{equation}</p>
+<p>Due to the weak overlap between the ground and highly excited Rydberg states (which scales as $\sim n^{*-3/2}$), the resulting matrix elements are relatively small meaning large intensities are required. As an example, consider a 1 W UV laser driving the transition above with a $1/e^2$ waist of 50 $\mu$m. The resulting Rabi frequency is only $\Omega/2\pi=10$ MHz!</p>
 
 </div>
 </div>
@@ -14780,7 +14858,7 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 <span class="n">q</span><span class="o">=+</span><span class="mi">1</span><span class="p">;</span> <span class="c1">#Light Polarisation (sigma+)</span>
 
 <span class="n">rabiFreq</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">getRabiFrequency</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">mj1</span><span class="p">,</span><span class="n">n2</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">,</span><span class="n">q</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="n">waist</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rabi Frequency = 2 pi x </span><span class="si">%.2f</span><span class="s2"> MHz&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">rabiFreq</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">6</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rabi Frequency = 2 pi x </span><span class="si">%.2f</span><span class="s2"> MHz&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">rabiFreq</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-6</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -14791,7 +14869,11 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>rabi Frequency = 2 pi x 10.58 MHz
 </pre>
@@ -14802,8 +14884,7 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -14819,11 +14900,11 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">atom</span> <span class="o">=</span> <span class="n">Rubidium</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;5 S_{1/2} -&gt; 5 P_{3/2}&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e9</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">12</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-12</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;5 P_{3/2} -&gt; 60 S_{1/2}&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e9</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">12</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-12</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -14834,7 +14915,11 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>5 S_{1/2} -&gt; 5 P_{3/2}
 780.241 nm 
@@ -14850,8 +14935,7 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -14867,14 +14951,14 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">atom</span> <span class="o">=</span> <span class="n">Caesium</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;6 S_{1/2} -&gt; 6 P_{3/2}&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e9</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">12</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-12</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;6 P_{3/2} -&gt; 7 S_{1/2}&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e9</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">12</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-12</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;7 S_{1/2} -&gt; 60 P_{3/2}&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e9</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">12</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-12</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -14885,7 +14969,11 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>6 S_{1/2} -&gt; 6 P_{3/2}
 852.347 nm 
@@ -14904,8 +14992,7 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -14920,17 +15007,17 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;6 S_{1/2} -&gt; 6 P_{3/2}&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e9</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">12</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-12</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;6 P_{3/2} -&gt; 7 S_{1/2}&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e9</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">12</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-12</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;7 S_{1/2} -&gt; 8 P_{3/2}&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e9</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">12</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-12</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;8 P_{1/2} -&gt; 52 D_{3/2}&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">52</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e9</span><span class="p">))</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">52</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">12</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> nm &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">52</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e9</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%.3f</span><span class="s2"> THz &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">52</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-12</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -14941,7 +15028,11 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>6 S_{1/2} -&gt; 6 P_{3/2}
 852.347 nm 
@@ -14963,8 +15054,7 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -14978,10 +15068,10 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 <div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">waist</span> <span class="o">=</span> <span class="mi">50</span><span class="n">e</span><span class="o">-</span><span class="mi">6</span> <span class="c1"># 50 mu m</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">waist</span> <span class="o">=</span> <span class="mf">50e-6</span> <span class="c1"># 50 mu m</span>
 <span class="n">P</span> <span class="o">=</span> <span class="mf">10.e-3</span> <span class="c1"># 10 mW</span>
 <span class="n">rabiFreq</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">getRabiFrequency</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">52</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">waist</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rabi Frequency = 2 pi x </span><span class="si">%.2f</span><span class="s2"> MHz&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">rabiFreq</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">6</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rabi Frequency = 2 pi x </span><span class="si">%.2f</span><span class="s2"> MHz&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">rabiFreq</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-6</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -14992,7 +15082,11 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>rabi Frequency = 2 pi x 1.59 MHz
 </pre>
@@ -15003,8 +15097,7 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -15012,8 +15105,7 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -15041,7 +15133,11 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>1.15e-01 e^2 a_0^4
 7.94e-02 e^2 a_0^4
@@ -15061,18 +15157,19 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Rydberg-Atom-Stark-Shifts">Rydberg Atom Stark Shifts<a class="anchor-link" href="#Rydberg-Atom-Stark-Shifts">&#182;</a></h2><p>The large dipole moment of the Rydberg states makes them highly polarisable. For an atom in a d.c. electromagnetic field $\mathcal{E}$ directed along the $z$-axis, the interaction leads to a coupling given by</p>
-\begin{equation}
+<p>\begin{equation}
 \mathcal{H} = \mathcal{H}_0 + \mathcal{E}\hat{z}, 
-\end{equation}<p>where $\mathcal{H}_0$ is the Hamiltonian for the unperturbed energy levels and $\hat{z}\equiv r_0$ in the spherical basis resulting in a selection rule $\Delta m_j=0$ and a shift dependent on $\vert m_j \vert$. For the low-$\ell$ states, the quantum defects cause the first-order Stark-shift to vanish, resulting in a second-order energy shift $\Delta E = -\frac{1}{2}\alpha_0\mathcal{E}^2$ where the polarizability for state $\vert n \ell j m_j\rangle$ is given by</p>
-\begin{equation}
+\end{equation}</p>
+<p>where $\mathcal{H}_0$ is the Hamiltonian for the unperturbed energy levels and $\hat{z}\equiv r_0$ in the spherical basis resulting in a selection rule $\Delta m_j=0$ and a shift dependent on $\vert m_j \vert$. For the low-$\ell$ states, the quantum defects cause the first-order Stark-shift to vanish, resulting in a second-order energy shift $\Delta E = -\frac{1}{2}\alpha_0\mathcal{E}^2$ where the polarizability for state $\vert n \ell j m_j\rangle$ is given by</p>
+<p>\begin{equation}
 \alpha_0 = 2 e^2\displaystyle\sum_{n'\ell'j'\neq n\ell j} \frac{\vert \langle n,\ell,j,m_j\vert r_0 \vert n',\ell',j',m_j' \rangle \vert^2}{E_{n'\ell' j'}-E_{n\ell j}}.
-\end{equation}<p>Since the dipole matrix elements scale as $n^{2}$, and the energy difference scales as $n^{-3}$ the scalar polarizability $\alpha_0\propto n^7$. States with $\ell>3$ are degenerate, and therefore experience a linear Stark shift.</p>
+\end{equation}</p>
+<p>Since the dipole matrix elements scale as $n^{2}$, and the energy difference scales as $n^{-3}$ the scalar polarizability $\alpha_0\propto n^7$. States with $\ell&gt;3$ are degenerate, and therefore experience a linear Stark shift.</p>
 <p>The evaluation of polarisability using second-order perturbation theory is limited, and only valid at weak fields. Instead, Stark maps accurate to all orders can be obtained by direct diagonalisatoin of the Hamiltonian $\mathcal{H}$, taking care to include a large enough set of basis states to achieve divergence. As well as revealing the exact energies of the Stark-coupled states, this permits extraction of the mixed electric field eigenstates which are relevant when considering optical excitation of a given Rydberg state which is now mixed into neighbouring energy levels.</p>
 <p>The code below provides an example Stark map for the $35S_{1/2},\vert m_j\vert=1/2$ state in Cesium. After identifying the target state, a range of basis states are defined before running the diagonalisation for the range of E-fields specified, returning the desired Stark map. To show the effect of state mixing, the levels are coloured proportional to the fraction of the target state present in each eigenstate. This knowledge can also be used to determine the effective polarisability by extracting the energy level of the eigenstate with a contribution of at least 90% of the original target state.</p>
 <p>For high $n$, the range of basis states may need to be increased due to the reduction in energy spacings but this can easily be checked for convergence by running twice with a larger basis set.</p>
@@ -15123,7 +15220,11 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Found  410  states.
 Generating matrix...
@@ -15137,7 +15238,11 @@ plotting...
 </div>
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -18094,7 +18199,11 @@ QmCC
 
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -18467,7 +18576,11 @@ Gph20DoBAAAAAElFTkSuQmCC
 
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>4.15576 MHz cm^2 / V^2 
 </pre>
@@ -18478,8 +18591,7 @@ Gph20DoBAAAAAElFTkSuQmCC
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -18524,7 +18636,11 @@ Gph20DoBAAAAAElFTkSuQmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>State		Polarizability (MHz cm^2 / V^2)		Electric field range (V/cm)
 15 S 1/2	7.995e-03				90.00-492.00
@@ -18551,8 +18667,7 @@ Gph20DoBAAAAAElFTkSuQmCC
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -18568,8 +18683,8 @@ Gph20DoBAAAAAElFTkSuQmCC
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">stateN</span><span class="p">,</span><span class="n">polarizabilityList</span><span class="p">,</span><span class="s2">&quot;b.&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">r&quot;Principal quantum number, $n$&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">r&quot;Scalar polarizability, $\alpha_0$ (MHz cm$^2$/ V$^2$)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Principal quantum number, $n$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Scalar polarizability, $\alpha_0$ (MHz cm$^2$/ V$^2$)&quot;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">functionFromReference_Rb_S_states</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
     <span class="c1"># recommended fit function from M. S. O&#39;Sullivan and B. P. Stoicheff, PRA 31, 2718 (1985) </span>
@@ -18591,7 +18706,11 @@ Gph20DoBAAAAAElFTkSuQmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -18984,8 +19103,7 @@ YHlHxTnnnHMFyzsqzjnnnCtY3lFxzjnnXMHyjopzzjnnCpZ3VJxzzjlXsLyj4pxzzrmC9f+GssHT
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -19033,7 +19151,11 @@ YHlHxTnnnHMFyzsqzjnnnCtY3lFxzjnnXMHyjopzzjnnCpZ3VJxzzjlXsLyj4pxzzrmC9f+GssHT
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Found  1636  states.
 Generating matrix...
@@ -19069,7 +19191,11 @@ Finding eigenvectors...
 </div>
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -23451,7 +23577,11 @@ ZmZmZmU5aGBmZmZmZmZmZf0/OqF0ErxGV4AAAAAASUVORK5CYII=
 
 </div>
 
-<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[14]:</div>
+
+
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -23464,28 +23594,31 @@ ZmZmZmU5aGBmZmZmZmZmZf0/OqF0ErxGV4AAAAAASUVORK5CYII=
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Rydberg-atom-interactions">Rydberg atom interactions<a class="anchor-link" href="#Rydberg-atom-interactions">&#182;</a></h1><p>As described above, the Rydberg states have extremely large dipole moments making them ideal candidates for controlled long-range interactions in quantum information processing and for studying effects such as resonant energy transfer or superradiance.</p>
 <p>For two atoms separated by distance $\textbf{R}$ the dipole-dipole interaction is given by</p>
-\begin{equation}
+<p>\begin{equation}
 V(\textbf{R}) =  \frac{\textbf{$\mu$}_1\cdot\textbf{$\mu$}_2}{R^3} -\frac{3(\textbf{$\mu$}_1\cdot\textbf{R})(\textbf{$\mu$}_2\cdot\textbf{R})}{R^5},
-\end{equation}<p>where the dipole matrix elements $\mathbf{\mu}_{1,2}$ describe transitions from the initial Rydberg states $\vert r \rangle$ to other dipole-coupled states $\vert r'\rangle,\vert r''\rangle$ respectively. The dipole-coupled pair-states have an energy difference $\Delta$ give by</p>
-\begin{equation}
+\end{equation}</p>
+<p>where the dipole matrix elements $\mathbf{\mu}_{1,2}$ describe transitions from the initial Rydberg states $\vert r \rangle$ to other dipole-coupled states $\vert r'\rangle,\vert r''\rangle$ respectively. The dipole-coupled pair-states have an energy difference $\Delta$ give by</p>
+<p>\begin{equation}
 \Delta = E_{r'}+E_{r''}-2E_{r},
-\end{equation}<p>with the dominant contribution to the atom-atom interaction arising from the pair state of with smallest absolute defect $\vert \Delta \vert$. Reducing this to a simple two-pair problem, the Hamiltonian for the states $\vert r r\rangle,\vert r'r''\rangle$ is given by</p>
-\begin{equation}
+\end{equation}</p>
+<p>with the dominant contribution to the atom-atom interaction arising from the pair state of with smallest absolute defect $\vert \Delta \vert$. Reducing this to a simple two-pair problem, the Hamiltonian for the states $\vert r r\rangle,\vert r'r''\rangle$ is given by</p>
+<p>\begin{equation}
 \mathcal{H} = \begin{pmatrix}
-0 &V(R) \\
-V(R)&\Delta
+0 &amp;V(R) \\
+V(R)&amp;\Delta
 \end{pmatrix},
-\end{equation}<p>which has the eigenvalues</p>
-\begin{equation}
+\end{equation}</p>
+<p>which has the eigenvalues</p>
+<p>\begin{equation}
 \lambda_\pm = \frac{\Delta\pm\sqrt{\Delta^2+4V(R)^2}}{2}.
-\end{equation}<p>This results in two asympotitic limits for the atom-atom interactions:</p>
+\end{equation}</p>
+<p>This results in two asympotitic limits for the atom-atom interactions:</p>
 <p><strong>i) Long-range ($V(R)\ll\Delta$)</strong></p>
 <p>In this limit, also known as the Van der Waals regime, pair-state energy is shifted by $-V(R)^2/\Delta\equiv - C_6/R^6$. The sign of the interaction (attractive/repulsive) is determined by $\Delta$, and the interaction scales as $C_6\propto n^{11}$.</p>
 <p><strong>ii) Short-range ($V(R)\gg\Delta$)</strong></p>
@@ -23514,9 +23647,9 @@ V(R)&\Delta
 <span class="n">l2</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">j2</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="c1"># S_{1/2}</span>
 <span class="n">energyDefect</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nlist</span><span class="p">:</span>
-    <span class="n">energyDefect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getEnergyDefect2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">C_h</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">9</span><span class="p">)</span>    
+    <span class="n">energyDefect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getEnergyDefect2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">C_h</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-9</span><span class="p">)</span>    
 <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nlist</span><span class="p">,</span><span class="n">energyDefect</span><span class="p">,</span><span class="s1">&#39;r.&#39;</span><span class="p">,</span>\
-          <span class="n">label</span><span class="o">=</span><span class="s2">r&quot;$|n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2},n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2}\rangle\rightarrow</span><span class="se">\</span>
+          <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$|n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2},n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2}\rangle\rightarrow</span><span class="se">\</span>
 <span class="s2">              |(n+1) </span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2},n </span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2}\rangle$&quot;</span><span class="o">%</span>\
               <span class="p">(</span><span class="n">printStateLetter</span><span class="p">(</span><span class="n">l1</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j1</span><span class="p">),</span><span class="n">printStateLetter</span><span class="p">(</span><span class="n">l1</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j1</span><span class="p">),</span>\
               <span class="n">printStateLetter</span><span class="p">(</span><span class="n">l2</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j2</span><span class="p">),</span><span class="n">printStateLetter</span><span class="p">(</span><span class="n">l2</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j2</span><span class="p">)))</span>
@@ -23525,9 +23658,9 @@ V(R)&\Delta
 <span class="n">l2</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">j2</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="c1"># S_{1/2}</span>
 <span class="n">energyDefect</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nlist</span><span class="p">:</span>
-    <span class="n">energyDefect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getEnergyDefect2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">C_h</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">9</span><span class="p">)</span>
+    <span class="n">energyDefect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getEnergyDefect2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">C_h</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-9</span><span class="p">)</span>
 <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nlist</span><span class="p">,</span><span class="n">energyDefect</span><span class="p">,</span><span class="s1">&#39;g.&#39;</span><span class="p">,</span>\
-          <span class="n">label</span><span class="o">=</span><span class="s2">r&quot;$|n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2},n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2}\rangle\rightarrow</span><span class="se">\</span>
+          <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$|n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2},n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2}\rangle\rightarrow</span><span class="se">\</span>
 <span class="s2">              |(n+1) </span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2},n </span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2}\rangle$&quot;</span><span class="o">%</span>\
               <span class="p">(</span><span class="n">printStateLetter</span><span class="p">(</span><span class="n">l1</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j1</span><span class="p">),</span><span class="n">printStateLetter</span><span class="p">(</span><span class="n">l1</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j1</span><span class="p">),</span>\
               <span class="n">printStateLetter</span><span class="p">(</span><span class="n">l2</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j2</span><span class="p">),</span><span class="n">printStateLetter</span><span class="p">(</span><span class="n">l2</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j2</span><span class="p">)))</span>
@@ -23536,9 +23669,9 @@ V(R)&\Delta
 <span class="n">l2</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">j2</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="c1"># S_{1/2}</span>
 <span class="n">energyDefect</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nlist</span><span class="p">:</span>
-    <span class="n">energyDefect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getEnergyDefect2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">C_h</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">9</span><span class="p">)</span>
+    <span class="n">energyDefect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getEnergyDefect2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">C_h</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-9</span><span class="p">)</span>
 <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nlist</span><span class="p">,</span><span class="n">energyDefect</span><span class="p">,</span><span class="s1">&#39;k.&#39;</span><span class="p">,</span>\
-          <span class="n">label</span><span class="o">=</span><span class="s2">r&quot;$|n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2},n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2}\rangle\rightarrow</span><span class="se">\</span>
+          <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$|n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2},n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2}\rangle\rightarrow</span><span class="se">\</span>
 <span class="s2">              |(n+2) </span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2},(n_1) </span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2}\rangle$&quot;</span><span class="o">%</span>\
               <span class="p">(</span><span class="n">printStateLetter</span><span class="p">(</span><span class="n">l1</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j1</span><span class="p">),</span><span class="n">printStateLetter</span><span class="p">(</span><span class="n">l1</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j1</span><span class="p">),</span>\
               <span class="n">printStateLetter</span><span class="p">(</span><span class="n">l2</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j2</span><span class="p">),</span><span class="n">printStateLetter</span><span class="p">(</span><span class="n">l2</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j2</span><span class="p">)))</span>
@@ -23547,9 +23680,9 @@ V(R)&\Delta
 <span class="n">l2</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">;</span> <span class="n">j2</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="c1"># S_{1/2}</span>
 <span class="n">energyDefect</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nlist</span><span class="p">:</span>
-    <span class="n">energyDefect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getEnergyDefect2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">C_h</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">9</span><span class="p">)</span>
+    <span class="n">energyDefect</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getEnergyDefect2</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">,</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">C_h</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-9</span><span class="p">)</span>
 <span class="n">axes</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nlist</span><span class="p">,</span><span class="n">energyDefect</span><span class="p">,</span><span class="s1">&#39;b.&#39;</span><span class="p">,</span>\
-          <span class="n">label</span><span class="o">=</span><span class="s2">r&quot;$|n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2},n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2}\rangle\rightarrow</span><span class="se">\</span>
+          <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$|n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2},n</span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2}\rangle\rightarrow</span><span class="se">\</span>
 <span class="s2">              |(n+2) </span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2},(n_1) </span><span class="si">%s</span><span class="s2">_{</span><span class="si">%d</span><span class="s2">/2}\rangle$&quot;</span><span class="o">%</span>\
               <span class="p">(</span><span class="n">printStateLetter</span><span class="p">(</span><span class="n">l1</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j1</span><span class="p">),</span><span class="n">printStateLetter</span><span class="p">(</span><span class="n">l1</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j1</span><span class="p">),</span>\
               <span class="n">printStateLetter</span><span class="p">(</span><span class="n">l2</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j2</span><span class="p">),</span><span class="n">printStateLetter</span><span class="p">(</span><span class="n">l2</span><span class="p">),</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">j2</span><span class="p">)))</span>
@@ -23573,7 +23706,11 @@ V(R)&\Delta
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -24175,8 +24312,7 @@ RK5CYII=
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -24215,7 +24351,11 @@ RK5CYII=
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre> = = = Caesium = = = 
 722  GHz (mu m)^6
@@ -24236,15 +24376,15 @@ RK5CYII=
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Dispersion-Coefficients">Dispersion Coefficients<a class="anchor-link" href="#Dispersion-Coefficients">&#182;</a></h2><p>For the long-range limit, the $C_6$ dispersion coefficient can be calculated using second-order petubation theory valid for $R>R_\mathrm{vdW}$ and taking a sum over all dipole-coupled pair-states using the equation</p>
-\begin{equation}
+<h2 id="Dispersion-Coefficients">Dispersion Coefficients<a class="anchor-link" href="#Dispersion-Coefficients">&#182;</a></h2><p>For the long-range limit, the $C_6$ dispersion coefficient can be calculated using second-order petubation theory valid for $R&gt;R_\mathrm{vdW}$ and taking a sum over all dipole-coupled pair-states using the equation</p>
+<p>\begin{equation}
 C_6 = \displaystyle\sum_{r'r''} \frac{\left| \langle r'r''\vert V(R) \vert rr\rangle\right|^2}{\Delta_{r',r''}}.
-\end{equation}<p>As well as the dependence upon the sign of $\Delta$ for attractive/repulsive interactions, the form of the dipole interaction above is anisotropic leading to a strong angular sensitivity. Defining an angle $(\theta,\phi)$ in spherical basis between the quantization axis and the interatomic separation vector $\textbf{R}$, the plots below highlight the difference in interaction strength of the different $\ell$ states. As a general rule, for the alkali atoms $ns$ states are repulsive ($C_6<0$) and relatively isotropic, whilst $nd$ states are attractive ($C_6>0$) and highly anisotropic.</p>
+\end{equation}</p>
+<p>As well as the dependence upon the sign of $\Delta$ for attractive/repulsive interactions, the form of the dipole interaction above is anisotropic leading to a strong angular sensitivity. Defining an angle $(\theta,\phi)$ in spherical basis between the quantization axis and the interatomic separation vector $\textbf{R}$, the plots below highlight the difference in interaction strength of the different $\ell$ states. As a general rule, for the alkali atoms $ns$ states are repulsive ($C_6&lt;0$) and relatively isotropic, whilst $nd$ states are attractive ($C_6&gt;0$) and highly anisotropic.</p>
 <p>Note: Typically, this sum is constrained to include only pair states up to a maximum value of $\Delta$ to minimise computational overhead, and this can be set to achieve convergence.</p>
 
 </div>
@@ -24262,7 +24402,7 @@ C_6 = \displaystyle\sum_{r'r''} \frac{\left| \langle r'r''\vert V(R) \vert rr\ra
 <span class="n">theta</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="c1">#Polar Angle [0-pi]</span>
 <span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="c1">#Azimuthal Angle [0-2pi]</span>
 <span class="n">dn</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">#Range of n to consider (n0-dn:n0+dn)</span>
-<span class="n">deltaMax</span> <span class="o">=</span> <span class="mi">25</span><span class="n">e9</span> <span class="c1">#Max pair-state energy difference [Hz]</span>
+<span class="n">deltaMax</span> <span class="o">=</span> <span class="mf">25e9</span> <span class="c1">#Max pair-state energy difference [Hz]</span>
 
 <span class="c1">#Set target-state and extract value</span>
 <span class="n">calculation</span> <span class="o">=</span> <span class="n">PairStateInteractions</span><span class="p">(</span><span class="n">Rubidium</span><span class="p">(),</span> <span class="n">n0</span><span class="p">,</span><span class="n">l0</span><span class="p">,</span><span class="n">j0</span><span class="p">,</span><span class="n">n0</span><span class="p">,</span><span class="n">l0</span><span class="p">,</span><span class="n">j0</span><span class="p">,</span> <span class="n">mj0</span><span class="p">,</span><span class="n">mj0</span><span class="p">)</span>
@@ -24300,7 +24440,11 @@ C_6 = \displaystyle\sum_{r'r''} \frac{\left| \langle r'r''\vert V(R) \vert rr\ra
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>C6 [60 S 1/2] = -138.88 GHz (mum)^6
 Note: No saved angular matrix files to be loaded.
@@ -24309,7 +24453,11 @@ Note: No saved angular matrix files to be loaded.
 </div>
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -25067,9 +25215,9 @@ AAAASUVORK5CYII=
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Dipole-Interaction Dispersion Coefficient:60SD5/2</span>
 <span class="c1">#=================================================</span>
 <span class="n">n0</span><span class="o">=</span><span class="mi">60</span><span class="p">;</span><span class="n">l0</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span><span class="n">j0</span><span class="o">=</span><span class="mf">2.5</span><span class="p">;</span><span class="c1">#Target State</span>
-<span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="c1">#Azimuthal Angle [0-pi]</span>
+<span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="c1">#Azimuthal Angle [0-2pi]</span>
 <span class="n">dn</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">#Range of n to consider (n0-dn:n0+dn)</span>
-<span class="n">deltaMax</span> <span class="o">=</span> <span class="mi">25</span><span class="n">e9</span> <span class="c1">#Max pair-state energy difference [Hz]</span>
+<span class="n">deltaMax</span> <span class="o">=</span> <span class="mf">25e9</span> <span class="c1">#Max pair-state energy difference [Hz]</span>
 
 <span class="n">thetaList</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span><span class="mi">71</span><span class="p">)</span>
 <span class="n">mj</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">2.5</span><span class="p">]</span>
@@ -25103,7 +25251,11 @@ AAAASUVORK5CYII=
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -26021,7 +26173,7 @@ QSKRSCT5kIZBIpFIJPmQhkEikUgk+ZCGQSKRSCT5kIZBIpFIJPmQhkEikUgk+ZCGQSKRSCT5+H8m
     <span class="n">calculation1</span> <span class="o">=</span> <span class="n">PairStateInteractions</span><span class="p">(</span><span class="n">Rubidium</span><span class="p">(),</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">mj</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">mj</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="n">c6</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">thetaList</span><span class="p">:</span>
-        <span class="n">c6</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">calculation1</span><span class="o">.</span><span class="n">getC6perturbatively</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">25</span><span class="n">e9</span><span class="p">))</span>
+        <span class="n">c6</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">calculation1</span><span class="o">.</span><span class="n">getC6perturbatively</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">25e9</span><span class="p">))</span>
     
     <span class="c1"># plot results</span>
     <span class="n">lineLegend</span><span class="p">,</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">thetaList</span><span class="p">,</span><span class="n">c6</span><span class="p">,</span><span class="s2">&quot;-&quot;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">colourList</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">label</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;mj=</span><span class="si">%d</span><span class="s2">/2&quot;</span><span class="o">%</span><span class="k">int</span>(2*mj[i])) )
@@ -26040,7 +26192,11 @@ QSKRSCT5kIZBIpFIJPmQhkEikUgk+ZCGQSKRSCT5kIZBIpFIJPmQhkEikUgk+ZCGQSKRSCT5+H8m
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -26857,8 +27013,7 @@ SZJkRyYGSZIkyY5MDJIkSZIdmRgkSZIkOzIxSJIkSXb+H5RNtl8BoNBwAAAAAElFTkSuQmCC
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -26875,7 +27030,7 @@ SZJkRyYGSZIkyY5MDJIkSZIdmRgkSZIkOzIxSJIkSXb+H5RNtl8BoNBwAAAAAElFTkSuQmCC
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">53</span><span class="p">,</span><span class="mi">62</span><span class="p">,</span><span class="mi">82</span><span class="p">]:</span>
     <span class="n">calculation1</span> <span class="o">=</span> <span class="n">PairStateInteractions</span><span class="p">(</span><span class="n">Rubidium</span><span class="p">(),</span> <span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
     <span class="n">state</span> <span class="o">=</span> <span class="n">printStateString</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mf">1.5</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; m_j= 3/2&quot;</span>
-    <span class="n">c6</span> <span class="o">=</span> <span class="n">calculation1</span><span class="o">.</span><span class="n">getC6perturbatively</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">25</span><span class="n">e9</span><span class="p">)</span>
+    <span class="n">c6</span> <span class="o">=</span> <span class="n">calculation1</span><span class="o">.</span><span class="n">getC6perturbatively</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">25e9</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;C_6 [</span><span class="si">%s</span><span class="s2">] = </span><span class="si">%.0f</span><span class="s2"> GHz (mu m)^6&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">c6</span><span class="p">))</span>
 </pre></div>
 
@@ -26887,7 +27042,11 @@ SZJkRyYGSZIkyY5MDJIkSZIdmRgkSZIkOzIxSJIkSXb+H5RNtl8BoNBwAAAAAElFTkSuQmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>C_6 [53 D 3/2 m_j= 3/2] = 16 GHz (mu m)^6
 C_6 [62 D 3/2 m_j= 3/2] = 767 GHz (mu m)^6
@@ -26900,8 +27059,7 @@ C_6 [82 D 3/2 m_j= 3/2] = 8866 GHz (mu m)^6
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -26924,7 +27082,7 @@ C_6 [82 D 3/2 m_j= 3/2] = 8866 GHz (mu m)^6
 <span class="c1"># do calculation</span>
 <span class="n">interactionVeff</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">thetaList</span><span class="p">:</span>
-    <span class="n">c6</span> <span class="o">=</span> <span class="n">calculation</span><span class="o">.</span><span class="n">getC6perturbatively</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">25</span><span class="n">e9</span><span class="p">)</span>
+    <span class="n">c6</span> <span class="o">=</span> <span class="n">calculation</span><span class="o">.</span><span class="n">getC6perturbatively</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mf">25e9</span><span class="p">)</span>
     <span class="n">interactionVeff</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">c6</span><span class="o">/</span><span class="n">atomDistance</span><span class="o">**</span><span class="mi">6</span><span class="p">)</span><span class="o">*</span><span class="mf">1.e3</span><span class="p">)</span>
     
 <span class="c1"># now plotting</span>
@@ -26932,8 +27090,8 @@ C_6 [82 D 3/2 m_j= 3/2] = 8866 GHz (mu m)^6
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">thetaList</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">,</span><span class="n">interactionVeff</span><span class="p">,</span><span class="s2">&quot;b-&quot;</span><span class="p">)</span>
 <span class="c1"># symetric plot for 0- &gt;-90</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">-</span><span class="n">thetaList</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">,</span><span class="n">interactionVeff</span><span class="p">,</span><span class="s2">&quot;b-&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">r&quot;Angle, $\theta (^\circ)$&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">r&quot;Interactions, $|V_{\rm eff}|/h$ (MHz)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Angle, $\theta (^\circ)$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Interactions, $|V_{\rm eff}|/h$ (MHz)&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">90</span><span class="p">,</span><span class="mi">90</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Rb, pairstate  82 $D_{3/2}$, $V(12 \mu$m$)/h$ in MHz&quot;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -26947,7 +27105,11 @@ C_6 [82 D 3/2 m_j= 3/2] = 8866 GHz (mu m)^6
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -27339,8 +27501,7 @@ MzPLhZMMMzMzy4WTDDMzM8uFkwwzMzPLxf8DaIOZwDjACBwAAAAASUVORK5CYII=
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -27355,7 +27516,7 @@ MzPLhZMMMzMzy4WTDDMzM8uFkwwzMzPLxf8DaIOZwDjACBwAAAAASUVORK5CYII=
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">calculation1</span> <span class="o">=</span> <span class="n">PairStateInteractions</span><span class="p">(</span><span class="n">Potassium</span><span class="p">(),</span><span class="mi">66</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">66</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
-<span class="n">c6</span> <span class="o">=</span> <span class="n">calculation1</span><span class="o">.</span><span class="n">getC6perturbatively</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">30</span><span class="n">e9</span><span class="p">)</span>
+<span class="n">c6</span> <span class="o">=</span> <span class="n">calculation1</span><span class="o">.</span><span class="n">getC6perturbatively</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">30e9</span><span class="p">)</span>
 <span class="n">state</span> <span class="o">=</span> <span class="n">printStateString</span><span class="p">(</span><span class="mi">66</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; m_j= 1/2&quot;</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;C_6 [</span><span class="si">%s</span><span class="s2">] = </span><span class="si">%.0f</span><span class="s2"> GHz (mu m)^6&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">c6</span><span class="p">))</span>
 </pre></div>
@@ -27368,7 +27529,11 @@ MzPLhZMMMzMzy4WTDDMzM8uFkwwzMzPLxf8DaIOZwDjACBwAAAAASUVORK5CYII=
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>C_6 [66 S 1/2 m_j= 1/2] = -265 GHz (mu m)^6
 </pre>
@@ -27379,12 +27544,11 @@ MzPLhZMMMzMzy4WTDDMzM8uFkwwzMzPLxf8DaIOZwDjACBwAAAAASUVORK5CYII=
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Short-range-interactions">Short-range interactions<a class="anchor-link" href="#Short-range-interactions">&#182;</a></h2><p>For $R<R_\mathrm{vdW}$ it is no longer possible to calculate the interactions using perturbation theory, and instead (as with Stark-shift) it is necessary to diagonalize the pair-state interaction Hamiltionian, taking into account all pair states in the vicinity of the target pair state.</p>
+<h2 id="Short-range-interactions">Short-range interactions<a class="anchor-link" href="#Short-range-interactions">&#182;</a></h2><p>For $R&lt;R_\mathrm{vdW}$ it is no longer possible to calculate the interactions using perturbation theory, and instead (as with Stark-shift) it is necessary to diagonalize the pair-state interaction Hamiltionian, taking into account all pair states in the vicinity of the target pair state.</p>
 
 </div>
 </div>
@@ -27401,7 +27565,7 @@ MzPLhZMMMzMzy4WTDDMzM8uFkwwzMzPLxf8DaIOZwDjACBwAAAAASUVORK5CYII=
 <span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="c1">#Azimuthal Angle [0-pi]</span>
 <span class="n">dn</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">#Range of n to consider (n0-dn:n0+dn)</span>
 <span class="n">dl</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">#Range of l values</span>
-<span class="n">deltaMax</span> <span class="o">=</span> <span class="mi">25</span><span class="n">e9</span> <span class="c1">#Max pair-state energy difference [Hz]</span>
+<span class="n">deltaMax</span> <span class="o">=</span> <span class="mf">25e9</span> <span class="c1">#Max pair-state energy difference [Hz]</span>
 
 <span class="c1">#R array (um)</span>
 <span class="n">r</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">10.0</span><span class="p">,</span><span class="mi">400</span><span class="p">)</span>
@@ -27437,7 +27601,11 @@ MzPLhZMMMzMzy4WTDDMzM8uFkwwzMzPLxf8DaIOZwDjACBwAAAAASUVORK5CYII=
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>LeRoy radius = 1.1 mum
 
@@ -27457,7 +27625,11 @@ Diagonalizing interaction matrix...
 </div>
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -28866,7 +29038,11 @@ ssLMzMzMzMzMSsXJCjMzMzMzMzMrlf8H25jL69q2jr8AAAAASUVORK5CYII=
 
 </div>
 
-<div class="output_area"><div class="prompt output_prompt">Out[6]:</div>
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[6]:</div>
+
+
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -28879,8 +29055,7 @@ ssLMzMzMzMzMSsXJCjMzMzMzMzMrlf8H25jL69q2jr8AAAAASUVORK5CYII=
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -28907,7 +29082,11 @@ ssLMzMzMzMzMSsXJCjMzMzMzMzMrlf8H25jL69q2jr8AAAAASUVORK5CYII=
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Data points to fit =  346
 Rvdw =   2.38128939453  mu m
@@ -28917,7 +29096,11 @@ offset =  -1.54658975074e-06
 </div>
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -29421,7 +29604,11 @@ KU0FsYiIiIikNBXEIiIiIpLSVBCLiIiISEpTQSwiIiIiKe3/AVmYhuZG2mCpAAAAAElFTkSuQmCC
 
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>c3 =  15.7544760327  GHz /R^3 (mu m)^3
 offset =  -0.541716348022
@@ -29429,7 +29616,11 @@ offset =  -0.541716348022
 </div>
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -29851,7 +30042,11 @@ eJYkSZKaZHiWJEmSmmR4liRJkppkeJYkSZKaZHiWJEmSmvT/ARUW/7hsPlrFAAAAAElFTkSuQmCC
 
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>c6 =  134.99542226  GHz /R^6 (mu m)^6
 offset =  0.000317651244569
@@ -29859,7 +30054,11 @@ offset =  0.000317651244569
 </div>
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -30286,7 +30485,11 @@ Tc2CWJIkSU3NgliSJElNzYJYkiRJTc2CWJIkSU3NgliSJElNzYJYkiRJTc2CWJIkSU3t/wPBaCy3
 
 </div>
 
-<div class="output_area"><div class="prompt output_prompt">Out[7]:</div>
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[7]:</div>
+
+
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -30299,8 +30502,7 @@ Tc2CWJIkSU3NgliSJElNzYJYkiRJTc2CWJIkSU3NgliSJElNzYJYkiRJTc2CWJIkSU3t/wPBaCy3
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -30315,7 +30517,7 @@ Tc2CWJIkSU3NgliSJElNzYJYkiRJTc2CWJIkSU3NgliSJElNzYJYkiRJTc2CWJIkSU3t/wPBaCy3
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">calculation1</span> <span class="o">=</span> <span class="n">PairStateInteractions</span><span class="p">(</span><span class="n">Rubidium</span><span class="p">(),</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span><span class="n">interactionsUpTo</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">calculation1</span><span class="o">.</span><span class="n">defineBasis</span><span class="p">(</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span><span class="mi">25</span><span class="n">e9</span><span class="p">,</span><span class="n">progressOutput</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">calculation1</span><span class="o">.</span><span class="n">defineBasis</span><span class="p">(</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span><span class="mf">25e9</span><span class="p">,</span><span class="n">progressOutput</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">calculation1</span><span class="o">.</span><span class="n">diagonalise</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">2.6</span><span class="p">,</span><span class="mi">400</span><span class="p">),</span><span class="mi">100</span><span class="p">,</span><span class="n">progressOutput</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     
 <span class="n">calculation1</span><span class="o">.</span><span class="n">plotLevelDiagram</span><span class="p">()</span>
@@ -30332,7 +30534,11 @@ Tc2CWJIkSU3NgliSJElNzYJYkiRJTc2CWJIkSU3NgliSJElNzYJYkiRJTc2CWJIkSU3t/wPBaCy3
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
 Calculating Hamiltonian matrix...
@@ -30351,7 +30557,11 @@ Diagonalizing interaction matrix...
 </div>
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -32143,7 +32353,11 @@ rkJggg==
 
 </div>
 
-<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[8]:</div>
+
+
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -32156,8 +32370,7 @@ rkJggg==
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -32166,8 +32379,7 @@ rkJggg==
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -32182,7 +32394,7 @@ rkJggg==
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">calculation1</span> <span class="o">=</span> <span class="n">PairStateInteractions</span><span class="p">(</span><span class="n">Caesium</span><span class="p">(),</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="n">interactionsUpTo</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">calculation1</span><span class="o">.</span><span class="n">defineBasis</span><span class="p">(</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span><span class="mi">25</span><span class="n">e9</span><span class="p">,</span><span class="n">progressOutput</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">calculation1</span><span class="o">.</span><span class="n">defineBasis</span><span class="p">(</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span><span class="mf">25e9</span><span class="p">,</span><span class="n">progressOutput</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">calculation1</span><span class="o">.</span><span class="n">diagonalise</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.3</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mi">400</span><span class="p">),</span><span class="mi">300</span><span class="p">,</span><span class="n">progressOutput</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     
 <span class="n">calculation1</span><span class="o">.</span><span class="n">plotLevelDiagram</span><span class="p">()</span>
@@ -32199,7 +32411,11 @@ rkJggg==
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
 Calculating Hamiltonian matrix...
@@ -32222,7 +32438,11 @@ Diagonalizing interaction matrix...
 </div>
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -35119,7 +35339,11 @@ gg==
 
 </div>
 
-<div class="output_area"><div class="prompt output_prompt">Out[9]:</div>
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[9]:</div>
+
+
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -35132,8 +35356,7 @@ gg==
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -35141,8 +35364,7 @@ gg==
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -35174,7 +35396,11 @@ gg==
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>C_3 = 2.545 GHz (mu m)^3 
 </pre>
@@ -35185,8 +35411,7 @@ gg==
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -35216,7 +35441,11 @@ gg==
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>C_3 = 7.971 GHz (mu m)^3 
 </pre>
@@ -35227,8 +35456,7 @@ gg==
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -35236,8 +35464,7 @@ gg==
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -35264,7 +35491,11 @@ gg==
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -36451,8 +36682,7 @@ OnYAAAAASUVORK5CYII=
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -36468,8 +36698,7 @@ OnYAAAAASUVORK5CYII=
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -36496,7 +36725,11 @@ OnYAAAAASUVORK5CYII=
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -37098,7 +37331,11 @@ ZmZmZmaVObEwMzMzM7PKnFiYmZmZmVll/w8GpGbA/O6uJQAAAABJRU5ErkJggg==
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -37664,8 +37901,7 @@ pJSEiIiIiIhISSkJERERERGRklISIiIiIiIiJfX/+agX86gC46cAAAAASUVORK5CYII=
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -37673,8 +37909,7 @@ pJSEiIiIiIhISSkJERERERGRklISIiIiIiIiJfX/+agX86gC46cAAAAASUVORK5CYII=
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -37693,8 +37928,8 @@ pJSEiIiIiIhISSkJERERERGRklISIiIiIiIiJfX/+agX86gC46cAAAAASUVORK5CYII=
 <span class="n">numberDensity</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">interatomicSpacing</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">temperature</span><span class="p">:</span>
-    <span class="n">numberDensity</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getNumberDensity</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e</span><span class="o">-</span><span class="mi">6</span><span class="p">)</span> <span class="c1"># 1e-6 factor converts result to 1/cm^3</span>
-    <span class="n">interatomicSpacing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getAverageInteratomicSpacing</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="mi">1</span><span class="n">e6</span><span class="p">)</span> <span class="c1">#1e6 for um</span>
+    <span class="n">numberDensity</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getNumberDensity</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-6</span><span class="p">)</span> <span class="c1"># 1e-6 factor converts result to 1/cm^3</span>
+    <span class="n">interatomicSpacing</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getAverageInteratomicSpacing</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="mf">1e6</span><span class="p">)</span> <span class="c1">#1e6 for um</span>
 
 <span class="c1"># plotting results</span>
 <span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mf">3.5</span><span class="p">))</span>
@@ -37719,7 +37954,11 @@ pJSEiIiIiIhISSkJERERERGRklISIiIiIiIiJfX/+agX86gC46cAAAAASUVORK5CYII=
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -38228,8 +38467,7 @@ EREREZGEU8NOREREREQk4dSwExERERERSbj/B6t6VNA30CVNAAAAAElFTkSuQmCC
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -38262,10 +38500,10 @@ EREREZGEU8NOREREREQk4dSwExERERERSbj/B6t6VNA30CVNAAAAAElFTkSuQmCC
     <span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">temperature</span><span class="o">-</span><span class="mf">273.15</span><span class="p">,</span><span class="n">numberDensity</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="mf">1.e6</span><span class="p">,</span><span class="n">symbolList</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">((</span><span class="s2">&quot;Li&quot;</span><span class="p">,</span><span class="s2">&quot;Na&quot;</span><span class="p">,</span><span class="s2">&quot;K&quot;</span><span class="p">,</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="s2">&quot;Cs&quot;</span><span class="p">),</span><span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">r&quot;Number density (cm$^{-3}$)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Number density (cm$^{-3}$)&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Temperature (C)&quot;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">200</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">1</span><span class="n">e5</span><span class="p">,</span><span class="mi">1</span><span class="n">e16</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">1e5</span><span class="p">,</span><span class="mf">1e16</span><span class="p">)</span>
     
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -38279,7 +38517,11 @@ EREREZGEU8NOREREREQk4dSwExERERERSbj/B6t6VNA30CVNAAAAAElFTkSuQmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -39032,8 +39274,7 @@ AElFTkSuQmCC
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -39041,8 +39282,7 @@ AElFTkSuQmCC
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -39062,7 +39302,7 @@ AElFTkSuQmCC
 <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nList</span><span class="p">:</span>
     <span class="n">calculation1</span> <span class="o">=</span> <span class="n">PairStateInteractions</span><span class="p">(</span><span class="n">Rubidium</span><span class="p">(),</span> <span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
     <span class="n">state</span> <span class="o">=</span> <span class="n">printStateString</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; m_j= 1/2&quot;</span>
-    <span class="n">c6</span> <span class="o">=</span> <span class="n">calculation1</span><span class="o">.</span><span class="n">getC6perturbatively</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">35</span><span class="n">e9</span><span class="p">)</span>
+    <span class="n">c6</span> <span class="o">=</span> <span class="n">calculation1</span><span class="o">.</span><span class="n">getC6perturbatively</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">35e9</span><span class="p">)</span>
     <span class="n">blockade</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">c6</span><span class="o">/</span><span class="n">laserLinewidth</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mf">6.</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;C_6 [</span><span class="si">%s</span><span class="s2">] = </span><span class="si">%.0f</span><span class="s2"> GHz (mu m)^6</span><span class="se">\t</span><span class="si">%.1f</span><span class="s2"> mu m&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">state</span><span class="p">,</span><span class="n">c6</span><span class="p">,</span><span class="n">blockade</span><span class="p">))</span>
     <span class="n">c6List</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c6</span><span class="p">)</span>
@@ -39077,7 +39317,11 @@ AElFTkSuQmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>C_6 [60 S 1/2 m_j= 1/2] = -135 GHz (mu m)^6	6.0 mu m
 C_6 [61 S 1/2 m_j= 1/2] = -165 GHz (mu m)^6	6.2 mu m
@@ -39125,14 +39369,14 @@ C_6 [90 S 1/2 m_j= 1/2] = -16501 GHz (mu m)^6	13.3 mu m
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nList</span><span class="p">,</span><span class="n">blockadeRadiusList</span><span class="p">,</span><span class="s2">&quot;b.&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">r&quot;Principal quantum number, $n$&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">r&quot;Blockade radius, $r_b$ ($\mu$m)&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">r&quot;Scaling of blockade radius with $n$ for laser linewidth </span><span class="si">%.1f</span><span class="s2"> MHz&quot;</span><span class="o">%</span> \
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Principal quantum number, $n$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Blockade radius, $r_b$ ($\mu$m)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Scaling of blockade radius with $n$ for laser linewidth </span><span class="si">%.1f</span><span class="s2"> MHz&quot;</span><span class="o">%</span> \
              <span class="p">(</span><span class="n">laserLinewidth</span><span class="o">*</span><span class="mf">1.e3</span><span class="p">),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">nList</span><span class="p">,</span><span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">c6List</span><span class="p">)),</span><span class="s2">&quot;r.&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">r&quot;Principal quantum number, $n$&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">r&quot;$C_6$ (GHz $\mu$m$^6$)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Principal quantum number, $n$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$C_6$ (GHz $\mu$m$^6$)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
@@ -39145,7 +39389,11 @@ C_6 [90 S 1/2 m_j= 1/2] = -16501 GHz (mu m)^6	13.3 mu m
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -39524,8 +39772,7 @@ SmZmZmYNuKNkZmZm1oA7SmZmZmYNuKNkZmZm1sD/A7EG6JGu6kExAAAAAElFTkSuQmCC
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -39559,9 +39806,9 @@ SmZmZmYNuKNkZmZm1oA7SmZmZmYNuKNkZmZm1sD/A7EG6JGu6kExAAAAAElFTkSuQmCC
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nrange</span><span class="p">,</span><span class="n">leRoyRadius</span><span class="p">,</span><span class="s2">&quot;bo&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">r&quot;Principal quantum number $n$&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">r&quot;Le Roy radius ($\mu$m)&quot;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">r&quot;Interaction of caesium $n$ $S_{1/2}$, $n$ $S_{1/2}$ states&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Principal quantum number $n$&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Le Roy radius ($\mu$m)&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Interaction of caesium $n$ $S_{1/2}$, $n$ $S_{1/2}$ states&quot;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -39572,7 +39819,11 @@ SmZmZmYNuKNkZmZm1oA7SmZmZmYNuKNkZmZm1sD/A7EG6JGu6kExAAAAAElFTkSuQmCC
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[9]:</div>
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[9]:</div>
+
+
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -39581,7 +39832,11 @@ SmZmZmYNuKNkZmZm1oA7SmZmZmYNuKNkZmZm1sD/A7EG6JGu6kExAAAAAElFTkSuQmCC
 
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -39873,8 +40128,7 @@ AABJRU5ErkJggg==
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -39891,11 +40145,11 @@ AABJRU5ErkJggg==
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Interaction Potential for 60S1/2</span>
 <span class="c1">#=================================</span>
 <span class="n">n0</span><span class="o">=</span><span class="mi">60</span><span class="p">;</span><span class="n">l0</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j0</span><span class="o">=</span><span class="mf">0.5</span><span class="p">;</span><span class="n">mj0</span><span class="o">=</span><span class="mf">0.5</span><span class="p">;</span> <span class="c1">#Target State</span>
-<span class="n">theta</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="c1">#Polar Angle [0-2pi]</span>
-<span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="c1">#Azimuthal Angle [0-pi]</span>
+<span class="n">theta</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="c1">#Polar Angle [0-pi]</span>
+<span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="c1">#Azimuthal Angle [0-2pi]</span>
 <span class="n">dn</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">#Range of n to consider (n0-dn:n0+dn)</span>
 <span class="n">dl</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">#Range of l values</span>
-<span class="n">deltaMax</span> <span class="o">=</span> <span class="mi">25</span><span class="n">e9</span> <span class="c1">#Max pair-state energy difference [Hz]</span>
+<span class="n">deltaMax</span> <span class="o">=</span> <span class="mf">25e9</span> <span class="c1">#Max pair-state energy difference [Hz]</span>
 
 
 <span class="c1">#Set target-state</span>
@@ -39927,7 +40181,11 @@ AABJRU5ErkJggg==
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>LeRoy radius = 1.1 mum
 
@@ -39947,7 +40205,11 @@ Diagonalizing interaction matrix...
 </div>
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -40602,7 +40864,11 @@ rDAzMzMzMzOzQvl/ZVm69kNgFRIAAAAASUVORK5CYII=
 
 </div>
 
-<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[10]:</div>
+
+
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -40615,8 +40881,7 @@ rDAzMzMzMzOzQvl/ZVm69kNgFRIAAAAASUVORK5CYII=
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -40625,8 +40890,7 @@ rDAzMzMzMzOzQvl/ZVm69kNgFRIAAAAASUVORK5CYII=
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -40725,8 +40989,7 @@ rDAzMzMzMzOzQvl/ZVm69kNgFRIAAAAASUVORK5CYII=
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -40778,7 +41041,11 @@ rDAzMzMzMzOzQvl/ZVm69kNgFRIAAAAASUVORK5CYII=
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>1:
 Found  380  states.
@@ -40798,8 +41065,7 @@ Generating matrix...
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -40813,14 +41079,14 @@ Generating matrix...
 <div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">eFieldList</span><span class="o">/</span><span class="mi">1</span><span class="n">e2</span><span class="p">,</span><span class="n">couplingList</span><span class="p">,</span><span class="s2">&quot;o--&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">eFieldList</span><span class="o">/</span><span class="mf">1e2</span><span class="p">,</span><span class="n">couplingList</span><span class="p">,</span><span class="s2">&quot;o--&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Electric field (V/cm)&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">r&quot;Coupling dipole matrix element ($a_0 e$)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Coupling dipole matrix element ($a_0 e$)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">eFieldList</span><span class="o">/</span><span class="mi">1</span><span class="n">e2</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">frequencyList</span><span class="p">)</span><span class="o">/</span><span class="mf">1.e3</span><span class="p">,</span><span class="s2">&quot;o--&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">eFieldList</span><span class="o">/</span><span class="mf">1e2</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">frequencyList</span><span class="p">)</span><span class="o">/</span><span class="mf">1.e3</span><span class="p">,</span><span class="s2">&quot;o--&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Electric field (V/cm)&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">r&quot;Frequency (THz)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Frequency (THz)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 
@@ -40832,7 +41098,11 @@ Generating matrix...
 <div class="output">
 
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -41201,7 +41471,11 @@ ZmZmleZkxczMzCrNyYqZmZlV2v8DhYveloIuuYMAAAAASUVORK5CYII=
 
 </div>
 
-<div class="output_area"><div class="prompt"></div>
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
 
 
 <div class="output_png output_subarea ">
@@ -41509,8 +41783,7 @@ SUVORK5CYII=
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -41529,4 +41802,8 @@ SUVORK5CYII=
     </div>
   </div>
 </body>
+
+ 
+
+
 </html>
