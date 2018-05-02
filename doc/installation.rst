@@ -8,11 +8,15 @@ Install Python and packages for scientific computing in Python (scipy, numpy, ma
 Recommended installation: via Python pip
 ----------------------------------------
 
-In the command line type::
+Linux and Mac users can simply install the package from command line::
 
     pip install ARC-Alkali-Rydberg-Calculator
 
-This finishes installation. **Below we describe some old (legacy) installation methods.**
+This finishes installation.
+Windows users can use old precompiled version
+`available here <https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/releases/tag/1.3>`_,
+or try compiling themselves the package as described below.
+**Below we describe some old (legacy) installation methods.**
 
 Download the ARC library/package
 --------------------------------
@@ -31,7 +35,7 @@ Installation of the package globally with setup.py
 **This is tested on Linux so far**
 
 Do this only if you have Linux/UNIX (as it is tested on it) and you are sure that you don't want to change underlying ARC code.
-Make sure you have C compiler and `python development headers <[https://anaconda.org/StatisKit/python-dev>`_ installed. To compile and install for local user ARC call from terminal::
+Make sure you have C compiler and `python development headers <https://anaconda.org/StatisKit/python-dev>`_ installed. To compile and install for local user ARC call from terminal::
 
     python setup.py build
     python setup.py install
