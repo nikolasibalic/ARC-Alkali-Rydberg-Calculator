@@ -48,6 +48,6 @@ script:
       conda install --yes twine;
       python setup.py sdist bdist_wheel;
       if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        python -m twine upload --repository-url https://pypi.python.org/pypi dist/*.whl;
+        python -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*.whl;
       fi;
     fi
