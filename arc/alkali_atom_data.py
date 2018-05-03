@@ -100,12 +100,21 @@ class Hydrogen(AlkaliAtom):
     scaledRydbergConstant = 109677.5834*1.e2\
         *physical_constants["inverse meter-electron volt relationship"][0]
 
+    # NOTE: below data is from NIST Atomic Spectra Database (ASD, ver. 5.5.6)
+    # Even more precise Hydrogen level data is available if needed on
+    # U.D. Jentschura, S. Kotochigova, E.O. LeBigot, P.J. Mohr, and B.N. Taylor (2005),
+    # The Energy Levels of Hydrogen and Deuterium (version 2.1). [Online]
+    # Available: http://physics.nist.gov/HDEL [2018, May 3].
+    # National Institute of Standards and Technology, Gaithersburg, MD.
+    levelDataFromNIST = "h_NIST_level_data.ascii"
+    NISTdataLevels = 12
+
     precalculatedDB = "h_precalculated.db"
     dipoleMatrixElementFile = "h_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "h_quadrupole_matrix_elements.npy"
 
     groundStateN = 1
-    minQuantumDefectN = 0
+    minQuantumDefectN = 8
 
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     mass = 1.00782503223*physical_constants["atomic mass constant"][0]
@@ -164,11 +173,7 @@ class Caesium(AlkaliAtom):
     ionisationEnergy = 31406.4677325*1.e2\
         *physical_constants["inverse meter-electron volt relationship"][0]
 
-    # State energies sEnergy [a,b] = state energy for n=a+1, l = b; j = l-1/2
-    # sEnergy [l,n] = state energy for j = l+1/2
-    sEnergy = 0
     NISTdataLevels = 25
-
 
     # first index [0]:  j-1/2    [1]: j+1/2
     # second index [0..4] : s,p,d,f,g
