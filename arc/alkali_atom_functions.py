@@ -106,6 +106,9 @@ class AlkaliAtom(object):
     alphaC = 0.0    #: Core polarizability
     Z = 0.0       #: Atomic number
 
+    # state energies from NIST values
+    # sEnergy [n,l] = state energy for n, l, j = l-1/2
+    # sEnergy [l,n] = state energy for j = l+1/2
     sEnergy = 0
     NISTdataLevels = 0
     scaledRydbergConstant = 0 #: in eV
@@ -240,7 +243,8 @@ class AlkaliAtom(object):
             print(e)
             exit()
 
-        self.sEnergy = np.array([[0.0]*self.NISTdataLevels]*self.NISTdataLevels)
+        self.sEnergy = np.array([[0.0] * (self.NISTdataLevels+1)]
+                                * (self.NISTdataLevels+1))
 
 
         # Always load NIST data on measured energy levels;
@@ -513,10 +517,10 @@ class AlkaliAtom(object):
         #
         if abs(j-(l-0.5))<0.001:
             # j =l-1/2
-            self.sEnergy[n-1,l] = energyNIST - self.ionisationEnergy
+            self.sEnergy[n, l] = energyNIST - self.ionisationEnergy
         else:
             # j = l+1/2
-            self.sEnergy[l,n-1] = energyNIST - self.ionisationEnergy
+            self.sEnergy[l, n] = energyNIST - self.ionisationEnergy
 
     def getTransitionWavelength(self,n1,l1,j1,n2,l2,j2):
         """
@@ -594,8 +598,8 @@ class AlkaliAtom(object):
             # use NIST data ?
             if (not self.preferQuantumDefects or
                 n<self.minQuantumDefectN)and(n <= self.NISTdataLevels) and \
-                (abs(self.sEnergy[n-1,l])>1e-8):
-                    return self.sEnergy[n-1,l]
+                (abs(self.sEnergy[n,l])>1e-8):
+                    return self.sEnergy[n,l]
             # else, use quantum defects
             defect = self.getQuantumDefect(n, l,j)
             return -self.scaledRydbergConstant/((n-defect)**2)
@@ -605,8 +609,8 @@ class AlkaliAtom(object):
             # use NIST data ?
             if (not self.preferQuantumDefects or
                 n<self.minQuantumDefectN)and(n <= self.NISTdataLevels) and \
-                (abs(self.sEnergy[l,n-1])>1e-8):
-                    return self.sEnergy[l,n-1]
+                (abs(self.sEnergy[l,n])>1e-8):
+                    return self.sEnergy[l,n]
 
             # else, use quantum defects
             defect = self.getQuantumDefect(n, l,j)
