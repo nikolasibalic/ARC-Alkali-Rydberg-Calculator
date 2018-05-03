@@ -410,7 +410,7 @@ class AlkaliAtom(object):
             package expansion).
 
         """
-
+        innerLimit = max(4. * step, innerLimit)  # prevent divergence due to hitting 0
         if self.cpp_numerov:
             # efficiant implementation in C
 
