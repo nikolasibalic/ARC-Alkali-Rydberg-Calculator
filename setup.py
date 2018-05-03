@@ -21,7 +21,7 @@ arc_ext = Extension(
 
 setup(
     name="ARC-Alkali-Rydberg-Calculator",
-    version="1.3.1",
+    version="1.3.4",
     description="Alkali Rydberg Calculator",
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
