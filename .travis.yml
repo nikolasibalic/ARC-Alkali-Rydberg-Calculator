@@ -46,8 +46,13 @@ script:
 - |
     if [[ $TRAVIS_TAG ]]; then
       conda install --yes twine;
-      python setup.py sdist bdist_wheel;
       if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        python setup.py sdist bdist_wheel;
         python -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*.whl;
+      else
+        if [[ "$TOXENV" == "py3" ]]; then
+          python setup.py sdist
+          python -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*.tar.gz;
+        fi;
       fi;
     fi
