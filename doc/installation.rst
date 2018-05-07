@@ -3,8 +3,25 @@ Installation instructions
 Prerequisite: Python
 --------------------
 
-Install Python and packages for scientific computing in Python (scipy, numpy, matplotlib). The package is tested and works with **both Python 2.7 and Python 3.5**.  We recommend installing Python distributions that comes with Numpy that is connected to the optimized numeric libraries like ATLAS. One such distribution is `Anaconda <https://www.continuum.io/downloads>`_, that provides `ATLAS <https://anaconda.org/anaconda/atlas>`_ support and optimized math kernel.
+Install Python and packages for scientific computing in Python (scipy, numpy, matplotlib).
+The package is tested and works with **both Python 2.7 and Python 3.6**.
+We recommend installing Python distributions that comes with Numpy that is
+connected to the optimized numeric libraries like ATLAS. One such distribution
+is `Anaconda <https://www.continuum.io/downloads>`_, that provides
+`ATLAS <https://anaconda.org/anaconda/atlas>`_ support and optimized math kernel.
 
+Recommended installation: via Python pip
+----------------------------------------
+
+Linux and Mac users can simply install the package from command line::
+
+    pip install ARC-Alkali-Rydberg-Calculator
+
+This finishes installation.
+Windows users can use old precompiled version
+`available here <https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/releases/tag/1.3>`_,
+or try compiling themselves the package as described below.
+**Below we describe some old (legacy) installation methods.**
 
 Download the ARC library/package
 --------------------------------
@@ -22,8 +39,8 @@ Installation of the package globally with setup.py
 
 **This is tested on Linux so far**
 
-Do this only if you have Linux/UNIX (as it is tested on it) and you are sure that you don't want to change underlying ARC code. 
-Make sure you have C compiler and `python development headers <[https://anaconda.org/StatisKit/python-dev>`_ installed. To compile and install for local user ARC call from terminal::
+Do this only if you have Linux/UNIX (as it is tested on it) and you are sure that you don't want to change underlying ARC code.
+Make sure you have C compiler and `python development headers <https://anaconda.org/StatisKit/python-dev>`_ installed. To compile and install for local user ARC call from terminal::
 
     python setup.py build
     python setup.py install
@@ -33,8 +50,8 @@ Databases that have to be changed with new values will be locally copied from pa
 Compiling C extension
 ----------------------
 
-If you do need to compile C extension yourself, this is how to do it without 
-installing globally the package (as in the previos section 
+If you do need to compile C extension yourself, this is how to do it without
+installing globally the package (as in the previos section
 "Installation of the package globally with setup.py").
 Optimized version of the Numerov is provided as the C code `arc_c_extensions.c`.
 **You don't need to perform this step** of manual compilation of that code if you
