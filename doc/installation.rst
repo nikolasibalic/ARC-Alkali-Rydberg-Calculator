@@ -13,14 +13,14 @@ is `Anaconda <https://www.continuum.io/downloads>`_, that provides
 Recommended installation: via Python pip
 ----------------------------------------
 
-Linux and Mac users can simply install the package from command line::
+Users can simply install the package from command line::
 
     pip install ARC-Alkali-Rydberg-Calculator
 
 This finishes installation.
-Windows users can use old precompiled version
-`available here <https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/releases/tag/1.3>`_,
-or try compiling themselves the package as described below.
+This should work on all operating systems (Linux, OSX, Windows) with
+Python 2.7 or Python 3.6. Note this is a new feature for Windows, so
+Windows  users should contact developers if unexpected errors occur.
 **Below we describe some old (legacy) installation methods.**
 
 Download the ARC library/package
