@@ -17,7 +17,9 @@ For online access to a selection of package functions see [online Atom Calculato
 
 If you want to contribute to the project, [check this page](http://arc-alkali-rydberg-calculator.readthedocs.io/en/stable/contribute.html).
 
-![Documentation Status](https://readthedocs.org/projects/arc-alkali-rydberg-calculator/badge/?version=latest) [![Build Status](https://travis-ci.org/nikolasibalic/ARC-Alkali-Rydberg-Calculator.svg?branch=master)](https://travis-ci.org/nikolasibalic/ARC-Alkali-Rydberg-Calculator)
+![Documentation Status](https://readthedocs.org/projects/arc-alkali-rydberg-calculator/badge/?version=latest) [![Build Status](https://travis-ci.org/nikolasibalic/ARC-Alkali-Rydberg-Calculator.svg?branch=master)](https://travis-ci.org/nikolasibalic/ARC-Alkali-Rydberg-Calculator) [![Build status](https://ci.appveyor.com/api/projects/status/oerrwe9otd96es4h/branch/master?svg=true)](https://ci.appveyor.com/project/nikolasibalic/arc-alkali-rydberg-calculator/branch/master) [![PyPI version](https://badge.fury.io/py/ARC-Alkali-Rydberg-Calculator.svg)](https://badge.fury.io/py/ARC-Alkali-Rydberg-Calculator)
+
+
 -------
 Authors
 -------
