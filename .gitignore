@@ -6,4 +6,4 @@ arc.egg-info/
 build/
 dist/
 **/__pycache__
-*.db
+*_precalculated.db
