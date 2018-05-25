@@ -10,6 +10,9 @@ from scipy.sparse import csr_matrix
 import sys
 if sys.version_info > (2,):
     xrange = range
+    roundPy2 = lambda x: round(x + 1.e-15)
+else:
+    roundPy2 = round
 
 wignerPrecal = True  # use precalculated values - tested only for the main algorithm calls
 wignerPrecalJmax = 23
@@ -26,8 +29,8 @@ def Wigner3j(j1,j2,j3,m1,m2,m3):
         # we shoud have precalculated value
         if ((abs(j1-j2)-0.1<j3) and (j3<j1+j2+0.1) and abs(m1+m2+m3)<0.1):
             # return precalculated value
-            return wignerPrecal3j[int(round(2*j1)),int(round(2*(wignerPrecalJmax+m1))),\
-                                  int(round(2.*j2)),int(round(m2+j2)),int(round(2-j3+j1,0))]
+            return wignerPrecal3j[int(roundPy2(2*j1)),int(roundPy2(2*(wignerPrecalJmax+m1))),\
+                                  int(roundPy2(2.*j2)),int(roundPy2(m2+j2)),int(roundPy2(2-j3+j1))]
         else:
             # that value is 0
             return 0
@@ -121,11 +124,11 @@ def Wigner3j(j1,j2,j3,m1,m2,m3):
 def Wigner6j(j1,j2,j3,J1,J2,J3):
     # if possible, use precalculated values
     global wignerPrecal
-    if wignerPrecal and ((round(2*j2,0)==1) and (J2==1 or J2==2)and \
+    if wignerPrecal and ((roundPy2(2*j2)==1) and (J2==1 or J2==2)and \
                          (j1<wignerPrecalJmax) and (J3<wignerPrecalJmax)):
         # we have precalculated value
-        return wignerPrecal6j[j1,J3,int(round(0.5 +j1-j3)),\
-                              int(round(0.5+J3-J1)),J2-1]
+        return wignerPrecal6j[j1,J3,int(roundPy2(0.5 +j1-j3)),\
+                              int(roundPy2(0.5+J3-J1)),J2-1]
     ##print("not in database %1.f %1.f %1.f %1.f %1.f %1.f" % (j1,j2,j3,J1,J2,J3))
 
 #======================================================================
@@ -147,7 +150,7 @@ def Wigner6j(j1,j2,j3,J1,J2,J3):
 #======================================================================
 
     # Check that the js and Js are only integer or half integer
-    if ( ( 2*j1 != round(2*j1) ) | ( 2*j2 != round(2*j2) ) | ( 2*j2 != round(2*j2) ) | ( 2*J1 != round(2*J1) ) | ( 2*J2 != round(2*J2) ) | ( 2*J3 != round(2*J3) ) ):
+    if ( ( 2*j1 != roundPy2(2*j1) ) | ( 2*j2 != roundPy2(2*j2) ) | ( 2*j2 != roundPy2(2*j2) ) | ( 2*J1 != roundPy2(2*J1) ) | ( 2*J2 != roundPy2(2*J2) ) | ( 2*J3 != roundPy2(2*J3) ) ):
         print('All arguments must be integers or half-integers.')
         return -1
 
@@ -157,7 +160,7 @@ def Wigner6j(j1,j2,j3,J1,J2,J3):
         return 0
 
     # Check if the sum of the elements of each traid is an integer
-    if ( ( 2*(j1+j2+j3) != round(2*(j1+j2+j3)) ) | ( 2*(j1+J2+J3) != round(2*(j1+J2+J3)) ) | ( 2*(J1+j2+J3) != round(2*(J1+j2+J3)) ) | ( 2*(J1+J2+j3) != round(2*(J1+J2+j3)) ) ):
+    if ( ( 2*(j1+j2+j3) != roundPy2(2*(j1+j2+j3)) ) | ( 2*(j1+J2+J3) != roundPy2(2*(j1+J2+J3)) ) | ( 2*(J1+j2+J3) != roundPy2(2*(J1+j2+J3)) ) | ( 2*(J1+J2+j3) != roundPy2(2*(J1+J2+j3)) ) ):
         print('6j-Symbol is not triangular!')
         return 0
 
@@ -317,14 +320,14 @@ class wignerDmatrix:
 
     def get(self,j):
         if self.trivial:
-            return np.eye(int(round(2.*j+1.,0)),int(round(2.*j+1.,0)), dtype=np.complex128)
-        savedIndex = self.matLoc[int(round(2*j,0))]
+            return np.eye(int(roundPy2(2.*j+1.)), int(roundPy2(2.*j+1.)), dtype=np.complex128)
+        savedIndex = self.matLoc[int(roundPy2(2*j))]
         if savedIndex != 0:
             return self.matSaved[savedIndex-1]
             # bacause 0 marks no entry; but matrix numbers starts from zero,
             # saved Index array is actually offsetted by 1
         # else
-        mat = np.zeros((int(round(2.*j+1.,0)),int(round(2.*j+1.,0))),dtype=np.complex128)
+        mat = np.zeros((int(roundPy2(2.*j+1.)), int(roundPy2(2.*j+1.))), dtype=np.complex128)
         jrange = np.linspace(-j,j,int(2*j)+1)
         maxIndex = int(2*j)+1
 
@@ -335,5 +338,5 @@ class wignerDmatrix:
 
         mat = csr_matrix(mat)
         self.matSaved.append(mat)
-        self.matLoc[int(round(2*j,0))] = len(self.matSaved)
+        self.matLoc[int(roundPy2(2*j))] = len(self.matSaved)
         return mat
