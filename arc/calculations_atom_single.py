@@ -698,6 +698,8 @@ class StarkMap:
         if isinstance(event.artist, matplotlib.collections.PathCollection):
             if (self.units==1):
                 scaleFactor = 0.03336
+            else:
+                scaleFactor = 1.0
 
             x = event.mouseevent.xdata*100.
             y = event.mouseevent.ydata/scaleFactor
