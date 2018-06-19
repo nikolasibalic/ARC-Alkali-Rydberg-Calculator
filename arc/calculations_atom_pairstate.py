@@ -64,6 +64,7 @@ from scipy.sparse import lil_matrix,csr_matrix
 from scipy.sparse.linalg import eigsh
 from scipy.special.specfun import fcoef
 from scipy import floor
+from scipy.special import factorial
 
 from .alkali_atom_functions import *
 from .alkali_atom_functions import _EFieldCoupling,_atomLightAtomCoupling
@@ -263,6 +264,14 @@ class PairStateInteractions:
         #self.sam = []
         self.savedAngularMatrix_matrix = []
 
+        # intialize precalculated values for factorial term in __getAngularMatrix_M
+        fcoef = lambda l1,l2,m: factorial(l1+l2)/(factorial(l1+m)*factorial(l1-m)*factorial(l2+m)*factorial(l2-m))**0.5
+        x = self.interactionsUpTo
+        self.fcp = np.zeros((x+1,x+1,2*x+1))
+        for c1 in range(1,x+1):
+            for c2 in range(1,x+1):
+                for p in range(-min(c1,c2),min(c1,c2)+1):
+                    self.fcp[c1,c2,p+x] = fcoef(c1,c2,p)
 
         self.conn = False
         self.c = False
@@ -303,12 +312,6 @@ class PairStateInteractions:
             raise ValueError("error in __getAngularMatrix_M")
             exit()
 
-        ##fcoef = lambda l1,l2,m: factorial(l1+l2)/(factorial(l1+m)*factorial(l1-m)*factorial(l2+m)*factorial(l2-m))**0.5
-        # fcp[c1,c2,p+2] = fcoef(c1,c2,p) precalculated to speed up calculation
-        fcp = np.array([[[0, 0, 0, 0, 0],[0, 0, 0, 0, 0],[0, 0, 0, 0, 0]],\
-                        [[0, 0, 0 ,0, 0],[0, 1, 2, 1, 0],[0, 1, 3, 1, 0]],\
-                         [[0, 0, 0, 0, 0],[0, 1, 3, 1, 0],[1, 4, 6, 4, 1]]],\
-                       dtype=np.int16)
 
         am = zeros((int(round((2*j1+1)*(2*j2+1),0)),\
                     int(round((2*j+1)*(2*jj+1),0))),dtype=np.float64)
@@ -338,7 +341,10 @@ class PairStateInteractions:
                         sumPol = 0.0  # sum over polarisations
                         limit = min(c1,c2)
                         for p in xrange(-limit,limit+1):
-                            sumPol = sumPol + fcp[c1,c2,p+2]*CG(j,m,c1,p,j1,m1)*CG(jj,mm,c2,-p,j2,m2)
+                            sumPol = sumPol + \
+                                     self.fcp[c1,c2,p + self.interactionsUpTo] * \
+                                     CG(j,m,c1,p,j1,m1) *\
+                                     CG(jj,mm,c2,-p,j2,m2)
                         am[index1,index2] = elem*sumPol
 
         index = len(self.savedAngularMatrix_matrix)
@@ -390,11 +396,15 @@ class PairStateInteractions:
             print(e)
 
     def __loadAngularMatrixElementsFile(self):
-
-        fileHandle =  gzip.GzipFile(os.path.join(self.dataFolder,\
-                                                 self.angularMatrixFile_meta),'rb')
-        data = np.load(fileHandle, encoding = 'latin1')
-        fileHandle.close()
+        try:
+            fileHandle =  gzip.GzipFile(os.path.join(self.dataFolder,\
+                                                     self.angularMatrixFile_meta),'rb')
+            data = np.load(fileHandle, encoding = 'latin1')
+            fileHandle.close()
+        except :
+            print("Note: No saved angular matrix metadata files to be loaded.")
+            print(sys.exc_info())
+            return
 
         data[:,1] *= 2  # j1 -> 2 r j1
         data[:,3] *= 2  # j2 -> 2 r j2
