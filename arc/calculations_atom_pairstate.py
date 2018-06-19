@@ -39,6 +39,11 @@ mpl.rcParams['xtick.major.size'] = 8
 mpl.rcParams['ytick.major.size'] = 8
 mpl.rcParams['xtick.minor.size'] = 4
 mpl.rcParams['ytick.minor.size'] = 4
+mpl.rcParams['xtick.direction'] = 'in'
+mpl.rcParams['ytick.direction'] = 'in'
+mpl.rcParams['xtick.top'] = True
+mpl.rcParams['ytick.right'] = True
+mpl.rcParams['font.family'] = 'serif'
 
 import numpy as np
 import re
@@ -66,6 +71,8 @@ from .calculations_atom_single import StarkMap
 
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib
+
+import datetime
 
 import sys
 if sys.version_info > (2,):
@@ -533,8 +540,13 @@ class PairStateInteractions:
         couplingMatConstructor = [ [[],[],[]] \
                                   for i in xrange(2*self.interactionsUpTo-1) ]
 
-
-
+        # original pair-state (i.e. target pair state) Zeeman Shift
+        opZeemanShift = (self.atom.getZeemanEnergyShift(
+                              self.l, self.j, self.m1,
+                              self.Bz) + \
+                         self.atom.getZeemanEnergyShift(
+                              self.ll, self.jj, self.m2,
+                              self.Bz)) / C_h * 1.0e-9  # in GHz
 
         if debugOutput:
             print("\n ======= Coupling strengths (radial part only) =======\n")
@@ -550,7 +562,8 @@ class PairStateInteractions:
             ed =  self.atom.getEnergyDefect2(states[opi][0],states[opi][1],states[opi][2],
                                           states[opi][3],states[opi][4],states[opi][5],
                                           states[i][0],states[i][1],states[i][2],
-                                          states[i][3],states[i][4],states[i][5])/C_h*1.0e-9
+                                          states[i][3],states[i][4],states[i][5]) / C_h * 1.0e-9\
+                 - opZeemanShift
 
             pairState1 = "|"+printStateString(states[i][0],states[i][1],states[i][2])+\
                         ","+printStateString(states[i][3],states[i][4],states[i][5])+">"
@@ -630,6 +643,12 @@ class PairStateInteractions:
         self.__loadAngularMatrixElementsFile()
         self.savedAngularMatrixChanged = False
 
+    def __closeDatabaseForMemoization(self):
+        self.conn.commit()
+        self.conn.close()
+        self.conn = False
+        self.c = False
+
     def getLeRoyRadius(self):
         """
             Returns Le Roy radius for initial pair-state.
@@ -681,9 +700,9 @@ class PairStateInteractions:
             are close to each other. In that region multiple levels are strongly
             coupled, and one needs to use full diagonalization.
 
-            See `pertubative C6 calculations example snippet`_.
+            See `perturbative C6 calculations example snippet`_.
 
-            .. _`pertubative C6 calculations example snippet`:
+            .. _`perturbative C6 calculations example snippet`:
                 ./Rydberg_atoms_a_primer.html#Dispersion-Coefficients
 
             Args:
@@ -709,7 +728,7 @@ class PairStateInteractions:
 
                     from arc import *
                     calculation = PairStateInteractions(Rubidium(), 62, 2, 1.5, 62, 2, 1.5, 1.5, 1.5)
-                    c6 = calculation.getC6pertubatively(0,0, 5, 25e9)
+                    c6 = calculation.getC6perturbatively(0,0, 5, 25e9)
                     print "C_6 = %.0f GHz (mu m)^6" % c6
 
                 Which returns::
@@ -726,7 +745,7 @@ class PairStateInteractions:
                     # do calculation of C6 pertubatively for all atom orientations
                     c6 = []
                     for theta in thetaList:
-                        value = calculation1.getC6pertubatively(theta,0,5,25e9)
+                        value = calculation1.getC6perturbatively(theta,0,5,25e9)
                         c6.append(value)
                         print ("theta = %.2f * pi \tC6 = %.2f GHz  mum^6" % (theta/pi,value))
                     # plot results
@@ -836,12 +855,12 @@ class PairStateInteractions:
 
 
         # ========= END OF THE MAIN CODE ===========
-
+        self.__closeDatabaseForMemoization()
         return C6
 
 
     def defineBasis(self,theta,phi,nRange,lrange,energyDelta,\
-                         progressOutput=False,debugOutput=False):
+                         Bz=0, progressOutput=False,debugOutput=False):
         """
             Finds relevant states in the vicinity of the given pair-state
 
@@ -870,6 +889,10 @@ class PairStateInteractions:
                 energyDelta (float): what is maximum energy difference ( :math:`\\Delta E/h` in Hz)
                     between the original pair state and the other pair states that we are including in
                     calculation
+                Bz (float): optional, magnetic field directed along z-axis in
+                    units of Tesla. Calculation will be correct only for weak
+                    magnetic fields, where paramagnetic term is much stronger
+                    then diamagnetic term. Diamagnetic term is neglected.
                 progressOutput (bool): optional, False by default. If true, prints
                     information about the progress of the calculation.
                 debugOutput (bool): optional, False by default. If true, similar
@@ -887,6 +910,7 @@ class PairStateInteractions:
         # save call parameters
         self.theta = theta; self.phi = phi; self.nRange = nRange;
         self.lrange = lrange; self.energyDelta = energyDelta
+        self.Bz = Bz
 
         # wignerDmatrix
         wgd = wignerDmatrix(theta,phi)
@@ -941,10 +965,12 @@ class PairStateInteractions:
                 print(stateCoupled)
         self.index[-1] = len(self.basisStates)
 
-        print("\nCalculating Hamiltonian matrix...\n")
+        if progressOutput or debugOutput:
+            print("\nCalculating Hamiltonian matrix...\n")
 
         dimension = len(self.basisStates)
-        print("\n\tmatrix (dimension ",dimension,")\n")
+        if progressOutput or debugOutput:
+            print("\n\tmatrix (dimension ",dimension,")\n")
 
         # INITIALIZING MATICES
         # all (sparce) matrices will be saved in csr format
@@ -969,7 +995,7 @@ class PairStateInteractions:
                 ed = self.channel[ii][6]
 
                 # solves problems with exactly degenerate basisStates
-                degeneracyOffset = 0.000001
+                degeneracyOffset = 0.00000001
 
                 i = self.index[ii]
                 dMatrix1 = wgd.get(self.basisStates[i][2])
@@ -986,8 +1012,19 @@ class PairStateInteractions:
                     stateCom = compositeState(statePart1, statePart2)
 
                     if (matRIndex==0):
-                        matDiagonalConstructor[0].append(ed+degeneracyOffset)
-                        degeneracyOffset +=  0.000001
+                        zeemanShift = (self.atom.getZeemanEnergyShift(
+                                           self.basisStates[i][1],
+                                           self.basisStates[i][2],
+                                           self.basisStates[i][3],
+                                           self.Bz) + \
+                                       self.atom.getZeemanEnergyShift(
+                                           self.basisStates[i][5],
+                                           self.basisStates[i][6],
+                                           self.basisStates[i][7],
+                                           self.Bz)) / C_h * 1.0e-9   # in GHz
+                        matDiagonalConstructor[0].append(ed + zeemanShift +
+                                                         degeneracyOffset)
+                        degeneracyOffset +=  0.00000001
                         matDiagonalConstructor[1].append(i)
                         matDiagonalConstructor[2].append(i)
 
@@ -1033,7 +1070,8 @@ class PairStateInteractions:
                                 matRConstructor[matRIndex][1].append(j)
                                 matRConstructor[matRIndex][2].append(i)
             matRIndex += 1
-            print("\n")
+            if progressOutput or debugOutput:
+                print("\n")
 
         self.matDiagonal = csr_matrix((matDiagonalConstructor[0], \
                                     (matDiagonalConstructor[1], matDiagonalConstructor[2])),
@@ -1050,13 +1088,14 @@ class PairStateInteractions:
         self.originalPairStateIndex = opi
 
         self.__updateAngularMatrixElementsFile()
-
+        self.__closeDatabaseForMemoization()
 
 
     def diagonalise(self,rangeR,noOfEigenvectors,
                          drivingFromState = [0,0,0,0,0],
                          eigenstateDetuning = 0.,
-                         progressOutput = False,\
+                         sortEigenvectors = False,
+                         progressOutput = False,
                          debugOutput = False):
         """
             Finds eigenstates in atom pair basis.
@@ -1088,6 +1127,10 @@ class PairStateInteractions:
                     contribution of the original pair-state in the eigenstates
                     obtained by diagonalization, and will highlight it's
                     admixure by colour mapping the obtained eigenstates plot.
+                sortEigenvectors(bool): optional, False by default. Tries to sort
+                    eigenvectors so that given eigen vector index corresponds
+                    to adiabatically changing eigenstate, as detirmined by
+                    maximising overlap between old and new eigenvectors.
                 progressOutput (bool): optional, False by default. If true, prints
                     information about the progress of the calculation.
                 debugOutput (bool): optional, False by default. If true, similar
@@ -1095,7 +1138,7 @@ class PairStateInteractions:
                     progress of calculations, but with more verbose output.
         """
 
-        self.r = rangeR
+        self.r = np.sort(rangeR)
         dimension = len(self.basisStates)
 
         self.noOfEigenvectors = noOfEigenvectors
@@ -1189,6 +1232,8 @@ class PairStateInteractions:
             print("\n\nDiagonalizing interaction matrix...\n")
 
         rvalIndex = 0.
+        previousEigenvectors = []
+
         for rval in self.r:
             if progressOutput:
                 sys.stdout.write("\r%d%%" %  (rvalIndex/len(self.r-1)*100.))
@@ -1208,8 +1253,41 @@ class PairStateInteractions:
             # sigma specifies center frequency (in GHz)
             ev, egvector = eigsh(m, noOfEigenvectors, sigma= eigenstateDetuning*1.e-9, which='LM',tol=1E-6)
 
-            self.y.append(ev)
+            if sortEigenvectors:
+                # Find which eigenvectors overlap most with eigenvectors from
+                # previous diagonalisatoin, in order to find "adiabatic"
+                # continuation for the respective states
 
+                if previousEigenvectors==[]:
+                    previousEigenvectors = np.copy(egvector)
+                    previousEigenvalues = np.copy(ev)
+                rowPicked = [False for i in range(len(ev))]
+                columnPicked = [False for i in range(len(ev))]
+
+                stateOverlap = np.zeros((len(ev),len(ev)))
+                for i in range(len(ev)):
+                    for j in range(len(ev)):
+                        stateOverlap[i,j] = np.vdot(egvector[:, i],
+                                                    previousEigenvectors[:, j])**2
+
+                sortedOverlap = np.dstack(np.unravel_index(np.argsort(stateOverlap.ravel()),
+                                                           (len(ev), len(ev))))[0]
+
+                sortedEigenvaluesOrder = np.zeros(len(ev), dtype=np.int32)
+                j = len(ev)**2 - 1
+                for i in range(len(ev)):
+                    while rowPicked[sortedOverlap[j, 0]] or \
+                        columnPicked[sortedOverlap[j, 1]]:
+                        j -= 1
+                    rowPicked[sortedOverlap[j, 0]] = True
+                    columnPicked[sortedOverlap[j, 1]] = True
+                    sortedEigenvaluesOrder[sortedOverlap[j, 1]] = sortedOverlap[j, 0]
+
+                egvector = egvector[:,sortedEigenvaluesOrder]
+                ev = ev[sortedEigenvaluesOrder]
+                previousEigenvectors = np.copy(egvector)
+
+            self.y.append(ev)
 
             if (drivingFromState[0] < 0.1):
                 # if we've defined from which state we are driving
@@ -1479,6 +1557,8 @@ class PairStateInteractions:
             y = event.mouseevent.ydata
 
             i = np.searchsorted(self.r,x)
+            if i == len(self.r):
+                i -= 1
             if ((i>0) and (abs(self.r[i-1]-x)<abs(self.r[i]-x))):
                 i -=1
 
@@ -2005,7 +2085,7 @@ class StarkMapResonances:
                             *C_e/C_h*1e-9
 
     def findResonances(self,nMin,nMax,maxL,eFieldList,energyRange=[-5.e9,+5.e9],\
-             progressOutput = False):
+             Bz=0, progressOutput=False):
         """
             Finds near-resonant dipole-coupled pair-states
 
@@ -2025,13 +2105,20 @@ class StarkMapResonances:
                     to be included in the calculation
                 eFieldList ([float]): list of the electric fields (in V/m) for
                     which to calculate level diagram (StarkMap)
+                Bz (float): optional, magnetic field directed along z-axis in
+                    units of Tesla. Calculation will be correct only for weak
+                    magnetic fields, where paramagnetic term is much stronger
+                    then diamagnetic term. Diamagnetic term is neglected.
                 energyRange ([float,float]): optinal argument. Minimal and maximal
                     energy of that some dipole-coupled state should have in order
                     to keep it in the plot (in units of Hz). By default it finds
                     states that are :math:`\pm 5` GHz
+                progressOutput (:obj:`bool`, optional): if True prints the
+                    progress of calculation; Set to false by default.
         """
 
         self.eFieldList = eFieldList
+        self.Bz = Bz
         eMin = energyRange[0]*1.e-9  # in GHz
         eMax = energyRange[1]*1.e-9
 
@@ -2039,7 +2126,7 @@ class StarkMapResonances:
 
         sm1 = StarkMap(self.atom1)
         sm1.defineBasis(self.state1[0],self.state1[1],self.state1[2],\
-                        self.state1[3], nMin, nMax, maxL, \
+                        self.state1[3], nMin, nMax, maxL, Bz=self.Bz,\
                         progressOutput = progressOutput)
         sm1.diagonalise(eFieldList,  progressOutput = progressOutput)
         if (self.atom2 is self.atom1) and \
@@ -2051,7 +2138,7 @@ class StarkMapResonances:
         else:
             sm2 = StarkMap(self.atom2)
             sm2.defineBasis(self.state2[0],self.state2[1],self.state2[2],\
-                            self.state2[3], nMin, nMax, maxL, \
+                            self.state2[3], nMin, nMax, maxL, Bz=self.Bz,\
                             progressOutput = progressOutput)
             sm2.diagonalise(eFieldList,  progressOutput = progressOutput)
 
@@ -2101,12 +2188,12 @@ class StarkMapResonances:
         self.composition = []
 
         for dm1 in dmlist1:
-            sm1.defineBasis(n1,l1,j1,mj1+dm1, nMin, nMax, maxL, \
+            sm1.defineBasis(n1,l1,j1,mj1+dm1, nMin, nMax, maxL, Bz=self.Bz,\
                         progressOutput = progressOutput)
             sm1.diagonalise(eFieldList,  progressOutput = progressOutput)
 
             for dm2 in dmlist2:
-                sm2.defineBasis(n2,l2,j2,mj2+dm2, nMin, nMax, maxL, \
+                sm2.defineBasis(n2,l2,j2,mj2+dm2, nMin, nMax, maxL, Bz=self.Bz,\
                             progressOutput = progressOutput)
                 sm2.diagonalise(eFieldList,  progressOutput = progressOutput)
 
@@ -2184,6 +2271,8 @@ class StarkMapResonances:
             y = event.mouseevent.ydata
 
             i = np.searchsorted(self.eFieldList,x)
+            if i == len(self.eFieldList):
+                i -= 1
             if ((i>0) and (abs(self.eFieldList[i-1]-x)<\
                            abs(self.eFieldList[i]-x))):
                 i -=1
@@ -2218,6 +2307,8 @@ class StarkMapResonances:
             y = ydata
 
             i = np.searchsorted(self.eFieldList,x)
+            if i == len(self.eFieldList):
+                i -= 1
             if ((i>0) and (abs(self.eFieldList[i-1]-x)<\
                            abs(self.eFieldList[i]-x))):
                 i -=1

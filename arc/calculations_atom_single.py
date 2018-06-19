@@ -195,7 +195,7 @@ class StarkMap:
         self.maxCoupling = 0.
 
         # STARK memoization
-        self.eFieldCouplingSaved = _EFieldCoupling()
+        self.eFieldCouplingSaved = False
 
 
 
@@ -217,8 +217,8 @@ class StarkMap:
         return self._eFieldCouplingDivE(n1,l1,j1,mj1,n2,l2,j2,mj2)*eField
 
 
-    def defineBasis(self,n,l,j,mj,nMin,nMax,maxL,progressOutput = False,\
-                    debugOutput=False):
+    def defineBasis(self, n, l, j, mj, nMin, nMax, maxL, Bz=0,
+                    progressOutput=False, debugOutput=False):
         """
             Initializes basis of states around state of interest
 
@@ -244,6 +244,10 @@ class StarkMap:
                     be included in the basis for calculation
                 maxL (int): *maximal* value of orbital angular momentum for the
                     states to be included in the basis for calculation
+                Bz (float): optional, magnetic field directed along z-axis in
+                    units of Tesla. Calculation will be correct only for weak
+                    magnetic fields, where paramagnetic term is much stronger
+                    then diamagnetic term. Diamagnetic term is neglected.
                 progressOutput (:obj:`bool`, optional): if True prints the
                     progress of calculation; Set to false by default.
                 debugOutput (:obj:`bool`, optional): if True prints additional
@@ -251,12 +255,14 @@ class StarkMap:
         """
         global wignerPrecal
         wignerPrecal = True
+        self.eFieldCouplingSaved = _EFieldCoupling()
 
         states = []
 
         # save calculation details START
         self.n = n; self.l =l; self.j=j
         self.mj = mj; self.nMin = nMin; self.nMax = nMax; self.maxL = maxL
+        self.Bz = Bz
         # save calculation details END
 
 
@@ -308,7 +314,12 @@ class StarkMap:
             # add diagonal element
             self.mat1[ii][ii] = self.atom.getEnergy(states[ii][0],\
                                                states[ii][1],states[ii][2])\
-                            *C_e/C_h*1e-9
+                                * C_e/C_h*1e-9 \
+                                + self.atom.getZeemanEnergyShift(
+                                                states[ii][1],
+                                                states[ii][2],
+                                                states[ii][3],
+                                                self.Bz) / C_h * 1.0e-9
             # add off-diagonal element
 
             for jj in xrange(ii+1,dimension):
@@ -329,6 +340,8 @@ class StarkMap:
             print(self.mat2[0])
 
         self.atom.updateDipoleMatrixElementsFile()
+        self.eFieldCouplingSaved._closeDatabase()
+        self.eFieldCouplingSaved = False
         return 0
 
     def diagonalise(self,eFieldList,drivingFromState = [0,0,0,0,0],
@@ -713,6 +726,8 @@ class StarkMap:
             y = event.mouseevent.ydata/scaleFactor
 
             i = np.searchsorted(self.eFieldList,x)
+            if i == len(self.eFieldList):
+                i -= 1
             if ((i>0) and (abs(self.eFieldList[i-1]-x)<abs(self.eFieldList[i]-x))):
                 i -=1
 
