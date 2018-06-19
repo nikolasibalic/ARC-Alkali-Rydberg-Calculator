@@ -538,7 +538,8 @@ class StarkMap:
             raise ValueError("Unsupported export format (.%s)." % format)
 
     def plotLevelDiagram(self,units=1,highlighState=True,progressOutput=False,\
-                        debugOutput=False,highlightColour='red'):
+                        debugOutput=False,highlightColour='red',
+                        addToExistingPlot = False):
         """
             Makes a plot of a stark map of energy levels
 
@@ -557,11 +558,15 @@ class StarkMap:
                     progress of calculation; Set to False by default.
                 debugOutput (:obj:`bool`, optional): if True prints additional
                     information usefull for debuging. Set to False by default.
+                addToExistingPlot (:obj:`bool`, optional): if True adds points to
+                    existing old plot. Note that then interactive plotting
+                    doesn't work. False by default.
         """
         rvb = LinearSegmentedColormap.from_list('mymap',\
                                                ['0.9', highlightColour,'black'])
 
         self.units = units
+        self.addToExistingPlot = addToExistingPlot
 
         if progressOutput:
             print("plotting...")
@@ -572,7 +577,8 @@ class StarkMap:
         j = originalState[2]
 
         existingPlot = False
-        if (self.fig == 0):
+        if (self.fig == 0 or not addToExistingPlot):
+            if (self.fig != 0): plt.close()
             self.fig, self.ax = plt.subplots(1,1,figsize=(11.,5))
         else:
             existingPlot = True
@@ -682,14 +688,16 @@ class StarkMap:
         """
         if (self.fig != 0):
             if interactive:
-                self.ax.set_title("Click on state to see state composition")
-                self.clickedPoint = 0
-                self.fig.canvas.draw()
-                self.fig.canvas.mpl_connect('pick_event', self._onPick)
+                if self.addToExistingPlot:
+                    print("NOTE: Interactive plotting doesn't work with"
+                          " addToExistingPlot option set to True"
+                          "\nPlease turn off this option in plotLevelDiagram.\n")
+                else:
+                    self.ax.set_title("Click on state to see state composition")
+                    self.clickedPoint = 0
+                    self.fig.canvas.draw()
+                    self.fig.canvas.mpl_connect('pick_event', self._onPick)
             plt.show()
-            self.fig.clear()
-            self.fig = 0
-            self.ax = 0
         else:
             print("Error while showing a plot: nothing is plotted yet")
         return 0
