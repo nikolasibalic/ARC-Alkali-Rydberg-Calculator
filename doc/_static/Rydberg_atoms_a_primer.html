@@ -11784,7 +11784,7 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Authors: Nikola Šibalić, Jonathan D. Pritchard, Charles S. Adams, Kevin J. Weatherill</p>
-<p>Updated 30/05/2018</p>
+<p>Updated 04/07/2018</p>
 <p>In this notebook:</p>
 <ol>
 <li><a href="#Configure-Notebook">Configure Notebook</a></li>
@@ -11833,7 +11833,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Configure the matplotlib graphics library and configure it to show </span>
@@ -12544,13 +12544,13 @@ Lifetime (300 K) &tau;<sub>eff</sub> = 15.54 &mu;s
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">atom</span> <span class="o">=</span> <span class="n">Caesium</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cs Excitation 6S_{1/2} -&gt; 60P_{3/2}&quot;</span><span class="p">)</span>
-<span class="n">n1</span><span class="o">=</span><span class="mi">6</span><span class="p">;</span><span class="n">l1</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j1</span><span class="o">=</span><span class="mf">0.5</span><span class="p">;</span> <span class="c1">#Initial State</span>
-<span class="n">n2</span><span class="o">=</span><span class="mi">60</span><span class="p">;</span><span class="n">l2</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="n">j2</span><span class="o">=</span><span class="mf">1.5</span><span class="p">;</span> <span class="c1">#Final State</span>
+<span class="n">n1</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span> <span class="n">l1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j1</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">;</span> <span class="c1">#Initial State</span>
+<span class="n">n2</span> <span class="o">=</span> <span class="mi">60</span><span class="p">;</span> <span class="n">l2</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">j2</span> <span class="o">=</span> <span class="mf">1.5</span><span class="p">;</span> <span class="c1">#Final State</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;lambda = </span><span class="si">%.3f</span><span class="s2"> nm&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionWavelength</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n2</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">*</span><span class="mf">1e9</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;omega/2pi = </span><span class="si">%.3f</span><span class="s2"> THz&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">getTransitionFrequency</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">n2</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-12</span><span class="p">))</span>
 </pre></div>
@@ -12599,7 +12599,7 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Laser Parameters</span>
@@ -12610,7 +12610,9 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 <span class="n">mj2</span><span class="o">=</span><span class="mf">1.5</span><span class="p">;</span>
 <span class="n">q</span><span class="o">=+</span><span class="mi">1</span><span class="p">;</span> <span class="c1">#Light Polarisation (sigma+)</span>
 
-<span class="n">rabiFreq</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">getRabiFrequency</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span><span class="n">l1</span><span class="p">,</span><span class="n">j1</span><span class="p">,</span><span class="n">mj1</span><span class="p">,</span><span class="n">n2</span><span class="p">,</span><span class="n">l2</span><span class="p">,</span><span class="n">j2</span><span class="p">,</span><span class="n">q</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="n">waist</span><span class="p">)</span>
+<span class="n">rabiFreq</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">getRabiFrequency</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">l1</span><span class="p">,</span> <span class="n">j1</span><span class="p">,</span> <span class="n">mj1</span><span class="p">,</span>
+                                 <span class="n">n2</span><span class="p">,</span> <span class="n">l2</span><span class="p">,</span> <span class="n">j2</span><span class="p">,</span>
+                                 <span class="n">q</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">waist</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rabi Frequency = 2 pi x </span><span class="si">%.2f</span><span class="s2"> MHz&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">rabiFreq</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-6</span><span class="p">))</span>
 </pre></div>
 
@@ -12818,13 +12820,16 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">waist</span> <span class="o">=</span> <span class="mf">50e-6</span> <span class="c1"># 50 mu m</span>
-<span class="n">P</span> <span class="o">=</span> <span class="mf">10.e-3</span> <span class="c1"># 10 mW</span>
-<span class="n">rabiFreq</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">getRabiFrequency</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">52</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="n">P</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">waist</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rabi Frequency = 2 pi x </span><span class="si">%.2f</span><span class="s2"> MHz&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">rabiFreq</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-6</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">waist</span> <span class="o">=</span> <span class="mf">50e-6</span>  <span class="c1"># 50 mu m</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mf">10.e-3</span>  <span class="c1"># 10 mW</span>
+<span class="n">q</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># laser drives pi transition</span>
+<span class="n">rabiFreq</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">getRabiFrequency</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> 
+                                 <span class="mi">52</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span>
+                                 <span class="n">q</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">waist</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;rabi Frequency = 2 pi x </span><span class="si">%.2f</span><span class="s2"> MHz&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rabiFreq</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -12841,7 +12846,7 @@ which is related to the electric field by $I=(1/2)c\epsilon_0\vert \mathcal{E}\v
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>rabi Frequency = 2 pi x 1.58 MHz
+<pre>rabi Frequency = 2 pi x 3.16 MHz
 </pre>
 </div>
 </div>
