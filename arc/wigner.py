@@ -3,6 +3,10 @@
 from __future__ import division, print_function, absolute_import
 from scipy import floor, sqrt
 from scipy.misc import factorial
+from sympy.physics.wigner import clebsch_gordan as CG_sympy
+from sympy.physics.wigner import wigner_3j as Wigner3j_sympy
+from sympy.physics.wigner import wigner_6j as Wigner6j_sympy
+from sympy import N as sympyEvaluate
 from numpy import arange
 import numpy as np
 import os
@@ -34,6 +38,11 @@ def Wigner3j(j1,j2,j3,m1,m2,m3):
         else:
             # that value is 0
             return 0
+
+    if (j1>50 or j2>50 or j3>50 or m1>50 or m2>50 or m3>50):
+        # usual implementation of coefficient calculation that uses factorials
+        # would fail (overflow). Use instead something slower verion from Sympy
+        return float(sympyEvaluate(Wigner3j_sympy(j1,j2,j3,m1,m2,m3).doit()))
 
     ##print "unknown %.1f %.1f %.1f %.1f %.1f %.1f " % (j1,j2,j3,m1,m2,m3)
 #======================================================================
@@ -130,6 +139,11 @@ def Wigner6j(j1,j2,j3,J1,J2,J3):
         return wignerPrecal6j[j1,J3,int(roundPy2(0.5 +j1-j3)),\
                               int(roundPy2(0.5+J3-J1)),J2-1]
     ##print("not in database %1.f %1.f %1.f %1.f %1.f %1.f" % (j1,j2,j3,J1,J2,J3))
+
+    if (j1>50 or j2>50 or j3>50 or J1>50 or J2>50 or J3>50):
+        # usual implementation of coefficient calculation that uses factorials
+        # would fail (overflow). Use instead something slower verion from Sympy
+        return float(sympyEvaluate(Wigner6j_sympy(j1,j2,j3,J1,J2,J3).doit()))
 
 #======================================================================
 # Calculating the Wigner6j-Symbols using the Racah-Formula
