@@ -1262,7 +1262,7 @@ class AlkaliAtom(object):
             modeOccupationTerm = 1.
 
         # only possible by absorbing thermal photons ?
-        if (hbar*omega < 100*C_k*temperature):
+        if (hbar*omega < 100*C_k*temperature) and (omega > 1e2):
             modeOccupationTerm += 1./(exp(hbar*omega/(C_k*temperature))-1.)
 
         return omega**3*dipoleRadialPart**2/\
