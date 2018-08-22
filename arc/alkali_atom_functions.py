@@ -1309,7 +1309,7 @@ class AlkaliAtom(object):
              which we are calculating the lifetime. This is in order to include \
              black-body induced transitions to higher lying up in energy levels.")
         elif (temperature<0.1):
-            includeLevelsUpTo = n
+            includeLevelsUpTo = max(n, self.groundStateN)
 
         transitionRate = 0.
 
