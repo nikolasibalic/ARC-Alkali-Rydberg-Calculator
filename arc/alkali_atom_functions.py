@@ -1701,9 +1701,11 @@ def NumerovBack(innerLimit,outerLimit,kfun,step,init1,init2):
                 print("Numerov error")
                 exit()
 
-    for i in xrange(divergencePoint):
-        rad[i]=0;
-        sol[i]=0;
+    br = divergencePoint;
+    while (br>0):
+        rad[br]=rad[br+1]-step;
+        sol[br]=0;
+        br -= 1;
 
     # convert R(r)*r^{3/4} to  R(r)*r
     sol = np.multiply(sol,np.sqrt(rad))

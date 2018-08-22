@@ -265,7 +265,7 @@ static PyObject *NumerovWavefunction(PyObject *self, PyObject *args) {
   // RETURN RESULT - but set to zero divergent part (to prevent integration there)
   for (i =0; i<divergencePoint; i++) sol[i] = 0;
   // same for radial part
-  for (i = 0; i < divergencePoint; i++) sol[i+totalLength] = 0;
+  for (i = divergencePoint; i >= 0 ; i--) sol[i+totalLength] = sol[i+totalLength+1]-step;
 
   // convert sol that is at the moment R(r)*r^{3/4} into R(r)*r
   for (i=0; i<totalLength; i++)  sol[i]=sol[i]*sqrt(sol[i+totalLength]);
