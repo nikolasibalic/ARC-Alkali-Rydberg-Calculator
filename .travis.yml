@@ -16,6 +16,9 @@ matrix:
         - os: osx
           language: generic
           env: TOXENV=py3
+        - os: osx
+          language: generic
+          env: TOXENV=py36
 before_script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       if [[ "$TOXENV" == "py27" ]]; then
@@ -36,6 +39,10 @@ before_script:
   - export PATH=$HOME/miniconda/bin:$PATH
 
 script:
+- if [[ "$TOXENV" == "py36" ]]; then
+    conda create --yes -n py36 python=3.6;
+    source activate py36;
+  fi;
 - conda update -n base --yes conda
 - conda install --yes numpy
 - conda install --yes scipy
