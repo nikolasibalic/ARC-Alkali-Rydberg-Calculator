@@ -439,7 +439,7 @@ class Rubidium87(AlkaliAtom):
     NISTdataLevels = 77
 
     #: (eV) Ref. [#Mack2011]_
-    ionisationEnergy = (1010.0291646e12-4.271676631815181e-9)/C_c \
+    ionisationEnergy = (1010.0291646e12-4.271676631815181e9)/C_c \
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     quantumDefect = [[[3.1311804,0.1784,0.0,0.0,0.0,0.0],\
