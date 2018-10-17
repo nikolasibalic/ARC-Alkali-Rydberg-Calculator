@@ -1039,12 +1039,12 @@ class AlkaliAtom(object):
                     print(" = = = Caesium = = = ")
                     atom = Caesium()
                     for channel in channels:
-                        print("%.0f  GHz (mu m)^6" % ( atom.getC6term(*channel)/h*1.e27 ))
+                        print("%.0f  GHz (mu m)^6" % ( atom.getC6term(*channel) / C_h * 1.e27 ))
 
                     print("\\n = = = Rubidium  = = =")
                     atom = Rubidium()
                     for channel in channels:
-                        print("%.0f  GHz (mu m)^6" % ( atom.getC6term(*channel)/h*1.e27 ))
+                        print("%.0f  GHz (mu m)^6" % ( atom.getC6term(*channel) / C_h * 1.e27 ))
 
                 Returns::
 
