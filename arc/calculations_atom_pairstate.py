@@ -705,10 +705,17 @@ class PairStateInteractions:
         """
             Calculates :math:`C_6` from second order perturbation theory.
 
+            Calculates
+            :math:`C_6=\\sum_{\\rm r',r''}|\\langle {\\rm r',r''}|V|\
+            {\\rm r1,r2}\\rangle|^2/\\Delta_{\\rm r',r''}`, where
+            :math:`\\Delta_{\\rm r',r''}\\equiv E({\\rm r',r''})-E({\\rm r1, r2})`
+
             This calculation is faster then full diagonalization, but it is valid
             only far from the so called spaghetti region that occurs when atoms
             are close to each other. In that region multiple levels are strongly
-            coupled, and one needs to use full diagonalization.
+            coupled, and one needs to use full diagonalization. In region where
+            perturbative calculation is correct, energy level shift can be
+            obtained as :math:`V(R)=-C_6/R^6`
 
             See `perturbative C6 calculations example snippet`_.
 
