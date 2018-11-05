@@ -1112,8 +1112,8 @@ class AlkaliAtom(object):
             Energy defect for the given two pair-states (one of the state has
             two atoms in the same state)
 
-            Energy difference between the states :math:`E(n,l,j,n,l,j) - \
-            E(n_1,l_1,j_1,n_2,l_2,j_2)`
+            Energy difference between the states
+            :math:`E(n_1,l_1,j_1,n_2,l_2,j_2) - E(n,l,j,n,l,j)`
 
             Args:
                 n (int): principal quantum number
@@ -1136,8 +1136,8 @@ class AlkaliAtom(object):
         """
             Energy defect for the given two pair-states
 
-            Energy difference between the states :math:`E(n,l,j,nn,ll,jj) - \
-            E(n_1,l_1,j_1,n_2,l_2,j_2)`
+            Energy difference between the states
+            :math:`E(n_1,l_1,j_1,n_2,l_2,j_2) - E(n,l,j,nn,ll,jj)`
 
             See `pair-state energy defects example snippet`_.
 
