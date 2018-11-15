@@ -41,6 +41,7 @@ Overview
     AlkaliAtom.potential
     AlkaliAtom.radialWavefunction
     AlkaliAtom.getEnergy
+    AlkaliAtom.getZeemanEnergyShift
     AlkaliAtom.getQuantumDefect
     AlkaliAtom.getC6term
     AlkaliAtom.getC3term
