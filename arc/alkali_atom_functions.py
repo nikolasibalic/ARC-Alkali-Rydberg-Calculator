@@ -1582,7 +1582,7 @@ class AlkaliAtom(object):
         return False,0,[]
 
     def getZeemanEnergyShift(self, l, j, mj, magneticFieldBz):
-        """
+        r"""
             Retuns linear (paramagnetic) Zeeman shift.
 
             :math:`\mathcal{H}_P=\frac{\mu_B B_z}{\hbar}(\hat{L}_{\rm z}+g_{\rm S}S_{\rm z})`
