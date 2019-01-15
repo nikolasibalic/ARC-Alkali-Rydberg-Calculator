@@ -1463,7 +1463,8 @@ class PairStateInteractions:
              (printStateStringLatex(n1, l1, j1),int(2*mj1),\
               printStateStringLatex(n2, l2, j2),int(2*mj2))
 
-    def plotLevelDiagram(self,  highlightColor='red'):
+    def plotLevelDiagram(self,  highlightColor='red',
+                         highlightScale='linear'):
         """
             Plots pair state level diagram
 
@@ -1472,13 +1473,25 @@ class PairStateInteractions:
             Args:
                 highlightColor (string): optional, specifies the colour used
                     for state highlighting
-
+                highlightScale (string): optional, specifies scaling of
+                    state highlighting. Default is 'linear'. Use 'log-2' or
+                    'log-3' for logarithmic scale going down to 1e-2 and 1e-3
+                    respectively. Logarithmic scale is useful for spotting
+                    weakly admixed states.
         """
 
         rvb = LinearSegmentedColormap.from_list('mymap',\
                                                  ['0.9', highlightColor])
 
-        cNorm  = matplotlib.colors.Normalize(vmin=0., vmax=1.)
+        if highlightScale == 'linear':
+            cNorm = matplotlib.colors.Normalize(vmin=0., vmax=1.)
+        elif highlightScale == 'log-2':
+            cNorm = matplotlib.colors.LogNorm(vmin=1e-2, vmax=1)
+        elif highlightScale == 'log-3':
+            cNorm = matplotlib.colors.LogNorm(vmin=1e-3, vmax=1)
+        else:
+            raise ValueError("Only 'linear', 'log-2' and 'log-3' are valid "
+                             "inputs for highlightScale")
 
         print(" Now we are plotting...")
         self.fig, self.ax = plt.subplots(1, 1,figsize=(11.5,5.0))
