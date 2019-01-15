@@ -316,6 +316,8 @@ class PairStateInteractions:
         am = zeros((int(round((2*j1+1)*(2*j2+1),0)),\
                     int(round((2*j+1)*(2*jj+1),0))),dtype=np.float64)
 
+        if (c1 > self.interactionsUpTo) or (c2 > self.interactionsUpTo):
+            return am
 
         j1range = np.linspace(-j1,j1,round(2*j1)+1)
         j2range = np.linspace(-j2,j2,round(2*j2)+1)
