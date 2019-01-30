@@ -19,6 +19,9 @@ matrix:
         - os: osx
           language: generic
           env: TOXENV=py36
+        - os: osx
+          language: generic
+          env: TOXENV=py37
 before_script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
       if [[ "$TOXENV" == "py27" ]]; then
@@ -44,8 +47,7 @@ script:
     source activate py36;
   fi;
 - conda update -n base --yes conda
-- conda install --yes numpy
-- conda install --yes scipy
+- conda install --yes --file requirements.txt
 - conda install --yes wheel
 - python  -m compileall -f arc/*.py
 - python setup.py build
