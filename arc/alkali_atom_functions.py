@@ -1343,7 +1343,8 @@ class AlkaliAtom(object):
                                                     temperature)
         # sum over additional states
         for state in self.extraLevels:
-            if (abs(j-state[2])<0.6) and (state[2]!= l):
+            if (abs(j-state[2])<1.1) and \
+                (abs(state[1]- l)<1.1) and (abs(state[1]- l) > 0.9):
                 transitionRate += self.getTransitionRate(n,l,j,\
                                                     state[0],state[1],state[2],\
                                                     temperature)
