@@ -818,8 +818,10 @@ class PairStateInteractions:
 
         for n1 in xrange(max(self.n-nRange,1),self.n+nRange+1):
             for n2 in xrange(max(self.nn-nRange,1),self.nn+nRange+1):
-                for l1 in xrange(lmin1,self.l+2,2):
-                    for l2 in xrange(lmin2,self.ll+2,2):
+                lmax1 = min(self.l + 2, n1)
+                for l1 in xrange(lmin1, lmax1, 2):
+                    lmax2 = min(self.ll + 2, n2)
+                    for l2 in xrange(lmin2, lmax2, 2):
                         j1 = l1-0.5
                         if l1 == 0:
                             j1 = 0.5
@@ -833,9 +835,14 @@ class PairStateInteractions:
                                                                   self.nn,self.ll,self.jj,\
                                                                   n1,l1,j1,\
                                                                   n2,l2,j2)/C_h
-                                if abs(getEnergyDefect)<energyDelta  \
-                                    and (not (self.interactionsUpTo==1) or\
-                                         (Lmod2 == ((l1+l2)%2) )) :
+                                if (abs(getEnergyDefect)<energyDelta
+                                    and (not (self.interactionsUpTo==1) or
+                                         (Lmod2 == ((l1+l2)%2) ))
+                                    and (n1 >= self.atom.groundStateN or
+                                         [n1, l1, j1] in  self.atom.extraLevels)
+                                    and (n2 >= self.atom.groundStateN or
+                                         [n2, l2, j2] in self.atom.extraLevels)
+                                    ):
                                     getEnergyDefect = getEnergyDefect*1.0e-9 # GHz
 
                                     # calculate radial part
