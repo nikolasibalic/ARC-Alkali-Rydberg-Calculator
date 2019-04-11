@@ -525,7 +525,12 @@ class PairStateInteractions:
                                     and (not (self.interactionsUpTo==1) or\
                                          (Lmod2 == ((l1+l2)%2) ) )
                                     and ((not limitBasisToMj) or \
-                                         (j1+j2+0.1>self.m1+self.m2) )    ):
+                                         (j1+j2+0.1>self.m1+self.m2) )
+                                    and (n1 >= self.atom.groundStateN or
+                                         [n1, l1, j1] in  self.atom.extraLevels)
+                                    and (n2 >= self.atom.groundStateN or
+                                         [n2, l2, j2] in self.atom.extraLevels)
+                                    ):
 
                                     if debugOutput:
                                         pairState = "|"+printStateString(n1,l1,j1)+\
