@@ -1,7 +1,7 @@
-from __future__ import print_function
+from __future__ import print_function,  absolute_import
 
 import numpy as np
-from alkali_atom_functions import printStateString,C_e,C_h,pi
+from .alkali_atom_functions import printStateString,C_e,C_h,pi
 
 
 def htmlLiteratureOutput(v,ref):
