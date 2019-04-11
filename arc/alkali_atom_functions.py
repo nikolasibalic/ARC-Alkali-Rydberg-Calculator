@@ -22,24 +22,20 @@ import numpy as np
 import re
 import shutil
 
-from .wigner import Wigner6j,Wigner3j,wignerD,CG,wignerDmatrix
+from .wigner import Wigner6j, Wigner3j, CG, wignerDmatrix
 from scipy.constants import physical_constants, pi , epsilon_0, hbar
 from scipy.constants import k as C_k
 from scipy.constants import c as C_c
 from scipy.constants import h as C_h
 from scipy.constants import e as C_e
 from scipy.constants import m_e as C_m_e
-from scipy.optimize import curve_fit
 
 # for matrices
-from numpy import zeros,savetxt, complex64,complex128
 from numpy.linalg import eigvalsh,eig,eigh
 from numpy.ma import conjugate
 from numpy.lib.polynomial import real
 
 from scipy.sparse import csr_matrix
-from scipy.sparse import kron as kroneckerp
-from scipy.sparse.linalg import eigsh
 from scipy.special.specfun import fcoef
 from scipy import floor
 
@@ -1880,14 +1876,14 @@ def loadSavedCalculation(fileName):
 # =================== State generation and printing (START) ===================
 
 def singleAtomState(j,m):
-    a = zeros((int(round(2.0*j+1.0,0)),1),dtype=np.complex128)
+    a = np.zeros((int(round(2.0*j+1.0,0)),1),dtype=np.complex128)
     a[int(round(j+m,0))] = 1
     return a
     return csr_matrix(([1], ([j+m], [0])),
                                        shape=(round(2.0*j+1.0,0),1))
 
 def compositeState(s1,s2):
-    a = zeros((s1.shape[0]*s2.shape[0],1),dtype=np.complex128)
+    a = np.zeros((s1.shape[0]*s2.shape[0],1),dtype=np.complex128)
     index = 0
     for br1 in xrange(s1.shape[0]):
         for br2 in xrange(s2.shape[0]):

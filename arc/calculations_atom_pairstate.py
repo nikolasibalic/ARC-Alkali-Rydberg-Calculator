@@ -56,11 +56,9 @@ from scipy.constants import e as C_e
 from scipy.optimize import curve_fit
 
 # for matrices
-from numpy import zeros,savetxt, complex64,complex128
-from numpy.linalg import eigvalsh,eig,eigh
 from numpy.ma import conjugate
 from numpy.lib.polynomial import real
-from scipy.sparse import lil_matrix,csr_matrix
+from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import eigsh
 from scipy.special.specfun import fcoef
 from scipy import floor
@@ -313,8 +311,8 @@ class PairStateInteractions:
             exit()
 
 
-        am = zeros((int(round((2*j1+1)*(2*j2+1),0)),\
-                    int(round((2*j+1)*(2*jj+1),0))),dtype=np.float64)
+        am = np.zeros((int(round((2*j1+1)*(2*j2+1),0)),\
+                       int(round((2*j+1)*(2*jj+1),0))),dtype=np.float64)
 
         if (c1 > self.interactionsUpTo) or (c2 > self.interactionsUpTo):
             return am
