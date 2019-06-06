@@ -30,7 +30,7 @@ Authors
 ARC: An open-source library for calculating properties of alkali Rydberg atoms,
 *Computer Physics Communications* **220**, 319 (2017), [https://doi.org/10.1016/j.cpc.2017.06.015](https://doi.org/10.1016/j.cpc.2017.06.015)
 
-**Who are the users of this library?** Check papers that cite us in [ADS](http://adsabs.harvard.edu/cgi-bin/nph-ref_query?bibcode=2017CoPhC.220..319S&amp;refs=CITATIONS&amp;db_key=PHY) and [Google Scholar](https://scholar.google.com/scholar?cites=17451096747440945721&as_sdt=2005&sciodt=0,5&hl=en).
+**Who are the users of this library?** Check papers that cite us in [ADS](https://ui.adsabs.harvard.edu/abs/2017CoPhC.220..319S/citations) and [Google Scholar](https://scholar.google.com/scholar?cites=17451096747440945721&as_sdt=2005&sciodt=0,5&hl=en).
 
 -------
 License
