@@ -2,7 +2,7 @@
 
 from __future__ import division, print_function, absolute_import
 from scipy import floor, sqrt
-from scipy.misc import factorial
+from scipy.special  import factorial
 from sympy.physics.wigner import clebsch_gordan as CG_sympy
 from sympy.physics.wigner import wigner_3j as Wigner3j_sympy
 from sympy.physics.wigner import wigner_6j as Wigner6j_sympy
@@ -209,7 +209,7 @@ def TriaCoeff(a,b,c):
 # Jojann Goetz
 
 from scipy.special import jv, legendre, sph_harm, jacobi
-from scipy.misc import  comb
+from scipy.special import  comb
 from numpy import floor, sqrt, sin, cos, exp, power
 from numpy import conj as conjugate
 from math import pi
