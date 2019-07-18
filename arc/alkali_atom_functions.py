@@ -180,7 +180,7 @@ class AlkaliAtom(object):
             try:
                 data = np.load(os.path.join(self.dataFolder,\
                                             self.dipoleMatrixElementFile),\
-                               encoding = 'latin1')
+                               encoding = 'latin1', allow_pickle=True)
             except IOError as e:
                 print("Error reading dipoleMatrixElement File "+\
                     os.path.join(self.dataFolder,self.dipoleMatrixElementFile))
@@ -213,7 +213,7 @@ class AlkaliAtom(object):
             try:
                 data = np.load(os.path.join(self.dataFolder,\
                                             self.quadrupoleMatrixElementFile),\
-                               encoding = 'latin1')
+                               encoding = 'latin1', allow_pickle=True)
 
             except IOError as e:
                 print("Error reading quadrupoleMatrixElementFile File "+\
