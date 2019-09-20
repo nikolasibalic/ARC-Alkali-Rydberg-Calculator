@@ -6,19 +6,19 @@ from ..alkali_atom_data import *
 
 
 """
-**Contributors:**
-getPopulationLifetime - written by Alessandro Greco,
-Dipartimento di Fisica “E. Fermi”, Università di Pisa,
-Largo Bruno Pontecorvo 3, 56127 Pisa, Italy (alessandrogreco08 at gmail dot com),
-the `simulations have been compared with experimental data (*Phys. Rev. A* **100**, 030501(R))`_
+    **Contributors:**
+    getPopulationLifetime - written by Alessandro Greco,
+    Dipartimento di Fisica “E. Fermi”, Università di Pisa,
+    Largo Bruno Pontecorvo 3, 56127 Pisa, Italy (alessandrogreco08 at gmail dot com),
+    the simulations have been compared with experimental data [#greco2019]_
 """
 
 
 def getPopulationLifetime(atom, n, l, j,
                           temperature=0, includeLevelsUpTo=0, period=1,
                           plotting=1, thresholdState=False, detailedOutput=False):
-    """
-    Calculates lifetime of atomic population taking into account
+    r"""
+    Calculates lifetime of atomic **population** taking into account
     redistribution of population to other states under spontaneous and
     black body induced transitions.
 
@@ -34,89 +34,92 @@ def getPopulationLifetime(atom, n, l, j,
 
     This function creates a .txt file, plots the time evolution of the
     population of the Rydberg states and yields the lifetime values by using
-    `this fitting method`_
+    the fitting method from Ref. [#fit]_ .
 
-    *What are the "ensemble", the "support", the "ground"?* According to https://arxiv.org/abs/1907.01254
-        -The sum of the populations of every state which is detected as Rydberg state
-            (above the threshold state which must be set) is called "ensemble"
-        -The sum of the populations of every state which is detected as Rydberg state,
-            without the target state, is called "support"
-        -The sum of the populations of every state which cannot be detected as Rydberg state
-            (under the threshold state which must be set) is called "ground"
+    **Contributed by:** Alessandro Greco (alessandrogreco08 at gmail dot com),
+    Dipartimento di Fisica *E. Fermi*, Università di Pisa, Largo Bruno Pontecorvo 3, 56127 Pisa, Italy.
+    The simulations have been compared with experimental data [#greco2019]_ .
 
+    **Please cite as:** `original ARC paper`_ and paper introducing
+    extension [#greco2019]_
 
-
-    Written by Alessandro Greco (alessandrogreco08 at gmail dot com),
-    Dipartimento di Fisica “E. Fermi”, Università di Pisa, Largo Bruno Pontecorvo 3, 56127 Pisa, Italy.
-    The `simulations have been compared with experimental data (*Phys. Rev. A* **100**, 030501(R))`_
-
+    .. _`original ARC paper`:
+        https://doi.org/10.1016/j.cpc.2017.06.015
 
     References:
-    .. _this fitting method:
-        https://people.duke.edu/~ccc14/sta-663/CalibratingODEs.html
-    .. _simulations have been compared with experimental data (click for arXiv preprint):
-        https://arxiv.org/abs/1907.01254
+
+    .. [#fit] https://people.duke.edu/~ccc14/sta-663/CalibratingODEs.html
+
+    .. [#greco2019] M. Archimi, C. Simonelli, L. Di Virgilio, A. Greco,
+        M. Ceccanti, E. Arimondo, D. Ciampini, I. I. Ryabtsev, I. I. Beterov,
+        and O. Morsch, *Phys. Rev. A* **100**, 030501(R) (2019)
+        https://doi.org/10.1103/PhysRevA.100.030501
+
+    **Some definitions:**
+
+    What are the **ensemble**, the **support**, the **ground**?
+    According to https://arxiv.org/abs/1907.01254
+    The sum of the populations of every state which is detected as Rydberg state
+    (above the threshold state which must be set\) is called **ensemble**
+    The sum of the populations of every state which is detected as Rydberg state,
+    without the target state, is called **support**
+    The sum of the populations of every state which cannot be detected as Rydberg state
+    (under the threshold state which must be set) is called **ground**
+    **gammaTargetSpont** is the rate which describes transitions
+    from Target State towards all the levels under the threshold
+    state, i.e. Ground State
+    **gammaTargetBBR** is the rate which describes transitions towards all
+    the levels above the threshold state, i.e. Support State
+    **gammaSupporSpont** is the rate which describes transitions from the
+    Support State towards all the levels under the threshold state,
+    i.e. Ground State
+    **gammaSupportBBR** is the rate which describes transitions from
+    upport State towards all the levels above the threshold state,
+    i.e. Target State)
 
     Args:
         n (int): principal quantum number of the state whose population lifetime
-            we are calculating, it's called the "Target" state and its color is
-            green in the graph.
+            we are calculating, it's called the *Target* state and its color is
+            green in the plot.
         l (int): orbital angular momentum number of the state whose population lifetime
-            we are calculating, it's called the "Target" state and its color is
-            green in the graph.
+            we are calculating, it's called the *Target* state and its color is
+            green in the plot.
         j (float): total angular momentum of the state whose population lifetime
-            we are calculating, it's called the "Target" state and its color is
-            green in the graph.
-
-        temperature: Temperature at which the atom environment
+            we are calculating, it's called the *Target* state and its color is
+            green in the plot.
+        temperature (float): Temperature at which the atom environment
             is, measured in K. If this parameter is non-zero, user has
             to specify transitions up to which state (due to black-body
             decay) should be included in calculation.
-
         includeLevelsUpTo (int): At non zero temperatures,
             this specifies maximum principal quantum number of the state
             to which black-body induced transitions will be included.
             Minimal value of the parameter in that case is =`n+1
-
         period: Specifies the period that you want to consider for
             the time evolution, in microseconds.
-
         plotting (int): optional. It is set to 1 by default.
-            plotting=0: no graph
-            plotting=1: it plots the population of the target (n,l,j) state
-                with its fit and it yields the value of the target lifetime
-                in microseconds.
-            plotting=2: it plots the whole system (Ensemble*, Support*, Target),
-                no fit
-            plotting=3: it plots the whole system (Ensemble, Support, Target)
-                and it fits the Ensemble and Target curves, it yields the values
-                of the Ensemble lifetime and Target lifetime in microseconds.
-            plotting=4: it plots the whole system (Ensemble, Support, Target) +
-                the Ground* (which is the complementary of the ensemble).
-                It considers the whole system like a three-level model (Ground
-                State, Support State, Target State) and yields four transition
-                rates (gammaTargetSpont: the rate which describes transitions
-                from Target State towards all the levels under the threshold
-                state, i.e. Ground State
-                gammaTargetBBR: the rate which describes transitions towards all
-                the levels above the threshold state, i.e. Support State
-                gammaSupporSpont: the rate which describes transitions from the
-                Support State towards all the levels under the threshold state,
-                 i.e. Ground State
-                gammaSupportBBR: the rate which describes transitions from
-                 upport State towards all the levels above the threshold state,
-                 i.e. Target State)
+            **plotting=0** no plot.
+            **plotting=1** plots the population of the target (n,l,j) state
+            with its fit and it yields the value of the target lifetime
+            in microseconds.
+            **plotting=2** plots the whole system (Ensemble, Support, Target),
+            no fit
+            **plotting=3** plots the whole system (Ensemble, Support, Target)
+            and it fits the Ensemble and Target curves, it yields the values
+            of the Ensemble lifetime and Target lifetime in microseconds.
+            **plotting=4** it plots the whole system (Ensemble, Support, Target) +
+            the Ground (which is the complementary of the ensemble).
+            It considers the whole system like a three-level model (Ground
+            State, Support State, Target State) and yields four transition
+            rates.
 
-
-                In any case, a .txt file is created:
-                        graph = 0,1 create a .txt file with two coloumns (time \t target population)
-                        graph = 2,3,4 create a .txt file with four coloumns (time \t ensemble population \t support population \t target population)
-
-                thresholdState (int): optional. It specifies the principal quantum number n of the lowest state
-                        (it's referred to S state!) which is detectable by your experimental apparatus, it directly modifies
-                        the "Ensemble" and the "Support" (whose colors are red and blue respectively in the graph).
-                        It is necessary to define a threshold state if graph = 2, 3 or 4 has been selected.
-                        It is not necessary to define a threshold state if graph = 0 or 1 has been selected.
+        thresholdState (int): optional. It specifies the principal quantum
+            number n of the lowest state (it's referred to S state!) which is
+            detectable by your experimental apparatus, it directly modifies
+            the *Ensemble* and the *Support* (whose colors are red and blue
+            respectively in the plot). It is necessary to define a threshold
+            state if plotting = 2, 3 or 4 has been selected. It is not necessary
+            to define a threshold state if plotting = 0 or 1 has been selected.
 
         detailedOutput=True: optional. It writes a .txt file with the time
             evolution of all the states. It is set to false by default.
@@ -125,16 +128,22 @@ def getPopulationLifetime(atom, n, l, j,
             nF2.5, nF3.5, and n is ordered from the lowest state to the highest one.
             For example: time, 4S, 5S ,6S ,ecc... includeLevelsUpToS, 4P0.5,
             5P0.5, 6P0.5, ecc... includeLevelsUpToP0.5, 4P1.5, 5P1.5, 6P1.5, ecc...)
-    Returns:
-        Plots
 
-    Examples:
+    Returns:
+        Plots and a .txt file.
+        **plotting = 0,1** create a .txt file with two coloumns
+        (time \t target population);
+        **plotting = 2,3,4** create a .txt file with four coloumns
+        (time \t ensemble population \t support population \t target population)
+
+
+    Example:
         >>> from arc import *
         >>> from arc.advanced.population_lifetime import getPopulationLifetime
-
         >>> atom = Rubidium()
         >>> getPopulationLifetime(atom, 10, 1, 1.5, temperature =300,
-        >>>     includeLevelsUpTo=15, detailedOutput=True, plotting=1)
+                includeLevelsUpTo=15, detailedOutput=True, plotting=1)
+
     """
 
     if l > 3:
@@ -142,12 +151,12 @@ def getPopulationLifetime(atom, n, l, j,
         return
 
     if plotting > 4:
-        print("Error: graph must be equal to 0, 1, 2, 3 or 4.")
+        print("Error: plotting must be equal to 0, 1, 2, 3 or 4.")
         return
 
     if ((thresholdState == False) and  (plotting >1 )) or (thresholdState==True):
         print("Error: you need to specify the principal quantum number of the "
-              "thresholdState if you use graph=2, 3 or 4.")
+              "thresholdState if you use plotting=2, 3 or 4.")
         return
 
     if ((plotting == 0) or  (plotting ==1)):
@@ -472,7 +481,7 @@ def getPopulationLifetime(atom, n, l, j,
 
     if plotting == 2:
 
-        # Make the graph of the three curves
+        # Make the plot of the three curves
         fig, axes = plt.subplots(1, 1, figsize=(10, 6))
 
         axes.plot(ListTime, ListRed, 'r.', label=r"Ensemble")

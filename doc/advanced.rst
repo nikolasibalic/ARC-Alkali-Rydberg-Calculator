@@ -10,6 +10,11 @@ Overview
 
 .. currentmodule:: arc.advanced.population_lifetime
 
-
 .. autosummary::
   getPopulationLifetime
+
+Detailed documentation
+----------------------
+
+  .. automodule:: arc.advanced.population_lifetime
+     :members:
