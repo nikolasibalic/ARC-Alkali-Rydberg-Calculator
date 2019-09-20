@@ -34,7 +34,7 @@ setup(
     author = 'Nikola Sibalic, Jonathan D. Pritchard, Charles S. Adams, Kevin J. Weatherill',
     author_email = 'nikolasibalic@physics.org',
 
-    packages=['arc'],
+    packages=['arc','arc.advanced'],
 
     package_data={'arc': ['data/*', 'arc_c_extensions.c']},
 
