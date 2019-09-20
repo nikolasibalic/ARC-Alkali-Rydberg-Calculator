@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import lmfit
 from scipy.integrate import odeint
 from lmfit import minimize, Parameters, Parameter, report_fit
@@ -8,7 +9,7 @@ from ..alkali_atom_data import *
 """
     **Contributors:**
     getPopulationLifetime - written by Alessandro Greco,
-    Dipartimento di Fisica “E. Fermi”, Università di Pisa,
+    Dipartimento di Fisica *E. Fermi*, Università di Pisa,
     Largo Bruno Pontecorvo 3, 56127 Pisa, Italy (alessandrogreco08 at gmail dot com),
     the simulations have been compared with experimental data [#greco2019]_
 """
