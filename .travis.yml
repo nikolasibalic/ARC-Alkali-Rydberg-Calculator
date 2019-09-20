@@ -44,7 +44,7 @@ script:
     source activate py36;
   fi;
 - conda update -n base --yes conda
-- conda install --yes --file requirements.txt
+- pip install -r requirements.txt
 - conda install --yes wheel
 - python  -m compileall -f arc/*.py
 - python setup.py build
