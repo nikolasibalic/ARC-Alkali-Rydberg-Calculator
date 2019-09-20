@@ -6,9 +6,14 @@ from ..alkali_atom_data import *
 
 
 """
-Authors:
-getPopulationLifetime - written by Alessandro Greco (alessandrogreco08 at gmail dot com),
-the `simulations have been compared with experimental data (arXiv:1907.01254)`_
+When using advanced extension modules for ARC please cite *both* original
+ARC paper *and* paper that introduced extension.
+
+**Contributors:**
+getPopulationLifetime - written by Alessandro Greco,
+Dipartimento di Fisica “E. Fermi”, Università di Pisa,
+Largo Bruno Pontecorvo 3, 56127 Pisa, Italy (alessandrogreco08 at gmail dot com),
+the `simulations have been compared with experimental data (*Phys. Rev. A* **100**, 030501(R))`_
 """
 
 
@@ -44,8 +49,9 @@ def getPopulationLifetime(atom, n, l, j,
 
 
 
-    Written by Alessandro Greco (alessandrogreco08 at gmail dot com), the
-    `simulations have been compared with experimental data (arXiv:1907.01254)`_
+    Written by Alessandro Greco (alessandrogreco08 at gmail dot com),
+    Dipartimento di Fisica “E. Fermi”, Università di Pisa, Largo Bruno Pontecorvo 3, 56127 Pisa, Italy.
+    The `simulations have been compared with experimental data (*Phys. Rev. A* **100**, 030501(R))`_
 
 
     .. _this fitting method:
@@ -79,38 +85,48 @@ def getPopulationLifetime(atom, n, l, j,
 
         plotting (int): optional. It is set to 1 by default.
             plotting=0: no graph
-            plotting=1: it plots the population of the target (n,l,j) state with its fit and
-                it yields the value of the target lifetime in microseconds.
-            plotting=2: it plots the whole system (Ensemble*, Support*, Target), no fit
-            plotting=3: it plots the whole system (Ensemble, Support, Target) and it fits the Ensemble and Target curves,
-                 it yields the values of the Ensemble lifetime and Target lifetime in microseconds.
+            plotting=1: it plots the population of the target (n,l,j) state
+                with its fit and it yields the value of the target lifetime
+                in microseconds.
+            plotting=2: it plots the whole system (Ensemble*, Support*, Target),
+                no fit
+            plotting=3: it plots the whole system (Ensemble, Support, Target)
+                and it fits the Ensemble and Target curves, it yields the values
+                of the Ensemble lifetime and Target lifetime in microseconds.
             plotting=4: it plots the whole system (Ensemble, Support, Target) +
-                the Ground* (which is the complementary of the ensemble). It considers the whole system
-                like a three-level model (Ground State, Support State, Target State) and yields four transition rates
-                (gammaTargetSpont: the rate which describes transitions from Target State towards all the levels under the threshold state, i.e. Ground State
-                 gammaTargetBBR: the rate which describes transitions towards all the levels above the threshold state, i.e. Support State
-                 gammaSupporSpont: the rate which describes transitions from the Support State towards all the levels under the threshold state, i.e. Ground State
-                 gammaSupportBBR: the rate which describes transitions from Support State towards all the levels above the threshold state, i.e. Target State)
-                      It is set to 1 by default.
+                the Ground* (which is the complementary of the ensemble).
+                It considers the whole system like a three-level model (Ground
+                State, Support State, Target State) and yields four transition
+                rates (gammaTargetSpont: the rate which describes transitions
+                from Target State towards all the levels under the threshold
+                state, i.e. Ground State
+                gammaTargetBBR: the rate which describes transitions towards all
+                the levels above the threshold state, i.e. Support State
+                gammaSupporSpont: the rate which describes transitions from the
+                Support State towards all the levels under the threshold state,
+                 i.e. Ground State
+                gammaSupportBBR: the rate which describes transitions from
+                 upport State towards all the levels above the threshold state,
+                 i.e. Target State)
 
 
-                        In any case, a .txt file is created:
-                                graph = 0,1 create a .txt file with two coloumns (time \t target population)
-                                graph = 2,3,4 create a .txt file with four coloumns (time \t ensemble population \t support population \t target population)
+                In any case, a .txt file is created:
+                        graph = 0,1 create a .txt file with two coloumns (time \t target population)
+                        graph = 2,3,4 create a .txt file with four coloumns (time \t ensemble population \t support population \t target population)
 
-                        thresholdState (int): optional. It specifies the principal quantum number n of the lowest state
-                                (it's referred to S state!) which is detectable by your experimental apparatus, it directly modifies
-                                the "Ensemble" and the "Support" (whose colors are red and blue respectively in the graph).
-                                It is necessary to define a threshold state if graph = 2, 3 or 4 has been selected.
-                                It is not necessary to define a threshold state if graph = 0 or 1 has been selected.
+                thresholdState (int): optional. It specifies the principal quantum number n of the lowest state
+                        (it's referred to S state!) which is detectable by your experimental apparatus, it directly modifies
+                        the "Ensemble" and the "Support" (whose colors are red and blue respectively in the graph).
+                        It is necessary to define a threshold state if graph = 2, 3 or 4 has been selected.
+                        It is not necessary to define a threshold state if graph = 0 or 1 has been selected.
 
-
-       detailedOutput=True: optional. It writes a .txt file with the time evolution of all the states.
-               It is set to false by default.
-                   (The first column is the time, the other are the population of all the states.
-                   The order is time, nS, nP0.5, nP1.5, nD1.5, nD2.5, nF2.5, nF3.5, and n is ordered
-                   from the lowest state to the highest one.
-                        For example: time, 4S, 5S ,6S ,ecc... includeLevelsUpToS, 4P0.5, 5P0.5, 6P0.5, ecc... includeLevelsUpToP0.5, 4P1.5, 5P1.5, 6P1.5, ecc...)
+        detailedOutput=True: optional. It writes a .txt file with the time
+            evolution of all the states. It is set to false by default.
+            (The first column is the time, the other are the population of all
+            the states. The order is time, nS, nP0.5, nP1.5, nD1.5, nD2.5,
+            nF2.5, nF3.5, and n is ordered from the lowest state to the highest one.
+            For example: time, 4S, 5S ,6S ,ecc... includeLevelsUpToS, 4P0.5,
+            5P0.5, 6P0.5, ecc... includeLevelsUpToP0.5, 4P1.5, 5P1.5, 6P1.5, ecc...)
     Returns:
         Plots
     """
