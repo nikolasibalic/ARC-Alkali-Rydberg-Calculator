@@ -173,15 +173,15 @@ def getPopulationLifetime(atom, n, l, j,
 
     # Which states do you want to consider for the BBR width?
     if includeLevelsUpTo - STATE < 0:
-        return print("Error: includeLevelsUpTo must be >= n")
+        raise valueError("Error: includeLevelsUpTo must be >= n")
     WidthBBR = includeLevelsUpTo - STATE
     # What is the temperature?
     if temperature == 0:
-        return print("Error: if you don't want BBR-induced transition, use getStateLifetime")
+        raise valueError("Error: if you don't want BBR-induced transition, use getStateLifetime")
     TEMP_BBR = temperature
     # What is the critical state for the ionization?
     if thresholdState - STATE >= 0:
-        return print("Error: thresholdState must be < n")
+        raise valueError("Error: thresholdState must be < n")
     CState = thresholdState
     # It creates the references for the ensemble population
     cutoffs = int(atom.getQuantumDefect(STATE, 0, 0.5) -
