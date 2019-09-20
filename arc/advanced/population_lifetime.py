@@ -6,9 +6,6 @@ from ..alkali_atom_data import *
 
 
 """
-When using advanced extension modules for ARC please cite *both* original
-ARC paper *and* paper that introduced extension.
-
 **Contributors:**
 getPopulationLifetime - written by Alessandro Greco,
 Dipartimento di Fisica “E. Fermi”, Università di Pisa,
@@ -54,6 +51,7 @@ def getPopulationLifetime(atom, n, l, j,
     The `simulations have been compared with experimental data (*Phys. Rev. A* **100**, 030501(R))`_
 
 
+    References:
     .. _this fitting method:
         https://people.duke.edu/~ccc14/sta-663/CalibratingODEs.html
     .. _simulations have been compared with experimental data (click for arXiv preprint):
@@ -129,6 +127,14 @@ def getPopulationLifetime(atom, n, l, j,
             5P0.5, 6P0.5, ecc... includeLevelsUpToP0.5, 4P1.5, 5P1.5, 6P1.5, ecc...)
     Returns:
         Plots
+
+    Examples:
+        >>> from arc import *
+        >>> from arc.advanced.population_lifetime import getPopulationLifetime
+
+        >>> atom = Rubidium()
+        >>> getPopulationLifetime(atom, 10, 1, 1.5, temperature =300,
+        >>>     includeLevelsUpTo=15, detailedOutput=True, plotting=1)
     """
 
     if l > 3:

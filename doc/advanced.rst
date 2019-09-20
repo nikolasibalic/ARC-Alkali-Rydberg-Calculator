@@ -1,6 +1,10 @@
 Advanced functions
 =====================
 
+Below is the list of extension modules for advanced ARC calculations,
+contributed by the research community. When using advanced extension modules for
+ARC please cite *both* original ARC paper *and* paper that introduced extension.
+
 Overview
 --------
 
@@ -8,3 +12,4 @@ Overview
 
 
 .. autosummary::
+  getPopulationLifetime
