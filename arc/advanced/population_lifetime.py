@@ -98,16 +98,17 @@ def getPopulationLifetime(atom, n, l, j,
             Minimal value of the parameter in that case is =`n+1
         period: Specifies the period that you want to consider for
             the time evolution, in microseconds.
-        plotting (int): optional. It is set to 1 by default.
-            **plotting=0** no plot.
+        plotting (int): optional. It is set to 1 by default. The options are
+            (see also image at the bottom of documentation):
+            **plotting=0** no plot;
             **plotting=1** plots the population of the target (n,l,j) state
             with its fit and it yields the value of the target lifetime
-            in microseconds.
+            in microseconds;
             **plotting=2** plots the whole system (Ensemble, Support, Target),
-            no fit
+            no fit;
             **plotting=3** plots the whole system (Ensemble, Support, Target)
             and it fits the Ensemble and Target curves, it yields the values
-            of the Ensemble lifetime and Target lifetime in microseconds.
+            of the Ensemble lifetime and Target lifetime in microseconds;
             **plotting=4** it plots the whole system (Ensemble, Support, Target) +
             the Ground (which is the complementary of the ensemble).
             It considers the whole system like a three-level model (Ground

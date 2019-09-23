@@ -18,3 +18,13 @@ Detailed documentation
 
   .. automodule:: arc.advanced.population_lifetime
      :members:
+
+ .. figure:: ./getPopulationLifetime_examples.png
+      :width: 800px
+      :align: center
+      :height: 320px
+      :alt: overview of results  with different plotting parameter settings
+      :figclass: align-center
+
+      Examples of possible outputs of :obj:`getPopulationLifetime` for
+      different `plotting` parameter settings.
