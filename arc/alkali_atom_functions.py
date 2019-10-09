@@ -1347,7 +1347,6 @@ class AlkaliAtom(object):
 
         return 1./transitionRate
 
-
     def getRadialCoupling(self,n,l,j,n1,l1,j1):
         """
             Returns radial part of the coupling between two states (dipole and
