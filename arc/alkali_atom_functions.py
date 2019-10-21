@@ -1904,37 +1904,51 @@ def printState(n,l,j):
 
     print(n," ",printStateLetter(l),(" %.0d/2" % (j*2)))
 
-def printStateString(n,l,j):
+def printStateString(n, l, j, s=None):
     """
         Returns state spectroscopic label for numeric :math:`n`,
-        :math:`l`, :math:`s` label of the state
+        :math:`l`, :math:`j` label of the state.
+
+        Optionally users can define :math:`s`, prompting printing :math:`2S+1`
+        index too (commonly used for Alkaline Earth atoms, while it is usually
+        omitted for Alkali atoms)
 
         Args:
             n (int): principal quantum number
             l (int): orbital angular momentum
             j (float): total angular momentum
+            s (float): (optional) total spin momentum
 
         Returns:
             string: label for the state in standard spectroscopic notation
     """
+    if s == None:
+        return str(n)+" "+printStateLetter(l)+(" %.0d/2" % (j*2))
+    else:
+        return str(n) + (" %d" % (2 * s + 1)) + \
+            printStateLetter(l)+(" %.0d/2" % (j*2))
 
-    return str(n)+" "+printStateLetter(l)+(" %.0d/2" % (j*2))
-
-def printStateStringLatex(n,l,j):
+def printStateStringLatex(n, l, j, s=None):
     """
         Returns latex code for spectroscopic label for numeric :math:`n`,
-        :math:`l`, :math:`s` label of the state
+        :math:`l`, :math:`j` label of the state.
+
+
 
         Args:
             n (int): principal quantum number
             l (int): orbital angular momentum
             j (float): total angular momentum
+            s (float): (optional) total spin momentum
 
         Returns:
             string: label for the state in standard spectroscopic notation
     """
-
-    return str(n)+printStateLetter(l)+("_{%.0d/2}" % (j*2))
+    if s == None:
+        return str(n) + printStateLetter(l) + ("_{%.0d/2}" % (j*2))
+    else:
+        return str(n) + (" ^{%d}" % (2 * s + 1)) + \
+            printStateLetter(l) + ("_{%.0d/2}" % (j*2))
 
 def printStateLetter(l):
     let = ''
