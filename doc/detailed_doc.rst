@@ -7,6 +7,8 @@ Detailed documentation of functions
 
    alkali_atom_functions
    alkali_atom_data
+   alkaline_earth_atom_functions
+   alkaline_earth_atom_data
    calculations_atoms_single
    calculations_atom_pairstate
    advanced
