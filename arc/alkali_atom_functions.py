@@ -151,6 +151,7 @@ class AlkaliAtom(object):
     abundance = 1.0  #: relative isotope abundance
 
     elementName = "elementName"  #: Human-readable element name
+    meltingPoint = 0  #: melting point of the element at standard conditions
 
     preferQuantumDefects = False
     minQuantumDefectN = 0  #: minimal quantum number for which quantum defects can be used; uses measured energy levels otherwise

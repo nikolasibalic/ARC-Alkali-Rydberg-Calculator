@@ -225,6 +225,7 @@ class Caesium(AlkaliAtom):
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Cs133"
+    meltingPoint = 28.44 + 273.15  #: in K
 
     def getPressure(self,temperature):
         """
@@ -238,7 +239,7 @@ class Caesium(AlkaliAtom):
 
         # returns pressure in Pa for temperature in K
 
-        if temperature<28.5+273.15:
+        if temperature < self.meltingPoint:
             # Cs is in solid phase (from table 2. for recommended equations / +-5%)
             return 10.0**(2.881+4.711-3999./temperature)*133.322368
 
@@ -364,6 +365,7 @@ class Rubidium85(AlkaliAtom):
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Rb85"
+    meltingPoint = 39.31 + 273.15  #: in K
 
     def getPressure(self,temperature):
         """
@@ -375,7 +377,7 @@ class Rubidium85(AlkaliAtom):
 
         """
 
-        if temperature<39.3+273.15:
+        if temperature < self.meltingPoint:
             # Rb is in solid phase (from table 2. for recommended equations / +-5%)
             return 10.0**(2.881+4.857-4215./temperature)*133.322368
 
@@ -486,6 +488,7 @@ class Rubidium87(AlkaliAtom):
 #        *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Rb87"
+    meltingPoint = 39.31 + 273.15  #: in K
 
     def getPressure(self,temperature):
         """
@@ -497,7 +500,7 @@ class Rubidium87(AlkaliAtom):
 
         """
 
-        if temperature<39.3+273.15:
+        if temperature < self.meltingPoint:
             # Rb is in solid phase (from table 2. for recommended equations / +-5%)
             return 10.0**(2.881+4.857-4215./temperature)*133.322368
 
@@ -598,6 +601,7 @@ class Lithium6(AlkaliAtom): # Li
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Li6"
+    meltingPoint = 180.54 + 273.15  #: in K
 
 
     def getPressure(self,temperature):
@@ -609,7 +613,7 @@ class Lithium6(AlkaliAtom): # Li
 
         """
 
-        if temperature<180.5+273.15:
+        if temperature < self.meltingPoint:
             # Li is in solid phase (from table 3. of the cited reference
             # "precisely fitted equations / +- 1%)
             return 10.0**(2.881+7.790-8423./temperature-\
@@ -707,6 +711,7 @@ class Lithium7(AlkaliAtom): # Li
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Li7"
+    meltingPoint = 180.54 + 273.15  #: in K
 
 
     def getPressure(self,temperature):
@@ -718,7 +723,7 @@ class Lithium7(AlkaliAtom): # Li
 
         """
 
-        if temperature<180.5+273.15:
+        if temperature < self.meltingPoint:
             # Li is in solid phase (from table 3. of the cited reference
             # "precisely fitted equations / +- 1%)
             return 10.0**(2.881+7.790-8423./temperature-\
@@ -820,6 +825,7 @@ class Sodium(AlkaliAtom): #Na23
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Na23"
+    meltingPoint = 97.794 + 273.15  #: in K
 
 
     def getPressure(self,temperature):
@@ -832,7 +838,7 @@ class Sodium(AlkaliAtom): #Na23
 
         """
 
-        if temperature<97.794+273.15:
+        if temperature < self.meltingPoint:
             # Na is in solid phase (from table 2. of the cited reference  / +- 5%)
             return 10.0**(2.881+5.298-5603./temperature)*133.322368
 
@@ -929,6 +935,7 @@ class Potassium39(AlkaliAtom):
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "K39"
+    meltingPoint = 63.5 + 273.15  #: in K
 
     def getPressure(self,temperature):
         """
@@ -940,7 +947,7 @@ class Potassium39(AlkaliAtom):
 
         """
 
-        if temperature<63.5+273.15:
+        if temperature < self.meltingPoint:
             # K is in solid phase (from table 2. of the cited reference  / +- 5%)
             return 10.0**(2.881+4.961-4646./temperature)*133.322368
 
@@ -1046,6 +1053,7 @@ class Potassium40(AlkaliAtom):
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "K40"
+    meltingPoint = 63.5 + 273.15  #: in K
 
     def getPressure(self,temperature):
         """
@@ -1057,11 +1065,11 @@ class Potassium40(AlkaliAtom):
 
         """
 
-        if temperature<63.5+273.15:
+        if temperature < self.meltingPoint:
             # K is in solid phase (from table 2. of the cited reference  / +- 5%)
             return 10.0**(2.881+4.961-4646./temperature)*133.322368
 
-        elif temperature<600.+273.15:
+        elif temperature < 600.+273.15:
             # K is in liquid phase (from table 3. of the cited reference
             # "precisely fitted equations / +- 1%)
             return 10.0**(2.881+8.233-4693./temperature-\
@@ -1154,6 +1162,7 @@ class Potassium41(AlkaliAtom):
         *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "K41"
+    meltingPoint = 63.5 + 273.15  #: in K
 
     def getPressure(self,temperature):
         """
@@ -1165,7 +1174,7 @@ class Potassium41(AlkaliAtom):
 
         """
 
-        if temperature<63.5+273.15:
+        if temperature < self.meltingPoint:
             # K is in solid phase (from table 2. of the cited reference  / +- 5%)
             return 10.0**(2.881+4.961-4646./temperature)*133.322368
 
