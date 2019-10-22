@@ -143,7 +143,8 @@ class Strontium87(AlkalineEarthAtom):
     # due to angular part
     extraLevels = {"3D3": 4, "3D1": 4, "1F3": 4,
                    "3F4": 4, "3F3": 4, "3F2": 4, "1D2": 4}
-    preferQuantumDefects = False
+
+    levelDataFromNIST = "sr_NIST_level_data.ascii"
 
     precalculatedDB = "sr_precalculated.db"
     dipoleMatrixElementFile = "sr_dipole_matrix_elements.npy"
