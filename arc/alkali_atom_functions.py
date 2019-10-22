@@ -617,7 +617,7 @@ class AlkaliAtom(object):
 
 
 
-    def getQuantumDefect(self,n,l,j):
+    def getQuantumDefect(self,n,l,j, s=0.5):
         """
             Quantum defect of the level.
 
@@ -630,28 +630,23 @@ class AlkaliAtom(object):
                 n (int): principal quantum number
                 l (int): orbital angular momentum
                 j (float): total angular momentum
+                s (float): (optional). Total spin angular momentum.
+                    Default value of 0.5 correct for Alkali atoms. For divalent
+                    atoms it has to be explicitly defined.
 
             Returns:
                 float: quantum defect
         """
         defect = 0.0
         if (l<5):
-            if abs(j-(l-0.5))<0.001:
-                # j = l-1/2
-                defect = self.quantumDefect[0][l][0]+\
-                    self.quantumDefect[0][l][1]/((n-self.quantumDefect[0][l][0])**2)+\
-                    self.quantumDefect[0][l][2]/((n-self.quantumDefect[0][l][0])**4)+\
-                    self.quantumDefect[0][l][3]/((n-self.quantumDefect[0][l][0])**6)+\
-                    self.quantumDefect[0][l][4]/((n-self.quantumDefect[0][l][0])**8)+\
-                    self.quantumDefect[0][l][5]/((n-self.quantumDefect[0][l][0])**10)
-            else:
-                # j = l + 1/2
-                defect = self.quantumDefect[1][l][0]+\
-                    self.quantumDefect[1][l][1]/((n-self.quantumDefect[1][l][0])**2)+\
-                    self.quantumDefect[1][l][2]/((n-self.quantumDefect[1][l][0])**4)+\
-                    self.quantumDefect[1][l][3]/((n-self.quantumDefect[1][l][0])**6)+\
-                    self.quantumDefect[1][l][4]/((n-self.quantumDefect[1][l][0])**8)+\
-                    self.quantumDefect[1][l][5]/((n-self.quantumDefect[1][l][0])**10)
+            # find correct part in table of quantum defects
+            modifiedRRcoef = self.quantumDefect[int(floor(s) + s + j - l)][l]
+            defect = modifiedRRcoef[0] + \
+                     modifiedRRcoef[1] / ((n - modifiedRRcoef[0])**2) + \
+                     modifiedRRcoef[2] / ((n - modifiedRRcoef[0])**4) + \
+                     modifiedRRcoef[3] / ((n - modifiedRRcoef[0])**6) + \
+                     modifiedRRcoef[4] / ((n - modifiedRRcoef[0])**8) + \
+                     modifiedRRcoef[5] / ((n - modifiedRRcoef[0])**10)
         return defect
 
     def getRadialMatrixElement(self,n1,l1,j1,n2,l2,j2,useLiterature=True):
@@ -1948,8 +1943,12 @@ def printStateStringLatex(n, l, j, s=None):
     if s == None:
         return str(n) + printStateLetter(l) + ("_{%.0d/2}" % (j*2))
     else:
+        if abs(floor (j)-j)<0.1:
+            subscript = "_{%.0d}" % (j)
+        else:
+            subscript = "_{%.0d/2}" % (j*2)
         return str(n) + (" ^{%d}" % (2 * s + 1)) + \
-            printStateLetter(l) + ("_{%.0d/2}" % (j*2))
+            printStateLetter(l) + subscript
 
 def printStateLetter(l):
     let = ''
