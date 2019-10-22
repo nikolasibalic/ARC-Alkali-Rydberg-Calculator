@@ -11,4 +11,6 @@ class AlkalineEarthAtom(AlkaliAtom):
         different l (electron angular momentum)
     """
 
-    
+
+    def __init__(self,preferQuantumDefects=True,cpp_numerov=True):
+        pass;

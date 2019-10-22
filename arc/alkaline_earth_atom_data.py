@@ -67,6 +67,10 @@ Data sources
 
 .. [#ca3] Meija, Juris; et al. (2016). "Atomic weights of the elements 2013 (IUPAC Technical Report)". Pure and Applied Chemistry. 88 (3): 265–91. doi:10.1515/pac-2015-0305.
 
+
+.. [#pr] C.B.Alcock, V.P.Itkin, M.K.Horrigan,\
+        *Canadian Metallurgical Quarterly*, **23**, 309 (1984)
+        http://dx.doi.org/10.1179/cmq.1984.23.3.309
 """
 
 from .alkaline_earth_atom_functions import *
@@ -99,6 +103,7 @@ class Strontium87(AlkalineEarthAtom):
                          "sr_3D2.csv", "sr_3D1.csv", "sr_1F3.csv", "sr_3F4.csv",
                          "sr_3F3.csv", "sr_3F2.csv"]
 
+    #: TODO what are these? indexes or some values or ...?
     NISTdataLevels = {"1S0": 65, "3S1": 45, "1P1": 79, "3P2": 55, "3P1": 17,
                       "3P0": 10, "1D2": 65, "3D3": 41, "3D2": 45, "3D1": 46,
                       "1F3": 25, "3F4": 24, "3F3": 24, "3F2": 24}
@@ -121,7 +126,9 @@ class Strontium87(AlkalineEarthAtom):
     literatureDMEfilename = 'strontium_literature_dme.csv'
 
     useLiterature = False
-    elementName = 'Strontium-87'
+    elementName = 'Sr87'
+    meltingPoint = 777 + 273.15  #: in K
+
     #: TODO FIND A CITATION FOR THIS
     mass = 87.62 * physical_constants["atomic mass constant"][0]
 
@@ -132,14 +139,29 @@ class Strontium87(AlkalineEarthAtom):
                           "3D1": [20, 32], "1F3": [10, 25], "3F4": [10, 24],
                           "3F3": [10, 24], "3F2": [10, 24]}
 
+    def getPressure(self, temperature):
+        """
+            Pressure of atomic vapour at given temperature.
+
+            Calculates pressure based on Ref. [#pr]_ (accuracy +- 5%).
+        """
+        if temperature < 298:
+            print("WARNING: Sr vapour pressure below 298 K is unknown (small)")
+            return 0
+        if temperature < self.meltingPoint:
+            return 10**(5.006 + 9.226 - 8572 / temperature
+                        - 1.1926 * log(temperature)/log(10.) )
+        else:
+            raise ValueError("ERROR: Sr vapour pressure above %.0f C is unknown"
+                            % self.meltingPoint)
+
 
 class Calcium40(AlkalineEarthAtom):
     """
-    Properties of Calcium-40 atoms
+    Properties of Calcium 40 atoms
     """
 
-    ionisationEnergycm = 49305.924  # cm-1  ref. [#ca2]
-    ionisationEnergy = ionisationEnergycm / 8065.544  # eV ref.
+    ionisationEnergy = 49305.924 / 8065.544  #: eV ref. [#ca2]_
 
     modelPotential_coef = {}
 
@@ -169,7 +191,8 @@ class Calcium40(AlkalineEarthAtom):
     literatureDMEfilename = 'calcium_literature_dme.csv'
 
     useLiterature = False
-    elementName = 'Calcium'
+    elementName = 'Ca40'
+    meltingPoint = 842 + 273.15  #: in K
 
     #: TODO LIZZY FIND A CITATION FOR THIS (Ref. [#ca3]_ ??)
     mass = 40.078 * physical_constants["atomic mass constant"][0]
@@ -181,10 +204,26 @@ class Calcium40(AlkalineEarthAtom):
                           "3D1": [20, 32], "1F3": [10, 25], "3F4": [10, 24],
                           "3F3": [10, 24], "3F2": [10, 24]}
 
+    def getPressure(self, temperature):
+        """
+            Pressure of atomic vapour at given temperature.
+
+            Calculates pressure based on Ref. [#pr]_ (accuracy +- 5%).
+        """
+        if temperature < 298:
+            print("WARNING: Ca vapour pressure below 298 K is unknown (small)")
+            return 0
+        if temperature < self.meltingPoint:
+            return 10**(5.006 + 10.127 - 9517 / temperature
+                        - 1.4030 * log(temperature)/log(10.) )
+        else:
+            raise ValueError("ERROR: Ca vapour pressure above %.0f C is unknown"
+                            % self.meltingPoint)
+
 
 class Ytterbium173(AlkalineEarthAtom):
     """
-    Properties of Ytterbium -173 atoms
+    Properties of Ytterbium 173 atoms
     """
 
     ionisationEnergycm = 50443.08  # cm-1  ref. [#yb3]
@@ -217,7 +256,8 @@ class Ytterbium173(AlkalineEarthAtom):
     literatureDMEfilename = 'ytterbium_literature_dme.csv'
 
     useLiterature = False
-    elementName = 'Ytterbium-173'
+    elementName = 'Yb173'
+    meltingPoint = 819 + 273.15  #: in K
 
     #: TODO LIZZY FIND A CITATION FOR THIS (Ref. [#ca3]_ ?? )
     mass = 173.045 * \
@@ -226,3 +266,18 @@ class Ytterbium173(AlkalineEarthAtom):
     #: TODO what is docstring here? (fitting ranges have been taken from Pauls fits and christophe)
     defectFittingRange = {"1S0": [15, 43], "1P1": [
         35, 53], "1D2": [28, 75], "3D2": [10, 52]}
+
+    def getPressure(self, temperature):
+        """
+            Pressure of atomic vapour at given temperature.
+
+            Calculates pressure based on Ref. [#pr]_ (accuracy +- 5%).
+        """
+        if temperature < 298:
+            print("WARNING: Yb vapour pressure below 298 K is unknown (small)")
+            return 0
+        if temperature < 900:
+            return 10**(5.006 + 9.111 - 8111 / temperature
+                        - 1.0849 * log(temperature)/log(10.) )
+        else:
+            raise ValueError("ERROR: Yb vapour pressure above 900 K is unknown")
