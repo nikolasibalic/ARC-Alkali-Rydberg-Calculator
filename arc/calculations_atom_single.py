@@ -1252,33 +1252,3 @@ class LevelPlot:
             line = self.findLine(xdata[ind][0], ydata[ind][0])
             self.ax.set_title(line)
             event.canvas.draw()
-
-
-def printState(n,l,j):
-    """
-        Prints state spectroscopic label for numeric :math:`n`,
-        :math:`l`, :math:`s` label of the state
-
-        Args:
-            n (int): principal quantum number
-            l (int): orbital angular momentum
-            j (float): total angular momentum
-    """
-
-    print(n," ",printStateLetter(l),(" %.0d/2" % (j*2)))
-
-def printStateString(n,l,j):
-    """
-        Returns state spectroscopic label for numeric :math:`n`,
-        :math:`l`, :math:`s` label of the state
-
-        Args:
-            n (int): principal quantum number
-            l (int): orbital angular momentum
-            j (float): total angular momentum
-
-        Returns:
-            string: label for the state in standard spectroscopic notation
-    """
-
-    return str(n)+" "+printStateLetter(l)+(" %.0d/2" % (j*2))
