@@ -30,6 +30,8 @@ class AlkalineEarthAtom(AlkaliAtom):
         [ :math:`^3S_{0},^3P_{1},^3D_{2},^3F_{3}`],
         [ :math:`^3S_{1},^3P_{2},^3D_{3},^3F_{4}`]]."""
 
+
+
     def __init__(self,preferQuantumDefects=True,cpp_numerov=True):
         self.cpp_numerov = cpp_numerov
         self.preferQuantumDefects = preferQuantumDefects
@@ -113,3 +115,84 @@ class AlkalineEarthAtom(AlkaliAtom):
             print("Error while loading precalculated values into the database")
             print(e)
             exit()
+
+        if (self.levelDataFromNIST == ""):
+            print("NIST level data file not specified. Only quantum defects will be used.")
+        else:
+            levels = self._parseLevelsFromNIST(os.path.join(self.dataFolder,\
+                                               self.levelDataFromNIST))
+            br = 0
+            while br<len(levels):
+                self._addEnergy(*levels[br])
+                br = br+1
+            try:
+                self.conn.commit()
+            except sqlite3.Error as e:
+                print("Error while loading precalculated values into the database")
+                print(e)
+                print(n," ",l," ",j," ",s)
+                exit()
+
+
+    def _parseLevelsFromNIST(self,fileData):
+        print(fileData)
+        data = np.loadtxt(fileData, delimiter=",",
+                          usecols=(0,1,3,2,4))
+        return data
+
+
+    def _addEnergy(self, n, l ,j, s, energy):
+        """
+            Adds energy level relative to
+
+            NOTE:
+            Requres changes to be commited to the sql database afterwards!
+
+            Args:
+                n: principal quantum number
+                l: orbital angular momentum quantum number
+                j: total angular momentum quantum number
+                s: spin quantum number
+                energy: energy in cm^-1 relative to the ground state
+        """
+        self.c.execute('INSERT INTO energyLevel VALUES (?,?,?,?,?)',
+            (int(n), int(l), int(j), int(s),
+            energy * 1.e2
+            * physical_constants["inverse meter-electron volt relationship"][0]
+            - self.ionisationEnergy)
+            )
+        self.NISTdataLevels = max(self.NISTdataLevels, int(n))
+        # saves energy in eV
+
+
+    def _databaseInit(self):
+        self.conn = sqlite3.connect(os.path.join(self.dataFolder,\
+                                                 self.precalculatedDB))
+        self.c = self.conn.cursor()
+
+        # create space for storing NIST/literature energy levels
+        self.c.execute('''SELECT COUNT(*) FROM sqlite_master
+                        WHERE type='table' AND name='energyLevel';''')
+        if (self.c.fetchone()[0] != 0):
+            self.c.execute('''DROP TABLE energyLevel''')
+        # create fresh table
+        self.c.execute('''CREATE TABLE IF NOT EXISTS energyLevel
+             (n TINYINT UNSIGNED, l TINYINT UNSIGNED, j TINYINT UNSIGNED,
+             s TINYINT UNSIGNED,
+             energy DOUBLE,
+             PRIMARY KEY (n, l, j, s)
+            ) ''')
+
+        self.conn.commit()
+
+
+
+    def _getSavedEnergy(self, n, l, j, s=0):
+        self.c.execute('''SELECT energy FROM energyLevel WHERE
+            n= ? AND l = ? AND j = ? AND
+            s = ? ''',(n, l, j, s))
+        energy = self.c.fetchone()
+        if (energy):
+            return energy[0]
+        else:
+            return 0      # there is no saved energy level measurement

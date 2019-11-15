@@ -97,19 +97,6 @@ class Strontium87(AlkalineEarthAtom):
     scaledRydbergConstant = 109736.627 * 1.e2\
         * physical_constants["inverse meter-electron volt relationship"][0]
 
-    #: Store list of filenames to read in
-    levelDataFromNIST = ["sr_1S0.csv", "sr_3S1.csv", "sr_1P1.csv", "sr_3P2.csv",
-                         "sr_3P1.csv", "sr_3P0.csv", "sr_1D2.csv", "sr_3D3.csv",
-                         "sr_3D2.csv", "sr_3D1.csv", "sr_1F3.csv", "sr_3F4.csv",
-                         "sr_3F3.csv", "sr_3F2.csv"]
-
-    #: TODO what are these? indexes or some values or ...?
-    NISTdataLevels = {"1S0": 65, "3S1": 45, "1P1": 79, "3P2": 55, "3P1": 17,
-                      "3P0": 10, "1D2": 65, "3D3": 41, "3D2": 45, "3D1": 46,
-                      "1F3": 25, "3F4": 24, "3F3": 24, "3F2": 24}
-    level_labels = ["1S0", "3S1", "1P1", "3P2", "3P1", "3P0", "1D2", "3D3",
-                    "3D2", "3D1", "1F3", "3F4", "3F3", "3F2"]
-
     quantumDefect = [[[3.26923346261,-0.252029996277,12.6529707842,0.0,0.0,0.0],
                       [2.73329407388,-5.97060805042,-40.2119216814,0.0,0.0,0.0],
                       [2.38878451407,-48.8061795134,0.128122744619,0.0,0.0,0.0],
@@ -137,6 +124,8 @@ class Strontium87(AlkalineEarthAtom):
         [ :math:`^3S_{0},^3P_{1},^3D_{2},^3F_{3}`],
         [ :math:`^3S_{1},^3P_{2},^3D_{3},^3F_{4}`]]."""
 
+    minQuantumDefectN = 10  # TODO: CHECK WITH Sr people!
+
     groundStateN = 5
 
     # levels that are for smaller n than ground level, but are above in energy
@@ -144,7 +133,7 @@ class Strontium87(AlkalineEarthAtom):
     extraLevels = {"3D3": 4, "3D1": 4, "1F3": 4,
                    "3F4": 4, "3F3": 4, "3F2": 4, "1D2": 4}
 
-    levelDataFromNIST = "sr_NIST_level_data.ascii"
+    levelDataFromNIST = "sr_level_data.csv"
 
     precalculatedDB = "sr_precalculated.db"
     dipoleMatrixElementFile = "sr_dipole_matrix_elements.npy"

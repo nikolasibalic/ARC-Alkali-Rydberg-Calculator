@@ -518,7 +518,7 @@ class AlkaliAtom(object):
             # j = l+1/2
             self.sEnergy[l, n] = energyNIST - self.ionisationEnergy
 
-    def getTransitionWavelength(self,n1,l1,j1,n2,l2,j2):
+    def getTransitionWavelength(self, n1, l1, j1, n2, l2, j2, s1=0.5, s2=0.5):
         """
             Calculated transition wavelength (in vacuum) in m.
 
@@ -532,6 +532,8 @@ class AlkaliAtom(object):
                 n2 (int): principal quantum number of the state **to** which we are going
                 l2 (int): orbital angular momentum of the state **to** which we are going
                 j2 (float): total angular momentum of the state **to** which we are going
+                s1 (float): optional, spin of the intial state (for Alkali this is fixed to 0.5)
+                s2 (float): optional, spin of the final state (for Alkali this is fixed to 0.5)
 
             Returns:
                 float:
@@ -539,9 +541,10 @@ class AlkaliAtom(object):
                     level from which we are going is **above** the level to which we are
                     going.
         """
-        return (C_h*C_c)/((self.getEnergy(n2, l2, j2)-self.getEnergy(n1, l1, j1))*C_e)
+        return (C_h * C_c) / ((self.getEnergy(n2, l2, j2, s=s2) -
+                               self.getEnergy(n1, l1, j1, s=s1)) * C_e)
 
-    def getTransitionFrequency(self,n1,l1,j1,n2,l2,j2):
+    def getTransitionFrequency(self, n1, l1, j1, n2, l2, j2, s1=0.5, s2=0.5):
         """
             Calculated transition frequency in Hz
 
@@ -555,6 +558,8 @@ class AlkaliAtom(object):
                 n2 (int): principal quantum number of the state **to** which we are going
                 l2 (int): orbital angular momentum of the state **to** which we are going
                 j2 (float): total angular momentum of the state **to** which we are going
+                s1 (float): optional, spin of the intial state (for Alkali this is fixed to 0.5)
+                s2 (float): optional, spin of the final state (for Alkali this is fixed to 0.5)
 
             Returns:
                 float:
@@ -562,10 +567,11 @@ class AlkaliAtom(object):
                     level from which we are going is **above** the level to which we are
                     going.
         """
-        return (self.getEnergy(n2, l2, j2)-self.getEnergy(n1, l1, j1))*C_e/C_h
+        return (self.getEnergy(n2, l2, j2, s=s2)
+                - self.getEnergy(n1, l1, j1, s=s1)) * C_e / C_h
 
 
-    def getEnergy(self,n,l,j):
+    def getEnergy(self,n,l,j, s=0.5):
         """
             Energy of the level relative to the ionisation level (in eV)
 
@@ -582,6 +588,9 @@ class AlkaliAtom(object):
                 n (int): principal quantum number
                 l (int): orbital angular momentum
                 j (float): total angular momentum
+                s (float): optional, total spin angular momentum. Default value
+                    of 0.5 is correct for Alkali atoms, and has to be specified
+                    explicitly for divalent atoms.
 
             Returns:
                 float: state energy (eV)
@@ -589,32 +598,27 @@ class AlkaliAtom(object):
         if l>=n:
             raise ValueError("Requested energy for state l=%d >= n=%d !" % (l,n))
 
-        if abs(j-(l-0.5))<0.001:
+        # use NIST data ?
+        if (not self.preferQuantumDefects or
+            n < self.minQuantumDefectN) and (n <= self.NISTdataLevels) and \
+            (abs(self._getSavedEnergy(n, l, j, s=s)) > 1e-8):
+                return self._getSavedEnergy(n, l, j, s=s)
+
+        # else, use quantum defects
+        defect = self.getQuantumDefect(n, l, j, s=s)
+        return -self.scaledRydbergConstant / ((n - defect)**2)
+
+
+    def _getSavedEnergy(self, n, l, j, s=0.5):
+        if abs(j - (l - 0.5)) < 0.001:
             # j = l-1/2
-            # use NIST data ?
-            if (not self.preferQuantumDefects or
-                n<self.minQuantumDefectN)and(n <= self.NISTdataLevels) and \
-                (abs(self.sEnergy[n,l])>1e-8):
-                    return self.sEnergy[n,l]
-            # else, use quantum defects
-            defect = self.getQuantumDefect(n, l,j)
-            return -self.scaledRydbergConstant/((n-defect)**2)
-
-        elif abs(j-(l+0.5))<0.001:
-            # j = l+1/2
-            # use NIST data ?
-            if (not self.preferQuantumDefects or
-                n<self.minQuantumDefectN)and(n <= self.NISTdataLevels) and \
-                (abs(self.sEnergy[l,n])>1e-8):
-                    return self.sEnergy[l,n]
-
-            # else, use quantum defects
-            defect = self.getQuantumDefect(n, l,j)
-            return -self.scaledRydbergConstant/((n-defect)**2)
+            return  self.sEnergy[n, l]
+        elif abs(j - (l + 0.5)) < 0.001:
+            # j =l+1/2
+            return self.sEnergy[l, n]
         else:
             raise ValueError("j (=%.1f) is not equal to l+1/2 nor l-1/2 (l=%d)"%\
-                             (j,l))
-
+                             (j, l))
 
 
     def getQuantumDefect(self,n,l,j, s=0.5):
