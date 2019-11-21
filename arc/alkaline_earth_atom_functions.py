@@ -365,6 +365,9 @@ class AlkalineEarthAtom(AlkaliAtom):
                         temp = j1
                         j1 = j2
                         j2 = temp
+                        temp = s1
+                        s1 = s2
+                        s2 = temp
 
                     # convered from reduced DME in J basis (symmetric notation)
                     # to radial part of dme as it is saved for calculated
@@ -412,3 +415,125 @@ class AlkalineEarthAtom(AlkaliAtom):
             print("Error reading literature values File "
                   + self.literatureDMEfilename)
             print(e)
+
+    def getLiteratureDME(self,
+                         n1, l1, j1, s1,
+                         n2, l2, j2, s2):
+        """
+            Returns literature information on requested transition.
+
+            Args:
+                n1,l1,j1, s1: one of the states we are coupling
+                n2,l2,j2, s2: the other state to which we are coupling
+
+            Returns:
+                bool, float, [int,float,string,string,string]:
+
+                    hasLiteratureValue?, dme, referenceInformation
+
+                    **If Boolean value is True**, a literature value for
+                    dipole matrix element was found and reduced DME in J basis
+                    is returned as the number. The third returned argument
+                    (array) contains additional information about the
+                    literature value in the following order [ typeOfSource,
+                    errorEstimate , comment , reference, reference DOI]
+                    upon success to find a literature value for dipole matrix
+                    element:
+                        * typeOfSource=1 if the value is theoretical
+                         calculation; otherwise, if it is experimentally \
+                         obtained value typeOfSource=0
+                        * comment details where within the publication the \
+                         value can be found
+                        * errorEstimate is absolute error estimate
+                        * reference is human-readable formatted reference
+                        * reference DOI provides link to the publication.
+
+                    **Boolean value is False**, followed by zero and an empty
+                    array if no literature value for dipole matrix element is
+                    found.
+
+            Note:
+                The literature values are stored in /data folder in
+                <element name>_literature_dme.csv files as a ; separated
+                values. Each row in the file consists of one literature entry,
+                that has information in the following order:
+
+                 * n1
+                 * l1
+                 * j1
+                 * s1
+                 * n2
+                 * l2
+                 * j2
+                 * s2
+                 * dipole matrix element reduced l basis (a.u.)
+                 * comment (e.g. where in the paper value appears?)
+                 * value origin: 1 for theoretical; 0 for experimental values
+                 * accuracy
+                 * source (human readable formatted citation)
+                 * doi number (e.g. 10.1103/RevModPhys.82.2313 )
+
+                If there are several values for a given transition, program
+                outputs the value that has smallest error (under column
+                accuracy). The list of values can be expanded - every time
+                program runs this file is read and the list is parsed again
+                for use in calculations.
+
+        """
+
+        if (self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2)):
+            temp = n1
+            n1 = n2
+            n2 = temp
+            temp = l1
+            l1 = l2
+            l2 = temp
+            temp = j1
+            j1 = j2
+            j2 = temp
+            temp = s1
+            s1 = s2
+            s2 = temp
+
+        # is there literature value for this DME? If there is,
+        # use the best one (wit the smallest error)
+
+        self.c.execute('''SELECT dme, typeOfSource,
+                     errorEstimate ,
+                     comment ,
+                     ref,
+                     refdoi FROM literatureDME WHERE
+                     n1= ? AND l1 = ? AND j1 = ? AND s1 = ? AND
+                     n2 = ? AND l2 = ? AND j2 = ? AND s2 = ?
+                     ORDER BY errorEstimate ASC''',
+                       (n1, l1, j1, s1, n2, l2, j2, s2))
+        answer = self.c.fetchone()
+        if (answer):
+            # we did found literature value
+            return True, answer[0], [answer[1], answer[2], answer[3],
+                                     answer[4], answer[5]]
+
+        # if we are here, we were unsucessfull in literature search
+        # for this value
+        return False, 0, []
+
+    def radialWavefunction(self, l, s, j, stateEnergy,
+                           innerLimit, outerLimit, step):
+        raise NotImplementedError("radialWavefunction calculation for alkaline"
+                                  " earths has not been implemented yet.")
+        return
+
+    def effectiveCharge(self, l, r):
+        raise NotImplementedError("effectiveCharge calculation for alkaline"
+                                  " earths has not been implemented yet.")
+        return
+
+    def corePotential(self, l, r):
+        raise NotImplementedError("corePotential calculation for alkaline"
+                                  " earths has not been implemented yet.")
+        return
+
+    def potential(self, l, s, j, r):
+        raise NotImplementedError("potential calculation for alkaline"
+                                  " earths has not been implemented yet.")
+        return
