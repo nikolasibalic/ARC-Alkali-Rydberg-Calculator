@@ -10,13 +10,18 @@
 
 from __future__ import print_function
 
-from math import exp,log,sqrt
+from .alkali_atom_functions import printStateString, _EFieldCoupling, printStateLetter, printStateStringLatex
+import datetime
+import sqlite3
+import matplotlib
+from matplotlib.colors import LinearSegmentedColormap
+from math import exp, log, sqrt
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import numpy as np
 import re
-from .wigner import Wigner6j,Wigner3j,CG
-from scipy.constants import physical_constants, pi , epsilon_0, hbar
+from .wigner import Wigner6j, Wigner3j, CG
+from scipy.constants import physical_constants, pi, epsilon_0, hbar
 from scipy.constants import k as C_k
 from scipy.constants import c as C_c
 from scipy.constants import h as C_h
@@ -28,24 +33,20 @@ from numpy.linalg import eigh
 from numpy.ma import conjugate
 from numpy.lib.polynomial import real
 
-from scipy.sparse import lil_matrix,csr_matrix
+from scipy.sparse import lil_matrix, csr_matrix
 from scipy.sparse.linalg import eigsh
 from scipy.special.specfun import fcoef
 
 import sys
 if sys.version_info > (2,):
     xrange = range
-from .alkali_atom_functions import printStateString, _EFieldCoupling, printStateLetter,printStateStringLatex
 
-from matplotlib.colors import LinearSegmentedColormap
-import matplotlib
 
-import sqlite3
 sqlite3.register_adapter(np.float64, float)
 sqlite3.register_adapter(np.float32, float)
 sqlite3.register_adapter(np.int64, int)
 sqlite3.register_adapter(np.int32, int)
-import datetime
+
 
 class StarkMap:
     """
@@ -122,7 +123,7 @@ class StarkMap:
             ./Rydberg_atoms_a_primer.html#Rydberg-Atom-Stark-Shifts
     """
 
-    def __init__(self,atom):
+    def __init__(self, atom):
 
         self.atom = atom
 
@@ -150,7 +151,6 @@ class StarkMap:
             in :obj:`basisStates` list of basis states
         """
 
-
         # finding energy levels
         self.eFieldList = []
         """
@@ -169,7 +169,8 @@ class StarkMap:
         See also:
             :obj:`eFieldList`, :obj:`highlight`, :obj:`diagonalise`
         """
-        self.highlight = [] #contribution of initial state there (overlap |<original state | given state>|^2)
+        self.highlight = [
+        ]  # contribution of initial state there (overlap |<original state | given state>|^2)
         """
         `highlight[i]` is an array of values measuring highlighted feature in the
         eigenstates at electric field intensity `eFieldList[i]`. E.g. `highlight[i][j]`
@@ -190,31 +191,28 @@ class StarkMap:
         self.fitY = []
         self.fittedCurveY = []
 
-        self.drivingFromState = [0,0,0,0,0]
+        self.drivingFromState = [0, 0, 0, 0, 0]
         self.maxCoupling = 0.
 
         # STARK memoization
         self.eFieldCouplingSaved = False
 
-
-
-    def _eFieldCouplingDivE(self,n1,l1,j1,mj1,n2,l2,j2,mj2):
+    def _eFieldCouplingDivE(self, n1, l1, j1, mj1, n2, l2, j2, mj2):
         # eFied coupling devided with E (witout actuall multiplication to getE)
         # delta(mj1,mj2') delta(l1,l2+-1)
-        if ( (abs(mj1-mj2)>0.1) or (abs(l1-l2) !=1) ):
+        if ((abs(mj1 - mj2) > 0.1) or (abs(l1 - l2) != 1)):
             return 0
 
         # matrix element
-        result = self.atom.getRadialMatrixElement(n1,l1,j1,n2,l2,j2)*\
-                physical_constants["Bohr radius"][0]*C_e
+        result = self.atom.getRadialMatrixElement(n1, l1, j1, n2, l2, j2) *\
+            physical_constants["Bohr radius"][0] * C_e
 
-        sumPart = self.eFieldCouplingSaved.getAngular(l1,j1,mj1,l2,j2,mj2)
+        sumPart = self.eFieldCouplingSaved.getAngular(l1, j1, mj1, l2, j2, mj2)
 
-        return result*sumPart
+        return result * sumPart
 
-    def _eFieldCoupling(self,n1,l1,j1,mj1,n2,l2,j2,mj2,eField):
-        return self._eFieldCouplingDivE(n1,l1,j1,mj1,n2,l2,j2,mj2)*eField
-
+    def _eFieldCoupling(self, n1, l1, j1, mj1, n2, l2, j2, mj2, eField):
+        return self._eFieldCouplingDivE(n1, l1, j1, mj1, n2, l2, j2, mj2) * eField
 
     def defineBasis(self, n, l, j, mj, nMin, nMax, maxL, Bz=0,
                     progressOutput=False, debugOutput=False):
@@ -259,43 +257,46 @@ class StarkMap:
         states = []
 
         # save calculation details START
-        self.n = n; self.l =l; self.j=j
-        self.mj = mj; self.nMin = nMin; self.nMax = nMax; self.maxL = maxL
+        self.n = n
+        self.l = l
+        self.j = j
+        self.mj = mj
+        self.nMin = nMin
+        self.nMax = nMax
+        self.maxL = maxL
         self.Bz = Bz
         # save calculation details END
 
+        for tn in xrange(nMin, nMax):
 
-        for tn in xrange(nMin,nMax):
+            for tl in xrange(min(maxL + 1, tn)):
+                if (abs(mj) - 0.1 <= float(tl) + 0.5):
+                    states.append([tn, tl, float(tl) + 0.5, mj])
 
-            for tl in xrange(min(maxL+1,tn)):
-                if (abs(mj)-0.1<=float(tl)+0.5):
-                    states.append([tn,tl,float(tl)+0.5,mj])
-
-                if (tl>0) and  (abs(mj)-0.1<=float(tl)-0.5):
-                    states.append([tn,tl,float(tl)-0.5,mj])
+                if (tl > 0) and (abs(mj) - 0.1 <= float(tl) - 0.5):
+                    states.append([tn, tl, float(tl) - 0.5, mj])
 
         dimension = len(states)
         if progressOutput:
-            print("Found ",dimension," states.")
+            print("Found ", dimension, " states.")
             if debugOutput:
                 print(states)
 
         indexOfCoupledState = 0
         index = 0
         for s in states:
-            if (s[0]==n) and (abs(s[1]-l)<0.1) and (abs(s[2]-j)<0.1) and\
-                 (abs(s[3]-mj)<0.1):
+            if (s[0] == n) and (abs(s[1] - l) < 0.1) and (abs(s[2] - j) < 0.1) and\
+                    (abs(s[3] - mj) < 0.1):
                 indexOfCoupledState = index
-            index +=1
+            index += 1
         if debugOutput:
             print("Index of initial state")
             print(indexOfCoupledState)
             print("Initial state = ")
             print(states[indexOfCoupledState])
 
-
-        self.mat1 = np.zeros((dimension,dimension),dtype=np.double)
-        self.mat2 = np.zeros((dimension,dimension),dtype=np.double)
+        self.mat1 = np.zeros((dimension, dimension), dtype=np.double)
+        self.mat2 = np.zeros((dimension, dimension), dtype=np.double)
 
         self.basisStates = states
         self.indexOfCoupledState = indexOfCoupledState
@@ -306,36 +307,36 @@ class StarkMap:
 
         for ii in xrange(dimension):
             if progressOutput:
-                progress += ((dimension-ii)*2-1)
-                sys.stdout.write("\r%d%%" % (float(progress)/float(dimension**2)*100))
+                progress += ((dimension - ii) * 2 - 1)
+                sys.stdout.write("\r%d%%" %
+                                 (float(progress) / float(dimension**2) * 100))
                 sys.stdout.flush()
 
             # add diagonal element
-            self.mat1[ii][ii] = self.atom.getEnergy(states[ii][0],\
-                                               states[ii][1],states[ii][2])\
-                                * C_e/C_h*1e-9 \
-                                + self.atom.getZeemanEnergyShift(
-                                                states[ii][1],
-                                                states[ii][2],
-                                                states[ii][3],
-                                                self.Bz) / C_h * 1.0e-9
+            self.mat1[ii][ii] = self.atom.getEnergy(states[ii][0],
+                                                    states[ii][1], states[ii][2])\
+                * C_e / C_h * 1e-9 \
+                + self.atom.getZeemanEnergyShift(
+                states[ii][1],
+                states[ii][2],
+                states[ii][3],
+                self.Bz) / C_h * 1.0e-9
             # add off-diagonal element
 
-            for jj in xrange(ii+1,dimension):
-                coupling = self._eFieldCouplingDivE(states[ii][0]\
-                                                    ,states[ii][1],\
-                                                    states[ii][2],mj,\
-                                                    states[jj][0],\
-                                                    states[jj][1],\
-                                                    states[jj][2],mj)*\
-                            1.e-9/C_h
+            for jj in xrange(ii + 1, dimension):
+                coupling = self._eFieldCouplingDivE(states[ii][0], states[ii][1],
+                                                    states[ii][2], mj,
+                                                    states[jj][0],
+                                                    states[jj][1],
+                                                    states[jj][2], mj) *\
+                    1.e-9 / C_h
                 self.mat2[jj][ii] = coupling
                 self.mat2[ii][jj] = coupling
 
         if progressOutput:
             print("\n")
         if debugOutput:
-            print(self.mat1+self.mat2)
+            print(self.mat1 + self.mat2)
             print(self.mat2[0])
 
         self.atom.updateDipoleMatrixElementsFile()
@@ -343,8 +344,8 @@ class StarkMap:
         self.eFieldCouplingSaved = False
         return 0
 
-    def diagonalise(self,eFieldList,drivingFromState = [0,0,0,0,0],
-                        progressOutput=False,debugOutput=False):
+    def diagonalise(self, eFieldList, drivingFromState=[0, 0, 0, 0, 0],
+                    progressOutput=False, debugOutput=False):
         """
             Finds atom eigenstates in a given electric field
 
@@ -371,7 +372,8 @@ class StarkMap:
         self.maxCoupling = 0.
         self.drivingFromState = drivingFromState
         if (self.drivingFromState[0] != 0):
-            if progressOutput: print("Finding driving field coupling...")
+            if progressOutput:
+                print("Finding driving field coupling...")
             # get first what was the state we are calculating coupling with
             state1 = drivingFromState
             n1 = int(round(state1[0]))
@@ -380,47 +382,46 @@ class StarkMap:
             m1 = state1[3]
             q = state1[4]
 
-
             for i in xrange(dimension):
                 thisCoupling = 0.
                 if progressOutput:
-                    sys.stdout.write("\r%d%%" %  (i/float(dimension-1)*100.))
+                    sys.stdout.write("\r%d%%" %
+                                     (i / float(dimension - 1) * 100.))
                     sys.stdout.flush()
-                if (int(abs(self.basisStates[i][1]-l1))==1)and\
-                    (int(abs(self.basisStates[i][2]-j1))<=1) and\
-                    (int(abs(self.basisStates[i][3]-m1-q))==0):
+                if (int(abs(self.basisStates[i][1] - l1)) == 1)and\
+                    (int(abs(self.basisStates[i][2] - j1)) <= 1) and\
+                        (int(abs(self.basisStates[i][3] - m1 - q)) == 0):
                     state2 = self.basisStates[i]
                     n2 = int(state2[0])
                     l2 = int(state2[1])
                     j2 = state2[2]
                     m2 = state2[3]
                     if debugOutput:
-                        print(n1," ",l1," ",j1," ",m1," < - ",q," - >",n2," ",\
-                            l2," ",j2," ",m2,"\n")
-                    dme = self.atom.getDipoleMatrixElement(n1, l1,j1,m1,\
-                                                            n2,l2,j2,m2,\
-                                                            q)
+                        print(n1, " ", l1, " ", j1, " ", m1, " < - ", q, " - >", n2, " ",
+                              l2, " ", j2, " ", m2, "\n")
+                    dme = self.atom.getDipoleMatrixElement(n1, l1, j1, m1,
+                                                           n2, l2, j2, m2,
+                                                           q)
                     thisCoupling += dme
                 thisCoupling = abs(thisCoupling)**2
                 if thisCoupling > self.maxCoupling:
                     self.maxCoupling = thisCoupling
-                if (thisCoupling >0.00000001) and debugOutput:
-                    print("coupling = ",thisCoupling)
+                if (thisCoupling > 0.00000001) and debugOutput:
+                    print("coupling = ", thisCoupling)
                 coupling.append(thisCoupling)
 
             if progressOutput:
                 print("\n")
 
-            if self.maxCoupling<0.00000001:
-                raise Exception("State that you specified in drivingFromState, for a "+\
-                "given laser polarization, is uncoupled from the specified Stark "+\
-                "manifold. If you just want to see the specified Stark manifold "+\
-                "remove driveFromState optional argument from call of function "+\
-                "diagonalise. Or specify state and driving that is coupled "+\
-                "to a given manifold to see coupling strengths.")
+            if self.maxCoupling < 0.00000001:
+                raise Exception("State that you specified in drivingFromState, for a " +
+                                "given laser polarization, is uncoupled from the specified Stark " +
+                                "manifold. If you just want to see the specified Stark manifold " +
+                                "remove driveFromState optional argument from call of function " +
+                                "diagonalise. Or specify state and driving that is coupled " +
+                                "to a given manifold to see coupling strengths.")
 
         # ========= FIND LASER COUPLINGS (END) =======
-
 
         indexOfCoupledState = self.indexOfCoupledState
         self.eFieldList = eFieldList
@@ -435,21 +436,21 @@ class StarkMap:
         for eField in eFieldList:
             if progressOutput:
                 progress += 1.
-                sys.stdout.write("\r%d%%" % \
-                                 (float(progress)/float(len(eFieldList))*100))
+                sys.stdout.write("\r%d%%" %
+                                 (float(progress) / float(len(eFieldList)) * 100))
                 sys.stdout.flush()
 
-            m = self.mat1+self.mat2*eField
+            m = self.mat1 + self.mat2 * eField
 
-            ev,egvector = eigh(m)
+            ev, egvector = eigh(m)
 
             self.y.append(ev)
-            if (drivingFromState[0]<0.1):
+            if (drivingFromState[0] < 0.1):
                 sh = []
                 comp = []
                 for i in xrange(len(ev)):
-                    sh.append(abs(egvector[indexOfCoupledState,i])**2)
-                    comp.append(self._stateComposition2(egvector[:,i]))
+                    sh.append(abs(egvector[indexOfCoupledState, i])**2)
+                    comp.append(self._stateComposition2(egvector[:, i]))
                 self.highlight.append(sh)
                 self.composition.append(comp)
             else:
@@ -458,19 +459,18 @@ class StarkMap:
                 for i in xrange(len(ev)):
                     sumCoupledStates = 0.
                     for j in xrange(dimension):
-                        sumCoupledStates += abs(coupling[j]/self.maxCoupling)*\
-                                                abs(egvector[j,i]**2)
-                    comp.append(self._stateComposition2(egvector[:,i]))
+                        sumCoupledStates += abs(coupling[j] / self.maxCoupling) *\
+                            abs(egvector[j, i]**2)
+                    comp.append(self._stateComposition2(egvector[:, i]))
                     sh.append(sumCoupledStates)
                 self.highlight.append(sh)
                 self.composition.append(comp)
-
 
         if progressOutput:
             print("\n")
         return
 
-    def exportData(self,fileBase,exportFormat = "csv"):
+    def exportData(self, fileBase, exportFormat="csv"):
         """
             Exports StarkMap calculation data.
 
@@ -490,68 +490,73 @@ class StarkMap:
                     only .csv is supported but this can be extended in the future.
         """
 
-        fmt='on %Y-%m-%d @ %H:%M:%S'
+        fmt = 'on %Y-%m-%d @ %H:%M:%S'
         ts = datetime.datetime.now().strftime(fmt)
 
         commonHeader = "Export from Alkali Rydberg Calculator (ARC) %s.\n" % ts
         commonHeader += ("\n *** Stark Map for %s %s m_j = %d/2. ***\n\n" % (self.atom.elementName,
-                        printStateString(self.n, self.l, self.j), int(round(2.*self.mj)) ) )
-        commonHeader += (" - Included states - principal quantum number (n) range [%d-%d].\n" %\
+                                                                             printStateString(self.n, self.l, self.j), int(round(2. * self.mj))))
+        commonHeader += (" - Included states - principal quantum number (n) range [%d-%d].\n" %
                          (self.nMin, self.nMax))
-        commonHeader += (" - Included states with orbital momentum (l) in range [%d,%d] (i.e. %s-%s).\n"%\
+        commonHeader += (" - Included states with orbital momentum (l) in range [%d,%d] (i.e. %s-%s).\n" %
                          (0, self.maxL, printStateLetter(0), printStateLetter(self.maxL)))
-        if self.drivingFromState[0]<0.1:
-            commonHeader += " - State highlighting based on the relative contribution \n"+\
-            "   of the original state in the eigenstates obtained by diagonalization."
+        if self.drivingFromState[0] < 0.1:
+            commonHeader += " - State highlighting based on the relative contribution \n" +\
+                "   of the original state in the eigenstates obtained by diagonalization."
         else:
-            commonHeader += (" - State highlighting based on the relative driving strength \n"+\
-            "   to a given energy eigenstate (energy level) from state\n"+\
-            "   %s m_j =%d/2 with polarization q=%d.\n"%\
-             ( printStateString(*self.drivingFromState[0:3]),\
-             int(round(2.*self.drivingFromState[3])),
-             self.drivingFromState[4]))
+            commonHeader += (" - State highlighting based on the relative driving strength \n" +
+                             "   to a given energy eigenstate (energy level) from state\n" +
+                             "   %s m_j =%d/2 with polarization q=%d.\n" %
+                             (printStateString(*self.drivingFromState[0:3]),
+                              int(round(2. * self.drivingFromState[3])),
+                                 self.drivingFromState[4]))
 
-
-        if exportFormat=="csv":
+        if exportFormat == "csv":
             print("Exporting StarkMap calculation results as .csv ...")
 
             commonHeader += " - Export consists of three (3) files:\n"
-            commonHeader += ("       1) %s,\n" % (fileBase+"_eField."+exportFormat))
-            commonHeader += ("       2) %s,\n" % (fileBase+"_energyLevels."+exportFormat))
-            commonHeader += ("       3) %s.\n\n" % (fileBase+"_highlight."+exportFormat))
+            commonHeader += ("       1) %s,\n" %
+                             (fileBase + "_eField." + exportFormat))
+            commonHeader += ("       2) %s,\n" %
+                             (fileBase + "_energyLevels." + exportFormat))
+            commonHeader += ("       3) %s.\n\n" %
+                             (fileBase + "_highlight." + exportFormat))
 
-            filename = fileBase+"_eField."+exportFormat
-            np.savetxt(filename, \
-                self.eFieldList, fmt='%.18e', delimiter=', ',\
-                newline='\n', \
-                header=(commonHeader + " - - - eField (V/m) - - -"),\
-                comments='# ')
+            filename = fileBase + "_eField." + exportFormat
+            np.savetxt(filename,
+                       self.eFieldList, fmt='%.18e', delimiter=', ',
+                       newline='\n',
+                       header=(commonHeader + " - - - eField (V/m) - - -"),
+                       comments='# ')
             print("   Electric field values (V/m) saved in %s" % filename)
 
-            filename = fileBase+"_energyLevels."+exportFormat
+            filename = fileBase + "_energyLevels." + exportFormat
             headerDetails = " NOTE : Each row corresponds to eigenstates for a single specified electric field"
-            np.savetxt(filename, \
-                self.y, fmt='%.18e', delimiter=', ',\
-                newline='\n', \
-                header=(commonHeader + ' - - - Energy (GHz) - - -\n' + headerDetails),\
-                comments='# ')
-            print("   Lists of energies (in GHz relative to ionisation) saved in %s" % filename)
+            np.savetxt(filename,
+                       self.y, fmt='%.18e', delimiter=', ',
+                       newline='\n',
+                       header=(commonHeader +
+                               ' - - - Energy (GHz) - - -\n' + headerDetails),
+                       comments='# ')
+            print(
+                "   Lists of energies (in GHz relative to ionisation) saved in %s" % filename)
 
-            filename = fileBase+"_highlight."+exportFormat
-            np.savetxt(filename, \
-                self.highlight, fmt='%.18e', delimiter=', ',\
-                newline='\n', \
-                header=(commonHeader + ' - - - Highlight value (rel.units) - - -\n'+ headerDetails),\
-                comments='# ')
+            filename = fileBase + "_highlight." + exportFormat
+            np.savetxt(filename,
+                       self.highlight, fmt='%.18e', delimiter=', ',
+                       newline='\n',
+                       header=(
+                           commonHeader + ' - - - Highlight value (rel.units) - - -\n' + headerDetails),
+                       comments='# ')
             print("   Highlight values saved in %s" % filename)
 
             print("... data export finished!")
         else:
             raise ValueError("Unsupported export format (.%s)." % format)
 
-    def plotLevelDiagram(self,units=1,highlighState=True,progressOutput=False,\
-                        debugOutput=False,highlightColour='red',
-                        addToExistingPlot = False):
+    def plotLevelDiagram(self, units=1, highlighState=True, progressOutput=False,
+                         debugOutput=False, highlightColour='red',
+                         addToExistingPlot=False):
         """
             Makes a plot of a stark map of energy levels
 
@@ -574,8 +579,8 @@ class StarkMap:
                     existing old plot. Note that then interactive plotting
                     doesn't work. False by default.
         """
-        rvb = LinearSegmentedColormap.from_list('mymap',\
-                                               ['0.9', highlightColour,'black'])
+        rvb = LinearSegmentedColormap.from_list('mymap',
+                                                ['0.9', highlightColour, 'black'])
 
         self.units = units
         self.addToExistingPlot = addToExistingPlot
@@ -590,16 +595,15 @@ class StarkMap:
 
         existingPlot = False
         if (self.fig == 0 or not addToExistingPlot):
-            if (self.fig != 0): plt.close()
-            self.fig, self.ax = plt.subplots(1,1,figsize=(11.,5))
+            if (self.fig != 0):
+                plt.close()
+            self.fig, self.ax = plt.subplots(1, 1, figsize=(11., 5))
         else:
             existingPlot = True
 
-
         eFieldList = []
-        y =[]
+        y = []
         yState = []
-
 
         for br in xrange(len(self.y)):
 
@@ -617,70 +621,69 @@ class StarkMap:
         y = y[sortOrder]
         yState = yState[sortOrder]
 
-
-        if (units==1):
-            ## in cm^-1
-
+        if (units == 1):
+            # in cm^-1
 
             if not highlighState:
-                self.ax.scatter(eFieldList/100.,y*0.03336,s=1,color="k",picker=5)
+                self.ax.scatter(eFieldList / 100., y * 0.03336,
+                                s=1, color="k", picker=5)
             else:
                 cm = rvb
-                cNorm  = matplotlib.colors.Normalize(vmin=0., vmax=1.)
-                self.ax.scatter(eFieldList/100,y*0.03336,\
-                                c=yState,s=5,norm=cNorm, cmap=cm,lw=0,picker=5)
+                cNorm = matplotlib.colors.Normalize(vmin=0., vmax=1.)
+                self.ax.scatter(eFieldList / 100, y * 0.03336,
+                                c=yState, s=5, norm=cNorm, cmap=cm, lw=0, picker=5)
                 if not existingPlot:
                     cax = self.fig.add_axes([0.91, 0.1, 0.02, 0.8])
-                    cb = matplotlib.colorbar.ColorbarBase(cax, cmap=cm, norm=cNorm)
-                    if (self.drivingFromState[0]<0.1):
-                        cb.set_label(r"$|\langle %s | \mu \rangle |^2$" % \
-                                 printStateStringLatex(n,l,j))
+                    cb = matplotlib.colorbar.ColorbarBase(
+                        cax, cmap=cm, norm=cNorm)
+                    if (self.drivingFromState[0] < 0.1):
+                        cb.set_label(r"$|\langle %s | \mu \rangle |^2$" %
+                                     printStateStringLatex(n, l, j))
                     else:
                         cb.set_label(r"$( \Omega_\mu | \Omega )^2$")
 
-
         else:
-            ## in GHz
+            # in GHz
 
             if not highlighState:
-                self.ax.scatter(eFieldList/100.,y,\
-                                s=1,color="k",picker=5) # in GHz
+                self.ax.scatter(eFieldList / 100., y,
+                                s=1, color="k", picker=5)  # in GHz
             else:
                 cm = rvb
-                cNorm  = matplotlib.colors.Normalize(vmin=0., vmax=1.)
-                self.ax.scatter(eFieldList/100.,y,c=yState,\
-                                s=5,norm=cNorm, cmap=cm,lw=0,picker=5)
+                cNorm = matplotlib.colors.Normalize(vmin=0., vmax=1.)
+                self.ax.scatter(eFieldList / 100., y, c=yState,
+                                s=5, norm=cNorm, cmap=cm, lw=0, picker=5)
                 if not existingPlot:
                     cax = self.fig.add_axes([0.91, 0.1, 0.02, 0.8])
-                    cb = matplotlib.colorbar.ColorbarBase(cax, \
+                    cb = matplotlib.colorbar.ColorbarBase(cax,
                                                           cmap=cm, norm=cNorm)
-                    if (self.drivingFromState[0]<0.1):
-                        cb.set_label(r"$|\langle %s | \mu \rangle |^2$" %\
-                                  printStateStringLatex(n,l,j))
+                    if (self.drivingFromState[0] < 0.1):
+                        cb.set_label(r"$|\langle %s | \mu \rangle |^2$" %
+                                     printStateStringLatex(n, l, j))
                     else:
                         cb.set_label(r"$(\Omega_\mu / \Omega )^2$")
 
         self.ax.set_xlabel("Electric field (V/cm)")
 
-
-        if (units==1):
-            ## in cm^{-1}
-            uppery = self.atom.getEnergy(n,l,j)*C_e/C_h*1e-9*0.03336+10
-            lowery = self.atom.getEnergy(n,l,j)*C_e/C_h*1e-9*0.03336-10
+        if (units == 1):
+            # in cm^{-1}
+            uppery = self.atom.getEnergy(
+                n, l, j) * C_e / C_h * 1e-9 * 0.03336 + 10
+            lowery = self.atom.getEnergy(
+                n, l, j) * C_e / C_h * 1e-9 * 0.03336 - 10
             self.ax.set_ylabel("State energy, $E/(h c)$ (cm$^{-1}$)")
         else:
-            ## in GHz
-            uppery = self.atom.getEnergy(n,l,j)*C_e/C_h*1e-9+5
-            lowery = self.atom.getEnergy(n,l,j)*C_e/C_h*1e-9-5
+            # in GHz
+            uppery = self.atom.getEnergy(n, l, j) * C_e / C_h * 1e-9 + 5
+            lowery = self.atom.getEnergy(n, l, j) * C_e / C_h * 1e-9 - 5
             self.ax.set_ylabel(r"State energy, $E/h$ (GHz)")
 
-
-        self.ax.set_ylim(lowery,uppery)
+        self.ax.set_ylim(lowery, uppery)
         ##
-        self.ax.set_xlim(min(eFieldList)/100.,max(eFieldList)/100.)
+        self.ax.set_xlim(min(eFieldList) / 100., max(eFieldList) / 100.)
         return 0
 
-    def savePlot(self,filename="StarkMap.pdf"):
+    def savePlot(self, filename="StarkMap.pdf"):
         """
             Saves plot made by :obj:`plotLevelDiagram`
 
@@ -689,12 +692,12 @@ class StarkMap:
                     should be saved
         """
         if (self.fig != 0):
-            self.fig.savefig(filename,bbox_inches='tight')
+            self.fig.savefig(filename, bbox_inches='tight')
         else:
             print("Error while saving a plot: nothing is plotted yet")
         return 0
 
-    def showPlot(self, interactive = True):
+    def showPlot(self, interactive=True):
         """
             Shows plot made by :obj:`plotLevelDiagram`
         """
@@ -705,7 +708,8 @@ class StarkMap:
                           " addToExistingPlot option set to True"
                           "\nPlease turn off this option in plotLevelDiagram.\n")
                 else:
-                    self.ax.set_title("Click on state to see state composition")
+                    self.ax.set_title(
+                        "Click on state to see state composition")
                     self.clickedPoint = 0
                     self.fig.canvas.draw()
                     self.fig.canvas.mpl_connect('pick_event', self._onPick)
@@ -714,84 +718,84 @@ class StarkMap:
             print("Error while showing a plot: nothing is plotted yet")
         return 0
 
-    def _onPick(self,event):
+    def _onPick(self, event):
         if isinstance(event.artist, matplotlib.collections.PathCollection):
-            if (self.units==1):
+            if (self.units == 1):
                 scaleFactor = 0.03336
             else:
                 scaleFactor = 1.0
 
-            x = event.mouseevent.xdata*100.
-            y = event.mouseevent.ydata/scaleFactor
+            x = event.mouseevent.xdata * 100.
+            y = event.mouseevent.ydata / scaleFactor
 
-            i = np.searchsorted(self.eFieldList,x)
+            i = np.searchsorted(self.eFieldList, x)
             if i == len(self.eFieldList):
                 i -= 1
-            if ((i>0) and (abs(self.eFieldList[i-1]-x)<abs(self.eFieldList[i]-x))):
-                i -=1
+            if ((i > 0) and (abs(self.eFieldList[i - 1] - x) < abs(self.eFieldList[i] - x))):
+                i -= 1
 
             j = 0
             for jj in xrange(len(self.y[i])):
-                if (abs(self.y[i][jj]-y) < abs(self.y[i][j]-y)):
+                if (abs(self.y[i][jj] - y) < abs(self.y[i][j] - y)):
                     j = jj
 
             # now choose the most higlighted state in this area
-            distance = abs(self.y[i][j]-y)*1.5
+            distance = abs(self.y[i][j] - y) * 1.5
             for jj in xrange(len(self.y[i])):
-                if (abs(self.y[i][jj]-y) < distance and \
-                    (abs(self.highlight[i][jj])>abs(self.highlight[i][j]))):
+                if (abs(self.y[i][jj] - y) < distance and
+                        (abs(self.highlight[i][jj]) > abs(self.highlight[i][j]))):
                     j = jj
 
-            if (self.clickedPoint!=0):
+            if (self.clickedPoint != 0):
                 self.clickedPoint.remove()
 
-            self.clickedPoint, = self.ax.plot([self.eFieldList[i]/100.],\
-                                               [self.y[i][j]*scaleFactor],"bs",\
-                                                 linewidth=0,zorder=3)
+            self.clickedPoint, = self.ax.plot([self.eFieldList[i] / 100.],
+                                              [self.y[i][j] * scaleFactor], "bs",
+                                              linewidth=0, zorder=3)
 
-            self.ax.set_title(("[%s] = " % self.atom.elementName)+\
-                              self._stateComposition(self.composition[i][j])+\
-                             ("   Colourbar value = %.2f"% self.highlight[i][j]),
-                             fontsize=11)
+            self.ax.set_title(("[%s] = " % self.atom.elementName) +
+                              self._stateComposition(self.composition[i][j]) +
+                              ("   Colourbar value = %.2f" %
+                               self.highlight[i][j]),
+                              fontsize=11)
 
             event.canvas.draw()
 
-    def _stateComposition(self,stateVector):
+    def _stateComposition(self, stateVector):
         i = 0
         totalContribution = 0
         value = "$"
-        while (i<len(stateVector)) and (totalContribution<0.95):
-            if (i!=0 and stateVector[i][0]>0):
-                value+= "+"
-            value = value+ ("%.2f" % stateVector[i][0])+\
-                    self._addState(*self.basisStates[stateVector[i][1]])
+        while (i < len(stateVector)) and (totalContribution < 0.95):
+            if (i != 0 and stateVector[i][0] > 0):
+                value += "+"
+            value = value + ("%.2f" % stateVector[i][0]) +\
+                self._addState(*self.basisStates[stateVector[i][1]])
             totalContribution += abs(stateVector[i][0])**2
             i += 1
 
-        if totalContribution<0.999:
-            value+="+\\ldots"
-        return value+"$"
+        if totalContribution < 0.999:
+            value += "+\\ldots"
+        return value + "$"
 
-
-    def _stateComposition2(self,stateVector,upTo=4):
+    def _stateComposition2(self, stateVector, upTo=4):
         contribution = np.absolute(stateVector)
-        order = np.argsort(contribution,kind='heapsort')
+        order = np.argsort(contribution, kind='heapsort')
         index = -1
         totalContribution = 0
-        mainStates = []  #[state Value, state index]
-        while (index>-upTo) and (totalContribution<0.95):
+        mainStates = []  # [state Value, state index]
+        while (index > -upTo) and (totalContribution < 0.95):
             i = order[index]
-            mainStates.append([stateVector[i],i])
+            mainStates.append([stateVector[i], i])
             totalContribution += contribution[i]**2
             index -= 1
         return mainStates
 
-    def _addState(self,n1,l1,j1,mj1):
+    def _addState(self, n1, l1, j1, mj1):
         return "|%s m_j=%d/2\\rangle" %\
-             (printStateStringLatex(n1, l1, j1),int(2*mj1))
+            (printStateStringLatex(n1, l1, j1), int(2 * mj1))
 
-    def getPolarizability(self, maxField=1.e10, showPlot = False,\
-                           debugOutput = False, minStateContribution=0.0):
+    def getPolarizability(self, maxField=1.e10, showPlot=False,
+                          debugOutput=False, minStateContribution=0.0):
         """
             Returns the polarizability of the state (set during the
             initalization process)
@@ -812,11 +816,10 @@ class StarkMap:
                 float: scalar polarizability in units of MHz cm :math:`^2` / V \
                 :math:`^2`
         """
-        if (self.drivingFromState[0]!=0):
-            raise Exception("Program can only find Polarizability of the original "+\
-            "state if you highlight original state. You can do so by NOT "+\
-            "specifying drivingFromState in diagonalise function.")
-
+        if (self.drivingFromState[0] != 0):
+            raise Exception("Program can only find Polarizability of the original " +
+                            "state if you highlight original state. You can do so by NOT " +
+                            "specifying drivingFromState in diagonalise function.")
 
         eFieldList = self.eFieldList
         yState = self.highlight
@@ -826,14 +829,15 @@ class StarkMap:
         n = originalState[0]
         l = originalState[1]
         j = originalState[2]
-        energyOfOriginalState = self.atom.getEnergy(n,l,j)*C_e/C_h*1e-9 # in  GHz
+        energyOfOriginalState = self.atom.getEnergy(
+            n, l, j) * C_e / C_h * 1e-9  # in  GHz
 
         if debugOutput:
             print("finding original state for each electric field value")
 
         stopFitIndex = 0
-        while stopFitIndex<len(eFieldList)-1 and \
-            eFieldList[stopFitIndex]<maxField:
+        while stopFitIndex < len(eFieldList) - 1 and \
+                eFieldList[stopFitIndex] < maxField:
             stopFitIndex += 1
 
         xOriginalState = []
@@ -843,48 +847,44 @@ class StarkMap:
 
             maxPortion = 0.
             yval = 0.
-            jj=0
+            jj = 0
             for jj in xrange(len(y[ii])):
-                if yState[ii][jj]>maxPortion:
+                if yState[ii][jj] > maxPortion:
                     maxPortion = yState[ii][jj]
                     yval = y[ii][jj]
             # measure state energy relative to the original state
-            if (minStateContribution<maxPortion):
+            if (minStateContribution < maxPortion):
                 xOriginalState.append(eFieldList[ii])
-                yOriginalState.append(yval-energyOfOriginalState)
+                yOriginalState.append(yval - energyOfOriginalState)
 
-
-        xOriginalState = np.array(xOriginalState)/100. # converts to V/cm
+        xOriginalState = np.array(xOriginalState) / 100.  # converts to V/cm
         yOriginalState = np.array(yOriginalState)   # in GHz
 
-
-        ## in GHz
+        # in GHz
         uppery = 5.0
         lowery = -5.0
 
-
         if debugOutput:
-            print("found ",len(xOriginalState))
+            print("found ", len(xOriginalState))
         if showPlot:
-            self.fig, self.ax = plt.subplots(1, 1,figsize=(6.5, 3))
-            self.ax.scatter(xOriginalState,yOriginalState,s=2,color="k")
+            self.fig, self.ax = plt.subplots(1, 1, figsize=(6.5, 3))
+            self.ax.scatter(xOriginalState, yOriginalState, s=2, color="k")
 
             self.ax.set_xlabel("E field (V/cm)")
 
-            self.ax.set_ylim(lowery,uppery)
+            self.ax.set_ylim(lowery, uppery)
             self.ax.set_ylabel(r"Energy/$h$ (GHz)")
-            self.ax.set_xlim(xOriginalState[0],\
-                                xOriginalState[-1])
+            self.ax.set_xlim(xOriginalState[0],
+                             xOriginalState[-1])
 
-
-        def polarizabilityFit(eField,offset,alpha):
-            return offset-0.5*alpha*eField**2
+        def polarizabilityFit(eField, offset, alpha):
+            return offset - 0.5 * alpha * eField**2
 
         try:
-            popt,pcov = curve_fit(polarizabilityFit,\
-                              xOriginalState,\
-                              yOriginalState,\
-                              [0,0])
+            popt, pcov = curve_fit(polarizabilityFit,
+                                   xOriginalState,
+                                   yOriginalState,
+                                   [0, 0])
         except:
             print("\nERROR: fitting energy levels for extracting polarizability\
                     of the state failed. Please check the range of electric \
@@ -894,19 +894,20 @@ class StarkMap:
             return 0
 
         if debugOutput:
-            print("Scalar polarizability = ",popt[1]*1.e3," MHz cm^2 / V^2 ")
+            print("Scalar polarizability = ",
+                  popt[1] * 1.e3, " MHz cm^2 / V^2 ")
 
         y_fit = []
         for val in xOriginalState:
-            y_fit.append(polarizabilityFit(val,popt[0],popt[1]))
+            y_fit.append(polarizabilityFit(val, popt[0], popt[1]))
         y_fit = np.array(y_fit)
 
         if showPlot:
-            self.ax.plot(xOriginalState,y_fit,"r--")
-            self.ax.legend(("fitted model function","calculated energy level"),\
-                      loc=1,fontsize=10)
+            self.ax.plot(xOriginalState, y_fit, "r--")
+            self.ax.legend(("fitted model function", "calculated energy level"),
+                           loc=1, fontsize=10)
 
-            self.ax.set_ylim(min(yOriginalState),max(yOriginalState))
+            self.ax.set_ylim(min(yOriginalState), max(yOriginalState))
 
             plt.show()
 
@@ -914,8 +915,7 @@ class StarkMap:
         self.fitY = yOriginalState
         self.fittedCurveY = y_fit
 
-        return popt[1]*1.e3 # returned value is in  MHz cm^2 / V^2
-
+        return popt[1] * 1.e3  # returned value is in  MHz cm^2 / V^2
 
 
 # ================= Level plots, decays, cascades etc =======================
@@ -943,24 +943,22 @@ class LevelPlot:
                 want to examine
     """
 
-
-
-    def __init__(self,atomType ):
+    def __init__(self, atomType):
         self.atom = atomType
         self.nFrom = 0
         self.nTo = 0
         self.lFrom = 0
         self.lTo = 0
 
-        self.listX = [] # list of l
-        self.listY = [] # list of energies
+        self.listX = []  # list of l
+        self.listY = []  # list of energies
         self.levelLabel = []
 
         self.fig = 0
         self.ax = 0
-        self.width =0.2
-        self.state1=[0,0,0]
-        self.state2 =[0,-1,0]
+        self.width = 0.2
+        self.state1 = [0, 0, 0]
+        self.state2 = [0, -1, 0]
         self.transitionMatrix = []
         self.populations = []
         self.transitionMatrixWavelength3 = []
@@ -970,8 +968,7 @@ class LevelPlot:
         self.spectraY = []
         self.spectraLine = []
 
-
-    def makeLevels(self,nFrom,nTo,lFrom,lTo):
+    def makeLevels(self, nFrom, nTo, lFrom, lTo, s=0.5):
         """
             Constructs energy level diagram in a given range
 
@@ -984,38 +981,42 @@ class LevelPlot:
                     of the states we are interested in
                 lTo (int): maximal orbital angular momentum
                     of the states we are interested in
+                s (float): optional, spin angular momentum. Default value
+                    of 0.5 corresponds to Alkali atoms. For Alkaline Earth it
+                    has to be specified.
         """
-        #save local copy of the space restrictions
+        # save local copy of the space restrictions
         self.nFrom = nFrom
         self.nTo = nTo
         self.lFrom = lFrom
         self.lTo = lTo
 
         # find all the levels within this space restrictions
-        nFrom = max(nFrom,self.atom.groundStateN)
-        while nFrom<=nTo:
+        nFrom = max(nFrom, self.atom.groundStateN)
+        while nFrom <= nTo:
             l = lFrom
-            while l<=min(lTo,4,nFrom-1):
-                if (l>0.5):
+            while l <= min(lTo, 4, nFrom - 1):
+                if (l > 0.5):
                     self.listX.append(l)
-                    self.listY.append(self.atom.getEnergy(nFrom,l,l-0.5))
-                    self.levelLabel.append([nFrom, l, l-0.5])
+                    self.listY.append(self.atom.getEnergy(nFrom, l, l - 0.5))
+                    self.levelLabel.append([nFrom, l, l - 0.5])
                 self.listX.append(l)
-                self.listY.append(self.atom.getEnergy(nFrom,l,l+0.5))
-                self.levelLabel.append([nFrom, l, l+0.5])
-                l = l+1
+                self.listY.append(self.atom.getEnergy(nFrom, l, l + 0.5))
+                self.levelLabel.append([nFrom, l, l + 0.5, s])
+                l = l + 1
             nFrom += 1
         # if user requested principal quantum nuber below the
         # ground state principal quantum number
         # add those L states that are higher in energy then the ground state
         for state in self.atom.extraLevels:
-            if state[1]<=lTo and state[0]>=self.nFrom:
+            if state[1] <= lTo and state[0] >= self.nFrom:
                 self.listX.append(state[1])
-                self.listY.append(self.atom.getEnergy(state[0],state[1],state[2]))
+                self.listY.append(self.atom.getEnergy(
+                    state[0], state[1], state[2]))
                 self.levelLabel.append(state)
 
-    def makeTransitionMatrix(self,environmentTemperature = 0.0,printDecays=True):
-        self.transitionMatrix =[]
+    def makeTransitionMatrix(self, environmentTemperature=0.0, printDecays=True):
+        self.transitionMatrix = []
 
         for i in xrange(len(self.levelLabel)):
             state1 = self.levelLabel[i]
@@ -1025,23 +1026,22 @@ class LevelPlot:
             decay = 0.0
 
             for state2 in self.levelLabel:
-                dipoleAllowed = (abs(state1[1]-state2[1])==1)and\
-                                (abs(state1[2]-state2[2])<=1.01)
+                dipoleAllowed = (abs(state1[1] - state2[1]) == 1)and\
+                                (abs(state1[2] - state2[2]) <= 1.01)
                 if (dipoleAllowed):
                     # decay to this state
-                    rate = self.atom.getTransitionRate(state2[0],state2[1],state2[2],\
-                                                    state1[0],state1[1],state1[2],\
-                                                    temperature=environmentTemperature)
-
+                    rate = self.atom.getTransitionRate(state2[0], state2[1], state2[2],
+                                                       state1[0], state1[1], state1[2],
+                                                       temperature=environmentTemperature)
 
                     transitionVector.append(rate)
 
                     # decay from this state
-                    rate = self.atom.getTransitionRate(state1[0],state1[1],state1[2],\
-                                                    state2[0],state2[1],state2[2],\
-                                                    temperature=environmentTemperature)
+                    rate = self.atom.getTransitionRate(state1[0], state1[1], state1[2],
+                                                       state2[0], state2[1], state2[2],
+                                                       temperature=environmentTemperature)
 
-                    decay = decay-rate
+                    decay = decay - rate
                 else:
                     transitionVector.append(0.0)
 
@@ -1050,7 +1050,7 @@ class LevelPlot:
                 print("Decay time of ")
                 printState(state1[0], state1[1], state1[2])
                 if decay < -1e-20:
-                    print("\t is\t",-1.e9/decay," ns")
+                    print("\t is\t", -1.e9 / decay, " ns")
             self.transitionMatrix.append(transitionVector)
 
         np.array(self.transitionMatrix)
@@ -1058,101 +1058,100 @@ class LevelPlot:
         self.transitionMatrix = np.transpose(self.transitionMatrix)
 
     def drawSpectra(self):
-        self.fig, self.ax = plt.subplots(1, 1,figsize=(16, 5))
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(16, 5))
 
         lineWavelength = []
         lineStrength = []
         lineName = []
         i = 0
-        while i<len(self.levelLabel):
+        while i < len(self.levelLabel):
             j = 0
-            while j<len(self.levelLabel):
-                if (i!=j):
-                    wavelength = self.atom.getTransitionWavelength(\
-                                     self.levelLabel[i][0],\
-                                     self.levelLabel[i][1],self.levelLabel[i][2],
-                                    self.levelLabel[j][0],\
-                                    self.levelLabel[j][1],self.levelLabel[j][2])
+            while j < len(self.levelLabel):
+                if (i != j):
+                    wavelength = self.atom.getTransitionWavelength(
+                        self.levelLabel[i][0],
+                        self.levelLabel[i][1], self.levelLabel[i][2],
+                        self.levelLabel[j][0],
+                        self.levelLabel[j][1], self.levelLabel[j][2])
 
-                    intensity = self.atom.getTransitionRate(self.levelLabel[i][0],\
-                                     self.levelLabel[i][1],self.levelLabel[i][2],\
-                                     self.levelLabel[j][0],\
-                                     self.levelLabel[j][1],self.levelLabel[j][2])
+                    intensity = self.atom.getTransitionRate(self.levelLabel[i][0],
+                                                            self.levelLabel[i][1], self.levelLabel[i][2],
+                                                            self.levelLabel[j][0],
+                                                            self.levelLabel[j][1], self.levelLabel[j][2])
 
-                    lineWavelength.append(abs(wavelength)*1.e9)
+                    lineWavelength.append(abs(wavelength) * 1.e9)
                     lineStrength.append(abs(intensity))
-                    lineName.append(printStateString(self.levelLabel[i][0],\
-                                                         self.levelLabel[i][1],\
-                                                         self.levelLabel[i][2])+\
-                                        " -> "+
-                                        printStateString(self.levelLabel[j][0],\
-                                                         self.levelLabel[j][1],\
-                                                         self.levelLabel[j][2]))
+                    lineName.append(printStateString(self.levelLabel[i][0],
+                                                     self.levelLabel[i][1],
+                                                     self.levelLabel[i][2]) +
+                                    " -> " +
+                                    printStateString(self.levelLabel[j][0],
+                                                     self.levelLabel[j][1],
+                                                     self.levelLabel[j][2]))
 
-                j = j+1
-            i = i+1
+                j = j + 1
+            i = i + 1
 
         self.spectraX = np.copy(lineWavelength)
         self.spectraY = np.copy(lineStrength)
         self.spectraLine = np.copy(lineName)
 
-    def drawSpectraConvoluted(self,lowerWavelength, higherWavelength,points,gamma):
-        wavelengths = linspace(lowerWavelength,higherWavelength,points)
+    def drawSpectraConvoluted(self, lowerWavelength, higherWavelength, points, gamma):
+        wavelengths = linspace(lowerWavelength, higherWavelength, points)
         spectra = np.zeros(points)
         i = 0
-        while i<len(wavelengths):
+        while i < len(wavelengths):
             value = 0
             j = 0
-            while j<len(self.spectraX):
-                value = value + self.spectraY[j]*gamma/\
-                                ((self.spectraX[j]-wavelengths[i])**2+gamma**2)
-                j = j+1
+            while j < len(self.spectraX):
+                value = value + self.spectraY[j] * gamma /\
+                    ((self.spectraX[j] - wavelengths[i])**2 + gamma**2)
+                j = j + 1
             spectra[i] = value
-            i = i+1
-        self.ax.plot(wavelengths,spectra,"g-")
+            i = i + 1
+        self.ax.plot(wavelengths, spectra, "g-")
 
-    def showSpectra(self,saveInFile="",showTransitionPoints=True):
+    def showSpectra(self, saveInFile="", showTransitionPoints=True):
         if showTransitionPoints:
-            self.ax.plot(self.spectraX,self.spectraY,"ro",picker=5)
+            self.ax.plot(self.spectraX, self.spectraY, "ro", picker=5)
         self.ax.set_xlabel("Wavelength (nm)")
         self.ax.set_ylabel("Intensity (arb.un)")
-        self.fig.subplots_adjust(right=0.95,left=0.1)
-        #self.ax.set_xlim(300,600)
+        self.fig.subplots_adjust(right=0.95, left=0.1)
+        # self.ax.set_xlim(300,600)
         self.fig.canvas.mpl_connect('pick_event', self.onpick3)
         if (saveInFile != ""):
             self.fig.savefig(saveInFile)
         plt.show()
 
-
     def drawLevels(self):
         """
             Draws a level diagram plot
         """
-        self.fig, self.ax = plt.subplots(1, 1,figsize=(9.0, 11.5))
+        self.fig, self.ax = plt.subplots(1, 1, figsize=(9.0, 11.5))
 
         i = 0
-        while i<len(self.listX):
-            self.ax.plot([self.listX[i]-self.width,self.listX[i]+self.width], \
-                         [self.listY[i],self.listY[i]],"b-",picker=4)
-            if (i<len(self.populations) and (self.populations[i]>1e-3)):
-                self.ax.plot([self.listX[i]],[self.listY[i]],"ro",alpha=self.populations[i])
+        while i < len(self.listX):
+            self.ax.plot([self.listX[i] - self.width, self.listX[i] + self.width],
+                         [self.listY[i], self.listY[i]], "b-", picker=4)
+            if (i < len(self.populations) and (self.populations[i] > 1e-3)):
+                self.ax.plot([self.listX[i]], [self.listY[i]],
+                             "ro", alpha=self.populations[i])
 
-            i = i+1
-
+            i = i + 1
 
     def showPlot(self):
         """
             Shows a level diagram plot
         """
         self.ax.set_ylabel("Energy (eV)")
-        self.ax.set_xlim(-0.5+self.lFrom,self.lTo+0.5)
+        self.ax.set_xlim(-0.5 + self.lFrom, self.lTo + 0.5)
 
         # X AXIS
-        majorLocator   = MultipleLocator(1)
+        majorLocator = MultipleLocator(1)
 
         self.ax.xaxis.set_major_locator(majorLocator)
         tickNames = [" "]
-        for l in xrange(self.lFrom,self.lTo+1):
+        for l in xrange(self.lFrom, self.lTo + 1):
             tickNames.append(printStateLetter(l))
         tickNum = len(self.ax.get_xticklabels())
 
@@ -1161,87 +1160,88 @@ class LevelPlot:
         self.fig.canvas.mpl_connect('pick_event', self.onpick2)
         plt.show()
 
-    def findState(self,x,y):
+    def findState(self, x, y):
         distance = 100000000.0
-        state=[0,0,0]
+        state = [0, 0, 0]
         i = 0
-        while i<len(self.listX):
-            dx = self.listX[i]-x
-            dy = self.listY[i]-y
-            dist = sqrt(dx*dx+dy*dy)
-            if (dist<distance):
+        while i < len(self.listX):
+            dx = self.listX[i] - x
+            dy = self.listY[i] - y
+            dist = sqrt(dx * dx + dy * dy)
+            if (dist < distance):
                 distance = dist
                 state = self.levelLabel[i]
-            i = i+1
+            i = i + 1
         return state
 
-    def findStateNo(self,state):
+    def findStateNo(self, state):
         # returns no of the given state in the basis
         i = 0
-        while i<len(self.levelLabel):
+        while i < len(self.levelLabel):
             if (self.levelLabel[i][0] == state[0])and\
                 (self.levelLabel[i][1] == state[1])and\
-                (abs(self.levelLabel[i][2] - state[2])<0.01):
+                    (abs(self.levelLabel[i][2] - state[2]) < 0.01):
                 return i
-            i = i+1
+            i = i + 1
 
         print("Error: requested state ")
         print(state)
         print("could not be found!")
         return -1
 
-    def findLine(self,x,y):
+    def findLine(self, x, y):
         distance = 1.e19
-        line=""
+        line = ""
         i = 0
-        while i<len(self.spectraLine):
-            dx = self.spectraX[i]-x
-            dy = self.spectraY[i]-y
-            dist = sqrt(dx*dx+dy*dy)
-            if (dist<distance):
+        while i < len(self.spectraLine):
+            dx = self.spectraX[i] - x
+            dy = self.spectraY[i] - y
+            dist = sqrt(dx * dx + dy * dy)
+            if (dist < distance):
                 distance = dist
                 line = self.spectraLine[i]
-            i = i+1
+            i = i + 1
         return line
 
-    def onpick2(self,event):
+    def onpick2(self, event):
         if isinstance(event.artist, matplotlib.lines.Line2D):
             thisline = event.artist
             xdata = thisline.get_xdata()
             ydata = thisline.get_ydata()
 
-            state = self.findState((xdata[0]+xdata[0])/2., ydata[0])
-            if (self.state1[0]==0 or (state[1]== self.state2[1])):
+            state = self.findState((xdata[0] + xdata[0]) / 2., ydata[0])
+            if (self.state1[0] == 0 or (state[1] == self.state2[1])):
                 self.state1 = state
-                self.ax.set_title(printStateString(state[0],state[1],state[2])+" -> ")
-                self.state2=[-1,-1,-1]
+                self.ax.set_title(printStateString(
+                    state[0], state[1], state[2]) + " -> ")
+                self.state2 = [-1, -1, -1]
             else:
                 title = ""
-                if (state[1] != self.state1[1]) and (state[1]!= self.state2[1]):
-                    title = printStateString(self.state1[0],\
-                                             self.state1[1],\
-                                             self.state1[2])+\
-                            " -> "+\
-                            printStateString(state[0],state[1],state[2])+" "
-                    title = title+(" %.2f nm (%.3f GHz)" % \
-                                   (self.atom.getTransitionWavelength(self.state1[0],\
-                                                                      self.state1[1],\
-                                                                      self.state1[2],\
-                                                                      state[0],state[1],\
-                                                                      state[2])*1e9,\
-                                    self.atom.getTransitionFrequency(self.state1[0],\
-                                                                     self.state1[1],\
-                                                                     self.state1[2],\
-                                                                     state[0],\
-                                                                     state[1],\
-                                                                     state[2])*1e-9))
+                if (state[1] != self.state1[1]) and (state[1] != self.state2[1]):
+                    title = printStateString(self.state1[0],
+                                             self.state1[1],
+                                             self.state1[2]) +\
+                        " -> " +\
+                        printStateString(state[0], state[1], state[2]) + " "
+                    title = title + (" %.2f nm (%.3f GHz)" %
+                                     (self.atom.getTransitionWavelength(self.state1[0],
+                                                                        self.state1[1],
+                                                                        self.state1[2],
+                                                                        state[0], state[1],
+                                                                        state[2]) * 1e9,
+                                      self.atom.getTransitionFrequency(self.state1[0],
+                                                                       self.state1[1],
+                                                                       self.state1[2],
+                                                                       state[0],
+                                                                       state[1],
+                                                                       state[2]) * 1e-9))
                     self.ax.set_title(title)
-                    self.state1=[0,0,0]
+                    self.state1 = [0, 0, 0]
 
                 self.state2[1] = state[1]
             event.canvas.draw()
 
-    def onpick3(self,event):
+    def onpick3(self, event):
         if isinstance(event.artist, Line2D):
             thisline = event.artist
             xdata = thisline.get_xdata()
