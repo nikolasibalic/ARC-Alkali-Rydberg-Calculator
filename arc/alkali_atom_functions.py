@@ -17,6 +17,7 @@ import sqlite3
 import csv
 import gzip
 from math import exp, log, sqrt
+from mpmath import angerj
 # for web-server execution, uncomment the following two lines
 #import matplotlib
 # matplotlib.use("Agg")
@@ -715,6 +716,7 @@ class AlkaliAtom(object):
     def getRadialMatrixElement(self,
                                n1, l1, j1,
                                n2, l2, j2,
+                               s1=0.5, s2=0.5,
                                useLiterature=True):
         """
             Radial part of the dipole matrix element
@@ -729,7 +731,10 @@ class AlkaliAtom(object):
                 n2 (int): principal quantum number of state 2
                 l2 (int): orbital angular momentum of state 2
                 j2 (float): total angular momentum of state 2
-
+                s1 (float): optional, total spin angular momentum of state 1.
+                    By default 0.5 for Alkali atoms.
+                s2 (float): optional, total spin angular momentum of state 2.
+                    By default 0.5 for Alkali atoms.
             Returns:
                 float: dipole matrix element (:math:`a_0 e`).
         """
@@ -1591,10 +1596,11 @@ class AlkaliAtom(object):
                                    literatureDME)
                 self.conn.commit()
             except sqlite3.Error as e:
-                print("Error while loading precalculated values "
-                      "into the database")
-                print(e)
-                exit()
+                if i > 0:
+                    print("Error while loading precalculated values "
+                          "into the database")
+                    print(e)
+                    exit()
 
         except IOError as e:
             print("Error reading literature values File "
@@ -1719,6 +1725,102 @@ class AlkaliAtom(object):
             sumOverMl += (mj - 0.5 + gs * 0.5) * \
                 abs(CG(l, mj - 0.5, 0.5, 0.5, j, mj))**2
         return prefactor * sumOverMl
+
+    def _getRadialDipoleSemiClassical(self, n1, l1, j1, n2, l2, j2,
+                                      s1=0.5, s2=0.5):
+        if abs(s1-s2) > 0.1:
+            return 0
+
+        # get the effective principal number of both states
+        nu = n1 - self.getQuantumDefect(n1, l1, j1, s=s1)
+        nu1 = n2 - self.getQuantumDefect(n2, l2, j2, s=s2)
+
+        # get the parameters required to calculate the sum
+        l_c = (l1 + l2 + 1.) / 2.
+        nu_c = sqrt(nu * nu1)
+
+        delta_nu = nu - nu1
+        delta_l = l2 - l1
+
+        # I am not sure if this correct
+
+        gamma = (delta_l * l_c) / nu_c
+
+        if delta_nu == 0:
+            g0 = 1
+            g1 = 0
+            g2 = 0
+            g3 = 0
+        else:
+
+            g0 = (1. / (3. * delta_nu)) * (
+                angerj(delta_nu - 1., - delta_nu)
+                - angerj(delta_nu + 1, - delta_nu))
+            g1 = -(1. / (3. * delta_nu)) * (
+                angerj(delta_nu - 1., - delta_nu)
+                + angerj(delta_nu + 1, -delta_nu))
+            g2 = g0 - np.sin(np.pi * delta_nu) / (np.pi * delta_nu)
+            g3 = (delta_nu / 2.) * g0 + g1
+
+        radial_ME = (3 / 2) * nu_c**2 * (1 - (l_c / nu_c)**(2))**0.5 * \
+            (g0 + gamma * g1 + gamma**2 * g2 + gamma**3 * g3)
+        return float(radial_ME)
+
+    def _getRadialQuadrupoleSemiClassical(self, n1, l1, j1, n2, l2, j2,
+                                          s1=0.5, s2=0.5):
+        if abs(s1-s2) > 0.1:
+            return 0
+
+        dl = abs(l2 - l1)
+
+        nu = n1 - self.getQuantumDefect(n1, l1, j1, s=s1)
+        nu1 = n2 - self.getQuantumDefect(n2, l2, j2, s=s2)
+
+        # get the parameters required to calculate the sum
+        l_c = (l1 + l2 + 1.) / 2.
+        nu_c = np.sqrt(nu * nu1)
+
+        delta_nu = nu - nu1
+        delta_l = l2 - l1
+
+        gamma = (delta_l * l_c) / nu_c
+
+        if delta_nu == 0:
+            q = np.array([1, 0, 0, 0])
+        else:
+
+            g0 = (1. / (3. * delta_nu)) * (
+                angerj(delta_nu - 1., - delta_nu)
+                - angerj(delta_nu + 1, -delta_nu))
+            g1 = -(1. / (3. * delta_nu)) * (
+                angerj(delta_nu - 1., - delta_nu)
+                + angerj(delta_nu + 1, -delta_nu))
+
+            q = np.zeros((4,))
+            q[0] = -(6. / (5. * delta_nu)) * g1
+            q[1] = -(6. / (5. * delta_nu)) * g0 + (6. / 5.) * \
+                np.sin(np.pi * delta_nu) / (np.pi * delta_nu**2)
+            q[2] = -(3. / 4.) * (6. / (5. * delta_nu) * g1 + g0)
+            q[3] = 0.5 * (delta_nu * 0.5 * q[0] + q[1])
+
+        sm = 0
+
+        if dl == 0:
+            quadrupoleElement = (5. / 2.) * nu_c**4 * \
+                (1. - (3. * l_c**2) / (5 * nu_c**2))
+            for p in range(0, 2, 1):
+                sm += gamma**(2 * p) * q[2 * p]
+            return quadrupoleElement * sm
+
+        elif dl == 2:
+            quadrupoleElement = (5. / 2.) * nu_c**4 * (
+                1 - (l_c + 1) ** 2 / (nu_c**2))**0.5 * (1 - (l_c + 2)**2
+                                                        / (nu_c**2))**0.5
+            for p in range(0, 4):
+                sm += gamma**(p) * q[p]
+            return quadrupoleElement * sm
+        else:
+            return 0
 
 
 def NumerovBack(innerLimit, outerLimit, kfun, step, init1, init2):
@@ -1852,7 +1954,7 @@ def _atomLightAtomCoupling(n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2, atom):
     dj = abs(j - j1)
     c1 = 0
     if dl == 1 and (dj < 1.1):
-        c1 = 1  # dipole coupling
+        c1 = 1  # dipole couplings1
     elif (dl == 0 or dl == 2 or dl == 1) and(dj < 2.1):
         c1 = 2  # quadrupole coupling
     else:
@@ -2053,7 +2155,93 @@ def printStateString(n, l, j, s=None):
             l (int): orbital angular momentum
             j (float): total angular momentum
             s (float): (optional) total spin momentum
+    def _getRadialDipoleSemiClassical(self, n, l, j, n1, l1, j1, s=0.5):
+        # get the effective principal number of both states
+        nu = n - self.getQuantumDefect(n, l, j, s=s)
+        nu1 = n1 - self.getQuantumDefect(n1, l1, j1, s=s)
 
+        # get the parameters required to calculate the sum
+        l_c = (l + l1 + 1.) / 2.
+        nu_c = sqrt(nu * nu1)
+
+        delta_nu = nu - nu1
+        delta_l = l1 - l
+
+        # I am not sure if this correct
+
+        gamma = (delta_l * l_c) / nu_c
+
+        if delta_nu == 0:
+            g0 = 1
+            g1 = 0
+            g2 = 0
+            g3 = 0
+        else:
+
+            g0 = (1. / (3. * delta_nu)) * (
+                angerj(delta_nu - 1., - delta_nu)
+                - angerj(delta_nu + 1, - delta_nu))
+            g1 = -(1. / (3. * delta_nu)) * (
+                angerj(delta_nu - 1., - delta_nu)
+                + angerj(delta_nu + 1, -delta_nu))
+            g2 = g0 - np.sin(np.pi * delta_nu) / (np.pi * delta_nu)
+            g3 = (delta_nu / 2.) * g0 + g1
+
+        radial_ME = (3 / 2) * nu_c**2 * (1 - (l_c / nu_c)**(2))**0.5 * \
+            (g0 + gamma * g1 + gamma**2 * g2 + gamma**3 * g3)
+        return float(radial_ME)
+
+    def _getRadialQuadrupoleSemiClassical(self, n, l, j, n1, l1, j1, s=0.5):
+        dl = abs(l1 - l)
+
+        nu = n - self.getQuantumDefect(n, l, j, s=s)
+        nu1 = n1 - self.getQuantumDefect(n1, l1, j1, s=s)
+
+        # get the parameters required to calculate the sum
+        l_c = (l + l1 + 1.) / 2.
+        nu_c = np.sqrt(nu * nu1)
+
+        delta_nu = nu - nu1
+        delta_l = l1 - l
+
+        gamma = (delta_l * l_c) / nu_c
+
+        if delta_nu == 0:
+            q = np.array([1, 0, 0, 0])
+        else:
+
+            g0 = (1. / (3. * delta_nu)) * (
+                angerj(delta_nu - 1., - delta_nu)
+                - angerj(delta_nu + 1, -delta_nu))
+            g1 = -(1. / (3. * delta_nu)) * (
+                angerj(delta_nu - 1., - delta_nu)
+                + angerj(delta_nu + 1, -delta_nu))
+
+            q = np.zeros((4,))
+            q[0] = -(6. / (5. * delta_nu)) * g1
+            q[1] = -(6. / (5. * delta_nu)) * g0 + (6. / 5.) * \
+                np.sin(np.pi * delta_nu) / (np.pi * delta_nu**2)
+            q[2] = -(3. / 4.) * (6. / (5. * delta_nu) * g1 + g0)
+            q[3] = 0.5 * (delta_nu * 0.5 * q[0] + q[1])
+
+        sm = 0
+
+        if dl == 0:
+            quadrupoleElement = (5. / 2.) * nu_c**4 * \
+                (1. - (3. * l_c**2) / (5 * nu_c**2))
+            for p in range(0, 2, 1):
+                sm += gamma**(2 * p) * q[2 * p]
+            return quadrupoleElement * sm
+
+        elif dl == 2:
+            quadrupoleElement = (5. / 2.) * nu_c**4 * (
+                1 - (l_c + 1) ** 2 / (nu_c**2))**0.5 * (1 - (l_c + 2)**2
+                                                        / (nu_c**2))**0.5
+            for p in range(0, 4):
+                sm += gamma**(p) * q[p]
+            return quadrupoleElement * sm
+        else:
+            return 0
         Returns:
             string: label for the state in standard spectroscopic notation
     """

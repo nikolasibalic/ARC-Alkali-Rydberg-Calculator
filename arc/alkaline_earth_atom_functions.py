@@ -2,6 +2,16 @@
 from __future__ import division, print_function, absolute_import
 from .alkali_atom_functions import *
 
+import os
+import numpy as np
+from math import sqrt
+
+import sqlite3
+sqlite3.register_adapter(np.float64, float)
+sqlite3.register_adapter(np.float32, float)
+sqlite3.register_adapter(np.int64, int)
+sqlite3.register_adapter(np.int32, int)
+
 
 class AlkalineEarthAtom(AlkaliAtom):
 
@@ -11,21 +21,25 @@ class AlkalineEarthAtom(AlkaliAtom):
         different l (electron angular momentum)
     """
 
-    quantumDefect = [[[0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [
-                          0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    quantumDefect = [[[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [
-                          0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [
-                          0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [
-                          0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
     """ Contains list of modified Rydberg-Ritz coefficients for calculating
         quantum defects for
@@ -47,16 +61,18 @@ class AlkalineEarthAtom(AlkaliAtom):
         # load dipole matrix elements previously calculated
         data = []
         if (self.dipoleMatrixElementFile != ""):
-            if (preferQuantumDefects == False):
-                self.dipoleMatrixElementFile = "NIST_" + self.dipoleMatrixElementFile
+            if preferQuantumDefects is False:
+                self.dipoleMatrixElementFile = \
+                    "NIST_" + self.dipoleMatrixElementFile
 
             try:
                 data = np.load(os.path.join(self.dataFolder,
                                             self.dipoleMatrixElementFile),
                                encoding='latin1', allow_pickle=True)
             except IOError as e:
-                print("Error reading dipoleMatrixElement File " +
-                      os.path.join(self.dataFolder, self.dipoleMatrixElementFile))
+                print("Error reading dipoleMatrixElement File "
+                      + os.path.join(self.dataFolder,
+                                     self.dipoleMatrixElementFile))
                 print(e)
         # save to SQLite database
         try:
@@ -65,16 +81,17 @@ class AlkalineEarthAtom(AlkaliAtom):
             if (self.c.fetchone()[0] == 0):
                 # create table
                 self.c.execute('''CREATE TABLE IF NOT EXISTS dipoleME
-                 (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED, j1 TINYINT UNSIGNED,
-                 s1 TINYINT UNSIGNED,
-                 n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED, j2 TINYINT UNSIGNED,
-                 s2 TINYINT UNSIGNED,
+                 (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED,
+                 j1 TINYINT UNSIGNED, s1 TINYINT UNSIGNED,
+                 n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED,
+                 j2 TINYINT UNSIGNED, s2 TINYINT UNSIGNED,
                  dme DOUBLE,
                  PRIMARY KEY (n1,l1,j1,s1,n2,l2,j2,s2)
                 ) ''')
                 if (len(data) > 0):
-                    self.c.executemany('INSERT INTO dipoleME VALUES (?,?,?,?,?,?,?,?,?)',
-                                       data)
+                    self.c.executemany(
+                        'INSERT INTO dipoleME VALUES (?,?,?,?,?,?,?,?,?)',
+                        data)
                 self.conn.commit()
         except sqlite3.Error as e:
             print("Error while loading precalculated values into the database")
@@ -84,16 +101,18 @@ class AlkalineEarthAtom(AlkaliAtom):
         # load quadrupole matrix elements previously calculated
         data = []
         if (self.quadrupoleMatrixElementFile != ""):
-            if (preferQuantumDefects == False):
-                self.quadrupoleMatrixElementFile = "NIST_" + self.quadrupoleMatrixElementFile
+            if preferQuantumDefects is False:
+                self.quadrupoleMatrixElementFile = \
+                    "NIST_" + self.quadrupoleMatrixElementFile
             try:
                 data = np.load(os.path.join(self.dataFolder,
                                             self.quadrupoleMatrixElementFile),
                                encoding='latin1', allow_pickle=True)
 
             except IOError as e:
-                print("Error reading quadrupoleMatrixElementFile File " +
-                      os.path.join(self.dataFolder, self.quadrupoleMatrixElementFile))
+                print("Error reading quadrupoleMatrixElementFile File "
+                      + os.path.join(self.dataFolder,
+                                     self.quadrupoleMatrixElementFile))
                 print(e)
         # save to SQLite database
         try:
@@ -102,16 +121,17 @@ class AlkalineEarthAtom(AlkaliAtom):
             if (self.c.fetchone()[0] == 0):
                 # create table
                 self.c.execute('''CREATE TABLE IF NOT EXISTS quadrupoleME
-                 (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED, j1 TINYINT UNSIGNED,
-                 s1 TINYINT UNSIGNED,
-                 n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED, j2 TINYINT UNSIGNED,
-                 s2 TINYINT UNSIGNED,
+                 (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED,
+                 j1 TINYINT UNSIGNED, s1 TINYINT UNSIGNED,
+                 n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED,
+                 j2 TINYINT UNSIGNED, s2 TINYINT UNSIGNED,
                  qme DOUBLE,
                  PRIMARY KEY (n1,l1,j1,s1,n2,l2,j2,s2)
                 ) ''')
                 if (len(data) > 0):
-                    self.c.executemany('INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?,?,?,?)',
-                                       data)
+                    self.c.executemany(
+                        'INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?,?,?,?)',
+                        data)
                 self.conn.commit()
         except sqlite3.Error as e:
             print("Error while loading precalculated values into the database")
@@ -119,11 +139,12 @@ class AlkalineEarthAtom(AlkaliAtom):
             exit()
 
         if (self.levelDataFromNIST == ""):
-            print(
-                "NIST level data file not specified. Only quantum defects will be used.")
+            print("NIST level data file not specified."
+                  " Only quantum defects will be used.")
         else:
-            levels = self._parseLevelsFromNIST(os.path.join(self.dataFolder,
-                                                            self.levelDataFromNIST))
+            levels = self._parseLevelsFromNIST(
+                os.path.join(self.dataFolder, self.levelDataFromNIST)
+            )
             br = 0
             while br < len(levels):
                 self._addEnergy(*levels[br])
@@ -131,13 +152,14 @@ class AlkalineEarthAtom(AlkaliAtom):
             try:
                 self.conn.commit()
             except sqlite3.Error as e:
-                print("Error while loading precalculated values into the database")
+                print("Error while loading precalculated values"
+                      "into the database")
                 print(e)
-                print(n, " ", l, " ", j, " ", s)
                 exit()
 
+        self._readLiteratureValues()
+
     def _parseLevelsFromNIST(self, fileData):
-        print(fileData)
         data = np.loadtxt(fileData, delimiter=",",
                           usecols=(0, 1, 3, 2, 4))
         return data
@@ -156,12 +178,13 @@ class AlkalineEarthAtom(AlkaliAtom):
                 s: spin quantum number
                 energy: energy in cm^-1 relative to the ground state
         """
-        self.c.execute('INSERT INTO energyLevel VALUES (?,?,?,?,?)',
-                       (int(n), int(l), int(j), int(s),
-                        energy * 1.e2
-                        * physical_constants["inverse meter-electron volt relationship"][0]
-                        - self.ionisationEnergy)
-                       )
+        self.c.execute(
+            'INSERT INTO energyLevel VALUES (?,?,?,?,?)',
+            (int(n), int(l), int(j), int(s),
+             energy * 1.e2
+             * physical_constants["inverse meter-electron volt relationship"][0]
+             - self.ionisationEnergy)
+        )
         self.NISTdataLevels = max(self.NISTdataLevels, int(n))
         # saves energy in eV
 
@@ -194,3 +217,198 @@ class AlkalineEarthAtom(AlkaliAtom):
             return energy[0]
         else:
             return 0      # there is no saved energy level measurement
+
+    def getRadialMatrixElement(self,
+                               n1, l1, j1,
+                               n2, l2, j2,
+                               s1=0.5, s2=0.5,
+                               useLiterature=True):
+        """
+            Radial part of the dipole matrix element
+
+            Calculates :math:`\\int \\mathbf{d}r~R_{n_1,l_1,j_1}(r)\\cdot \
+                R_{n_1,l_1,j_1}(r) \\cdot r^3`.
+
+            Args:
+                n1 (int): principal quantum number of state 1
+                l1 (int): orbital angular momentum of state 1
+                j1 (float): total angular momentum of state 1
+                n2 (int): principal quantum number of state 2
+                l2 (int): orbital angular momentum of state 2
+                j2 (float): total angular momentum of state 2
+                s1 (float): optional, total spin angular momentum of state 1.
+                    By default 0.5 for Alkali atoms.
+                s2 (float): optional, total spin angular momentum of state 2.
+                    By default 0.5 for Alkali atoms.
+            Returns:
+                float: dipole matrix element (:math:`a_0 e`).
+        """
+        dl = abs(l1 - l2)
+        dj = abs(j2 - j2)
+        if not(dl == 1 and (dj < 1.1)):
+            return 0
+
+        if (self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2)):
+            temp = n1
+            n1 = n2
+            n2 = temp
+            temp = l1
+            l1 = l2
+            l2 = temp
+            temp = j1
+            j1 = j2
+            j2 = temp
+            temp = s1
+            s1 = s2
+            s2 = temp
+
+        n1 = int(n1)
+        n2 = int(n2)
+        l1 = int(l1)
+        l2 = int(l2)
+
+        # HACK: add literature later
+        """
+        if useLiterature:
+            # is there literature value for this DME? If there is,
+            # use the best one (smalles error)
+            self.c.execute('''SELECT dme FROM literatureDME WHERE
+             n1= ? AND l1 = ? AND j1_x2 = ? AND
+             n2 = ? AND l2 = ? AND j2_x2 = ?
+             ORDER BY errorEstimate ASC''', (n1, l1, j1_x2, n2, l2, j2_x2))
+            answer = self.c.fetchone()
+            if (answer):
+                # we did found literature value
+                return answer[0]
+        """
+        # was this calculated before? If it was, retrieve from memory
+
+        self.c.execute(
+            '''SELECT dme FROM dipoleME WHERE
+            n1= ? AND l1 = ? AND j1 = ? AND s1 = ? AND
+            n2 = ? AND l2 = ? AND j2 = ? AND s2 = ?''',
+            (n1, l1, j1, s1, n2, l2, j2, s2)
+            )
+        dme = self.c.fetchone()
+        if (dme):
+            return dme[0]
+
+        dipoleElement = self._getRadialDipoleSemiClassical(
+            n1, l1, j1, n2, l2, j2, s1=s1, s2=s2
+            )
+
+        self.c.execute(
+            ''' INSERT INTO dipoleME VALUES (?,?,?,?, ?,?,?,?, ?)''',
+            [n1, l1, j1, s1,
+             n2, l2, j2, s2,
+             dipoleElement])
+        self.conn.commit()
+
+        return dipoleElement
+
+    def _readLiteratureValues(self):
+        # clear previously saved results, since literature file
+        # might have been updated in the meantime
+        self.c.execute('''DROP TABLE IF EXISTS literatureDME''')
+        self.c.execute('''SELECT COUNT(*) FROM sqlite_master
+                        WHERE type='table' AND name='literatureDME';''')
+        if (self.c.fetchone()[0] == 0):
+            # create table
+            self.c.execute('''CREATE TABLE IF NOT EXISTS literatureDME
+             (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED, j1 TINYINT UNSIGNED,
+             s1 TINYINT UNSIGNED,
+             n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED, j2 TINYINT UNSIGNED,
+             s2 TINYINT UNSIGNED,
+             dme DOUBLE,
+             typeOfSource TINYINT,
+             errorEstimate DOUBLE,
+             comment TINYTEXT,
+             ref TINYTEXT,
+             refdoi TINYTEXT
+            );''')
+            self.c.execute('''CREATE INDEX compositeIndex
+            ON literatureDME (n1,l1,j1,s1,n2,l2,j2,s2); ''')
+        self.conn.commit()
+
+        if (self.literatureDMEfilename == ""):
+            return 0  # no file specified for literature values
+
+        try:
+            fn = open(os.path.join(self.dataFolder,
+                                   self.literatureDMEfilename), 'r')
+            data = csv.reader(fn, delimiter=";", quotechar='"')
+
+            literatureDME = []
+
+            # i=0 is header
+            i = 0
+            for row in data:
+                if i != 0:
+                    n1 = int(row[0])
+                    l1 = int(row[1])
+                    j1 = int(row[2])
+                    s1 = int(row[3])
+
+                    n2 = int(row[4])
+                    l2 = int(row[5])
+                    j2 = int(row[6])
+                    s2 = int(row[7])
+                    if (
+                        self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2)
+                            ):
+                        temp = n1
+                        n1 = n2
+                        n2 = temp
+                        temp = l1
+                        l1 = l2
+                        l2 = temp
+                        temp = j1
+                        j1 = j2
+                        j2 = temp
+
+                    # convered from reduced DME in J basis (symmetric notation)
+                    # to radial part of dme as it is saved for calculated
+                    # values
+
+                    # To-DO : see in what notation are Strontium literature elements saved
+                    print("To-do (_readLiteratureValues): see in what notation are Sr literature saved (angular part)")
+                    dme = float(row[8]) / (
+                        (-1)**(int(l1 + 0.5 + j2 + 1.))
+                        * sqrt((2. * j1 + 1.) * (2. * j2 + 1.))
+                        * Wigner6j(j1, 1., j2, l2, 0.5, l1)
+                        * (-1)**l1 * sqrt((2.0 * l1 + 1.0) * (2.0 * l2 + 1.0))
+                        * Wigner3j(l1, 1, l2, 0, 0, 0))
+
+                    comment = row[9]
+                    typeOfSource = int(row[10])  # 0 = experiment; 1 = theory
+                    errorEstimate = float(row[11])
+                    ref = row[12]
+                    refdoi = row[13]
+
+                    literatureDME.append([n1, l1, j1, s1,
+                                          n2, l2, j2, s2, dme,
+                                          typeOfSource, errorEstimate,
+                                          comment, ref,
+                                          refdoi])
+                i += 1
+            fn.close()
+
+            try:
+                if i > 0:
+                    self.c.executemany('''INSERT INTO literatureDME
+                                        VALUES (?,?,?,?, ?,?,?,?
+                                                ?,?,?,?,?,?)''',
+                                       literatureDME)
+                    self.conn.commit()
+
+            except sqlite3.Error as e:
+                print("Error while loading precalculated values "
+                      "into the database")
+                print(e)
+                print(literatureDME)
+                exit()
+
+        except IOError as e:
+            print("Error reading literature values File "
+                  + self.literatureDMEfilename)
+            print(e)
