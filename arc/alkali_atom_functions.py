@@ -894,7 +894,8 @@ class AlkaliAtom(object):
 
         return quadrupoleElement
 
-    def getReducedMatrixElementJ_asymmetric(self, n1, l1, j1, n2, l2, j2):
+    def getReducedMatrixElementJ_asymmetric(self, n1, l1, j1, n2, l2, j2,
+                                            s1=0.5, s2=0.5):
         """
             Reduced matrix element in :math:`J` basis, defined in asymmetric
             notation.
@@ -940,13 +941,13 @@ class AlkaliAtom(object):
             temp = j1
             j1 = j2
             j2 = temp
-        return (-1)**(int((l2 + l1 + 3.) / 2. + 0.5 + j2)) *\
+        return (-1)**(int((l2 + l1 + 3.) / 2. + s1 + j2)) *\
             sqrt((2.0 * j2 + 1.0) * (2.0 * l1 + 1.0)) *\
-            Wigner6j(l1, l2, 1, j2, j1, 0.5) *\
+            Wigner6j(l1, l2, 1, j2, j1, s1) *\
             sqrt(float(max(l1, l2)) / (2.0 * l1 + 1.0)) *\
-            self.getRadialMatrixElement(n1, l1, j1, n2, l2, j2)
+            self.getRadialMatrixElement(n1, l1, j1, n2, l2, j2, s1=s1, s2=s2)
 
-    def getReducedMatrixElementL(self, n1, l1, j1, n2, l2, j2):
+    def getReducedMatrixElementL(self, n1, l1, j1, n2, l2, j2, s1=0.5, s2=0.5):
         """
             Reduced matrix element in :math:`L` basis (symmetric notation)
 
@@ -966,9 +967,10 @@ class AlkaliAtom(object):
 
         return (-1)**l1 * sqrt((2.0 * l1 + 1.0) * (2.0 * l2 + 1.0)) *\
             Wigner3j(l1, 1, l2, 0, 0, 0) *\
-            self.getRadialMatrixElement(n1, l1, j1, n2, l2, j2)
+            self.getRadialMatrixElement(n1, l1, j1, n2, l2, j2, s1=s1, s2=s2)
 
-    def getReducedMatrixElementJ(self, n1, l1, j1, n2, l2, j2):
+    def getReducedMatrixElementJ(self, n1, l1, j1, n2, l2, j2,
+                                 s1=0.5, s2=0.5):
         """
             Reduced matrix element in :math:`J` basis (symmetric notation)
 
@@ -986,12 +988,13 @@ class AlkaliAtom(object):
                     :math:`\\langle j || er || j' \\rangle` (:math:`a_0 e`).
         """
 
-        return (-1)**(int(l1 + 0.5 + j2 + 1.)) * sqrt((2. * j1 + 1.)
+        return (-1)**(int(l1 + s1 + j2 + 1.)) * sqrt((2. * j1 + 1.)
                                                       * (2. * j2 + 1.)) *\
-            Wigner6j(j1, 1., j2, l2, 0.5, l1) *\
-            self.getReducedMatrixElementL(n1, l1, j1, n2, l2, j2)
+            Wigner6j(j1, 1., j2, l2, s1, l1) *\
+            self.getReducedMatrixElementL(n1, l1, j1, n2, l2, j2, s1=s1, s2=s2)
 
-    def getDipoleMatrixElement(self, n1, l1, j1, mj1, n2, l2, j2, mj2, q):
+    def getDipoleMatrixElement(self, n1, l1, j1, mj1, n2, l2, j2, mj2, q,
+                               s1=0.5, s2=0.5):
         """
             Dipole matrix element
             :math:`\\langle n_1 l_1 j_1 m_{j_1} |e\\mathbf{r}|\
@@ -1020,12 +1023,13 @@ class AlkaliAtom(object):
             return 0
         return (-1)**(int(j1 - mj1)) *\
             Wigner3j(j1, 1, j2, -mj1, -q, mj2) *\
-            self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2)
+            self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s1=s1, s2=s2)
 
     def getRabiFrequency(self,
                          n1, l1, j1, mj1,
                          n2, l2, j2, q,
-                         laserPower, laserWaist):
+                         laserPower, laserWaist,
+                         s1=0.5, s2=0.5):
         """
             Returns a Rabi frequency for resonantly driven atom in a
             center of TEM00 mode of a driving field
@@ -1048,12 +1052,14 @@ class AlkaliAtom(object):
         electricField = sqrt(2. * maxIntensity / (C_c * epsilon_0))
         return self.getRabiFrequency2(n1, l1, j1, mj1,
                                       n2, l2, j2, q,
-                                      electricField)
+                                      electricField,
+                                      s1=s1, s2=s2)
 
     def getRabiFrequency2(self,
                           n1, l1, j1, mj1,
                           n2, l2, j2, q,
-                          electricFieldAmplitude):
+                          electricFieldAmplitude,
+                          s1=0.5, s2=0.5):
         """
             Returns a Rabi frequency for resonant excitation with a given
             electric field amplitude
@@ -1075,7 +1081,8 @@ class AlkaliAtom(object):
         if abs(mj2) - 0.1 > j2:
             return 0
         dipole = self.getDipoleMatrixElement(n1, l1, j1, mj1,
-                                             n2, l2, j2, mj2, q) *\
+                                             n2, l2, j2, mj2, q,
+                                             s1=s1, s2=s2) *\
             C_e * physical_constants["Bohr radius"][0]
         freq = electricFieldAmplitude * abs(dipole) / hbar
         return freq
@@ -1311,7 +1318,8 @@ class AlkaliAtom(object):
                   + self.quadrupoleMatrixElementFile)
             print(e)
 
-    def getTransitionRate(self, n1, l1, j1, n2, l2, j2, temperature=0.):
+    def getTransitionRate(self, n1, l1, j1, n2, l2, j2, temperature=0.,
+                          s1=0.5, s2=0.5):
         """
             Transition rate due to coupling to vacuum modes
             (black body included)
@@ -1354,13 +1362,15 @@ class AlkaliAtom(object):
         if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2) > 0):
             dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(
                 n1, l1, j1,
-                n2, l2, j2) *\
+                n2, l2, j2,
+                s1=s1, s2=s2) *\
                 C_e * (physical_constants["Bohr radius"][0])
 
         else:
             dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(
                 n2, l2, j2,
-                n1, l1, j1) *\
+                n1, l1, j1,
+                s1=s1, s2=s2) *\
                 C_e * (physical_constants["Bohr radius"][0])
             degeneracyTerm = (2. * j2 + 1.0) / (2. * j1 + 1.)
 
