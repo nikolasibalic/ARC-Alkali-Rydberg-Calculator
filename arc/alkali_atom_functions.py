@@ -743,7 +743,8 @@ class AlkaliAtom(object):
         if not(dl == 1 and (dj < 1.1)):
             return 0
 
-        if (self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2)):
+        if (self.getEnergy(n1, l1, j1, s=s1)
+                > self.getEnergy(n2, l2, j2, s=s2)):
             temp = n1
             n1 = n2
             n2 = temp
@@ -809,7 +810,8 @@ class AlkaliAtom(object):
 
         return dipoleElement
 
-    def getQuadrupoleMatrixElement(self, n1, l1, j1, n2, l2, j2):
+    def getQuadrupoleMatrixElement(self, n1, l1, j1, n2, l2, j2,
+                                   s1=0.5, s2=0.5):
         """
             Radial part of the quadrupole matrix element
 
@@ -1489,7 +1491,7 @@ class AlkaliAtom(object):
 
         return 1. / transitionRate
 
-    def getRadialCoupling(self, n, l, j, n1, l1, j1):
+    def getRadialCoupling(self, n, l, j, n1, l1, j1, s1=0.5, s2=0.5):
         """
             Returns radial part of the coupling between two states (dipole and
             quadrupole interactions only)
@@ -1509,11 +1511,13 @@ class AlkaliAtom(object):
         """
         dl = abs(l - l1)
         if (dl == 1 and abs(j - j1) < 1.1):
-            return self.getRadialMatrixElement(n, l, j, n1, l1, j1)
+            return self.getRadialMatrixElement(n, l, j, n1, l1, j1,
+                                               s1=s1, s2=s2)
         elif (dl == 0 or dl == 1 or dl == 2) and(abs(j - j1) < 2.1):
             # quadrupole coupling
             # return 0.
-            return self.getQuadrupoleMatrixElement(n, l, j, n1, l1, j1)
+            return self.getQuadrupoleMatrixElement(n, l, j, n1, l1, j1,
+                                                   s1=s1, s2=s2)
         else:
             # neglect octopole coupling and higher
             return 0

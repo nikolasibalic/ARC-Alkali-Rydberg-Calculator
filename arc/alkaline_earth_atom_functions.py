@@ -517,6 +517,73 @@ class AlkalineEarthAtom(AlkaliAtom):
         # for this value
         return False, 0, []
 
+    def getQuadrupoleMatrixElement(self, n1, l1, j1, n2, l2, j2,
+                                   s1=0.5, s2=0.5):
+        """
+            Radial part of the quadrupole matrix element
+
+            Calculates :math:`\\int \\mathbf{d}r~R_{n_1,l_1,j_1}(r)\\cdot \
+            R_{n_1,l_1,j_1}(r) \\cdot r^4`.
+            See `Quadrupole calculation example snippet`_  .
+
+            .. _`Quadrupole calculation example snippet`:
+                ./Rydberg_atoms_a_primer.html#Quadrupole-matrix-elements
+
+            Args:
+                n1 (int): principal quantum number of state 1
+                l1 (int): orbital angular momentum of state 1
+                j1 (float): total angular momentum of state 1
+                n2 (int): principal quantum number of state 2
+                l2 (int): orbital angular momentum of state 2
+                j2 (float): total angular momentum of state 2
+
+            Returns:
+                float: quadrupole matrix element (:math:`a_0^2 e`).
+        """
+
+        dl = abs(l1 - l2)
+        dj = abs(j1 - j2)
+        if not ((dl == 0 or dl == 2 or dl == 1)and (dj < 2.1)):
+            return 0
+
+        if (self.getEnergy(n1, l1, j1, s=s1)
+                > self.getEnergy(n2, l2, j2, s=s2)):
+            temp = n1
+            n1 = n2
+            n2 = temp
+            temp = l1
+            l1 = l2
+            l2 = temp
+            temp = j1
+            j1 = j2
+            j2 = temp
+
+        n1 = int(n1)
+        n2 = int(n2)
+        l1 = int(l1)
+        l2 = int(l2)
+
+        # was this calculated before? If yes, retrieve from memory.
+        self.c.execute('''SELECT qme FROM quadrupoleME WHERE
+         n1= ? AND l1 = ? AND j1 = ? AND s1 = ? AND
+         n2 = ? AND l2 = ? AND j2 = ? AND s2= ?''',
+         (n1, l1, j1, s1, n2, l2, j2, s2))
+        qme = self.c.fetchone()
+        if (qme):
+            return qme[0]
+
+        # if it wasn't, calculate now
+
+        quadrupoleElement = self._getRadialQuadrupoleSemiClassical(
+            n1, l1, j1, n2, l2, j2, s1=s1, s2=s2
+        )
+
+        self.c.execute(''' INSERT INTO quadrupoleME VALUES (?,?,?,?, ?,?,?,?, ?)''',
+                       [n1, l1, j1, s1, n2, l2, j2, s2, quadrupoleElement])
+        self.conn.commit()
+
+        return quadrupoleElement
+
     def radialWavefunction(self, l, s, j, stateEnergy,
                            innerLimit, outerLimit, step):
         raise NotImplementedError("radialWavefunction calculation for alkaline"
