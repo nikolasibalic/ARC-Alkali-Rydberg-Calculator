@@ -1359,7 +1359,8 @@ class AlkaliAtom(object):
         degeneracyTerm = 1.
 
         dipoleRadialPart = 0.0
-        if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2) > 0):
+        if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
+                                        s1=s1, s2=s2) > 0):
             dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(
                 n1, l1, j1,
                 n2, l2, j2,
@@ -1375,10 +1376,12 @@ class AlkaliAtom(object):
             degeneracyTerm = (2. * j2 + 1.0) / (2. * j1 + 1.)
 
         omega = abs(
-            2.0 * pi * self.getTransitionFrequency(n1, l1, j1, n2, l2, j2))
+            2.0 * pi * self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
+                                                   s1=s1, s2=s2))
 
         modeOccupationTerm = 0.
-        if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2) < 0):
+        if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
+                                        s1=s1, s2=s2) < 0):
             modeOccupationTerm = 1.
 
         # only possible by absorbing thermal photons ?
@@ -1390,7 +1393,8 @@ class AlkaliAtom(object):
             (3 * pi * epsilon_0 * hbar * C_c**3)\
             * degeneracyTerm * modeOccupationTerm
 
-    def getStateLifetime(self, n, l, j, temperature=0, includeLevelsUpTo=0):
+    def getStateLifetime(self, n, l, j, temperature=0, includeLevelsUpTo=0,
+                         s=0.5):
         """
             Returns the lifetime of the state (in s)
 
@@ -1448,12 +1452,14 @@ class AlkaliAtom(object):
                     jto = j
                     transitionRate += self.getTransitionRate(n, l, j,
                                                              nto, lto, jto,
-                                                             temperature)
+                                                             temperature,
+                                                             s1=s, s2=s)
                 jto = j - 1.
                 if jto > 0:
                     transitionRate += self.getTransitionRate(n, l, j,
                                                              nto, lto, jto,
-                                                             temperature)
+                                                             temperature,
+                                                             s1=s, s2=s)
 
         for nto in xrange(max(self.groundStateN, l + 2),
                           includeLevelsUpTo + 1):
@@ -1463,11 +1469,13 @@ class AlkaliAtom(object):
                 jto = j
                 transitionRate += self.getTransitionRate(n, l, j,
                                                          nto, lto, jto,
-                                                         temperature)
+                                                         temperature,
+                                                         s1=s, s2=s)
             jto = j + 1
             transitionRate += self.getTransitionRate(n, l, j,
                                                      nto, lto, jto,
-                                                     temperature)
+                                                     temperature,
+                                                     s1=s, s2=s)
         # sum over additional states
         for state in self.extraLevels:
             if (abs(j - state[2]) < 1.1) and \
@@ -1475,7 +1483,8 @@ class AlkaliAtom(object):
                 transitionRate += self.getTransitionRate(
                     n, l, j,
                     state[0], state[1], state[2],
-                    temperature
+                    temperature,
+                    s1=s, s2=s
                     )
 
         return 1. / transitionRate
