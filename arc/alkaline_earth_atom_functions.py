@@ -82,15 +82,15 @@ class AlkalineEarthAtom(AlkaliAtom):
                 # create table
                 self.c.execute('''CREATE TABLE IF NOT EXISTS dipoleME
                  (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED,
-                 j1 TINYINT UNSIGNED, s1 TINYINT UNSIGNED,
+                 j1 TINYINT UNSIGNED,
                  n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED,
-                 j2 TINYINT UNSIGNED, s2 TINYINT UNSIGNED,
+                 j2 TINYINT UNSIGNED, s TINYINT UNSIGNED,
                  dme DOUBLE,
-                 PRIMARY KEY (n1,l1,j1,s1,n2,l2,j2,s2)
+                 PRIMARY KEY (n1,l1,j1,n2,l2,j2,s)
                 ) ''')
                 if (len(data) > 0):
                     self.c.executemany(
-                        'INSERT INTO dipoleME VALUES (?,?,?,?,?,?,?,?,?)',
+                        'INSERT INTO dipoleME VALUES (?,?,?,?,?,?,?,?)',
                         data)
                 self.conn.commit()
         except sqlite3.Error as e:
@@ -122,15 +122,15 @@ class AlkalineEarthAtom(AlkaliAtom):
                 # create table
                 self.c.execute('''CREATE TABLE IF NOT EXISTS quadrupoleME
                  (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED,
-                 j1 TINYINT UNSIGNED, s1 TINYINT UNSIGNED,
+                 j1 TINYINT UNSIGNED,
                  n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED,
-                 j2 TINYINT UNSIGNED, s2 TINYINT UNSIGNED,
+                 j2 TINYINT UNSIGNED, s TINYINT UNSIGNED,
                  qme DOUBLE,
-                 PRIMARY KEY (n1,l1,j1,s1,n2,l2,j2,s2)
+                 PRIMARY KEY (n1,l1,j1,n2,l2,j2,s)
                 ) ''')
                 if (len(data) > 0):
                     self.c.executemany(
-                        'INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?,?,?,?)',
+                        'INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?,?,?)',
                         data)
                 self.conn.commit()
         except sqlite3.Error as e:
@@ -221,7 +221,7 @@ class AlkalineEarthAtom(AlkaliAtom):
     def getRadialMatrixElement(self,
                                n1, l1, j1,
                                n2, l2, j2,
-                               s1=0.5, s2=0.5,
+                               s=0.5,
                                useLiterature=True):
         """
             Radial part of the dipole matrix element
@@ -236,9 +236,7 @@ class AlkalineEarthAtom(AlkaliAtom):
                 n2 (int): principal quantum number of state 2
                 l2 (int): orbital angular momentum of state 2
                 j2 (float): total angular momentum of state 2
-                s1 (float): optional, total spin angular momentum of state 1.
-                    By default 0.5 for Alkali atoms.
-                s2 (float): optional, total spin angular momentum of state 2.
+                s (float): optional, total spin angular momentum of state.
                     By default 0.5 for Alkali atoms.
             Returns:
                 float: dipole matrix element (:math:`a_0 e`).
@@ -248,7 +246,7 @@ class AlkalineEarthAtom(AlkaliAtom):
         if not(dl == 1 and (dj < 1.1)):
             return 0
 
-        if (self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2)):
+        if (self.getEnergy(n1, l1, j1, s=s) > self.getEnergy(n2, l2, j2, s=s)):
             temp = n1
             n1 = n2
             n2 = temp
@@ -258,9 +256,6 @@ class AlkalineEarthAtom(AlkaliAtom):
             temp = j1
             j1 = j2
             j2 = temp
-            temp = s1
-            s1 = s2
-            s2 = temp
 
         n1 = int(n1)
         n2 = int(n2)
@@ -271,10 +266,10 @@ class AlkalineEarthAtom(AlkaliAtom):
             # is there literature value for this DME? If there is,
             # use the best one (smalles error)
             self.c.execute('''SELECT dme FROM literatureDME WHERE
-             n1= ? AND l1 = ? AND j1 = ? AND s1 = ? AND
-             n2 = ? AND l2 = ? AND j2 = ? AND s2 = ?
+             n1= ? AND l1 = ? AND j1 = ? AND
+             n2 = ? AND l2 = ? AND j2 = ? AND s = ?
              ORDER BY errorEstimate ASC''',
-             (n1, l1, j1, s1, n2, l2, j2, s2))
+             (n1, l1, j1, n2, l2, j2, s))
 
             answer = self.c.fetchone()
             if (answer):
@@ -284,22 +279,22 @@ class AlkalineEarthAtom(AlkaliAtom):
 
         self.c.execute(
             '''SELECT dme FROM dipoleME WHERE
-            n1= ? AND l1 = ? AND j1 = ? AND s1 = ? AND
-            n2 = ? AND l2 = ? AND j2 = ? AND s2 = ?''',
-            (n1, l1, j1, s1, n2, l2, j2, s2)
+            n1= ? AND l1 = ? AND j1 = ? AND
+            n2 = ? AND l2 = ? AND j2 = ? AND s = ?''',
+            (n1, l1, j1, n2, l2, j2, s)
             )
         dme = self.c.fetchone()
         if (dme):
             return dme[0]
 
         dipoleElement = self._getRadialDipoleSemiClassical(
-            n1, l1, j1, n2, l2, j2, s1=s1, s2=s2
+            n1, l1, j1, n2, l2, j2, s=s
             )
 
         self.c.execute(
-            ''' INSERT INTO dipoleME VALUES (?,?,?,?, ?,?,?,?, ?)''',
-            [n1, l1, j1, s1,
-             n2, l2, j2, s2,
+            ''' INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?, ?)''',
+            [n1, l1, j1,
+             n2, l2, j2, s,
              dipoleElement])
         self.conn.commit()
 
@@ -315,9 +310,8 @@ class AlkalineEarthAtom(AlkaliAtom):
             # create table
             self.c.execute('''CREATE TABLE IF NOT EXISTS literatureDME
              (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED, j1 TINYINT UNSIGNED,
-             s1 TINYINT UNSIGNED,
              n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED, j2 TINYINT UNSIGNED,
-             s2 TINYINT UNSIGNED,
+             s TINYINT UNSIGNED,
              dme DOUBLE,
              typeOfSource TINYINT,
              errorEstimate DOUBLE,
@@ -326,7 +320,7 @@ class AlkalineEarthAtom(AlkaliAtom):
              refdoi TINYTEXT
             );''')
             self.c.execute('''CREATE INDEX compositeIndex
-            ON literatureDME (n1,l1,j1,s1,n2,l2,j2,s2); ''')
+            ON literatureDME (n1,l1,j1,n2,l2,j2,s); ''')
         self.conn.commit()
 
         if (self.literatureDMEfilename == ""):
@@ -352,8 +346,14 @@ class AlkalineEarthAtom(AlkaliAtom):
                     l2 = int(row[5])
                     j2 = int(row[6])
                     s2 = int(row[7])
+                    if (s1 != s2):
+                        raise ValueError("Error reading litearture: database "
+                                         "cannot accept spin changing "
+                                         "transitions")
+                    s = s1
                     if (
-                        self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2)
+                        self.getEnergy(n1, l1, j1, s=s)
+                            > self.getEnergy(n2, l2, j2, s=s)
                             ):
                         temp = n1
                         n1 = n2
@@ -375,9 +375,9 @@ class AlkalineEarthAtom(AlkaliAtom):
                     # To-DO : see in what notation are Strontium literature elements saved
                     print("To-do (_readLiteratureValues): see in what notation are Sr literature saved (angular part)")
                     dme = float(row[8]) / (
-                        (-1)**(int(l1 + 0.5 + j2 + 1.))
+                        (-1)**(int(l1 + s + j2 + 1.))
                         * sqrt((2. * j1 + 1.) * (2. * j2 + 1.))
-                        * Wigner6j(j1, 1., j2, l2, 0.5, l1)
+                        * Wigner6j(j1, 1., j2, l2, s, l1)
                         * (-1)**l1 * sqrt((2.0 * l1 + 1.0) * (2.0 * l2 + 1.0))
                         * Wigner3j(l1, 1, l2, 0, 0, 0))
 
@@ -387,8 +387,8 @@ class AlkalineEarthAtom(AlkaliAtom):
                     ref = row[12]
                     refdoi = row[13]
 
-                    literatureDME.append([n1, l1, j1, s1,
-                                          n2, l2, j2, s2, dme,
+                    literatureDME.append([n1, l1, j1,
+                                          n2, l2, j2, s, dme,
                                           typeOfSource, errorEstimate,
                                           comment, ref,
                                           refdoi])
@@ -398,7 +398,7 @@ class AlkalineEarthAtom(AlkaliAtom):
             try:
                 if i > 0:
                     self.c.executemany('''INSERT INTO literatureDME
-                                        VALUES (?,?,?,?, ?,?,?,?
+                                        VALUES (?,?,?, ?,?,?,?
                                                 ?,?,?,?,?,?)''',
                                        literatureDME)
                     self.conn.commit()
@@ -416,14 +416,15 @@ class AlkalineEarthAtom(AlkaliAtom):
             print(e)
 
     def getLiteratureDME(self,
-                         n1, l1, j1, s1,
-                         n2, l2, j2, s2):
+                         n1, l1, j1,
+                         n2, l2, j2, s=0):
         """
             Returns literature information on requested transition.
 
             Args:
-                n1,l1,j1, s1: one of the states we are coupling
-                n2,l2,j2, s2: the other state to which we are coupling
+                n1,l1,j1: one of the states we are coupling
+                n2,l2,j2: the other state to which we are coupling
+                s: (optional) spin of the state. Default s=0.
 
             Returns:
                 bool, float, [int,float,string,string,string]:
@@ -460,11 +461,10 @@ class AlkalineEarthAtom(AlkaliAtom):
                  * n1
                  * l1
                  * j1
-                 * s1
                  * n2
                  * l2
                  * j2
-                 * s2
+                 * s
                  * dipole matrix element reduced l basis (a.u.)
                  * comment (e.g. where in the paper value appears?)
                  * value origin: 1 for theoretical; 0 for experimental values
@@ -480,7 +480,7 @@ class AlkalineEarthAtom(AlkaliAtom):
 
         """
 
-        if (self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2)):
+        if (self.getEnergy(n1, l1, j1, s=s) > self.getEnergy(n2, l2, j2, s=s)):
             temp = n1
             n1 = n2
             n2 = temp
@@ -490,9 +490,6 @@ class AlkalineEarthAtom(AlkaliAtom):
             temp = j1
             j1 = j2
             j2 = temp
-            temp = s1
-            s1 = s2
-            s2 = temp
 
         # is there literature value for this DME? If there is,
         # use the best one (wit the smallest error)
@@ -502,10 +499,10 @@ class AlkalineEarthAtom(AlkaliAtom):
                      comment ,
                      ref,
                      refdoi FROM literatureDME WHERE
-                     n1= ? AND l1 = ? AND j1 = ? AND s1 = ? AND
-                     n2 = ? AND l2 = ? AND j2 = ? AND s2 = ?
+                     n1= ? AND l1 = ? AND j1 = ? AND
+                     n2 = ? AND l2 = ? AND j2 = ? AND s = ?
                      ORDER BY errorEstimate ASC''',
-                       (n1, l1, j1, s1, n2, l2, j2, s2))
+                       (n1, l1, j1, n2, l2, j2, s))
         answer = self.c.fetchone()
         if (answer):
             # we did found literature value
@@ -517,7 +514,7 @@ class AlkalineEarthAtom(AlkaliAtom):
         return False, 0, []
 
     def getQuadrupoleMatrixElement(self, n1, l1, j1, n2, l2, j2,
-                                   s1=0.5, s2=0.5):
+                                   s=0.5):
         """
             Radial part of the quadrupole matrix element
 
@@ -535,6 +532,8 @@ class AlkalineEarthAtom(AlkaliAtom):
                 n2 (int): principal quantum number of state 2
                 l2 (int): orbital angular momentum of state 2
                 j2 (float): total angular momentum of state 2
+                s (float): optional. Spin of the state. Default 0.5 is for
+                    Alkali
 
             Returns:
                 float: quadrupole matrix element (:math:`a_0^2 e`).
@@ -545,8 +544,8 @@ class AlkalineEarthAtom(AlkaliAtom):
         if not ((dl == 0 or dl == 2 or dl == 1)and (dj < 2.1)):
             return 0
 
-        if (self.getEnergy(n1, l1, j1, s=s1)
-                > self.getEnergy(n2, l2, j2, s=s2)):
+        if (self.getEnergy(n1, l1, j1, s=s)
+                > self.getEnergy(n2, l2, j2, s=s)):
             temp = n1
             n1 = n2
             n2 = temp
@@ -564,9 +563,9 @@ class AlkalineEarthAtom(AlkaliAtom):
 
         # was this calculated before? If yes, retrieve from memory.
         self.c.execute('''SELECT qme FROM quadrupoleME WHERE
-            n1= ? AND l1 = ? AND j1 = ? AND s1 = ? AND
-            n2 = ? AND l2 = ? AND j2 = ? AND s2= ?''',
-            (n1, l1, j1, s1, n2, l2, j2, s2))
+            n1= ? AND l1 = ? AND j1 = ? AND
+            n2 = ? AND l2 = ? AND j2 = ? AND s= ?''',
+            (n1, l1, j1, n2, l2, j2, s))
         qme = self.c.fetchone()
         if (qme):
             return qme[0]
@@ -574,11 +573,11 @@ class AlkalineEarthAtom(AlkaliAtom):
         # if it wasn't, calculate now
 
         quadrupoleElement = self._getRadialQuadrupoleSemiClassical(
-            n1, l1, j1, n2, l2, j2, s1=s1, s2=s2
+            n1, l1, j1, n2, l2, j2, s=s
         )
 
-        self.c.execute(''' INSERT INTO quadrupoleME VALUES (?,?,?,?, ?,?,?,?, ?)''',
-                       [n1, l1, j1, s1, n2, l2, j2, s2, quadrupoleElement])
+        self.c.execute(''' INSERT INTO quadrupoleME VALUES (?,?,?, ?,?,?,?, ?)''',
+                       [n1, l1, j1, n2, l2, j2, s, quadrupoleElement])
         self.conn.commit()
 
         return quadrupoleElement
