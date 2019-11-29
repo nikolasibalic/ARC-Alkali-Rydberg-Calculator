@@ -2160,7 +2160,7 @@ def compositeState(s1, s2):
     return a
 
 
-def printState(n, l, j):
+def printState(n, l, j, s=None):
     """
         Prints state spectroscopic label for numeric :math:`n`,
         :math:`l`, :math:`s` label of the state
@@ -2169,9 +2169,9 @@ def printState(n, l, j):
             n (int): principal quantum number
             l (int): orbital angular momentum
             j (float): total angular momentum
+            s (float): (optional) total spin momentum
     """
-
-    print(n, " ", printStateLetter(l), (" %.0d/2" % (j * 2)))
+    print(printStateString(n, l, j, s=s))
 
 
 def printStateString(n, l, j, s=None):
@@ -2195,8 +2195,12 @@ def printStateString(n, l, j, s=None):
     if s is None:
         return str(n) + " " + printStateLetter(l) + (" %.0d/2" % (j * 2))
     else:
+        if abs(floor(j) - j) < 0.1:
+            subscript = " %.0d" % (j)
+        else:
+            subscript = " %.0d/2" % (j * 2)
         return str(n) + (" %d" % (2 * s + 1)) + \
-            printStateLetter(l) + (" %.0d/2" % (j * 2))
+            printStateLetter(l) + subscript
 
 
 def printStateStringLatex(n, l, j, s=None):
