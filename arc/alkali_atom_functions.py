@@ -1657,7 +1657,8 @@ class AlkaliAtom(object):
                     errorEstimate , comment , reference, reference DOI]
                     upon success to find a literature value for dipole matrix
                     element:
-                    * typeOfSource=1 if the value is theoretical
+
+                    * typeOfSource=1 if the value is theoretical \
                         calculation; otherwise, if it is experimentally \
                         obtained value typeOfSource=0
                     * comment details where within the publication the \

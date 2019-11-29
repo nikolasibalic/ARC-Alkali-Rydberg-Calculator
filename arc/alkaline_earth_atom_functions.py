@@ -14,6 +14,30 @@ sqlite3.register_adapter(np.int32, int)
 
 
 class AlkalineEarthAtom(AlkaliAtom):
+    """
+        Implements general calculations for Alkaline Earths, and other divalent
+        atoms.
+
+        This class inherits :obj:`arc.alkali_atom_functions.AlkaliAtom` .
+        Most of the methods can be directly used from there, and the source
+        for them is provided in the base class. Few methods that are
+        implemented differently for Alkaline Earths are defined here.
+
+        Args:
+            preferQuantumDefects (bool):
+                Use quantum defects for energy level calculations. If False,
+                uses NIST ASD values where available. If True, uses quantum
+                defects for energy calculations for principal quantum numbers
+                equal or above :obj:`minQuantumDefectN` which is specified for
+                each element separately. For principal quantum numbers below
+                this value, NIST ASD values are used, since quantum defects
+                don't reproduce well low-lying states. Default is True.
+            cpp_numerov (bool):
+                This switch for Alkaline Earths at the moment doesn't have
+                any effect since wavefunction calculation function is not
+                implemented (d.m.e. and quadrupole matrix elements are
+                calculated directly semiclassically)
+    """
 
     modelPotential_coef = dict()
     """
@@ -439,14 +463,15 @@ class AlkalineEarthAtom(AlkaliAtom):
                     errorEstimate , comment , reference, reference DOI]
                     upon success to find a literature value for dipole matrix
                     element:
-                        * typeOfSource=1 if the value is theoretical
-                         calculation; otherwise, if it is experimentally \
-                         obtained value typeOfSource=0
-                        * comment details where within the publication the \
-                         value can be found
-                        * errorEstimate is absolute error estimate
-                        * reference is human-readable formatted reference
-                        * reference DOI provides link to the publication.
+
+                    * typeOfSource=1 if the value is theoretical\
+                        calculation; otherwise, if it is experimentally \
+                        obtained value typeOfSource=0
+                    * comment details where within the publication the \
+                        value can be found
+                    * errorEstimate is absolute error estimate
+                    * reference is human-readable formatted reference
+                    * reference DOI provides link to the publication.
 
                     **Boolean value is False**, followed by zero and an empty
                     array if no literature value for dipole matrix element is
@@ -458,19 +483,19 @@ class AlkalineEarthAtom(AlkaliAtom):
                 values. Each row in the file consists of one literature entry,
                 that has information in the following order:
 
-                 * n1
-                 * l1
-                 * j1
-                 * n2
-                 * l2
-                 * j2
-                 * s
-                 * dipole matrix element reduced l basis (a.u.)
-                 * comment (e.g. where in the paper value appears?)
-                 * value origin: 1 for theoretical; 0 for experimental values
-                 * accuracy
-                 * source (human readable formatted citation)
-                 * doi number (e.g. 10.1103/RevModPhys.82.2313 )
+                * n1
+                * l1
+                * j1
+                * n2
+                * l2
+                * j2
+                * s
+                * dipole matrix element reduced l basis (a.u.)
+                * comment (e.g. where in the paper value appears?)
+                * value origin: 1 for theoretical; 0 for experimental values
+                * accuracy
+                * source (human readable formatted citation)
+                * doi number (e.g. 10.1103/RevModPhys.82.2313 )
 
                 If there are several values for a given transition, program
                 outputs the value that has smallest error (under column
@@ -584,21 +609,33 @@ class AlkalineEarthAtom(AlkaliAtom):
 
     def radialWavefunction(self, l, s, j, stateEnergy,
                            innerLimit, outerLimit, step):
+        """
+            Not implemented for Alkaline earths
+        """
         raise NotImplementedError("radialWavefunction calculation for alkaline"
                                   " earths has not been implemented yet.")
         return
 
     def effectiveCharge(self, l, r):
+        """
+            Not implemented for Alkaline earths
+        """
         raise NotImplementedError("effectiveCharge calculation for alkaline"
                                   " earths has not been implemented yet.")
         return
 
     def corePotential(self, l, r):
+        """
+            Not implemented for Alkaline earths
+        """
         raise NotImplementedError("corePotential calculation for alkaline"
                                   " earths has not been implemented yet.")
         return
 
     def potential(self, l, s, j, r):
+        """
+            Not implemented for Alkaline earths
+        """
         raise NotImplementedError("potential calculation for alkaline"
                                   " earths has not been implemented yet.")
         return
