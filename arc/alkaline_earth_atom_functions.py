@@ -267,20 +267,19 @@ class AlkalineEarthAtom(AlkaliAtom):
         l1 = int(l1)
         l2 = int(l2)
 
-        # HACK: add literature later
-        """
         if useLiterature:
             # is there literature value for this DME? If there is,
             # use the best one (smalles error)
             self.c.execute('''SELECT dme FROM literatureDME WHERE
-             n1= ? AND l1 = ? AND j1_x2 = ? AND
-             n2 = ? AND l2 = ? AND j2_x2 = ?
-             ORDER BY errorEstimate ASC''', (n1, l1, j1_x2, n2, l2, j2_x2))
+             n1= ? AND l1 = ? AND j1 = ? AND s1 = ? AND
+             n2 = ? AND l2 = ? AND j2 = ? AND s2 = ?
+             ORDER BY errorEstimate ASC''',
+             (n1, l1, j1, s1, n2, l2, j2, s2))
+
             answer = self.c.fetchone()
             if (answer):
                 # we did found literature value
                 return answer[0]
-        """
         # was this calculated before? If it was, retrieve from memory
 
         self.c.execute(
@@ -565,9 +564,9 @@ class AlkalineEarthAtom(AlkaliAtom):
 
         # was this calculated before? If yes, retrieve from memory.
         self.c.execute('''SELECT qme FROM quadrupoleME WHERE
-         n1= ? AND l1 = ? AND j1 = ? AND s1 = ? AND
-         n2 = ? AND l2 = ? AND j2 = ? AND s2= ?''',
-         (n1, l1, j1, s1, n2, l2, j2, s2))
+            n1= ? AND l1 = ? AND j1 = ? AND s1 = ? AND
+            n2 = ? AND l2 = ? AND j2 = ? AND s2= ?''',
+            (n1, l1, j1, s1, n2, l2, j2, s2))
         qme = self.c.fetchone()
         if (qme):
             return qme[0]
