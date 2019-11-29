@@ -1647,7 +1647,6 @@ class AlkaliAtom(object):
 
             Returns:
                 bool, float, [int,float,string,string,string]:
-
                     hasLiteratureValue?, dme, referenceInformation
 
                     **If Boolean value is True**, a literature value for
@@ -1658,14 +1657,14 @@ class AlkaliAtom(object):
                     errorEstimate , comment , reference, reference DOI]
                     upon success to find a literature value for dipole matrix
                     element:
-                        * typeOfSource=1 if the value is theoretical
-                         calculation; otherwise, if it is experimentally \
-                         obtained value typeOfSource=0
-                        * comment details where within the publication the \
-                         value can be found
-                        * errorEstimate is absolute error estimate
-                        * reference is human-readable formatted reference
-                        * reference DOI provides link to the publication.
+                    * typeOfSource=1 if the value is theoretical
+                        calculation; otherwise, if it is experimentally \
+                        obtained value typeOfSource=0
+                    * comment details where within the publication the \
+                        value can be found
+                    * errorEstimate is absolute error estimate
+                    * reference is human-readable formatted reference
+                    * reference DOI provides link to the publication.
 
                     **Boolean value is False**, followed by zero and an empty
                     array if no literature value for dipole matrix element is
@@ -1677,18 +1676,18 @@ class AlkaliAtom(object):
                 values. Each row in the file consists of one literature entry,
                 that has information in the following order:
 
-                 * n1
-                 * l1
-                 * j1
-                 * n2
-                 * l2
-                 * j2
-                 * dipole matrix element reduced l basis (a.u.)
-                 * comment (e.g. where in the paper value appears?)
-                 * value origin: 1 for theoretical; 0 for experimental values
-                 * accuracy
-                 * source (human readable formatted citation)
-                 * doi number (e.g. 10.1103/RevModPhys.82.2313 )
+                * n1
+                * l1
+                * j1
+                * n2
+                * l2
+                * j2
+                * dipole matrix element reduced l basis (a.u.)
+                * comment (e.g. where in the paper value appears?)
+                * value origin: 1 for theoretical; 0 for experimental values
+                * accuracy
+                * source (human readable formatted citation)
+                * doi number (e.g. 10.1103/RevModPhys.82.2313 )
 
                 If there are several values for a given transition, program
                 outputs the value that has smallest error (under column
@@ -2188,93 +2187,7 @@ def printStateString(n, l, j, s=None):
             l (int): orbital angular momentum
             j (float): total angular momentum
             s (float): (optional) total spin momentum
-    def _getRadialDipoleSemiClassical(self, n, l, j, n1, l1, j1, s=0.5):
-        # get the effective principal number of both states
-        nu = n - self.getQuantumDefect(n, l, j, s=s)
-        nu1 = n1 - self.getQuantumDefect(n1, l1, j1, s=s)
 
-        # get the parameters required to calculate the sum
-        l_c = (l + l1 + 1.) / 2.
-        nu_c = sqrt(nu * nu1)
-
-        delta_nu = nu - nu1
-        delta_l = l1 - l
-
-        # I am not sure if this correct
-
-        gamma = (delta_l * l_c) / nu_c
-
-        if delta_nu == 0:
-            g0 = 1
-            g1 = 0
-            g2 = 0
-            g3 = 0
-        else:
-
-            g0 = (1. / (3. * delta_nu)) * (
-                angerj(delta_nu - 1., - delta_nu)
-                - angerj(delta_nu + 1, - delta_nu))
-            g1 = -(1. / (3. * delta_nu)) * (
-                angerj(delta_nu - 1., - delta_nu)
-                + angerj(delta_nu + 1, -delta_nu))
-            g2 = g0 - np.sin(np.pi * delta_nu) / (np.pi * delta_nu)
-            g3 = (delta_nu / 2.) * g0 + g1
-
-        radial_ME = (3 / 2) * nu_c**2 * (1 - (l_c / nu_c)**(2))**0.5 * \
-            (g0 + gamma * g1 + gamma**2 * g2 + gamma**3 * g3)
-        return float(radial_ME)
-
-    def _getRadialQuadrupoleSemiClassical(self, n, l, j, n1, l1, j1, s=0.5):
-        dl = abs(l1 - l)
-
-        nu = n - self.getQuantumDefect(n, l, j, s=s)
-        nu1 = n1 - self.getQuantumDefect(n1, l1, j1, s=s)
-
-        # get the parameters required to calculate the sum
-        l_c = (l + l1 + 1.) / 2.
-        nu_c = np.sqrt(nu * nu1)
-
-        delta_nu = nu - nu1
-        delta_l = l1 - l
-
-        gamma = (delta_l * l_c) / nu_c
-
-        if delta_nu == 0:
-            q = np.array([1, 0, 0, 0])
-        else:
-
-            g0 = (1. / (3. * delta_nu)) * (
-                angerj(delta_nu - 1., - delta_nu)
-                - angerj(delta_nu + 1, -delta_nu))
-            g1 = -(1. / (3. * delta_nu)) * (
-                angerj(delta_nu - 1., - delta_nu)
-                + angerj(delta_nu + 1, -delta_nu))
-
-            q = np.zeros((4,))
-            q[0] = -(6. / (5. * delta_nu)) * g1
-            q[1] = -(6. / (5. * delta_nu)) * g0 + (6. / 5.) * \
-                np.sin(np.pi * delta_nu) / (np.pi * delta_nu**2)
-            q[2] = -(3. / 4.) * (6. / (5. * delta_nu) * g1 + g0)
-            q[3] = 0.5 * (delta_nu * 0.5 * q[0] + q[1])
-
-        sm = 0
-
-        if dl == 0:
-            quadrupoleElement = (5. / 2.) * nu_c**4 * \
-                (1. - (3. * l_c**2) / (5 * nu_c**2))
-            for p in range(0, 2, 1):
-                sm += gamma**(2 * p) * q[2 * p]
-            return quadrupoleElement * sm
-
-        elif dl == 2:
-            quadrupoleElement = (5. / 2.) * nu_c**4 * (
-                1 - (l_c + 1) ** 2 / (nu_c**2))**0.5 * (1 - (l_c + 2)**2
-                                                        / (nu_c**2))**0.5
-            for p in range(0, 4):
-                sm += gamma**(p) * q[p]
-            return quadrupoleElement * sm
-        else:
-            return 0
         Returns:
             string: label for the state in standard spectroscopic notation
     """
@@ -2289,8 +2202,6 @@ def printStateStringLatex(n, l, j, s=None):
     """
         Returns latex code for spectroscopic label for numeric :math:`n`,
         :math:`l`, :math:`j` label of the state.
-
-
 
         Args:
             n (int): principal quantum number
