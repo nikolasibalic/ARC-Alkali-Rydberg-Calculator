@@ -98,21 +98,23 @@ class AlkaliAtom(object):
     # ALL PARAMETERS ARE IN ATOMIC UNITS (Hatree)
     alpha = physical_constants["fine-structure constant"][0]
 
+    #: Model potential parameters fitted from experimental observations for
+    #: different l (electron angular momentum)
     a1, a2, a3, a4, rc = [0], [0], [0], [0], [0]
-    """
-        Model potential parameters fitted from experimental observations for
-        different l (electron angular momentum)
-    """
+
     alphaC = 0.0    #: Core polarizability
     Z = 0.0       #: Atomic number
 
-    # state energies from NIST values
-    # sEnergy [n,l] = state energy for n, l, j = l-1/2
-    # sEnergy [l,n] = state energy for j = l+1/2
+    #: state energies from NIST values
+    #: sEnergy [n,l] = state energy for n, l, j = l-1/2
+    #: sEnergy [l,n] = state energy for j = l+1/2
     sEnergy = 0
     NISTdataLevels = 0
     scaledRydbergConstant = 0  # : in eV
 
+    #: Contains list of modified Rydberg-Ritz coefficients for calculating
+    #: quantum defects for [[ :math:`S_{1/2},P_{1/2},D_{3/2},F_{5/2}`],
+    #: [ :math:`S_{1/2},P_{3/2},D_{5/2},F_{7/2}`]]."""
     quantumDefect = [[[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -123,9 +125,6 @@ class AlkaliAtom(object):
                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
-    """ Contains list of modified Rydberg-Ritz coefficients for calculating
-        quantum defects for [[ :math:`S_{1/2},P_{1/2},D_{3/2},F_{5/2}`],
-        [ :math:`S_{1/2},P_{3/2},D_{5/2},F_{7/2}`]]."""
 
     #: location of stored NIST values of measured energy levels in eV
     levelDataFromNIST = ""
@@ -138,29 +137,22 @@ class AlkaliAtom(object):
 
     # now additional literature sources of dipole matrix elements
 
+    #: Filename of the additional literature source values of dipole matrix
+    #: elements.
+    #: These additional values should be saved as reduced dipole matrix
+    #: elements in J basis.
     literatureDMEfilename = ""
-    """
-        Filename of the additional literature source values of dipole matrix
-        elements.
 
-        These additional values should be saved as reduced dipole matrix
-        elements in J basis.
-
-    """
-
-    """
-        levels that are for smaller principal quantum number (n) than ground
-        level, but are above in energy due to angular part
-    """
+    #: levels that are for smaller principal quantum number (n) than ground
+    #: level, but are above in energy due to angular part
     extraLevels = []
 
-    #: principal quantum number for the ground state
+
+     #: principal quantum number for the ground state
     groundStateN = 0
 
-    """
-        swich - should the wavefunction be calculated with Numerov algorithm
-        implemented in C++
-    """
+    #: swich - should the wavefunction be calculated with Numerov algorithm
+    #: implemented in C++
     cpp_numerov = True
 
     mass = 0.  #: atomic mass in kg
@@ -170,10 +162,9 @@ class AlkaliAtom(object):
     meltingPoint = 0  #: melting point of the element at standard conditions
 
     preferQuantumDefects = False
-    """
-        minimal quantum number for which quantum defects can be used;
-        uses measured energy levels otherwise
-    """
+
+    #: minimal quantum number for which quantum defects can be used;
+    #: uses measured energy levels otherwise
     minQuantumDefectN = 0
 
     # SQLite connection and cursor
@@ -716,7 +707,7 @@ class AlkaliAtom(object):
     def getRadialMatrixElement(self,
                                n1, l1, j1,
                                n2, l2, j2,
-                               s1=0.5, s2=0.5,
+                               s=0.5,
                                useLiterature=True):
         """
             Radial part of the dipole matrix element
@@ -731,10 +722,9 @@ class AlkaliAtom(object):
                 n2 (int): principal quantum number of state 2
                 l2 (int): orbital angular momentum of state 2
                 j2 (float): total angular momentum of state 2
-                s1 (float): optional, total spin angular momentum of state 1.
+                s (float): optional, total spin angular momentum of state 1.
                     By default 0.5 for Alkali atoms.
-                s2 (float): optional, total spin angular momentum of state 2.
-                    By default 0.5 for Alkali atoms.
+
             Returns:
                 float: dipole matrix element (:math:`a_0 e`).
         """
@@ -743,8 +733,8 @@ class AlkaliAtom(object):
         if not(dl == 1 and (dj < 1.1)):
             return 0
 
-        if (self.getEnergy(n1, l1, j1, s=s1)
-                > self.getEnergy(n2, l2, j2, s=s2)):
+        if (self.getEnergy(n1, l1, j1, s=s)
+                > self.getEnergy(n2, l2, j2, s=s)):
             temp = n1
             n1 = n2
             n2 = temp
@@ -811,7 +801,7 @@ class AlkaliAtom(object):
         return dipoleElement
 
     def getQuadrupoleMatrixElement(self, n1, l1, j1, n2, l2, j2,
-                                   s1=0.5, s2=0.5):
+                                   s=0.5):
         """
             Radial part of the quadrupole matrix element
 
@@ -829,6 +819,8 @@ class AlkaliAtom(object):
                 n2 (int): principal quantum number of state 2
                 l2 (int): orbital angular momentum of state 2
                 j2 (float): total angular momentum of state 2
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
 
             Returns:
                 float: quadrupole matrix element (:math:`a_0^2 e`).
@@ -839,7 +831,7 @@ class AlkaliAtom(object):
         if not ((dl == 0 or dl == 2 or dl == 1)and (dj < 2.1)):
             return 0
 
-        if (self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2)):
+        if (self.getEnergy(n1, l1, j1, s=s) > self.getEnergy(n2, l2, j2, s=s)):
             temp = n1
             n1 = n2
             n2 = temp
@@ -897,7 +889,7 @@ class AlkaliAtom(object):
         return quadrupoleElement
 
     def getReducedMatrixElementJ_asymmetric(self, n1, l1, j1, n2, l2, j2,
-                                            s1=0.5, s2=0.5):
+                                            s=0.5):
         """
             Reduced matrix element in :math:`J` basis, defined in asymmetric
             notation.
@@ -923,6 +915,8 @@ class AlkaliAtom(object):
                 n2 (int): principal quantum number of state 2
                 l2 (int): orbital angular momentum of state 2
                 j2 (float): total angular momentum of state 2
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
 
             Returns:
                 float:
@@ -943,13 +937,13 @@ class AlkaliAtom(object):
             temp = j1
             j1 = j2
             j2 = temp
-        return (-1)**(int((l2 + l1 + 3.) / 2. + s1 + j2)) *\
+        return (-1)**(int((l2 + l1 + 3.) / 2. + s + j2)) *\
             sqrt((2.0 * j2 + 1.0) * (2.0 * l1 + 1.0)) *\
-            Wigner6j(l1, l2, 1, j2, j1, s1) *\
+            Wigner6j(l1, l2, 1, j2, j1, s) *\
             sqrt(float(max(l1, l2)) / (2.0 * l1 + 1.0)) *\
-            self.getRadialMatrixElement(n1, l1, j1, n2, l2, j2, s1=s1, s2=s2)
+            self.getRadialMatrixElement(n1, l1, j1, n2, l2, j2, s=s)
 
-    def getReducedMatrixElementL(self, n1, l1, j1, n2, l2, j2, s1=0.5, s2=0.5):
+    def getReducedMatrixElementL(self, n1, l1, j1, n2, l2, j2, s=0.5):
         """
             Reduced matrix element in :math:`L` basis (symmetric notation)
 
@@ -969,10 +963,10 @@ class AlkaliAtom(object):
 
         return (-1)**l1 * sqrt((2.0 * l1 + 1.0) * (2.0 * l2 + 1.0)) *\
             Wigner3j(l1, 1, l2, 0, 0, 0) *\
-            self.getRadialMatrixElement(n1, l1, j1, n2, l2, j2, s1=s1, s2=s2)
+            self.getRadialMatrixElement(n1, l1, j1, n2, l2, j2, s=s)
 
     def getReducedMatrixElementJ(self, n1, l1, j1, n2, l2, j2,
-                                 s1=0.5, s2=0.5):
+                                 s=0.5):
         """
             Reduced matrix element in :math:`J` basis (symmetric notation)
 
@@ -983,6 +977,8 @@ class AlkaliAtom(object):
                 n2 (int): principal quantum number of state 2
                 l2 (int): orbital angular momentum of state 2
                 j2 (float): total angular momentum of state 2
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
 
             Returns:
                 float:
@@ -990,18 +986,26 @@ class AlkaliAtom(object):
                     :math:`\\langle j || er || j' \\rangle` (:math:`a_0 e`).
         """
 
-        return (-1)**(int(l1 + s1 + j2 + 1.)) * sqrt((2. * j1 + 1.)
+        return (-1)**(int(l1 + s + j2 + 1.)) * sqrt((2. * j1 + 1.)
                                                       * (2. * j2 + 1.)) *\
-            Wigner6j(j1, 1., j2, l2, s1, l1) *\
-            self.getReducedMatrixElementL(n1, l1, j1, n2, l2, j2, s1=s1, s2=s2)
+            Wigner6j(j1, 1., j2, l2, s, l1) *\
+            self.getReducedMatrixElementL(n1, l1, j1, n2, l2, j2, s=s)
 
     def getDipoleMatrixElement(self, n1, l1, j1, mj1, n2, l2, j2, mj2, q,
-                               s1=0.5, s2=0.5):
+                               s=0.5):
         """
             Dipole matrix element
             :math:`\\langle n_1 l_1 j_1 m_{j_1} |e\\mathbf{r}|\
             n_2 l_2 j_2 m_{j_2}\\rangle`
             in units of :math:`a_0 e`
+
+            Args:
+                n1. l1, j1, mj1: principal, orbital, total angular momentum,
+                    and projection of total angular momenutum for state 1
+                n2. l2, j2, mj2: principal, orbital, total angular momentum,
+                    and projection of total angular momenutum for state 2
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
 
             Returns:
                 float: dipole matrix element( :math:`a_0 e`)
@@ -1025,13 +1029,13 @@ class AlkaliAtom(object):
             return 0
         return (-1)**(int(j1 - mj1)) *\
             Wigner3j(j1, 1, j2, -mj1, -q, mj2) *\
-            self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s1=s1, s2=s2)
+            self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
 
     def getRabiFrequency(self,
                          n1, l1, j1, mj1,
                          n2, l2, j2, q,
                          laserPower, laserWaist,
-                         s1=0.5, s2=0.5):
+                         s=0.5):
         """
             Returns a Rabi frequency for resonantly driven atom in a
             center of TEM00 mode of a driving field
@@ -1043,7 +1047,8 @@ class AlkaliAtom(object):
                     :math:`\\pi` and :math:`\\sigma^+` respectively)
                 laserPower : laser power in units of W
                 laserWaist : laser :math:`1/e^2` waist (radius) in units of m
-
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
 
             Returns:
                 float:
@@ -1055,13 +1060,13 @@ class AlkaliAtom(object):
         return self.getRabiFrequency2(n1, l1, j1, mj1,
                                       n2, l2, j2, q,
                                       electricField,
-                                      s1=s1, s2=s2)
+                                      s=s)
 
     def getRabiFrequency2(self,
                           n1, l1, j1, mj1,
                           n2, l2, j2, q,
                           electricFieldAmplitude,
-                          s1=0.5, s2=0.5):
+                          s=0.5):
         """
             Returns a Rabi frequency for resonant excitation with a given
             electric field amplitude
@@ -1073,6 +1078,8 @@ class AlkaliAtom(object):
                     :math:`\\pi` and :math:`\\sigma^+` respectively)
                 electricFieldAmplitude : amplitude of electric field
                     driving (V/m)
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
 
             Returns:
                 float:
@@ -1084,12 +1091,12 @@ class AlkaliAtom(object):
             return 0
         dipole = self.getDipoleMatrixElement(n1, l1, j1, mj1,
                                              n2, l2, j2, mj2, q,
-                                             s1=s1, s2=s2) *\
+                                             s=s) *\
             C_e * physical_constants["Bohr radius"][0]
         freq = electricFieldAmplitude * abs(dipole) / hbar
         return freq
 
-    def getC6term(self, n, l, j, n1, l1, j1, n2, l2, j2):
+    def getC6term(self, n, l, j, n1, l1, j1, n2, l2, j2, s=0.5):
         """
             C6 interaction term for the given two pair-states
 
@@ -1107,6 +1114,8 @@ class AlkaliAtom(object):
                 n2 (int): principal quantum number
                 l2 (int): orbital angular momentum
                 j2 (float): total angular momentum
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
 
             Returns:
                 float:  :math:`C_6 = \\frac{1}{4\\pi\\varepsilon_0} \
@@ -1163,15 +1172,15 @@ class AlkaliAtom(object):
                     https://doi.org/10.1103/PhysRevA.77.032723
 
         """
-        d1 = self.getRadialMatrixElement(n, l, j, n1, l1, j1)
-        d2 = self.getRadialMatrixElement(n, l, j, n2, l2, j2)
+        d1 = self.getRadialMatrixElement(n, l, j, n1, l1, j1, s=s)
+        d2 = self.getRadialMatrixElement(n, l, j, n2, l2, j2, s=s)
         d1d2 = 1 / (4.0 * pi * epsilon_0) * d1 * d2 * C_e**2 *\
             (physical_constants["Bohr radius"][0])**2
-        return -d1d2**2 / (C_e * (self.getEnergy(n1, l1, j1)
-                                  + self.getEnergy(n2, l2, j2)
-                                  - 2 * self.getEnergy(n, l, j)))
+        return -d1d2**2 / (C_e * (self.getEnergy(n1, l1, j1, s=s)
+                                  + self.getEnergy(n2, l2, j2, s=s)
+                                  - 2 * self.getEnergy(n, l, j, s=s)))
 
-    def getC3term(self, n, l, j, n1, l1, j1, n2, l2, j2):
+    def getC3term(self, n, l, j, n1, l1, j1, n2, l2, j2, s=0.5):
         """
             C3 interaction term for the given two pair-states
 
@@ -1189,6 +1198,8 @@ class AlkaliAtom(object):
                 n2 (int): principal quantum number
                 l2 (int): orbital angular momentum
                 j2 (float): total angular momentum
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
 
             Returns:
                 float:  :math:`C_3 = \\frac{\\langle n,l,j |er\
@@ -1196,14 +1207,14 @@ class AlkaliAtom(object):
                 \\langle n,l,j |er|n_2,l_2,j_2\\rangle}{4\\pi\\varepsilon_0}`
                 (:math:`h` Hz m :math:`{}^3`).
         """
-        d1 = self.getRadialMatrixElement(n, l, j, n1, l1, j1)
-        d2 = self.getRadialMatrixElement(n, l, j, n2, l2, j2)
+        d1 = self.getRadialMatrixElement(n, l, j, n1, l1, j1, s=s)
+        d2 = self.getRadialMatrixElement(n, l, j, n2, l2, j2, s=s)
         d1d2 = 1 / (4.0 * pi * epsilon_0) * d1 * d2 * C_e**2 *\
             (physical_constants["Bohr radius"][0])**2
         return d1d2
 
     def getEnergyDefect(self, n, l, j, n1, l1, j1, n2, l2, j2,
-                        s=0.5, s1=0.5, s2=0.5):
+                        s=0.5):
         """
             Energy defect for the given two pair-states (one of the state has
             two atoms in the same state)
@@ -1223,20 +1234,16 @@ class AlkaliAtom(object):
                 j2 (float): total angular momentum
                 s (float): optional. Spin angular momentum
                     (default 0.5 for Alkali)
-                s1 (float): optional. Spin angular momentum
-                    (default 0.5 for Alkali)
-                s2 (float): optional. Spin angular momentum
-                    (default 0.5 for Alkali)
 
             Returns:
                 float:  energy defect (SI units: J)
         """
-        return C_e * (self.getEnergy(n1, l1, j1, s=s1)
-                      + self.getEnergy(n2, l2, j2, s=s2)
+        return C_e * (self.getEnergy(n1, l1, j1, s=s)
+                      + self.getEnergy(n2, l2, j2, s=s)
                       - 2 * self.getEnergy(n, l, j, s=s))
 
     def getEnergyDefect2(self, n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2,
-                         s=0.5, ss=0.5, s1=0.5, s2=0.5):
+                         s=0.5):
         """
             Energy defect for the given two pair-states
 
@@ -1264,20 +1271,14 @@ class AlkaliAtom(object):
                 j2 (float): total angular momentum
                 s (float): optional. Spin angular momentum
                     (default 0.5 for Alkali)
-                ss (float): optional. Spin angular momentum
-                    (default 0.5 for Alkali)
-                s1 (float): optional. Spin angular momentum
-                    (default 0.5 for Alkali)
-                s2 (float): optional. Spin angular momentum
-                    (default 0.5 for Alkali)
 
             Returns:
                 float:  energy defect (SI units: J)
         """
-        return C_e * (self.getEnergy(n1, l1, j1, s=s1)
-                      + self.getEnergy(n2, l2, j2, s=s2)
+        return C_e * (self.getEnergy(n1, l1, j1, s=s)
+                      + self.getEnergy(n2, l2, j2, s=s)
                       - self.getEnergy(n, l, j, s=s)
-                      - self.getEnergy(nn, ll, jj, s=ss))
+                      - self.getEnergy(nn, ll, jj, s=s))
 
     def updateDipoleMatrixElementsFile(self):
         """
@@ -1321,7 +1322,7 @@ class AlkaliAtom(object):
             print(e)
 
     def getTransitionRate(self, n1, l1, j1, n2, l2, j2, temperature=0.,
-                          s1=0.5, s2=0.5):
+                          s=0.5):
         """
             Transition rate due to coupling to vacuum modes
             (black body included)
@@ -1345,6 +1346,8 @@ class AlkaliAtom(object):
                 l2 (int): orbital angular momentum
                 j2 (float): total angular momentum
                 [temperature] (float): temperature in K
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
 
             Returns:
                 float:  transition rate in s :math:`{}^{-1}` (SI)
@@ -1362,28 +1365,28 @@ class AlkaliAtom(object):
 
         dipoleRadialPart = 0.0
         if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
-                                        s1=s1, s2=s2) > 0):
+                                        s=s) > 0):
             dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(
                 n1, l1, j1,
                 n2, l2, j2,
-                s1=s1, s2=s2) *\
+                s=s) *\
                 C_e * (physical_constants["Bohr radius"][0])
 
         else:
             dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(
                 n2, l2, j2,
                 n1, l1, j1,
-                s1=s1, s2=s2) *\
+                s=s) *\
                 C_e * (physical_constants["Bohr radius"][0])
             degeneracyTerm = (2. * j2 + 1.0) / (2. * j1 + 1.)
 
         omega = abs(
             2.0 * pi * self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
-                                                   s1=s1, s2=s2))
+                                                   s=s))
 
         modeOccupationTerm = 0.
         if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
-                                        s1=s1, s2=s2) < 0):
+                                        s=s) < 0):
             modeOccupationTerm = 1.
 
         # only possible by absorbing thermal photons ?
@@ -1422,6 +1425,8 @@ class AlkaliAtom(object):
                     of the state to which black-body induced transitions will
                     be included. Minimal value of the parameter in that case is
                     :math:`n+1`
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
 
 
             Returns:
@@ -1455,13 +1460,13 @@ class AlkaliAtom(object):
                     transitionRate += self.getTransitionRate(n, l, j,
                                                              nto, lto, jto,
                                                              temperature,
-                                                             s1=s, s2=s)
+                                                             s=s)
                 jto = j - 1.
                 if jto > 0:
                     transitionRate += self.getTransitionRate(n, l, j,
                                                              nto, lto, jto,
                                                              temperature,
-                                                             s1=s, s2=s)
+                                                             s=s)
 
         for nto in xrange(max(self.groundStateN, l + 2),
                           includeLevelsUpTo + 1):
@@ -1472,12 +1477,12 @@ class AlkaliAtom(object):
                 transitionRate += self.getTransitionRate(n, l, j,
                                                          nto, lto, jto,
                                                          temperature,
-                                                         s1=s, s2=s)
+                                                         s=s)
             jto = j + 1
             transitionRate += self.getTransitionRate(n, l, j,
                                                      nto, lto, jto,
                                                      temperature,
-                                                     s1=s, s2=s)
+                                                     s=s)
         # sum over additional states
         for state in self.extraLevels:
             if (abs(j - state[2]) < 1.1) and \
@@ -1486,12 +1491,12 @@ class AlkaliAtom(object):
                     n, l, j,
                     state[0], state[1], state[2],
                     temperature,
-                    s1=s, s2=s
+                    s=s
                     )
 
         return 1. / transitionRate
 
-    def getRadialCoupling(self, n, l, j, n1, l1, j1, s1=0.5, s2=0.5):
+    def getRadialCoupling(self, n, l, j, n1, l1, j1, s=0.5):
         """
             Returns radial part of the coupling between two states (dipole and
             quadrupole interactions only)
@@ -1503,6 +1508,8 @@ class AlkaliAtom(object):
                 n2 (int): principal quantum number
                 l2 (int): orbital angular momentum
                 j2 (float): total angular momentum
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
 
             Returns:
                 float:  radial coupling strength (in a.u.), or zero for
@@ -1512,12 +1519,12 @@ class AlkaliAtom(object):
         dl = abs(l - l1)
         if (dl == 1 and abs(j - j1) < 1.1):
             return self.getRadialMatrixElement(n, l, j, n1, l1, j1,
-                                               s1=s1, s2=s2)
+                                               s=s)
         elif (dl == 0 or dl == 1 or dl == 2) and(abs(j - j1) < 2.1):
             # quadrupole coupling
             # return 0.
             return self.getQuadrupoleMatrixElement(n, l, j, n1, l1, j1,
-                                                   s1=s1, s2=s2)
+                                                   s=s)
         else:
             # neglect octopole coupling and higher
             return 0
@@ -1733,6 +1740,15 @@ class AlkaliAtom(object):
             :math:`\mathcal{H}_P=\frac{\mu_B B_z}{\hbar}(\hat{L}_{\rm z}+\
             g_{\rm S}S_{\rm z})`
 
+            Args:
+                l (int): orbital angular momentum
+                j (float): total angular momentum
+                mj (float): projection of total angular momentum alon z-axis
+                magneticFieldBz (float): applied magnetic field (alon z-axis
+                    only) in units of T (Tesla)
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
+
             Returns:
                 float: energy offset of the state (in J)
         """
@@ -1748,13 +1764,11 @@ class AlkaliAtom(object):
         return prefactor * sumOverMl
 
     def _getRadialDipoleSemiClassical(self, n1, l1, j1, n2, l2, j2,
-                                      s1=0.5, s2=0.5):
-        if abs(s1-s2) > 0.1:
-            return 0
+                                      s=0.5):
 
         # get the effective principal number of both states
-        nu = n1 - self.getQuantumDefect(n1, l1, j1, s=s1)
-        nu1 = n2 - self.getQuantumDefect(n2, l2, j2, s=s2)
+        nu = n1 - self.getQuantumDefect(n1, l1, j1, s=s)
+        nu1 = n2 - self.getQuantumDefect(n2, l2, j2, s=s)
 
         # get the parameters required to calculate the sum
         l_c = (l1 + l2 + 1.) / 2.
@@ -1788,14 +1802,12 @@ class AlkaliAtom(object):
         return float(radial_ME)
 
     def _getRadialQuadrupoleSemiClassical(self, n1, l1, j1, n2, l2, j2,
-                                          s1=0.5, s2=0.5):
-        if abs(s1-s2) > 0.1:
-            return 0
+                                          s=0.5):
 
         dl = abs(l2 - l1)
 
-        nu = n1 - self.getQuantumDefect(n1, l1, j1, s=s1)
-        nu1 = n2 - self.getQuantumDefect(n2, l2, j2, s=s2)
+        nu = n1 - self.getQuantumDefect(n1, l1, j1, s=s)
+        nu1 = n2 - self.getQuantumDefect(n2, l2, j2, s=s)
 
         # get the parameters required to calculate the sum
         l_c = (l1 + l2 + 1.) / 2.
