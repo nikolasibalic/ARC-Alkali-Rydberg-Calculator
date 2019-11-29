@@ -949,9 +949,10 @@ class LevelPlot:
         self.nTo = 0
         self.lFrom = 0
         self.lTo = 0
+        self.sList = []
 
-        self.listX = []  # list of l
-        self.listY = []  # list of energies
+        self.listX = []
+        self.listY = []   # list of energies
         self.levelLabel = []
 
         self.fig = 0
@@ -968,7 +969,7 @@ class LevelPlot:
         self.spectraY = []
         self.spectraLine = []
 
-    def makeLevels(self, nFrom, nTo, lFrom, lTo, s=0.5):
+    def makeLevels(self, nFrom, nTo, lFrom, lTo, sList=[0.5]):
         """
             Constructs energy level diagram in a given range
 
@@ -981,31 +982,41 @@ class LevelPlot:
                     of the states we are interested in
                 lTo (int): maximal orbital angular momentum
                     of the states we are interested in
-                s (float): optional, spin angular momentum. Default value
-                    of 0.5 corresponds to Alkali atoms. For Alkaline Earth it
-                    has to be specified.
+                sList (float): optional, spin angular momentum. Default value
+                    of [0.5] corresponds to Alkali atoms. For Alkaline Earth it
+                    has to be specified. For divalent atoms one can plot either
+                    one spin state by setting for example `sList=[0]``,
+                    or both spin states `sList=[0,1]``
         """
         # save local copy of the space restrictions
         self.nFrom = nFrom
         self.nTo = nTo
         self.lFrom = lFrom
         self.lTo = lTo
+        self.sList = sList
+        spinOptions = len(sList)
 
         # find all the levels within this space restrictions
-        nFrom = max(nFrom, self.atom.groundStateN)
-        while nFrom <= nTo:
-            l = lFrom
-            while l <= min(lTo, 4, nFrom - 1):
-                if (l > 0.5):
-                    self.listX.append(l)
-                    self.listY.append(self.atom.getEnergy(nFrom, l, l - 0.5))
-                    self.levelLabel.append([nFrom, l, l - 0.5])
-                self.listX.append(l)
-                self.listY.append(self.atom.getEnergy(nFrom, l, l + 0.5))
-                self.levelLabel.append([nFrom, l, l + 0.5, s])
-                l = l + 1
-            nFrom += 1
-        # if user requested principal quantum nuber below the
+        xPositionOffset = 0
+        for s in sList:
+            n = max(self.nFrom, self.atom.groundStateN)
+            while n <= nTo:
+                l = lFrom
+                if (l==0 and s==1 and n == self.atom.groundStateN):
+                    # for ground state S state, there is only singlet
+                    # Todo: check with Strontium people!
+                    l += 1
+                while l <= min(lTo, 4, nFrom - 1):
+                    for j in np.linspace(l - s, l + s, 2 * s + 1):
+                        if j > -0.1:
+                            self.listX.append(l + xPositionOffset)
+                            self.listY.append(self.atom.getEnergy(n, l, j,
+                                                                  s=s))
+                            self.levelLabel.append([n, l, j, s])
+                    l = l + 1
+                n += 1
+            xPositionOffset += lTo + 1
+        # if user requested principal quantum nuber below theself.listX_l.append(l)
         # ground state principal quantum number
         # add those L states that are higher in energy then the ground state
         for state in self.atom.extraLevels:
@@ -1143,21 +1154,25 @@ class LevelPlot:
         """
             Shows a level diagram plot
         """
+        self.listX = np.array(self.listX)
         self.ax.set_ylabel("Energy (eV)")
-        self.ax.set_xlim(-0.5 + self.lFrom, self.lTo + 0.5)
+        self.ax.set_xlim(-0.5 + np.min(self.listX), np.max(self.listX) + 0.5)
 
         # X AXIS
         majorLocator = MultipleLocator(1)
 
         self.ax.xaxis.set_major_locator(majorLocator)
         tickNames = [" "]
-        for l in xrange(self.lFrom, self.lTo + 1):
-            tickNames.append(printStateLetter(l))
+        for s in self.sList:
+            sNumber  = 2 * s + 1
+            for l in xrange(self.lFrom, self.lTo + 1):
+                tickNames.append("$^%d %s$" % (sNumber, printStateLetter(l) ) )
         tickNum = len(self.ax.get_xticklabels())
 
         self.fig.canvas.draw()
         self.ax.set_xticklabels(tickNames)
         self.fig.canvas.mpl_connect('pick_event', self.onpick2)
+        self.state1[0] = -1  # initialise for picking
         plt.show()
 
     def findState(self, x, y):
@@ -1210,31 +1225,37 @@ class LevelPlot:
             ydata = thisline.get_ydata()
 
             state = self.findState((xdata[0] + xdata[0]) / 2., ydata[0])
-            if (self.state1[0] == 0 or (state[1] == self.state2[1])):
+            if (self.state1[0] == -1 or (state[1] == self.state1[1])):
                 self.state1 = state
-                self.ax.set_title(printStateString(
-                    state[0], state[1], state[2]) + " -> ")
+                self.ax.set_title(r"$%s \rightarrow$ " % (printStateStringLatex(
+                    state[0], state[1], state[2], s=state[3])) )
                 self.state2 = [-1, -1, -1]
             else:
                 title = ""
                 if (state[1] != self.state1[1]) and (state[1] != self.state2[1]):
-                    title = printStateString(self.state1[0],
+                    title = (r"$ %s \rightarrow %s $ " %
+                             (printStateStringLatex(self.state1[0],
                                              self.state1[1],
-                                             self.state1[2]) +\
-                        " -> " +\
-                        printStateString(state[0], state[1], state[2]) + " "
+                                             self.state1[2], s=self.state1[3]),
+
+                                printStateStringLatex(state[0], state[1], state[2],
+                                                      s=state[3])))
                     title = title + (" %.2f nm (%.3f GHz)" %
                                      (self.atom.getTransitionWavelength(self.state1[0],
                                                                         self.state1[1],
                                                                         self.state1[2],
                                                                         state[0], state[1],
-                                                                        state[2]) * 1e9,
+                                                                        state[2],
+                                                                        s1=self.state1[3],
+                                                                        s2=state[3]) * 1e9,
                                       self.atom.getTransitionFrequency(self.state1[0],
                                                                        self.state1[1],
                                                                        self.state1[2],
                                                                        state[0],
                                                                        state[1],
-                                                                       state[2]) * 1e-9))
+                                                                       state[2],
+                                                                       s1=self.state1[3],
+                                                                       s2=state[3]) * 1e-9))
                     self.ax.set_title(title)
                     self.state1 = [0, 0, 0]
 

@@ -141,8 +141,11 @@ class Strontium87(AlkalineEarthAtom):
 
     # levels that are for smaller n than ground level, but are above in energy
     # due to angular part
-    extraLevels = {"3D3": 4, "3D1": 4, "1F3": 4,
-                   "3F4": 4, "3F3": 4, "3F2": 4, "1D2": 4}
+    extraLevels = [[4, 2, 3, 1], [4, 2, 1, 1],
+                   [4, 3, 3, 0],
+                   [4, 3, 4, 1], [4, 3, 3, 1], [4, 3, 2, 1],
+                   [4, 2, 2, 0]
+                   ]
 
     levelDataFromNIST = "sr_level_data.csv"
 
@@ -232,7 +235,7 @@ class Calcium40(AlkalineEarthAtom):
         [ :math:`^3S_{1},^3P_{2},^3D_{3},^3F_{4}`]]."""
 
     groundStateN = 4
-    extraLevels = {}  #: TODO unkown if such exist at time of writing
+    extraLevels = []  #: TODO unkown if such exist at time of writing
     preferQuantumDefects = False
 
     precalculatedDB = "ca_precalculated.db"
@@ -324,7 +327,7 @@ class Ytterbium173(AlkalineEarthAtom):
         [ :math:`^3S_{1},^3P_{2},^3D_{3},^3F_{4}`]]."""
 
     groundStateN = 6
-    extraLevels = {}  #: TODO unkown if such exist at time of writing
+    extraLevels = []  #: TODO unkown if such exist at time of writing
     preferQuantumDefects = False
 
     precalculatedDB = "yb_precalculated.db"
