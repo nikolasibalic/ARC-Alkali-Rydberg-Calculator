@@ -16,6 +16,7 @@ Overview
     loadSavedCalculation
     printState
     printStateString
+    printStateStringLatex
 
 .. rubric:: AlkaliAtom Methods
 
