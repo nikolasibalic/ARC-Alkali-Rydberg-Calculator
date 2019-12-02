@@ -1162,7 +1162,7 @@ class LevelPlot:
         majorLocator = MultipleLocator(1)
 
         self.ax.xaxis.set_major_locator(majorLocator)
-        tickNames = [" "]
+        tickNames = []
         for s in self.sList:
             sNumber  = 2 * s + 1
             for l in xrange(self.lFrom, self.lTo + 1):
@@ -1170,7 +1170,9 @@ class LevelPlot:
         tickNum = len(self.ax.get_xticklabels())
 
         self.fig.canvas.draw()
+        self.ax.set_xticks(np.arange(tickNum))
         self.ax.set_xticklabels(tickNames)
+        self.ax.set_xlim(-0.5 + np.min(self.listX), np.max(self.listX) + 0.5)
         self.fig.canvas.mpl_connect('pick_event', self.onpick2)
         self.state1[0] = -1  # initialise for picking
         plt.show()
