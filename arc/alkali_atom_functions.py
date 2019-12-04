@@ -2284,9 +2284,9 @@ class _EFieldCoupling:
              (l1 TINYINT UNSIGNED, j1_x2 TINYINT UNSIGNED,
              j1_mj1 TINYINT UNSIGNED,
               l2 TINYINT UNSIGNED, j2_x2 TINYINT UNSIGNED,
-              j2_mj2 TINYINT UNSIGNED,
+              j2_mj2 TINYINT UNSIGNED, s_x2 TINYINT UNSIGNED,
              sumPart DOUBLE,
-             PRIMARY KEY (l1,j1_x2,j1_mj1,l2,j2_x2,j2_mj2)
+             PRIMARY KEY (l1,j1_x2,j1_mj1,l2,j2_x2,j2_mj2, s_x2)
             ) ''')
             self.conn.commit()
 
@@ -2302,66 +2302,53 @@ class _EFieldCoupling:
              (l1 TINYINT UNSIGNED, j1_x2 TINYINT UNSIGNED,
              j1_mj1 TINYINT UNSIGNED,
               l2 TINYINT UNSIGNED, j2_x2 TINYINT UNSIGNED,
-              j2_mj2 TINYINT UNSIGNED,
+              j2_mj2 TINYINT UNSIGNED, s_x2 TINYINT_UNSIGNED,
              coupling DOUBLE,
-             PRIMARY KEY (l1,j1_x2,j1_mj1,l2,j2_x2,j2_mj2)
+             PRIMARY KEY (l1,j1_x2,j1_mj1,l2,j2_x2,j2_mj2, s_x2)
             ) ''')
             self.conn.commit()
 
-    def getAngular(self, l1, j1, mj1, l2, j2, mj2):
+    def getAngular(self, l1, j1, mj1, l2, j2, mj2, s=0.5):
         self.c.execute('''SELECT sumPart FROM eFieldCoupling_angular WHERE
          l1= ? AND j1_x2 = ? AND j1_mj1 = ? AND
-         l2 = ? AND j2_x2 = ? AND j2_mj2 = ?
-         ''', (l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2))
+         l2 = ? AND j2_x2 = ? AND j2_mj2 = ? AND s_x2 = ?
+         ''', (l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2))
         answer = self.c.fetchone()
         if (answer):
             return answer[0]
 
         # calulates sum (See PRA 20:2251 (1979), eq.(10))
         sumPart = 0.
-        ml = mj1 + 0.5
-        if (abs(ml) - 0.1 < l1)and(abs(ml) - 0.1 < l2):
 
-            angularPart = 0.
-            if (abs(l1 - l2 - 1) < 0.1):
-                angularPart = ((l1**2 - ml**2)
-                               / ((2. * l1 + 1.) * (2. * l1 - 1.)))**0.5
-            elif(abs(l1 - l2 + 1) < 0.1):
-                angularPart = ((l2**2 - ml**2)
-                               / ((2. * l2 + 1.) * (2. * l2 - 1.)))**0.5
-
-            sumPart += CG(l1, ml, 0.5, mj1 - ml, j1, mj1) \
-                * CG(l2, ml, 0.5, mj1 - ml, j2, mj2) \
-                * angularPart
-
-        ml = mj1 - 0.5
-        if (abs(ml) - 0.1 < l1)and(abs(ml) - 0.1 < l2):
-            angularPart = 0.
-            if (abs(l1 - l2 - 1) < 0.1):
-                angularPart = ((l1**2 - ml**2)
-                               / ((2. * l1 + 1.) * (2. * l1 - 1.)))**0.5
-            elif(abs(l1 - l2 + 1) < 0.1):
-                angularPart = ((l2**2 - ml**2)
-                               / ((2. * l2 + 1.) * (2. * l2 - 1.)))**0.5
-            sumPart += CG(l1, ml, 0.5, mj1 - ml, j1, mj1) \
-                * CG(l2, ml, 0.5, mj1 - ml, j2, mj2) \
-                * angularPart
+        for ml in np.linspace(mj1 - s, mj1 + s, 2 * s + 1):
+            if (abs(ml) - 0.1 < l1)and(abs(ml) - 0.1 < l2):
+                angularPart = 0.
+                if (abs(l1 - l2 - 1) < 0.1):
+                    angularPart = ((l1**2 - ml**2)
+                                   / ((2. * l1 + 1.) * (2. * l1 - 1.)))**0.5
+                elif(abs(l1 - l2 + 1) < 0.1):
+                    angularPart = ((l2**2 - ml**2)
+                                   / ((2. * l2 + 1.) * (2. * l2 - 1.)))**0.5
+                sumPart += CG(l1, ml, s, mj1 - ml, j1, mj1) \
+                    * CG(l2, ml, s, mj1 - ml, j2, mj2) \
+                    * angularPart
 
         self.c.execute(''' INSERT INTO eFieldCoupling_angular
-                            VALUES (?,?,?, ?,?,?, ?)''',
-                       [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, sumPart])
+                            VALUES (?,?,?, ?,?,?, ?, ?)''',
+                       [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2,
+                        s * 2, sumPart])
         self.conn.commit()
 
         return sumPart
 
-    def getCouplingDivEDivDME(self, l1, j1, mj1, l2, j2, mj2):
+    def getCouplingDivEDivDME(self, l1, j1, mj1, l2, j2, mj2, s=0.5):
         # returns angular coupling without radial part and electric field
 
         # if calculated before, retrieve from memory
         self.c.execute('''SELECT coupling FROM eFieldCoupling WHERE
          l1= ? AND j1_x2 = ? AND j1_mj1 = ? AND
-         l2 = ? AND j2_x2 = ? AND j2_mj2 = ?
-         ''', (l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2))
+         l2 = ? AND j2_x2 = ? AND j2_mj2 = ? AND s_x2 = ?
+         ''', (l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2))
         answer = self.c.fetchone()
         if (answer):
             return answer[0]
@@ -2389,8 +2376,9 @@ class _EFieldCoupling:
         # save in memory for later use
 
         self.c.execute(''' INSERT INTO eFieldCoupling
-                            VALUES (?,?,?, ?,?,?, ?)''',
-                       [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, coupling])
+                            VALUES (?,?,?, ?,?,?, ?, ?)''',
+                       [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2,
+                        coupling])
         self.conn.commit()
 
         # return result

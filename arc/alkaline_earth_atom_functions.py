@@ -245,7 +245,7 @@ class AlkalineEarthAtom(AlkaliAtom):
     def getRadialMatrixElement(self,
                                n1, l1, j1,
                                n2, l2, j2,
-                               s=0.5,
+                               s=None,
                                useLiterature=True):
         """
             Radial part of the dipole matrix element
@@ -260,11 +260,16 @@ class AlkalineEarthAtom(AlkaliAtom):
                 n2 (int): principal quantum number of state 2
                 l2 (int): orbital angular momentum of state 2
                 j2 (float): total angular momentum of state 2
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+                s (float): is required argument, total spin angular momentum of
+                    state. Specify `s=0` for singlet state or `s=1` for
+                    triplet state.
             Returns:
                 float: dipole matrix element (:math:`a_0 e`).
         """
+        if s is None:
+            raise ValueError("You must specify total angular momentum s "
+                             "explicitly.")
+
         dl = abs(l1 - l2)
         dj = abs(j2 - j2)
         if not(dl == 1 and (dj < 1.1)):

@@ -197,25 +197,36 @@ class StarkMap:
         # STARK memoization
         self.eFieldCouplingSaved = False
 
-    def _eFieldCouplingDivE(self, n1, l1, j1, mj1, n2, l2, j2, mj2):
+        #: spin manifold in which we are working
+        #: default value of 0.5 is correct for Alkaline Atoms. Otherwise it has
+        #: to be specified when calling `defineBasis` as `s=0` or `s=1` for
+        #: singlet and triplet states respectively
+        self.s = 0.5
+
+    def _eFieldCouplingDivE(self, n1, l1, j1, mj1, n2, l2, j2, mj2, s=0.5):
         # eFied coupling devided with E (witout actuall multiplication to getE)
         # delta(mj1,mj2') delta(l1,l2+-1)
         if ((abs(mj1 - mj2) > 0.1) or (abs(l1 - l2) != 1)):
             return 0
 
         # matrix element
-        result = self.atom.getRadialMatrixElement(n1, l1, j1, n2, l2, j2) *\
+        result = self.atom.getRadialMatrixElement(n1, l1, j1,
+                                                  n2, l2, j2,
+                                                  s=s) *\
             physical_constants["Bohr radius"][0] * C_e
 
-        sumPart = self.eFieldCouplingSaved.getAngular(l1, j1, mj1, l2, j2, mj2)
-
+        sumPart = self.eFieldCouplingSaved.getAngular(l1, j1, mj1,
+                                                      l2, j2, mj2,
+                                                      s=s)
         return result * sumPart
 
-    def _eFieldCoupling(self, n1, l1, j1, mj1, n2, l2, j2, mj2, eField):
-        return self._eFieldCouplingDivE(n1, l1, j1, mj1, n2, l2, j2, mj2) * eField
+    def _eFieldCoupling(self, n1, l1, j1, mj1, n2, l2, j2, mj2, eField, s=0.5):
+        return self._eFieldCouplingDivE(n1, l1, j1, mj1,
+                                        n2, l2, j2, mj2,
+                                        s=s) * eField
 
     def defineBasis(self, n, l, j, mj, nMin, nMax, maxL, Bz=0,
-                    progressOutput=False, debugOutput=False):
+                    progressOutput=False, debugOutput=False, s=0.5):
         """
             Initializes basis of states around state of interest
 
@@ -249,6 +260,12 @@ class StarkMap:
                     progress of calculation; Set to false by default.
                 debugOutput (:obj:`bool`, optional): if True prints additional
                     information usefull for debuging. Set to false by default.
+                s (float): optional. Total spin angular momentum for the state.
+                    Default value of 0.5 is correct for Alkaline Atoms, but
+                    value **has to** be specified explicitly for divalent atoms
+                    (e.g. `s=0` or `s=1` for singlet and triplet states,
+                    that have total spin angular momenutum equal to 0 or 1
+                    respectively).
         """
         global wignerPrecal
         wignerPrecal = True
@@ -265,16 +282,15 @@ class StarkMap:
         self.nMax = nMax
         self.maxL = maxL
         self.Bz = Bz
+        self.s = s
         # save calculation details END
 
         for tn in xrange(nMin, nMax):
 
             for tl in xrange(min(maxL + 1, tn)):
-                if (abs(mj) - 0.1 <= float(tl) + 0.5):
-                    states.append([tn, tl, float(tl) + 0.5, mj])
-
-                if (tl > 0) and (abs(mj) - 0.1 <= float(tl) - 0.5):
-                    states.append([tn, tl, float(tl) - 0.5, mj])
+                for tj in np.linspace(tl - s, tl + s, 2 * s + 1):
+                    if abs(mj) - 0.1 <= tj:
+                        states.append([tn, tl, tj, mj])
 
         dimension = len(states)
         if progressOutput:
@@ -284,9 +300,9 @@ class StarkMap:
 
         indexOfCoupledState = 0
         index = 0
-        for s in states:
-            if (s[0] == n) and (abs(s[1] - l) < 0.1) and (abs(s[2] - j) < 0.1) and\
-                    (abs(s[3] - mj) < 0.1):
+        for st in states:
+            if (st[0] == n) and (abs(st[1] - l) < 0.1) and (abs(st[2] - j) < 0.1) and\
+                    (abs(st[3] - mj) < 0.1):
                 indexOfCoupledState = index
             index += 1
         if debugOutput:
@@ -314,13 +330,16 @@ class StarkMap:
 
             # add diagonal element
             self.mat1[ii][ii] = self.atom.getEnergy(states[ii][0],
-                                                    states[ii][1], states[ii][2])\
+                                                    states[ii][1],
+                                                    states[ii][2],
+                                                    s=self.s)\
                 * C_e / C_h * 1e-9 \
                 + self.atom.getZeemanEnergyShift(
                 states[ii][1],
                 states[ii][2],
                 states[ii][3],
-                self.Bz) / C_h * 1.0e-9
+                self.Bz,
+                s=self.s) / C_h * 1.0e-9
             # add off-diagonal element
 
             for jj in xrange(ii + 1, dimension):
@@ -328,7 +347,8 @@ class StarkMap:
                                                     states[ii][2], mj,
                                                     states[jj][0],
                                                     states[jj][1],
-                                                    states[jj][2], mj) *\
+                                                    states[jj][2], mj,
+                                                    s=self.s) *\
                     1.e-9 / C_h
                 self.mat2[jj][ii] = coupling
                 self.mat2[ii][jj] = coupling
@@ -401,7 +421,8 @@ class StarkMap:
                               l2, " ", j2, " ", m2, "\n")
                     dme = self.atom.getDipoleMatrixElement(n1, l1, j1, m1,
                                                            n2, l2, j2, m2,
-                                                           q)
+                                                           q,
+                                                           s=self.s)
                     thisCoupling += dme
                 thisCoupling = abs(thisCoupling)**2
                 if thisCoupling > self.maxCoupling:
@@ -500,6 +521,8 @@ class StarkMap:
                          (self.nMin, self.nMax))
         commonHeader += (" - Included states with orbital momentum (l) in range [%d,%d] (i.e. %s-%s).\n" %
                          (0, self.maxL, printStateLetter(0), printStateLetter(self.maxL)))
+        commonHeader += (" - Calculated in manifold where total spin angular momentum is s = %.1d\n" %
+                         (self.s))
         if self.drivingFromState[0] < 0.1:
             commonHeader += " - State highlighting based on the relative contribution \n" +\
                 "   of the original state in the eigenstates obtained by diagonalization."
@@ -659,7 +682,7 @@ class StarkMap:
                                                           cmap=cm, norm=cNorm)
                     if (self.drivingFromState[0] < 0.1):
                         cb.set_label(r"$|\langle %s | \mu \rangle |^2$" %
-                                     printStateStringLatex(n, l, j))
+                                     printStateStringLatex(n, l, j, s=self.s))
                     else:
                         cb.set_label(r"$(\Omega_\mu / \Omega )^2$")
 
@@ -668,14 +691,14 @@ class StarkMap:
         if (units == 1):
             # in cm^{-1}
             uppery = self.atom.getEnergy(
-                n, l, j) * C_e / C_h * 1e-9 * 0.03336 + 10
+                n, l, j, s=self.s) * C_e / C_h * 1e-9 * 0.03336 + 10
             lowery = self.atom.getEnergy(
-                n, l, j) * C_e / C_h * 1e-9 * 0.03336 - 10
+                n, l, j, s=self.s) * C_e / C_h * 1e-9 * 0.03336 - 10
             self.ax.set_ylabel("State energy, $E/(h c)$ (cm$^{-1}$)")
         else:
             # in GHz
-            uppery = self.atom.getEnergy(n, l, j) * C_e / C_h * 1e-9 + 5
-            lowery = self.atom.getEnergy(n, l, j) * C_e / C_h * 1e-9 - 5
+            uppery = self.atom.getEnergy(n, l, j, s=self.s) * C_e / C_h * 1e-9 + 5
+            lowery = self.atom.getEnergy(n, l, j, s=self.s) * C_e / C_h * 1e-9 - 5
             self.ax.set_ylabel(r"State energy, $E/h$ (GHz)")
 
         self.ax.set_ylim(lowery, uppery)
@@ -791,8 +814,14 @@ class StarkMap:
         return mainStates
 
     def _addState(self, n1, l1, j1, mj1):
-        return "|%s m_j=%d/2\\rangle" %\
-            (printStateStringLatex(n1, l1, j1), int(2 * mj1))
+        if abs(self.s - 0.5) < 0.1:
+            # we have Alkali Atoms
+            return "|%s m_j=%d/2\\rangle" %\
+                (printStateStringLatex(n1, l1, j1), int(2 * mj1))
+        else:
+            # we have singlets or triplets states of divalent atoms
+            return "|%s m_j=%d\\rangle" %\
+                (printStateStringLatex(n1, l1, j1, s=self.s), int(mj1))
 
     def getPolarizability(self, maxField=1.e10, showPlot=False,
                           debugOutput=False, minStateContribution=0.0):
@@ -830,7 +859,7 @@ class StarkMap:
         l = originalState[1]
         j = originalState[2]
         energyOfOriginalState = self.atom.getEnergy(
-            n, l, j) * C_e / C_h * 1e-9  # in  GHz
+            n, l, j, s=self.s) * C_e / C_h * 1e-9  # in  GHz
 
         if debugOutput:
             print("finding original state for each electric field value")
@@ -1015,16 +1044,23 @@ class LevelPlot:
                             self.levelLabel.append([n, l, j, s])
                     l = l + 1
                 n += 1
+
+            # if user requested principal quantum nuber below theself.listX_l.append(l)
+            # ground state principal quantum number
+            # add those L states that are higher in energy then the ground state
+            for state in self.atom.extraLevels:
+                if state[1] <= lTo and state[0] >= self.nFrom and \
+                        (len(state)==3 or state[3]==s):
+                    # last line means: either is Alkali, when we don't need to
+                    # check the spin, or it's divalent, when we do need to check
+                    # the spin
+                    self.listX.append(state[1] + xPositionOffset)
+                    self.listY.append(self.atom.getEnergy(
+                        state[0], state[1], state[2], s=s))
+                    self.levelLabel.append([state[0], state[1], state[2], s])
+
             xPositionOffset += lTo + 1
-        # if user requested principal quantum nuber below theself.listX_l.append(l)
-        # ground state principal quantum number
-        # add those L states that are higher in energy then the ground state
-        for state in self.atom.extraLevels:
-            if state[1] <= lTo and state[0] >= self.nFrom:
-                self.listX.append(state[1])
-                self.listY.append(self.atom.getEnergy(
-                    state[0], state[1], state[2]))
-                self.levelLabel.append(state)
+
 
     def makeTransitionMatrix(self, environmentTemperature=0.0, printDecays=True):
         self.transitionMatrix = []
