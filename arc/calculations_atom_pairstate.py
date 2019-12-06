@@ -2063,6 +2063,7 @@ class PairStateInteractions:
             ax.yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.3f'))
             ax.yaxis.set_minor_locator(
                 mpl.ticker.MultipleLocator(locatorStep / 10.))
+            ax.yaxis.set_minor_formatter(plt.NullFormatter())
             # ax.yaxis.set_minor_formatter(mpl.ticker.FormatStrFormatter('%.3f'))
 
             ax.set_title(r"$C_3$ fit")
