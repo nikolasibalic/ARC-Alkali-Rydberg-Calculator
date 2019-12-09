@@ -2303,8 +2303,12 @@ class StarkMapResonances:
                 :obj:`alkali_atom_data.Rubidium87`,
                 :obj:`alkali_atom_data.Caesium` }
                  the first atom in the pair-state
-            state1 ([int,int,float,float]): specification of the state
-                of the first state as an array of values :math:`[n,l,j,m_j]`
+            state1 ([int,int,float,float,(float)]): specification of the state
+                of the first state as an array of values :math:`[n,l,j,m_j]`.
+                For obj:`AlkalineEarthAtom` and other divalent atoms, 5th value
+                should be added specifying total spin angular momentum `s`.
+                Full definition of state then has format
+                :math:`[n,l,j,m_j,s]`.
             atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
                 :obj:`alkali_atom_data.Lithium7`,
                 :obj:`alkali_atom_data.Sodium`,
@@ -2315,8 +2319,12 @@ class StarkMapResonances:
                 :obj:`alkali_atom_data.Rubidium87`,
                 :obj:`alkali_atom_data.Caesium` }
                  the second atom in the pair-state
-            state2 ([int,int,float,float]): specification of the state
-                of the first state as an array of values :math:`[n,l,j,m_j]`
+            state2 ([int,int,float,float,(float)]): specification of the state
+                of the first state as an array of values :math:`[n,l,j,m_j]`,
+                For obj:`AlkalineEarthAtom` and other divalent atoms, 5th value
+                should be added specifying total spin angular momentum `s`.
+                Full definition of state then has format
+                :math:`[n,l,j,m_j,s]`.
 
         Note:
             In checking if certain state is dipole coupled to the original
@@ -2332,13 +2340,37 @@ class StarkMapResonances:
     def __init__(self, atom1, state1, atom2, state2):
 
         self.atom1 = atom1
+        if (isinstance(self.atom1, AlkalineEarthAtom)
+                and not len(state1) == 5
+                or not(state1[4] == 0 or state1[4] == 1)):
+            raise ValueError("For divalent atoms state specification has to "
+                             "include total spin angular momentum s as the last "
+                             "numbre in the state specification [n,l,j,m_j,s].")
         self.state1 = state1
+        # add exlicitly total spin of the state for Alkaline atoms
+        if (len(self.state1) == 4): self.state1.append(0.5)
+
         self.atom2 = atom2
+        if (isinstance(self.atom2, AlkalineEarthAtom)
+                and not len(state1) == 5
+                or not(state1[4] == 0 or state1[4] == 1)):
+            raise ValueError("For divalent atoms state specification has to "
+                             "include total spin angular momentum s as the last "
+                             "numbre in the state specification [n,l,j,m_j,s].")
         self.state2 = state2
+        # add exlicitly total spin of the state for Alkaline atoms
+        if (len(self.state2) == 4):
+            self.state2.append(0.5)
 
         self.pairStateEnergy = (
-            atom1.getEnergy(*state1[0:3])
-            + atom2.getEnergy(*state2[0:3])
+            atom1.getEnergy(self.state1[0],
+                            self.state1[1],
+                            self.state1[2],
+                            s=self.state1[4])
+            + atom2.getEnergy(self.state2[0],
+                              self.state2[1],
+                              self.state2[2],
+                              s=self.state2[4])
             ) * C_e / C_h * 1e-9
 
     def findResonances(self, nMin, nMax, maxL, eFieldList, energyRange=[-5.e9, +5.e9],
@@ -2384,19 +2416,23 @@ class StarkMapResonances:
         sm1 = StarkMap(self.atom1)
         sm1.defineBasis(self.state1[0], self.state1[1], self.state1[2],
                         self.state1[3], nMin, nMax, maxL, Bz=self.Bz,
-                        progressOutput=progressOutput)
+                        progressOutput=progressOutput,
+                        s=self.state1[4])
         sm1.diagonalise(eFieldList,  progressOutput=progressOutput)
-        if (self.atom2 is self.atom1) and \
-            (self.state1[0] == self.state2[0]) and \
-            (self.state1[1] == self.state2[1]) and \
-            (abs(self.state1[2] - self.state2[2]) < 0.1) and \
-                (abs(self.state1[3] - self.state2[3]) < 0.1):
+        if ((self.atom2 is self.atom1)
+            and (self.state1[0] == self.state2[0])
+            and (self.state1[1] == self.state2[1])
+            and (abs(self.state1[2] - self.state2[2]) < 0.1)
+            and (abs(self.state1[3] - self.state2[3]) < 0.1)
+            and (abs(self.state1[4] - self.state2[4]) < 0.1)
+                ):
             sm2 = sm1
         else:
             sm2 = StarkMap(self.atom2)
             sm2.defineBasis(self.state2[0], self.state2[1], self.state2[2],
                             self.state2[3], nMin, nMax, maxL, Bz=self.Bz,
-                            progressOutput=progressOutput)
+                            progressOutput=progressOutput,
+                            s=self.state2[4])
             sm2.diagonalise(eFieldList,  progressOutput=progressOutput)
 
         self.originalStateY = []
@@ -2446,13 +2482,17 @@ class StarkMapResonances:
         self.composition = []
 
         for dm1 in dmlist1:
-            sm1.defineBasis(n1, l1, j1, mj1 + dm1, nMin, nMax, maxL, Bz=self.Bz,
-                            progressOutput=progressOutput)
-            sm1.diagonalise(eFieldList,  progressOutput=progressOutput)
+            sm1.defineBasis(n1, l1, j1, mj1 + dm1, nMin, nMax, maxL,
+                            Bz=self.Bz,
+                            progressOutput=progressOutput,
+                            s=self.state1[4])
+            sm1.diagonalise(eFieldList, progressOutput=progressOutput)
 
             for dm2 in dmlist2:
-                sm2.defineBasis(n2, l2, j2, mj2 + dm2, nMin, nMax, maxL, Bz=self.Bz,
-                                progressOutput=progressOutput)
+                sm2.defineBasis(n2, l2, j2, mj2 + dm2, nMin, nMax, maxL,
+                                Bz=self.Bz,
+                                progressOutput=progressOutput,
+                                s=self.state2[4])
                 sm2.diagonalise(eFieldList,  progressOutput=progressOutput)
 
                 for i in xrange(len(sm1.eFieldList)):
@@ -2512,6 +2552,13 @@ class StarkMapResonances:
                 interactive (optional, bool): if True (by default) points on plot
                     will be clickable so that one can find the state labels
                     and their composition (if they are heavily admixed).
+
+            Note:
+                Zero is given by the initial states of the atom given in
+                initialisation of calculations, calculated **in absence of
+                magnetic field B_z**. In other words, for non-zero magnetic
+                field the inital states will have offset from zero even
+                for zero electric field due to Zeeman shift.
         """
 
         if (self.fig != 0):
