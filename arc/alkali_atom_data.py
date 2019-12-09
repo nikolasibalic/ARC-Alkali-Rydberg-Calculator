@@ -277,6 +277,11 @@ class Caesium(AlkaliAtom):
                     (limits of experimental interpolation)")
             return 0
 
+class Cesium(Caesium):
+    """
+        support for American English spelling
+    """
+    pass
 
 class Rubidium85(AlkaliAtom):
     """
