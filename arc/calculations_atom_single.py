@@ -27,6 +27,7 @@ from scipy.constants import c as C_c
 from scipy.constants import h as C_h
 from scipy.constants import e as C_e
 from scipy.optimize import curve_fit
+from scipy import interpolate
 
 # for matrices
 from numpy.linalg import eigh
@@ -36,6 +37,8 @@ from numpy.lib.polynomial import real
 from scipy.sparse import lil_matrix, csr_matrix
 from scipy.sparse.linalg import eigsh
 from scipy.special.specfun import fcoef
+from scipy.special import sph_harm
+from mpl_toolkits.mplot3d import Axes3D
 
 import sys
 if sys.version_info > (2,):
@@ -46,6 +49,356 @@ sqlite3.register_adapter(np.float64, float)
 sqlite3.register_adapter(np.float32, float)
 sqlite3.register_adapter(np.int64, int)
 sqlite3.register_adapter(np.int32, int)
+
+
+def Ylm(l, m, theta, phi):
+    return sph_harm(m, l, phi, theta)
+
+class Wavefunction:
+    """
+        Calculates and plots electron wavefunctions.
+
+        Args:
+            atom: atom type considered (for example :obj:`Rubidum87()`)
+            n (int): principal quantum number of requested state
+            l (int): orbital angular momentum of state
+            j (float): total angular momentum of state
+            mj (flaot): projection of total angular momentum on selected
+                quantization axis (`z` axis in coordinate system considered
+                here).
+    """
+
+    def __init__(self, atom, n, l, j, mj):
+        self.atom = atom
+        self.n = n
+        self.l = l
+        self.j = j
+        self.mj = mj
+
+        # calculate radial wavefunction
+        step = 0.001
+        r, rWavefunc = atom.radialWavefunction(
+            self.l, 0.5, self.j,
+            self.atom.getEnergy(self.n, self.l, self.j) / 27.211,
+            self.atom.alphaC**(1 / 3.0),
+            2.0 * self.n * (self.n + 15.0), step)
+        suma = np.trapz(rWavefunc**2, x=r)
+        rWavefunc = rWavefunc / (sqrt(suma))
+
+        self.rWavefunc = interpolate.interp1d(r, rWavefunc,
+                                                 bounds_error=False,
+                                                 fill_value=(0,0))
+
+    def getRtimesPsiSpherical(self, theta, phi, r):
+        r"""
+            Calculates list of :math:`r \cdot \psi_{m_s} (\theta, \phi, r)`
+
+            At point defined by spherical coordinates, returns list of
+            :math:`r \cdot \psi_{m_s} (\theta, \phi, r)`
+            wavefunction values for different electron spin projection
+            values :math:`m_s`.
+
+            Coordinates are defined relative to atomic core.
+
+            Args:
+                theta (float): polar angle (angle between :math:`z` axis and
+                    vector pointing towards selected point)
+                    (in units of radians).
+                phi (float): azimuthal angle (angle between :math:`x` axis and
+                    projection at :math:`x-y` plane of vector pointing towards
+                    selected point) (in units of radians).
+                r (float): distance between coordinate origin and selected
+                    point. (in atomic units of Bohr radius :math:`a_0`)
+
+            Returns:
+                list of complex values corresponding to
+                :math:`\psi_{m_s} (\theta, \phi, r)` for different
+                spin states :math:`m_s` contributing to the state in **decreasing**
+                order of :math:`m_s`. For example, for :obj:`arc.AlkaliAtom`
+                returns :math:`r \cdot \psi_{m_s=+1/2} (\theta, \phi, r)` and
+                :math:`r \cdot \psi_{m_s=-1/2} (\theta, \phi, r) `.
+                )`
+        """
+
+        wfElectronP = 0+0j  # electron spin +1/2
+        wfElectronM = 0+0j  # electron spin -1/2
+        if abs(self.mj - 0.5) - 0.1 < self.l:
+            wfElectronP += CG(self.l, self.mj-0.5, 0.5, +0.5, self.j, self.mj) *\
+                           Ylm(self.l, self.mj-0.5, theta, phi) * self.rWavefunc(r)
+        if abs(self.mj + 0.5) - 0.1 < self.l:
+            wfElectronM += CG(self.l, self.mj+0.5, 0.5, -0.5, self.j, self.mj) *\
+                           Ylm(self.l, self.mj+0.5, theta, phi) * self.rWavefunc(r)
+        return wfElectronP, wfElectronM
+
+    def getRtimesPsi(self, x, y, z):
+        r"""
+            Calculates list of :math:`r \cdot \psi_{m_s} (x, y, z)`
+
+            At a point defined by Cartesian coordinates returns list of
+            :math:`r \cdot \psi_{m_s} (x, y, z)`
+             wavefunction values for different
+            electron spin projection values :math:`m_s`.
+
+            Args:
+                x (float): Cartesian coordinates of selected point,
+                    relative to the atom core.
+                    (in atomic units of Bohr radius :math:`a_0`)
+                y (float): Cartesian coordinates of selected point,
+                    relative to the atom core.
+                    (in atomic units of Bohr radius :math:`a_0`)
+                z (float): Cartesian coordinates of selected point,
+                    relative to the atom core.
+                    (in atomic units of Bohr radius :math:`a_0`)
+
+            Returns:
+                list of complex values corresponding to
+                :math:`r \cdot \psi_{m_s} (\theta, \phi, r)` for different
+                spin states :math:`m_s` contributing to the state in
+                **decreasing** order of :math:`m_s`.
+                For example, for :obj:`arc.AlkaliAtom`
+                returns :math:`r \cdot \psi_{m_s=+1/2} (\theta, \phi, r)` and
+                :math:`r \cdot \psi_{m_s=-1/2} (\theta, \phi, r)` .
+                )`, where :math:`r=\sqrt{x^2+y^2+z^2}`.
+        """
+        theta = np.arctan2((x**2 + y**2)**0.5, z)
+        phi = np.arctan2(y, x)
+        r = np.sqrt(x**2 + y**2 + z**2)
+        return self.getRtimesPsiSpherical(theta, phi, r)
+
+    def getPsi(self, x, y, z):
+        r"""
+            Calculates list of :math:`\psi_{m_s} (x,y,z)`
+
+            At point define by Cartesian coordinates returns list of
+            :math:`\psi_{m_s} (x,y,z)` wavefunction values corresponding
+            to different electron spin projection values :math:`m_s`.
+
+            Args:
+                x (float): Cartesian coordinates of selected point,
+                    relative to the atom core.
+                    (in atomic units of Bohr radius :math:`a_0`)
+                y (float): Cartesian coordinates of selected point,
+                    relative to the atom core.
+                    (in atomic units of Bohr radius :math:`a_0`)
+                z (float): Cartesian coordinates of selected point,
+                    relative to the atom core.
+                    (in atomic units of Bohr radius :math:`a_0`)
+
+            Returns:
+                list of complex values corresponding to
+                :math:`\psi_{m_s} (\theta, \phi, r)` for different
+                spin states :math:`m_s` contributing to the state in
+                **decreasing** order of :math:`m_s`.
+                For example, for :obj:`arc.AlkaliAtom`
+                returns :math:`\psi_{m_s=+1/2} (\theta, \phi, r)` and
+                :math:`\psi_{m_s=-1/2} (\theta, \phi, r)` .
+                )`.
+        """
+        r = np.sqrt(x * x + y * y + z * z)
+        return self.getRtimesPsi(x, y, z) / r
+
+    def getRtimesPsiSquaredInPlane(self,
+                                   plane="x-z",
+                                   pointsPerAxis=150,
+                                   axisLength=None,
+                                   units="atomic"
+                                   ):
+        r"""
+        Calculates :math:`|r \cdot \psi|^2` on a mesh in a given plane.
+
+        Args:
+            plane (str): optiona, set's calculation plane to `'x-y'` or `'x-z'`.
+                Default value `'x-y'`
+            pointsPerAxis (int): optional, a number of mesh points per Carthesian
+                axis. Default value of 150, gives a mesh with total size of
+                :math:`150 \times 150 = 22500` points.
+            axisLength (float): optional, length of the square in the selected plane on
+                which wavefunction will be calculated. By default it is large
+                enough to fit the whole wavefunction
+                (in atomic units of Bohr radius :math:`a_0`).
+            units (str): optional, units of length in which calculated mesh will be
+                **returned** (note that `axisLength` is on the other hand
+                always in atomi units.). Supported values are
+                `'atomic'` or `'nm'`. Default value `'atomic'` .
+
+        Returns:
+            meshCoordinate1, meshCoordinate2 and :math:`|r \cdot \psi|^2 = \sum_{m_s} |r \cdot \psi_{m_s}|^2`,
+            where sum is over possible electron spin projection values
+            :math:`m_s`.
+
+        """
+        if axisLength is None:
+            axisLength = 2.0 * 2.0*self.n*(self.n+15.0)
+
+        coord1 = np.linspace(- axisLength / 2., axisLength / 2., pointsPerAxis)
+        coord2 = np.linspace(- axisLength / 2., axisLength / 2., pointsPerAxis)
+        meshCoord1, meshCoord2 = np.meshgrid(coord1, coord2)
+
+        coord = []
+        if (plane == "x-z"):
+            coord = [meshCoord1, 0, meshCoord2]
+        elif (plane == "x-y"):
+            coord = [meshCoord1, meshCoord2, 0]
+        else:
+            raise ValueError("Only 'x-y' and 'x-z' planes are supported.")
+
+        wfP, wfM = self.getRtimesPsi(*coord)
+
+        # change units
+        if units == "nm":
+            scale = physical_constants["Bohr radius"][0]*1e9
+            meshCoord1 *= scale
+            meshCoord2 *= scale
+            wfP /= scale
+            wfM /= scale
+        elif units == "atomic":
+            pass
+        else:
+            raise ValueError("Only 'atomic' (a_0) and 'nm' are recognised"
+                             "as possible units. Received: %s" % units)
+
+        f = np.power(np.abs(wfP), 2) + np.power(np.abs(wfM), 2)
+        return meshCoord1, meshCoord2, f
+
+
+    def plot2D(self,
+               plane="x-z",
+               pointsPerAxis=150,
+               axisLength = None,
+               units="atomic",
+               colorbar=True, labels=True):
+        r"""
+        2D colour plot of :math:`|r \cdot \psi|^2` wavefunction in a
+        requested plane.
+
+        Args:
+            plane (str): optiona, set's calculation plane to `'x-y'` or `'x-z'`.
+                Default value `'x-y'`
+            pointsPerAxis (int): optional, a number of mesh points per Carthesian
+                axis. Default value of 150, gives a mesh with total size of
+                :math:`150 \times 150 = 22500` points.
+            axisLength (float): optional, length of the square in the selected
+                plane on which wavefunction will be calculated. By default it
+                is large enough to fit the whole wavefunction
+                (in atomic units of Bohr radius :math:`a_0`).
+            units (str): optional, units of length in which calculated mesh
+                will be **returned** (note that `axisLength` is on the other
+                hand always in atomi units.). Supported values are
+                `'atomic'` or `'nm'`. Default value `'atomic'` .
+            colorbar (bool): optional, determens if the colour bar scale of
+                should be shown. Default value is `True`.
+            labels (bool): optional, determines if the labels on the axis
+                of the plot should be shown. Default value is `True`.
+
+        Returns:
+            :obj:`matplotlib.figure` object with a requested plot. Use `show()`
+            method to see figure.
+
+        """
+
+
+        x,y,f = self.getRtimesPsiSquaredInPlane(plane=plane,
+                                               pointsPerAxis=pointsPerAxis,
+                                               axisLength=axisLength,
+                                               units=units)
+
+        fig = plt.figure(figsize=(6,4))
+        ax = fig.add_subplot(1,1,1)
+        cp = ax.pcolor(x, y, f,
+                       vmin=0, vmax=f.max(), cmap='viridis')
+
+
+        if labels:
+            if units=="atomic":
+                unitLabel = r"$a_0$"
+            else:
+                unitLabel = "nm"
+            if plane=="x-y":
+                plt.xlabel(r"$x$ (%s)" % unitLabel)
+                plt.ylabel(r"$y$ (%s)" % unitLabel)
+            elif plane=="x-z":
+                plt.xlabel(r"$x$ (%s)" % unitLabel)
+                plt.ylabel(r"$z$ (%s)" % unitLabel)
+            else:
+                raise ValueError("Only 'atomic' (a_0) and 'nm' are recognised"
+                             "as possible units. Received: %s" % units)
+        ax.set_aspect('equal', 'box')
+        if colorbar:
+            cb = fig.colorbar(cp)
+            cb.set_label(r'$|r\cdot\psi(x,y,z)|^2$')  # NOTE: change label if plotting Imaginart part!
+        return fig
+    # return figure
+
+    def plot3D(self,
+               plane="x-z",
+               pointsPerAxis=150,
+               axisLength = None,
+               units="atomic",
+               labels=True):
+        r"""
+        3D colour surface plot of :math:`|r \cdot \psi|^2` wavefunction in a
+        requested plane.
+
+        Args:
+            plane (str): optiona, set's calculation plane to `'x-y'` or `'x-z'`.
+                Default value `'x-y'`
+            pointsPerAxis (int): optional, a number of mesh points per Carthesian
+                axis. Default value of 150, gives a mesh with total size of
+                :math:`150 \times 150 = 22500` points.
+            axisLength (float): optional, length of the square in the selected
+                plane on which wavefunction will be calculated. By default it
+                is large enough to fit the whole wavefunction
+                (in atomic units of Bohr radius :math:`a_0`).
+            units (str): optional, units of length in which calculated mesh
+                will be **returned** (note that `axisLength` is on the other
+                hand always in atomi units.). Supported values are
+                `'atomic'` or `'nm'`. Default value `'atomic'` .
+            labels (bool): optional, determines if the labels on the axis
+                of the plot should be shown. Default value is `True`.
+
+        Returns:
+            :obj:`matplotlib.figure` object with a requested plot. Use `show()`
+            method to see figure.
+
+        """
+
+
+        x, y, f = self.getRtimesPsiSquaredInPlane(plane=plane,
+                                                  pointsPerAxis=pointsPerAxis,
+                                                  axisLength=axisLength,
+                                                  units=units)
+        fig = plt.figure(figsize=(6,4))
+        ax = fig.gca(projection='3d')
+        ax.view_init(40, -35)
+
+        # Plot the surface.
+
+        surf = ax.plot_surface(x, y, f, cmap='Reds',
+                               vmin=0, vmax=f.max(),
+                               linewidth=0, antialiased=False,
+                               rstride=1, cstride=1)
+        ax.plot_wireframe(x, y, f,
+                          rstride=10, cstride=10,
+                          alpha=0.05, color="k")
+
+        if labels:
+            if units=="atomic":
+                unitLabel = r"$a_0$"
+            else:
+                unitLabel = "nm"
+            if plane=="x-y":
+                plt.xlabel(r"$x$ (%s)" % unitLabel)
+                plt.ylabel(r"$y$ (%s)" % unitLabel)
+            elif plane=="x-z":
+                plt.xlabel(r"$x$ (%s)" % unitLabel)
+                plt.ylabel(r"$z$ (%s)" % unitLabel)
+            else:
+                raise ValueError("Only 'atomic' (a_0) and 'nm' are recognised"
+                             "as possible units. Received: %s" % units)
+        plt.xlim(x.min(),x.max())
+        plt.ylim(y.min(),y.max())
+
+        return fig
 
 
 class StarkMap:
@@ -1144,7 +1497,7 @@ class LevelPlot:
         self.spectraLine = np.copy(lineName)
 
     def drawSpectraConvoluted(self, lowerWavelength, higherWavelength, points, gamma):
-        wavelengths = linspace(lowerWavelength, higherWavelength, points)
+        wavelengths = np.linspace(lowerWavelength, higherWavelength, points)
         spectra = np.zeros(points)
         i = 0
         while i < len(wavelengths):
