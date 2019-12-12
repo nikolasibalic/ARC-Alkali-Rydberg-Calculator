@@ -6,6 +6,17 @@ Overview
 
 .. currentmodule:: arc.calculations_atom_single
 
+.. rubric:: Wavefunction Methods
+
+.. autosummary::
+
+    Wavefunction.getRtimesPsiSpherical
+    Wavefunction.getRtimesPsi
+    Wavefunction.getPsi
+    Wavefunction.getRtimesPsiSquaredInPlane
+    Wavefunction.plot2D
+    Wavefunction.plot3D
+
 .. rubric:: StarkMap Methods
 
 .. autosummary::
@@ -17,7 +28,7 @@ Overview
     StarkMap.savePlot
     StarkMap.exportData
     StarkMap.getPolarizability
-    
+
 .. rubric:: LevelPlot Methods
 
 .. autosummary::
@@ -25,7 +36,7 @@ Overview
     LevelPlot.makeLevels
     LevelPlot.drawLevels
     LevelPlot.showPlot
-    
+
 Detailed documentation
 ----------------------
 

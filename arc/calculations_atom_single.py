@@ -55,39 +55,61 @@ def Ylm(l, m, theta, phi):
     return sph_harm(m, l, phi, theta)
 
 class Wavefunction:
-    """
+    r"""
         Calculates and plots electron wavefunctions.
 
         Args:
             atom: atom type considered (for example :obj:`Rubidum87()`)
-            n (int): principal quantum number of requested state
-            l (int): orbital angular momentum of state
-            j (float): total angular momentum of state
-            mj (flaot): projection of total angular momentum on selected
-                quantization axis (`z` axis in coordinate system considered
-                here).
+            basisStates (array): array of states in fine basis that contribute\
+                to the state whose wavefunction is requested.
+                :math:`[[n_1, \ell_1, j_1, mj_1], ...]` For efficient
+                calculation **do not** pass all the possible basis states, but
+                just the once that have significant contribution to the
+                reqested state.
+            coefficients (array): array of complex coefficents corresponding
+                to decomposition of required state :math:`|\psi\rangle` on
+                basis states :math:`|\psi_i rangle`, i.e. `[c1, ...]`, where
+                :math:`c1 = \langle \psi_i |\psi\rangle`.
     """
 
-    def __init__(self, atom, n, l, j, mj):
+    def __init__(self, atom, basisStates, coefficients):
+        # n, l, j, mj
         self.atom = atom
-        self.n = n
-        self.l = l
-        self.j = j
-        self.mj = mj
+        if (len(basisStates) == 0 or len(basisStates[0]) != 4
+                or len(basisStates) != len(coefficients)):
+            raise ValueError("basisStates should be defined as array of"
+                             "states in fine basis [[n1, l1, j1, mj1], ... ]"
+                             "contributing to the required states "
+                             "(do not use unecessarily whole basis) "
+                             "while coefficients corresponding to decomposition "
+                             "of requested state on these basis state "
+                             "should be given as"
+                             "separete array [c1, ...]")
+        self.basisStates = basisStates
+        self.coef = coefficients
+        self.basisWavefunctions = []
 
-        # calculate radial wavefunction
-        step = 0.001
-        r, rWavefunc = atom.radialWavefunction(
-            self.l, 0.5, self.j,
-            self.atom.getEnergy(self.n, self.l, self.j) / 27.211,
-            self.atom.alphaC**(1 / 3.0),
-            2.0 * self.n * (self.n + 15.0), step)
-        suma = np.trapz(rWavefunc**2, x=r)
-        rWavefunc = rWavefunc / (sqrt(suma))
+        for state in self.basisStates:
+            n = state[0]
+            l = state[1]
+            j = state[2]
+            mj = state[3]
 
-        self.rWavefunc = interpolate.interp1d(r, rWavefunc,
-                                                 bounds_error=False,
-                                                 fill_value=(0,0))
+            # calculate radial wavefunction
+            step = 0.001
+            r, rWavefunc = atom.radialWavefunction(
+                l, 0.5, j,
+                self.atom.getEnergy(n, l, j) / 27.211,
+                self.atom.alphaC**(1 / 3.0),
+                2.0 * n * (n + 15.0), step)
+            suma = np.trapz(rWavefunc**2, x=r)
+            rWavefunc = rWavefunc / (sqrt(suma))
+
+            self.basisWavefunctions.append(
+                interpolate.interp1d(r, rWavefunc,
+                                    bounds_error=False,
+                                    fill_value=(0,0))
+                )
 
     def getRtimesPsiSpherical(self, theta, phi, r):
         r"""
@@ -122,12 +144,21 @@ class Wavefunction:
 
         wfElectronP = 0+0j  # electron spin +1/2
         wfElectronM = 0+0j  # electron spin -1/2
-        if abs(self.mj - 0.5) - 0.1 < self.l:
-            wfElectronP += CG(self.l, self.mj-0.5, 0.5, +0.5, self.j, self.mj) *\
-                           Ylm(self.l, self.mj-0.5, theta, phi) * self.rWavefunc(r)
-        if abs(self.mj + 0.5) - 0.1 < self.l:
-            wfElectronM += CG(self.l, self.mj+0.5, 0.5, -0.5, self.j, self.mj) *\
-                           Ylm(self.l, self.mj+0.5, theta, phi) * self.rWavefunc(r)
+
+        for i, state in enumerate(self.basisStates):
+            l = state[1]
+            j = state[2]
+            mj = state[3]
+            if abs(mj - 0.5) - 0.1 < l:
+                wfElectronP += CG(l, mj-0.5, 0.5, +0.5, j, mj) \
+                               * Ylm(l, mj-0.5, theta, phi)\
+                               * self.basisWavefunctions[i](r) \
+                               * self.coef[i]
+            if abs(mj + 0.5) - 0.1 < l:
+                wfElectronM += CG(l, mj+0.5, 0.5, -0.5, j, mj) \
+                               * Ylm(l, mj+0.5, theta, phi) \
+                               * self.basisWavefunctions[i](r) \
+                               * self.coef[i]
         return wfElectronP, wfElectronM
 
     def getRtimesPsi(self, x, y, z):
@@ -207,28 +238,32 @@ class Wavefunction:
         Calculates :math:`|r \cdot \psi|^2` on a mesh in a given plane.
 
         Args:
-            plane (str): optiona, set's calculation plane to `'x-y'` or `'x-z'`.
-                Default value `'x-y'`
-            pointsPerAxis (int): optional, a number of mesh points per Carthesian
-                axis. Default value of 150, gives a mesh with total size of
-                :math:`150 \times 150 = 22500` points.
-            axisLength (float): optional, length of the square in the selected plane on
-                which wavefunction will be calculated. By default it is large
-                enough to fit the whole wavefunction
+            plane (str): optiona, set's calculation plane to `'x-y'` or
+                `'x-z'`. Default value `'x-y'`
+            pointsPerAxis (int): optional, a number of mesh points per
+                Carthesian axis. Default value of 150, gives a mesh with total
+                size of :math:`150 \times 150 = 22500` points.
+            axisLength (float): optional, length of the square in the selected
+                plane on which wavefunction will be calculated. By default it
+                is largw enough to fit the whole wavefunction
                 (in atomic units of Bohr radius :math:`a_0`).
-            units (str): optional, units of length in which calculated mesh will be
-                **returned** (note that `axisLength` is on the other hand
-                always in atomi units.). Supported values are
+            units (str): optional, units of length in which calculated mesh
+                will be **returned** (note that `axisLength` is on the other
+                hand always in atomi units.). Supported values are
                 `'atomic'` or `'nm'`. Default value `'atomic'` .
 
         Returns:
-            meshCoordinate1, meshCoordinate2 and :math:`|r \cdot \psi|^2 = \sum_{m_s} |r \cdot \psi_{m_s}|^2`,
+            meshCoordinate1, meshCoordinate2 and
+            :math:`|r \cdot \psi|^2 = \sum_{m_s} |r \cdot \psi_{m_s}|^2`,
             where sum is over possible electron spin projection values
             :math:`m_s`.
 
         """
         if axisLength is None:
-            axisLength = 2.0 * 2.0*self.n*(self.n+15.0)
+            nMax = 1
+            for state in self.basisStates:
+                nMax = max(nMax, state[0])
+            axisLength = 2.0 * 2.0 * nMax * (nMax + 15.0)
 
         coord1 = np.linspace(- axisLength / 2., axisLength / 2., pointsPerAxis)
         coord2 = np.linspace(- axisLength / 2., axisLength / 2., pointsPerAxis)
@@ -291,7 +326,7 @@ class Wavefunction:
                 of the plot should be shown. Default value is `True`.
 
         Returns:
-            :obj:`matplotlib.figure` object with a requested plot. Use `show()`
+            :obj:`matplotlib.pyplot.figure` object with a requested plot. Use `show()`
             method to see figure.
 
         """
