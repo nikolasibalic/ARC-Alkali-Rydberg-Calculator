@@ -28,6 +28,7 @@ Overview
     StarkMap.savePlot
     StarkMap.exportData
     StarkMap.getPolarizability
+    StarkMap.getState
 
 .. rubric:: LevelPlot Methods
 

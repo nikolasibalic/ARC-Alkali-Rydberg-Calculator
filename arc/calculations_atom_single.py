@@ -62,14 +62,14 @@ class Wavefunction:
             atom: atom type considered (for example :obj:`Rubidum87()`)
             basisStates (array): array of states in fine basis that contribute\
                 to the state whose wavefunction is requested.
-                :math:`[[n_1, \ell_1, j_1, mj_1], ...]` For efficient
+                :math:`[[n_1, \ell_1, j_1, m_{j1}], ...]` For efficient
                 calculation **do not** pass all the possible basis states, but
                 just the once that have significant contribution to the
                 reqested state.
-            coefficients (array): array of complex coefficents corresponding
-                to decomposition of required state :math:`|\psi\rangle` on
-                basis states :math:`|\psi_i rangle`, i.e. `[c1, ...]`, where
-                :math:`c1 = \langle \psi_i |\psi\rangle`.
+            coefficients (array): array `[c1, ...]` of complex coefficents
+                :math:`c_i = \langle \psi_i |\psi\rangle` corresponding to
+                decomposition of required state :math:`|\psi\rangle` on basis
+                states :math:`|\psi_i \rangle` .
     """
 
     def __init__(self, atom, basisStates, coefficients):
@@ -1334,6 +1334,89 @@ class StarkMap:
 
         return popt[1] * 1.e3  # returned value is in  MHz cm^2 / V^2
 
+
+    def getState(self, state, electricField, minN, maxN, maxL,
+                 accountForAmplitude=0.95,
+                 debugOutput=False):
+        """
+        Returns basis states and coefficients that make up for a given electric
+        field the eigenstate with largest contribution of the original state.
+
+        Args:
+            state (array): target basis state in format :math:`[n,\ell,j,m_j]`
+                corresponding to the state whose composition we want to track
+                as we apply the electric field
+            electricField (float): applied DC electric field in units of V/m.
+            minN (int): minimal principal quantum number to be taken for calculation
+                of the Stark mixing
+            maxN (int): maximal principal quantum nunber to be take for calculation
+                of the Start mixing
+            maxL (int): maximal orbital angular momentum of states that should be
+                taken in calculation of the Stark mixing
+            accountForAmplitude (float): optinal, relative amplitude of state
+                that should be reached with the subset of the eigen states
+                returned. The returned eigen states will be sorted in the
+                declining relative contribution to the final eigen state, and
+                once total accounted amplitude of the state reaches 0.95,
+                further output of additional small contribution of the other
+                basis states to the final states will be supressed. Default
+                value of 0.95 will force output until basis state accounts
+                for 95\% of the state amplitude.
+            debugOutput (bool): optional, prints additional debug information
+                if True. Default False.
+
+        Returns:
+            **array of states** in format [[n1, l1, j1, mj1], ...] and
+            **array of complex coefficients** in format [c1, c2, ...] corresponding
+            the projections of the eigenstate (thas has largest contribution
+            of the original state in the given electric field) on the basis
+            states,
+            and **energy** of the found state in (eV)
+
+        """
+        self.defineBasis(state[0], state[1], state[2], state[3],
+                         minN, maxN, maxL)
+
+        m = self.mat1 + self.mat2 * electricField
+        ev, egvector = eigh(m)
+
+        # find which state in the electric field has strongest contribution
+        # of the requested state?
+        maxOverlap = 0
+        eigenvectorIndex = 0
+        for i in range(len(ev)):
+            if ( abs(egvector[self.indexOfCoupledState, i])**2 > maxOverlap ):
+                maxOverlap = abs( egvector[self.indexOfCoupledState, i] )**2
+                eigenvectorIndex = i
+
+        energy = ev[eigenvectorIndex] * 0.03336
+        if debugOutput:
+            print("Max overlap = %.3f" % maxOverlap)
+            print("Eigen energy (state index %d) = %.2f eV" % (eigenvectorIndex,
+                                                               energy))
+
+        contributions = egvector[:, eigenvectorIndex]
+        sortedContributions = np.argsort(abs(contributions) )
+
+        if debugOutput:
+            print("Maximum contributions to this state")
+            for i in range(4):
+                index = sortedContributions[-i-1]
+                print(contributions[index])
+                print(self.basisStates[index])
+            print("===========\n")
+
+        i = 0
+        coef = []
+        contributingStates = []
+        while (accountForAmplitude > 0 and i < len(self.basisStates)):
+            index = sortedContributions[-i-1]
+            coef.append(contributions[index])
+            accountForAmplitude -= abs(coef[-1])**2
+            contributingStates.append(self.basisStates[index])
+            i += 1
+
+        return contributingStates, coef, energy
 
 # ================= Level plots, decays, cascades etc =======================
 
