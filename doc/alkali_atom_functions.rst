@@ -23,6 +23,7 @@ Overview
 .. autosummary::
 
     AlkaliAtom.getDipoleMatrixElement
+    AlkaliAtom.getDipoleMatrixElementHFS
     AlkaliAtom.getTransitionWavelength
     AlkaliAtom.getTransitionFrequency
     AlkaliAtom.getRabiFrequency
