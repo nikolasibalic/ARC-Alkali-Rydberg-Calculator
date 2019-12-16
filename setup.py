@@ -38,6 +38,14 @@ setup(
 
     package_data={'arc': ['data/*', 'arc_c_extensions.c']},
 
+    install_requires=[
+       'scipy>=0.18.1',
+       'numpy>=1.16.0',
+       'matplotlib>=1.5.3',
+       'sympy>=1.1.1',
+       'lmfit>=0.9.0'
+    ],
+
     zip_safe=False,
     ext_modules=[arc_ext],
 
