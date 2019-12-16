@@ -994,10 +994,10 @@ class AlkaliAtom(object):
 
     def getDipoleMatrixElement(self, n1, l1, j1, mj1, n2, l2, j2, mj2, q,
                                s=0.5):
-        """
+        r"""
             Dipole matrix element
-            :math:`\\langle n_1 l_1 j_1 m_{j_1} |e\\mathbf{r}|\
-            n_2 l_2 j_2 m_{j_2}\\rangle`
+            :math:`\langle n_1 l_1 j_1 m_{j_1} |e\mathbf{r}|\
+            n_2 l_2 j_2 m_{j_2}\rangle`
             in units of :math:`a_0 e`
 
             Args:
@@ -1005,6 +1005,9 @@ class AlkaliAtom(object):
                     and projection of total angular momenutum for state 1
                 n2. l2, j2, mj2: principal, orbital, total angular momentum,
                     and projection of total angular momenutum for state 2
+                q (int): specifies transition that the driving field couples to,
+                    +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
+                    :math:`\pi` and :math:`\sigma^-` transitions respectively.
                 s (float): optional, total spin angular momentum of state.
                     By default 0.5 for Alkali atoms.
 
@@ -1013,10 +1016,10 @@ class AlkaliAtom(object):
 
             Example:
 
-                For example, calculation of :math:`5 S_{1/2}m_j=-\\frac{1}{2}\
-                \\rightarrow  5 P_{3/2}m_j=-\\frac{3}{2}`
+                For example, calculation of :math:`5 S_{1/2}m_j=-\frac{1}{2}\
+                \rightarrow  5 P_{3/2}m_j=-\frac{3}{2}`
                 transition dipole matrix element for laser driving
-                :math:`\\sigma^-` transition::
+                :math:`\sigma^-` transition::
 
                     from arc import *
                     atom = Rubidium()
@@ -1031,6 +1034,60 @@ class AlkaliAtom(object):
         return (-1)**(int(j1 - mj1)) *\
             Wigner3j(j1, 1, j2, -mj1, -q, mj2) *\
             self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
+
+    def getDipoleMatrixElementHFS(self,
+                                  n1, l1, j1, f1, mf1,
+                                  n2, l2, j2, f2, mf2,
+                                  q,
+                                  s=0.5):
+        r"""
+        Dipole matrix element for hyperfine structure resolved transitions
+        :math:`\langle n_1 l_1 j_1 f_1 m_{f_1} |e\mathbf{r}|\
+        n_2 l_2 j_2 f_2 m_{f_2}\rangle`
+        in units of :math:`a_0 e`
+
+        For hyperfine resolved transitions, the dipole matrix element is
+        :math:`\langle n_1,\ell_1,j_1,f_1,m_{f1} |  \
+        \mathbf{\hat{r}}\cdot \mathbf{\varepsilon}_q  \
+        | n_2,\ell_2,j_2,f_2,m_{f2} \rangle = (-1)^{f_1-m_{f1}} \
+        \left( \
+        \begin{matrix} \
+        f_1 & 1 & f_2 \\ \
+        -m_{f1} & q & m_{f2} \
+        \end{matrix}\right) \
+        \langle n_1 \ell_1 j_1 f_1|| r || n_2 \ell_2 j_2 f_2 \rangle,` where
+        :math:`\langle n_1 \ell_1 j_1 f_1 ||r|| n_2 \ell_2 j_2 f_2 \rangle \
+        = (-1)^{j_1+I+F_2+1}\sqrt{(2f_1+1)(2f_2+1)} ~ \
+        \left\{ \begin{matrix}\
+        F_1 & 1 & F_2 \\ \
+        j_2 & I & j_1 \
+        \end{matrix}\right\}~ \
+        \langle n_1 \ell_1 j_1||r || n_2 \ell_2 j_2 \rangle.`
+
+
+        Args:
+            n1. l1, j1, f1, mf1: principal, orbital, total orbital,
+                fine basis (total atomic) angular momentum,
+                and projection of total angular momenutum for state 1
+            n2. l2, j2, f2, mf2: principal, orbital, total orbital,
+                fine basis (total atomic) angular momentum,
+                and projection of total angular momenutum for state 2
+            q (int): specifies transition that the driving field couples to,
+                +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
+                :math:`\pi` and :math:`\sigma^-` transitions respectively.
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
+
+        Returns:
+            float: dipole matrix element( :math:`a_0 e`)
+
+
+        """
+        dme = (-1)**(f1-mf1)*Wigner3j(f1, 1, f2, -mf1, q, mf2)
+        dme *= (-1)**(j1 + self.I + f2 + 1) * ((2. * f1 + 1) * (2 * f2 + 1))**0.5
+        dme *= Wigner6j(f1, 1, f2, j2, self.I, j1)
+        dme *= self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
+        return dme
 
     def getRabiFrequency(self,
                          n1, l1, j1, mj1,
