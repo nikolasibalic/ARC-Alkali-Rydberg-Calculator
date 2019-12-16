@@ -1083,8 +1083,9 @@ class AlkaliAtom(object):
 
 
         """
-        dme = (-1)**(f1-mf1)*Wigner3j(f1, 1, f2, -mf1, q, mf2)
-        dme *= (-1)**(j1 + self.I + f2 + 1) * ((2. * f1 + 1) * (2 * f2 + 1))**0.5
+        dme = (- 1)**(f1 - mf1) * Wigner3j(f1, 1, f2, - mf1, q, mf2)
+        dme *= (- 1)**(j1 + self.I + f2 + 1) * ((2. * f1 + 1)
+                                                * (2 * f2 + 1))**0.5
         dme *= Wigner6j(f1, 1, f2, j2, self.I, j1)
         dme *= self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
         return dme
