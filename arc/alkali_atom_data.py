@@ -171,6 +171,8 @@ class Caesium(AlkaliAtom):
     """
     Z = 55
 
+    I = 3.5  # 7/2
+
     #: (eV), Ref. [#jd2016]_.
     ionisationEnergy = 31406.4677325 * 1.e2\
         * physical_constants["inverse meter-electron volt relationship"][0]
@@ -322,6 +324,8 @@ class Rubidium85(AlkaliAtom):
     """
     Z = 37
 
+    I = 2.5  # 5/2
+
     NISTdataLevels = 77
 
     #: (eV) Ref. [#Sanguinetti2009]_
@@ -445,6 +449,8 @@ class Rubidium87(AlkaliAtom):
     """
     Z = 37
 
+    I = 1.5  # 3/2
+
     NISTdataLevels = 77
 
     #: (eV) Ref. [#Mack2011]_
@@ -562,6 +568,8 @@ class Lithium6(AlkaliAtom):  # Li
 
     Z = 3
 
+    I = 1.
+
     NISTdataLevels = 42
 
     # (eV) from Ref. [#c7]_
@@ -677,6 +685,8 @@ class Lithium7(AlkaliAtom):  # Li
 
     Z = 3
 
+    I = 1.5  # 3/2
+
     NISTdataLevels = 42
     ionisationEnergy = 5.391719  #: (eV) NIST Ref. [#c11]_.
 
@@ -786,6 +796,8 @@ class Sodium(AlkaliAtom):  # Na23
     """
 
     Z = 11
+
+    I = 1.5  # 3/2
 
     NISTdataLevels = 20
 
@@ -898,6 +910,8 @@ class Potassium39(AlkaliAtom):
     """
 
     Z = 19
+
+    I = 1.5  # 3/2
 
     NISTdataLevels = 46
 
@@ -1017,6 +1031,8 @@ class Potassium40(AlkaliAtom):
 
     Z = 19
 
+    I = 4
+
     NISTdataLevels = 46
 
     #: (eV), weighted average of values in Ref. [#c7]_.
@@ -1125,6 +1141,8 @@ class Potassium41(AlkaliAtom):
     """
 
     Z = 19
+
+    I = 1.5  # 3/2
 
     NISTdataLevels = 46
 

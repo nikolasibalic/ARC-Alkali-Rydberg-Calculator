@@ -76,9 +76,9 @@ Data sources
 from .alkaline_earth_atom_functions import *
 
 
-class Strontium87(AlkalineEarthAtom):
+class Strontium88(AlkalineEarthAtom):
     """
-    Properties of Strontium 87 atoms
+    Properties of Strontium 88 atoms
     """
 
     alphaC = 15
@@ -93,6 +93,8 @@ class Strontium87(AlkalineEarthAtom):
     ionisationEnergy = 5.69486740       #: (eV)  Ref. [#c3]_
 
     Z = 38
+    I = 0.
+
     #: TODO source
     scaledRydbergConstant = 109736.627 * 1.e2\
         * physical_constants["inverse meter-electron volt relationship"][0]
@@ -156,11 +158,11 @@ class Strontium87(AlkalineEarthAtom):
     literatureDMEfilename = 'strontium_literature_dme.csv'
 
     useLiterature = False
-    elementName = 'Sr87'
+    elementName = 'Sr88'
     meltingPoint = 777 + 273.15  #: in K
 
-    #: TODO FIND A CITATION FOR THIS
-    mass = 87.62 * physical_constants["atomic mass constant"][0]
+    #: NIST Standard reference database, https://dx.doi.org/10.18434/T4FW23
+    mass = 87.905619 * physical_constants["atomic mass constant"][0]
 
     #: TODO what is docstring here? (fitting ranges have been taken from Pauls fits and christophe)
     defectFittingRange = {"1S0": [14, 34], "3S1": [13, 45], "1P1": [14, 28],
@@ -196,6 +198,8 @@ class Calcium40(AlkalineEarthAtom):
     modelPotential_coef = {}
 
     Z = 20
+    I = 0
+
     #: TODO source
     scaledRydbergConstant = 109735.81 * 1e2 * \
         physical_constants["inverse meter-electron volt relationship"][0]
@@ -249,8 +253,8 @@ class Calcium40(AlkalineEarthAtom):
     elementName = 'Ca40'
     meltingPoint = 842 + 273.15  #: in K
 
-    #: TODO LIZZY FIND A CITATION FOR THIS (Ref. [#ca3]_ ??)
-    mass = 40.078 * physical_constants["atomic mass constant"][0]
+    #: NIST Standard Reference Database 108, https://dx.doi.org/10.18434/T4FW23
+    mass = 39.962591 * physical_constants["atomic mass constant"][0]
 
     #: TODO - what is here docstring? (fitting ranges have been taken from Pauls fits and christophe)
     defectFittingRange = {"1S0": [14, 34], "3S1": [13, 45], "1P1": [14, 28],
@@ -287,6 +291,8 @@ class Ytterbium173(AlkalineEarthAtom):
     modelPotential_coef = {}
 
     Z = 70
+    I = 2.5  # 5/2
+
     #: TODO source
     scaledRydbergConstant = 109736.627 * 1e2 * \
         physical_constants["inverse meter-electron volt relationship"][0]

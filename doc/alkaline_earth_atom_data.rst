@@ -5,7 +5,7 @@ Alkaline earth atom data
 
 .. autosummary::
 
-  Strontium87
+  Strontium88
   Calcium40
   Ytterbium173
 

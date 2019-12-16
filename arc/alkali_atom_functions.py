@@ -104,6 +104,7 @@ class AlkaliAtom(object):
 
     alphaC = 0.0    #: Core polarizability
     Z = 0.0       #: Atomic number
+    I = 0.0       #: Nuclear spin
 
     #: state energies from NIST values
     #: sEnergy [n,l] = state energy for n, l, j = l-1/2
