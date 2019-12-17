@@ -1782,3 +1782,225 @@ class LevelPlot:
             line = self.findLine(xdata[ind][0], ydata[ind][0])
             self.ax.set_title(line)
             event.canvas.draw()
+
+
+class AtomSurfaceVdW:
+    r"""
+        Calculates atom-surface Van der Waals interaction.
+
+        Energy of atom state :math:`|i\rangle` at distance :math:`z`
+        from the surface of material is offseted in energy by
+        :math:`V_{\rm VdW}` at small distances
+        :math:`z\ll\rm{min}(\lambda_{i,j})` ,
+        where :math:`\lambda_{i,j}` are the wavelengths from atom state
+        :math:`|i \rangle` to all strongly-coupled states :math:`j` ,
+        due to (unretarded) atom-surface interaction, also called
+        Van der Waals interaction.
+        The interaction potential can be expressed as
+
+        :math:`V_{\rm VdW} = - \frac{C_3}{16 z^3}`
+
+        This class calculates :math:`C_3` for individual states
+        :math:`|i\rangle`.
+
+        Args:
+            atom (:obj:`AlkaliAtom` or :obj:`AlkalineEarthAtom`): b
+            material (from :obj:`arc.material`): a
+
+        Note:
+            To find frequecy shift of a transition
+            :math:`|\rm a \rangle\rightarrow |\rm b \rangle`,
+            one needs to calculate difference in
+            :math:`C_3` coefficients obtained for the two states
+            :math:`|\rm a\rangle` and :math:`|\rm b\rangle` respectively.
+            For example::
+                x = 2+3
+                y = 2
+
+    """
+
+    def __init__(self, atom, surfaceMaterial=None):
+        self.atom = atom
+        if surfaceMaterial is None:
+            print("NOTE: No surface material specified. "
+                  "Assuming perfect mirror.")
+        self.surfaceMaterial = surfaceMaterial
+
+    def getC3contribution(self,
+                          n1, l1, j1,
+                          n2, l2, j2,
+                          s=0.5):
+        r"""
+        Contribution to :math:`C_3` of :math:`|n_1, \ell_1, j_1\rangle` state
+        due to dipole coupling to :math:`|n_2, \ell_2, j_2\rangle` state
+
+        Calculates
+        :math:`\left| \langle n_1,\ell_1,j_1| D_x \
+        |n_2,\ell_2,j_2\rangle \right|^2 \
+        + \left| \langle n_1, \ell_1, j_1 | D_y \
+        |n_2, \ell_2, j_2> \right|^2 + \
+        2 \cdot \left|<n_1, \ell_1, j_1|D_z|n_2, \ell_2, j_2>\right|^2`
+
+        where
+        :math:`\mathbf{D} \equiv e \cdot \mathbf{r} \
+        \equiv \hat{x} D_x + \hat{y} D_y\
+        + \hat{z} D_z` is atomic dipole operator.
+
+        Args:
+            n1 (int): principal quantum number of state 1
+            l1 (int): orbital angular momentum of state 1
+            j1 (float): total angular momentum of state 1
+            n2 (int): principal quantum number od state 2
+            l2 (int): orbital angular momentum of state 2
+            j2 (float): total angular momentum of state 2
+            s (float): optional, spin angular momentum of states. Default value
+                of 0.5 is correct for AlkaliAtoms. For AlkalineEarthAtom it
+                has to be explicitly stated
+
+        Returns:
+            float, float, float:
+                contribution to VdW coefficient :math:`C_3` ,\
+                estimated error :math:`\delta C_3` \
+                (in units of :math:`{\rm J}\cdot{\rm m}^3`), and refractive \
+                index :math:`n` of the surface material for the given \
+                transition.
+
+        Warning:
+            mkm
+        """
+
+        result = 0.
+        error = 0.
+
+        hasLiteratureValue, dme, info = self.atom.getLiteratureDME(
+            n1, l1, j1,
+            n2, l2, j2,
+            s=0.5)
+        if hasLiteratureValue:
+            dme_reduced_J = self.atom.getReducedMatrixElementJ(
+                n1, l1, j1,
+                n2, l2, j2,
+                s=0.5)
+            relativeError = abs(info[1]/dme_reduced_J)
+        else:
+            relativeError = 0.05  # 5 percent for calculated values (note: estimate only!)
+
+        # sum over mj1
+        for mj1 in np.linspace(-j1, j1, int(round(2 * j1 + 1))):
+
+            # calculate sum_mj2 |<j1,mj1|Dx|j2,mj2>|^2 + |<j1,mj1|Dy|j2,mj2>|^2 + 2* |<j1,mj1|Dz|j2,mj2>|^2
+            # which is equal to (check!)  |<j1,mj1|D+|j2,mj2>|^2 + |<j1,mj1|D-|j2,mj2>|^2 + 2* |<j1,mj1|Dz|j2,mj2>|^2
+            for mj2 in np.linspace(-j2, j2, int(round(2 * j2 + 1, 0))):
+                for q in [-1, +1]:
+                    result += abs(
+                        self.atom.getDipoleMatrixElement(n1, l1, j1, mj1,
+                                                         n2, l2, j2, mj2,
+                                                         q, s=s)
+                        * C_e * physical_constants["Bohr radius"][0]
+                        )**2
+                    error += (
+                        2 * abs(self.atom.getDipoleMatrixElement(n1, l1, j1, mj1,
+                                                                 n2, l2, j2, mj2,
+                                                                 q, s=s)
+                                * C_e * physical_constants["Bohr radius"][0]
+                               )**2
+                        * relativeError
+                        )
+                # for q = 0
+                q = 0
+                result += 2 * abs(
+                    self.atom.getDipoleMatrixElement(n1, l1, j1, mj1,
+                                                     n2, l2, j2, mj2,
+                                                     q)
+                    * C_e * physical_constants["Bohr radius"][0]
+                    )**2
+                error += (
+                    2 * abs(self.atom.getDipoleMatrixElement(n1, l1, j1, mj1,
+                                                             n2, l2, j2, mj2,
+                                                             q)
+                            * C_e * physical_constants["Bohr radius"][0]
+                            )**2
+                    * relativeError)
+
+        materialFactor = 1.
+        n = 10000
+        # effectively infinite refractive index would correspond to perfect
+        # reflector (perfect mirror)
+
+        if self.surfaceMaterial is not None:
+            wavelength = np.abs(self.atom.getTransitionWavelength(n1, l1, j1,
+                                                                  n2, l2, j2,
+                                                                  s1=s, s2=s)
+                                ) * 1e6  # in mum
+            n = self.surfaceMaterial.getN(vacuumWavelength=wavelength)
+            materialFactor = (n**2 - 1.) / (n**2 + 1.)
+
+        # include factor of 16
+
+        result = result / (2 * j1 + 1) / 16
+        error = error / (2 * j1 + 1) / 16
+
+        C3 = materialFactor * 1 / (4.0 * pi * epsilon_0) * result
+        error = materialFactor * 1 / (4.0 * pi * epsilon_0) * error
+
+        return C3, error, n  # C3 and error in units of J m^3
+
+    def getStateC3(self, n, l, j, coupledStatesList, s=0.5, debugOutput=False):
+        r"""
+        Retruns Van der Waals atom-surface interactoin coefficient for
+        a given state C3 (in J m^3)
+
+        Args:
+            n (int): principal quantum number of the state
+            l (int): orbital angular momentum of the state
+            j (int): total angular momentum of state
+            coupledStatesList (array): array of states that are strongly
+                dipole-coupled to the initial state, whose contribution
+                to :math:`C_3` will be take into account. Format
+                `[[n1,l1,j1],...]`
+            s (float, optional): total spin angular momentum for the considered
+                state. Default value of 0.5 is correct for `AlkaliAtoms`, but
+                it has to be explicitly specifiied for `AlkalineEarthAtom`.
+            debugOutput (bool, optional): prints additional output information,
+                False by default.
+
+        Returns:
+            float, float:
+                :math:`C_3` (in units of :math:`{\rm J}\cdot {\rm m}^3` ),
+                estimated error :math:`\delta C_3`
+        """
+
+        if debugOutput:
+            print("%s ->\tC3 contr. (kHz mum^3) \tlambda (mum)\tn"
+                  % (printStateString(n, l, j, s=s))
+                  )
+
+        totalShift = 0
+        sumSqError = 0
+
+        for state in coupledStatesList:
+            c3, err, refIndex = self.getC3contribution(
+                n, l, j,
+                state[0], state[1], state[2],
+                s=s)
+            if debugOutput:
+                print(
+                    "-> %s\t%.3f +- %.3f    \t%.3f\t\t%.3f\n" %
+                    (printStateString(state[0], state[1], state[2], s=s),
+                     c3/C_h*(1e6)**3*1e-3,
+                     err/C_h*(1e6)**3*1e-3,
+                     self.atom.getTransitionWavelength(
+                         n, l, j,
+                         state[0], state[1], state[2], s1=s, s2=s) * 1e6,
+                     refIndex)
+                    )
+            totalShift += c3
+            sumSqError += err**2
+        error = np.sqrt(sumSqError)
+        if debugOutput:
+            print("= = = = = = \tTotal shift of %s\t= %.3f+-%.4f kHz mum^3\n" %
+                  (printStateString(n, l, j, s=s),
+                   totalShift/C_h * (1e6)**3 * 1e-3,
+                   error/C_h * (1e6)**3 * 1e-3))
+
+        return totalShift, error  # in J m^3

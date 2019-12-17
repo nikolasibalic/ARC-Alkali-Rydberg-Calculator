@@ -1696,7 +1696,7 @@ class AlkaliAtom(object):
                   + self.literatureDMEfilename)
             print(e)
 
-    def getLiteratureDME(self, n1, l1, j1, n2, l2, j2):
+    def getLiteratureDME(self, n1, l1, j1, n2, l2, j2, s=0.5):
         """
             Returns literature information on requested transition.
 
