@@ -38,6 +38,14 @@ Overview
     LevelPlot.drawLevels
     LevelPlot.showPlot
 
+.. rubric:: AtomSurfaceVdW Methods
+
+.. autosummary::
+
+    AtomSurfaceVdW.getC3contribution
+    AtomSurfaceVdW.getStateC3
+
+
 Detailed documentation
 ----------------------
 
