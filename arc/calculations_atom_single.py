@@ -1813,9 +1813,7 @@ class AtomSurfaceVdW:
             one needs to calculate difference in
             :math:`C_3` coefficients obtained for the two states
             :math:`|\rm a\rangle` and :math:`|\rm b\rangle` respectively.
-            For example::
-                x = 2+3
-                y = 2
+            See example TODO (TO-DO)
 
     """
 
@@ -1866,7 +1864,9 @@ class AtomSurfaceVdW:
                 transition.
 
         Warning:
-            mkm
+            This is just contribution of one transition to the level shift
+            of a particular state. To calculate total level shift, check
+            :obj:`AtomSurfaceVdW.getStateC3`
         """
 
         result = 0.
@@ -1947,7 +1947,7 @@ class AtomSurfaceVdW:
 
     def getStateC3(self, n, l, j, coupledStatesList, s=0.5, debugOutput=False):
         r"""
-        Retruns Van der Waals atom-surface interactoin coefficient for
+        Van der Waals atom-surface interactoin coefficient for
         a given state C3 (in J m^3)
 
         Args:
@@ -2004,3 +2004,268 @@ class AtomSurfaceVdW:
                    error/C_h * (1e6)**3 * 1e-3))
 
         return totalShift, error  # in J m^3
+
+
+class OpticalLattice1D:
+    r"""
+        Atom properties in optical lattices in 1D
+
+        Args:
+            atom: one of AlkaliAtom or AlkalineEarthAtom
+            trapWavenegth (float): wavelength of trapping laser light
+                (in units of m)
+    """
+
+
+    energy = []
+    """
+        energy of states obtained by
+        :obj:`OpticalLattice1D.diagonalise` method
+        in format `[[energies for quasimomentum1 ],  [energies for quasimomentum2 ], ...]`
+    """
+
+    quasimomentum = []
+    """
+        list of quzimomentum for which the energies of states was calculated
+        by :obj:`OpticalLattice1D.diagonalise` method
+        in format `[quasimomentum1, quasimomentum2, ...]`
+    """
+
+    savedBlochBand = []
+    """
+        list of saved eigen energy state compositions for each of the Calculated
+        quasimomentums for the selected index of the Bloch band
+        in :obj:`OpticalLattice1D.diagonalise` method
+        in format `[[eigen state decomposition for quasimomentum 1],
+        [eigen state decomposition for quasimomentum 2], ...]`
+    """
+
+    trapPotentialDepth = 0
+    """
+        save slattice trap potential depth for which calculation
+        :obj:`OpticalLattice1D.diagonalise` was done
+    """
+
+    def __init__(self, atom, trapWavenegth):
+        self.atom = atom
+        self.trapWavenegth = trapWavenegth
+
+    def getRecoilEnergy(self):
+        """
+        Recoil energy for atoms in given optical lattice
+
+        Returns:
+            float: recoil energy in units of J
+        """
+        latticeConstant = self.trapWavenegth / 2
+        Er = C_h**2 / (8 * self.atom.mass * latticeConstant**2)
+        return Er
+
+    def getTrappingFrequency(self, trapPotentialDepth):
+        """
+        Atom's trapping frequecy for given trapth depth
+
+        Args:
+            trapPotentialDepth (float): lattice depth (in units of J)
+
+        Returns:
+            float: trapping frequency (in Hz)
+        """
+        Er = self.getRecoilEnergy()
+        return 2. * Er / hbar * np.sqrt(trapPotentialDepth / Er)
+
+    def _BlochFunction(self, x, stateVector, q, k=1.):
+        """
+        Bloch wavefunctions
+
+        Args:
+            x ():
+            stateVector:
+            lLimit:
+            q (float):
+            k (float):
+
+        Retruns:
+            float:
+        """
+
+        sign = 1
+        index = len(stateVector) // 2
+        angle = np.angle(stateVector[index])
+        sign = np.exp(-1j*angle)
+        temp = 0 + 0j
+        for l in np.arange(-self.lLimit, self.lLimit + 1, 1):
+            temp += sign * stateVector[l + self.lLimit] \
+                * np.exp(1.j * (2. * k * l + q) * x)
+        return temp
+
+    def BlochWavefunction(self,
+                          trapPotentialDepth,
+                          quazimomentum,
+                          blochBandIndex):
+        r"""
+            Bloch wavefunction as a **function** of 1D coordinate.
+
+            Example:
+                Returns Bloch wavefunction. Use as following::
+
+                    trapPotentialDepth = 40  # units of recoil energy
+                    quazimomentum = 0
+                    blochBandIndex = 0  # Bloch band lowest in energy is 0
+                    wf = lattice.getBlochFunction(trapPotentialDepth,
+                                                  quazimomentum,
+                                                  blochBandIndex)
+                    wf(x)  # returns complex number corresponding to value of Bloch
+                           # wavefunction at point x (cooridnate given in units of
+                           # 1/k where k = 2 \pi / trapWavenegth )
+
+            Args:
+                trapPotentialDepth (float): (in units of recoil energy
+                    :obj:`OpticalLattice1D.getRecoilEnergy`)
+                quazimomentum (float): (in units of k = 2 \pi /
+                    :obj:`OpticalLattice1D.trapWavenegth` )
+
+            Returns:
+                Bloch wavefunction as a **function** of coordinate (see call
+                example above)
+        """
+        temp1 = self.energy
+        temp2 = self.quasimomentum
+        temp3 = self.savedBlochBand
+        self.diagonalise(trapPotentialDepth, [quazimomentum],
+                           saveBandIndex = blochBandIndex)
+        state = np.copy(self.savedBlochBand[0])
+        print(state)
+        self.energy = temp1
+        self.quasimomenutm = temp2
+        self.savedBlochBand = temp3
+        return lambda x: self._BlochFunction(x, state, quazimomentum)
+
+
+    def defineBasis(self, lLimit=35):
+        """
+            Define basis for Bloch band calculations
+
+            Bloch states are calculated suming up all relevant states
+            with momenta in range
+            `[-lLimit * 2 * pi /trapWavenegth, +lLimit * 2 * pi /trapWavenegth]`
+
+            Args:
+                lLimit (integer): Optional, defines maximal momentum to be taken
+                    for calculation of Bloch States
+                    as `lLimit * 2 * pi / trapWavenegth` . By default set to 35.
+        """
+        self.lLimit = lLimit
+
+    def _getLatticeHamiltonian(self, q, Vlat):
+        """
+        Lattice Hamiltonian
+
+        Args:
+            q (float):
+            Vlat (float):
+            lLimit (int):
+        """
+
+        # assemble Hamiltonian
+        hConstructor = [[], [], []]  # [[values],[columnIndex],[rowIndex]]
+        for l in np.arange(- self.lLimit, self.lLimit + 1, 1):
+            # basis index exp(2*l*k*x) state has index lLimit+l
+            column = self.lLimit + l
+            if (l - 1 >= - self.lLimit):
+                hConstructor[0].append(- Vlat / 4.)
+                hConstructor[1].append(column)
+                hConstructor[2].append(column - 1)
+            if (l + 1 <= self.lLimit):
+                hConstructor[0].append(- Vlat / 4.)
+                hConstructor[1].append(column)
+                hConstructor[2].append(column + 1)
+            # diagonal term
+            # with global energy offset (- Vlat / 2.) factored out
+            hConstructor[0].append((2. * l + q)**2 + Vlat / 2.)
+            hConstructor[1].append(column)
+            hConstructor[2].append(column)
+        dimension = 2 * self.lLimit + 1
+        hamiltonianQ = csr_matrix((hConstructor[0],
+                                   (hConstructor[1], hConstructor[2])),
+                                  shape=(dimension, dimension))
+        return hamiltonianQ
+
+    def diagonalise(self, trapPotentialDepth, quazimomentumList,
+                    saveBandIndex=None):
+        r"""
+            Calculates energy levels (Bloch bands) for given `quazimomentumList`
+
+            Energy levels and their quasimomentum are saved in internal variables
+            `energy` and `quasimomentum`. Energies are saved in units of
+            recoil energy, and quasimomentum in units of
+            The optional parameter `saveBandIndex` specifies index of the Bloch
+            band for which eigenvectrors should be saved. If provided,
+            eigenvectors for each value `quasimomentumList[i]` are saved in
+            `savedBlochBand[i]`.
+
+            Args:
+                latticePotential (float): lattice depth formed
+                    by the standing wave of laser, with wavelength specified
+                    during initialisation of the lattice
+                    (in units of recoil energy).
+                quazimomentumList (array): array of quazimomentum values for
+                    which energy levels will be calculated (in units of
+                    :math:`\hbar \cdot \frac{2\pi}{\lambda}`,
+                    where :math:`\lambda` is trapping laser wavelenth,
+                    `trapWavenegth`)
+                saveBandIndex (int): optional, default None. If provided,
+                    specifies for which Bloch band should the eignevectors be
+                    also saved. `saveBlochBand=0` corresponds to lowest energy
+                    band.
+        """
+
+        self.energy = []
+        self.quasimomentum = quazimomentumList
+        self.savedBlochBand = []
+        self.trapPotentialDepth = trapPotentialDepth
+        for q in quazimomentumList:
+            hamiltonianQ = self._getLatticeHamiltonian(q, trapPotentialDepth)
+            ev, egvector = np.linalg.eig(hamiltonianQ.todense())
+            egvector = np.transpose(np.array(egvector))
+            self.energy.append(ev)
+            if saveBandIndex is not None:
+                stateId = np.argsort(ev)[saveBandIndex]
+                self.savedBlochBand.append(egvector[stateId])
+
+    def plotLevelDiagram(self):
+        """
+
+        """
+        f = plt.figure(figsize=(6, 10))
+        ax = f.add_subplot(1, 1, 1)
+        for i, energyLevels in enumerate(self.energy):
+            ax.plot([self.quasimomentum[i]] * len(energyLevels),
+                    energyLevels, ".", color="0.8")
+        ax.set_xlabel(r"Quasimomentum, $q$ $(k\hbar)$")
+        ax.set_ylabel(r"State energy, E ($E_{\rm r}$)")
+        ax.set_ylim(-0.2, 50)
+        ax.set_xlim(-1, 1)
+        return f
+
+    def getWannierFunction(self, x, latticeIndex=0, k=1):
+        """
+            Gives value at cooridnate x of a Wannier function localized
+            at given lattice index.
+
+            Args:
+                x (float): offset from the latticeIndex site location
+                latticeIndex (int): optional, lattice index at which the
+                    Wannier function is localised. By defualt 0.
+        """
+        value = 0
+        localizedAt = 2. * pi / k * latticeIndex / 2.
+        # last division by 2 is because lattice period is
+        # 2 x smaleler then wavelenth of the driving laser
+        for i in range(len(self.quasimomentum)):
+            q = self.quasimomentum[i]
+            value += np.exp(-1j * q * localizedAt) \
+                * self._BlochFunction(x + localizedAt,
+                                         self.savedBlochBand[i],
+                                         q, k=k)
+        return value

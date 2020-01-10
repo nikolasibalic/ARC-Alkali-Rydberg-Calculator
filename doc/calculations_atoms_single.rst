@@ -45,6 +45,15 @@ Overview
     AtomSurfaceVdW.getC3contribution
     AtomSurfaceVdW.getStateC3
 
+.. rubric:: OpticalLattice1D Methods
+
+.. autosummary::
+
+    OpticalLattice1D.getRecoilEnergy
+    OpticalLattice1D.getTrappingFrequency
+    OpticalLattice1D.defineBasis
+    OpticalLattice1D.diagonalise
+    OpticalLattice1D.BlochWavefunction
 
 Detailed documentation
 ----------------------
