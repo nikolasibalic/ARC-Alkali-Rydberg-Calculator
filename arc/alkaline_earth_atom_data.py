@@ -280,9 +280,9 @@ class Calcium40(AlkalineEarthAtom):
                              % self.meltingPoint)
 
 
-class Ytterbium173(AlkalineEarthAtom):
+class Ytterbium174(AlkalineEarthAtom):
     """
-    Properties of Ytterbium 173 atoms
+    Properties of Ytterbium 174 atoms
     """
 
     ionisationEnergycm = 50443.08  # cm-1  ref. [#yb3]
@@ -291,7 +291,7 @@ class Ytterbium173(AlkalineEarthAtom):
     modelPotential_coef = {}
 
     Z = 70
-    I = 2.5  # 5/2
+    I = 0
 
     #: TODO source
     scaledRydbergConstant = 109736.627 * 1e2 * \
@@ -343,11 +343,11 @@ class Ytterbium173(AlkalineEarthAtom):
     literatureDMEfilename = 'ytterbium_literature_dme.csv'
 
     useLiterature = False
-    elementName = 'Yb173'
+    elementName = 'Yb174'
     meltingPoint = 819 + 273.15  #: in K
 
-    #: TODO LIZZY FIND A CITATION FOR THIS (Ref. [#ca3]_ ?? )
-    mass = 173.045 * \
+    #: NIST Standard reference database, https://dx.doi.org/10.18434/T4FW23
+    mass = 173.9388664 * \
         physical_constants["atomic mass constant"][0]
 
     #: TODO what is docstring here? (fitting ranges have been taken from Pauls fits and christophe)
