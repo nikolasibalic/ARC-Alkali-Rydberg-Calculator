@@ -915,11 +915,11 @@ class PairStateInteractions:
                     lmax2 = min(self.ll + 2, n2)
                     for l2 in xrange(lmin2, lmax2, 2):
                         j1 = l1 - self.s
-                        while j1 < 0.1:
+                        while j1 < -0.1:
                             j1 += 1
                         while j1 <= l1 + self.s + 0.1:
                             j2 = l2 - self.s
-                            while j2 < 0.1:
+                            while j2 < -0.1:
                                 j2 += 1
 
                             while j2 <= l2 + self.s + 0.1:
