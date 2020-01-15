@@ -1506,7 +1506,7 @@ class LevelPlot:
                     # for ground state S state, there is only singlet
                     # Todo: check with Strontium people!
                     l += 1
-                while l <= min(lTo, 4, nFrom - 1):
+                while l <= min(lTo, n - 1):
                     for j in np.linspace(l - s, l + s, 2 * s + 1):
                         if j > -0.1:
                             self.listX.append(l + xPositionOffset)
