@@ -7,7 +7,7 @@ Alkaline earth atom data
 
   Strontium88
   Calcium40
-  Ytterbium173
+  Ytterbium174
 
 .. currentmodule:: arc.alkaline_earth_atom_data
 

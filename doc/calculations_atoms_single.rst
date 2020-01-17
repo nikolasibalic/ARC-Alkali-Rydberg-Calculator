@@ -55,6 +55,15 @@ Overview
     OpticalLattice1D.diagonalise
     OpticalLattice1D.BlochWavefunction
 
+.. rubric:: DynamicPolarizability Methods
+
+.. autosummary::
+
+    DynamicPolarizability.defineBasis
+    DynamicPolarizability.getPolarizability
+    DynamicPolarizability.plotPolarizability
+
+
 Detailed documentation
 ----------------------
 

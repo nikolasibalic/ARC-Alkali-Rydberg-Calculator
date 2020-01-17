@@ -14,7 +14,11 @@ ARC documentation
     :alt: alternate text
     :figclass: align-right
 
-ARC (Alkali Rydberg Calculator)  is package of routines written in Python, using object-oriented programming (OOP) to make modular, reusable and extendable collection of routines and data for performing useful calculations of single atom and two-atom properties, like level diagrams, interactions and transition strengths for alkali metal atoms.
+ARC (Alkali.ne Rydberg Calculator)  is package of routines written in Python,
+using object-oriented programming (OOP) to make modular, reusable and extendable
+collection of routines and data for performing useful calculations of
+single atom and two-atom properties, like level diagrams, interactions and
+transition strengths for alkali and alkaline earth metal atoms.
 
 Contents
 ========
@@ -34,7 +38,7 @@ Package structure
 .. figure:: ./overview_of_modules2.png
     :width: 800px
     :align: center
-    :height: 320px
+    :height: 480px
     :alt: module overview image
     :figclass: align-center
 
@@ -61,4 +65,4 @@ Credits
 
 :Licence: BSD 3-Clause
 
-:Version: 1.2.0 of 2017/06/10
+:Version: 3.0.0 of 2020/01/17
