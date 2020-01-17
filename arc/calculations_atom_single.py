@@ -2269,3 +2269,237 @@ class OpticalLattice1D:
                                          self.savedBlochBand[i],
                                          q, k=k)
         return value
+
+
+class DynamicPolarizability:
+    """
+        Calculations of magic wavelengths and dynamic polarizability
+        (scalar and tensor).
+
+
+        Args:
+            atom: alkali or alkaline element of choice
+            n (int): principal quantum number of the selected stated
+            l (int): orbital angular momentum of the selected state
+            j (float): total angular momentum of selected state
+            s (float): optional, spin state of the atom. Default value of
+                0.5 is correct for Alkali atoms, but it has to be explicitly
+                specified for AlkalineEarthAtom.
+    """
+
+    def __init__(self, atom, n, l, j, s=0.5):
+        self.atom = atom
+        self.n = n
+        self.l = l
+        self.j = j
+        self.s = s
+
+    def defineBasis(self, nMin, nMax):
+        """
+            Defines basis for calculation of dynamic polarizability
+
+            Args:
+                nMin (int): minimal principal quantum number of states to be
+                    taken into account for calculation
+                nMax (int): maxi,al principal quantum number of states to be
+                    taken into account for calculation
+        """
+        self.nMin = nMin
+        self.nMax = nMax
+
+    def getPolarizability(self, driveWavelength, mj=None, units="SI"):
+        """
+            Calculates of scalar and tensor polarizability
+
+            Args:
+                driveWavelength (float): wavelength of driving field
+                    (in units of m)
+                mj (float): optional, mj of the state for which we calculate
+                    polarizability. Default value is value of :obj:`self.j` .
+                units (string): optional, 'SI' or 'a.u.' (equivalently 'au'),
+                    switches between SI units for returned result
+                    (:math:`Hz V^-2 m^2` )
+                    and atomic units (":math:`a_0^3` "). Defaul 'SI'
+
+        """
+        if mj is None:
+            mj = self.j
+
+        driveEnergy = C_c / driveWavelength * C_h
+        intialLevelEnergy = self.atom.getEnergy(self.n, self.l, self.j) * C_e
+        levels = []
+
+        for n1 in np.arange(self.nMin, self.nMax + 1):
+            lmin = self.l - 1
+            if (lmin < - 0.1):
+                lmin = self.l + 1
+            for l1 in range(lmin, self.l + 2):
+                j1 = l1 - self.s
+                if j1 < 0.1:
+                    j1 += 1
+                while j1 <= l1 + self.s + 0.1:
+                    levels.append([n1, l1, j1])
+                    j1 += 1
+
+        for state in self.atom.extraLevels:
+            levels.append(state)
+
+        prefactor2 = (6 * self.j * (2 * self.j - 1)
+                      / (6 * (self.j + 1)
+                         * (2 * self.j + 1)
+                         * (2 * self.j + 3))
+                      )**0.5
+
+        alpha0 = 0.
+        alpha2 = 0.
+        closestState = []
+        closestEnergy = -1
+        for state in levels:
+            n1 = state[0]
+            l1 = state[1]
+            j1 = state[2]
+            if abs(j1 - self.j) < 1.1 and (abs(l1 - self.l) > 0.5
+                                           and abs(l1 - self.l) < 1.1):
+                coupledLevelEnergy = self.atom.getEnergy(n1, l1, j1) * C_e
+
+                diffEnergy = abs((coupledLevelEnergy
+                                  - intialLevelEnergy)**2 - driveEnergy**2)
+                if ((diffEnergy < closestEnergy) or (closestEnergy < 0)
+                    ):
+                    closestEnergy = diffEnergy
+                    closestState = state
+
+                if diffEnergy < 1e-65:
+                    # print("For given frequency we are in exact resonance with state %s" % printStateString(n1,l1,j1,s=s))
+                    return None, None, state
+
+                if (abs(mj) < state[2]+0.1):
+                    d = self.atom.getReducedMatrixElementJ(self.n, self.l, self.j,
+                                                           n1, l1, j1)**2 \
+                        * (C_e * physical_constants["Bohr radius"][0])**2\
+                        * (coupledLevelEnergy - intialLevelEnergy) \
+                        / ((coupledLevelEnergy - intialLevelEnergy)**2
+                           - driveEnergy**2)
+
+                    alpha0 += d
+
+                    if abs(self.j - 2) <= self.j:
+                        alpha2 += \
+                            (- 1)**(self.j + j1 + 1) \
+                            * self.atom.getReducedMatrixElementJ(self.n,
+                                                                 self.l,
+                                                                 self.j,
+                                                                 n1, l1, j1)**2 \
+                            * (C_e * physical_constants["Bohr radius"][0])**2\
+                            * Wigner6j(self.j, 1, j1, 1, self.j, 2) \
+                            * (coupledLevelEnergy - intialLevelEnergy) \
+                            / ((coupledLevelEnergy - intialLevelEnergy)**2
+                               - driveEnergy**2)
+
+
+        alpha0 = 2. * alpha0/(3. * (2. * self.j + 1.))
+        alpha0 = alpha0 / C_h  # Hz m^2 / V^2
+
+        alpha2 = - 4 * prefactor2 * alpha2 / C_h
+
+        if (units == "SI"):
+            return alpha0, alpha2, closestState   # in Hz m^2 / V^2
+        elif (units == "a.u." or units == "au"):
+            return alpha0 / 2.48832e-8, alpha2 / 2.48832e-8, closestState
+        else:
+            raise ValueError("Only 'SI' and 'a.u' (atomic units) are recognised"
+                             " as 'units' parameter. Entered value '%s' is"
+                             " not recognised." % units)
+
+    def plotPolarizability(self, wavelengthList,
+                           mj=None,
+                           addToPlotAxis=None,
+                           line="b-",
+                           units="SI",
+                           debugOutput=False):
+        """
+        Plots of polarisability for a range of wavelengths.
+
+        Can be combined for different states to allow finding magic wavelengths
+        for pairs of states. See example
+
+        Todo:
+            Add link to example calculation of magic wavelengths
+
+        Args:
+            wavelengthList (array): wavelengths for which we want to calculate
+                polarisability (in units of m).
+            mj (float): optional, `mj` projection of the total angular
+                momenutum for the states for which we are calculating
+                polarisability. By default it's `+j`.
+            line (string): optional, line style short definition to be passed
+                to matplotlib when plotting calculated polarisabilities
+            units (string): optional, 'SI' or 'a.u.' (equivalently 'au'),
+                switches between SI units for returned result
+                (:math:`Hz V^-2 m^2` )
+                and atomic units (":math:`a_0^3` "). Deafault 'SI'.
+            debugOutput (bool): optonal. Print additional output on resonances
+                Default value False.
+        """
+
+        pFinal = []
+        wFinal = []
+        p = []
+        w = []
+        resonances = []
+
+        if (mj is None):
+            mj = self.j
+
+        if (self.j > 0.5 + 0.1):
+            tensorPrefactor = (3 * mj**2 - self.j * (self.j + 1)) / \
+                (self.j * (2 * self.j - 1))
+        else:
+            tensorPrefactor = 0
+
+        for wavelength in wavelengthList:
+            scalarP, tensorP, state = self.getPolarizability(wavelength,
+                                                             mj=mj,
+                                                             units=units)
+            if (scalarP is not None):
+                # we are not hitting directly the resonance
+                totalP = scalarP + tensorPrefactor * tensorP
+                if ((len(p) > 0) and p[-1] * totalP < 0
+                    and (len(p) > 2 and (p[-2] - p[-1]) * totalP > 0)
+                        ):
+                    pFinal.append(p)
+                    wFinal.append(w)
+                    p = []
+                    w = []
+                    resonances.append(wavelength)
+                    if debugOutput:
+                        print(r"Resonance: %.2f nm %s"
+                              % (wavelength * 1e9,
+                                 printStateString(state[0],
+                                                  state[1],
+                                                  state[2],
+                                                  s=self.s))
+                             )
+                p.append(totalP)
+                w.append(wavelength)
+
+        pFinal.append(p)
+        wFinal.append(w)
+
+        if addToPlotAxis is None:
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+        else:
+            ax = addToPlotAxis
+        for i in range(len(wFinal)):
+            ax.plot(np.array(wFinal[i]) * 1e9, pFinal[i], line,
+                    zorder=1)
+            ax.set_xlabel(r"Driving field wavelength (nm)")
+            if units == "SI":
+                ax.set_ylabel(r"Polarizability (Hz/V$^2$ cm$^2$)")
+            else:
+                ax.set_ylabel(r"Polarizability (a.u.)")
+            for resonance in resonances:
+                ax.axvline(x=resonance * 1e9, linestyle=":", color="0.5",
+                           zorder=0)
+        return ax
