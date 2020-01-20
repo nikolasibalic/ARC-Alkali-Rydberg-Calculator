@@ -24,7 +24,7 @@ If you want to contribute to the project, [check this page](http://arc-alkali-ry
 Authors
 -------
 
-[Nikola Šibalić](https://www.mas.ncl.ac.uk/old_jqc/people/nikola-%C5%A0ibali%C4%87/104/index.html), [Jonathan D. Pritchard](http://photonics.phys.strath.ac.uk/people/dr-jonathan-pritchard/), [Charles S. Adams](https://www.mas.ncl.ac.uk/old_jqc/people/charles-adams/44/index.html), [Kevin J. Weatherill](https://www.mas.ncl.ac.uk/old_jqc/people/kevin-weatherill/18/index.html)
+[Nikola Šibalić](https://github.com/nikolasibalic), [Jonathan D. Pritchard](http://photonics.phys.strath.ac.uk/people/dr-jonathan-pritchard/), [Charles S. Adams](https://www.dur.ac.uk/physics/staff/profiles/?id=523), [Kevin J. Weatherill](https://www.dur.ac.uk/physics/staff/profiles/?id=1882)
 
 **Please cite as:** N. Šibalić, J. D. Pritchard, K. J. Weatherill, C. S. Adams,
 ARC: An open-source library for calculating properties of alkali Rydberg atoms,
