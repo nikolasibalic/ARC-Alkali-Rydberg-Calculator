@@ -35,6 +35,15 @@ wignerPrecal6j = np.load(os.path.join(os.path.dirname(os.path.realpath(__file__)
 
 
 def Wigner3j(j1, j2, j3, m1, m2, m3):
+    r"""
+    Evaluates Wigner 3-j symbol
+
+    Args:
+        j1,j2,j3,m1,m2,m3 (float): parameters of
+            :math:`\begin{pmatrix}j_1 & j_2 & j_2 \\ m_1 & m_2 & m_3\end{pmatrix}`
+
+
+    """
 
     # use precalculated values
     if wignerPrecal and ((j2 < 2.1) and abs(m2) < 2.1 and (j1 < wignerPrecalJmax)):
@@ -140,6 +149,14 @@ def Wigner3j(j1, j2, j3, m1, m2, m3):
 
 
 def Wigner6j(j1, j2, j3, J1, J2, J3):
+    r"""
+    Evaluates Wigner 6-j symbol
+
+    Args:
+        j1, j2, j3, J1, J2, J3 (float): parameters of
+            :math:`\left\{ \begin{matrix}j_1 & j_2 & j_3 \\ J_1 & J_2 & J_3\end{matrix}\right\}`
+    """
+
     # if possible, use precalculated values
     global wignerPrecal
     if wignerPrecal and ((roundPy2(2 * j2) == 1) and (J2 == 1 or J2 == 2)and
@@ -219,25 +236,25 @@ def TriaCoeff(a, b, c):
 # Jojann Goetz
 
 
-def wignerd(j, m, n=0, approx_lim=10):
+def _wignerd(j, m, n=0, approx_lim=10):
     '''
         Wigner "small d" matrix. (Euler z-y-z convention)
-        example:
+        example::
             j = 2
             m = 1
             n = 0
             beta = linspace(0,pi,100)
-            wd210 = wignerd(j,m,n)(beta)
+            wd210 = _wignerd(j,m,n)(beta)
 
-        some conditions have to be met:
+        some conditions have to be met::
              j >= 0
             -j <= m <= j
             -j <= n <= j
 
         The approx_lim determines at what point
-        bessel functions are used. Default is when:
+        bessel functions are used. Default is when::
             j > m+10
-              and
+            #  and
             j > n+10
 
         for integer l and n=0, we can use the spherical harmonics. If in
@@ -245,7 +262,7 @@ def wignerd(j, m, n=0, approx_lim=10):
     '''
 
     if (j < 0) or (abs(m) > j) or (abs(n) > j):
-        raise ValueError("wignerd(j = {0}, m = {1}, n = {2}) value error.".format(j, m, n)
+        raise ValueError("_wignerd(j = {0}, m = {1}, n = {2}) value error.".format(j, m, n)
                          + " Valid range for parameters: j>=0, -j<=m,n<=j.")
 
     if (j > (m + approx_lim)) and (j > (n + approx_lim)):
@@ -274,7 +291,7 @@ def wignerd(j, m, n=0, approx_lim=10):
     b = 2. * j - 2. * k - a
 
     if (a < 0) or (b < 0):
-        raise ValueError("wignerd(j = {0}, m = {1}, n = {2}) value error.".format(j, m, n)
+        raise ValueError("_wignerd(j = {0}, m = {1}, n = {2}) value error.".format(j, m, n)
                          + " Encountered negative values in (a,b) = ({0},{1})".format(a, b))
 
     coeff = power(-1., lmb) * sqrt(comb(2. * j - k, k + a)) * \
@@ -287,7 +304,7 @@ def wignerd(j, m, n=0, approx_lim=10):
         * jacobi(k, a, b)(cos(beta))
 
 
-def wignerD(j, m, n=0, approx_lim=10):
+def _wignerD(j, m, n=0, approx_lim=10):
     '''
         Wigner D-function. (Euler z-y-z convention)
 
@@ -303,29 +320,53 @@ def wignerD(j, m, n=0, approx_lim=10):
               and
             j > n+10
 
-        usage:
+        usage::
             from numpy import linspace, meshgrid
             a = linspace(0, 2*pi, 100)
             b = linspace(0,   pi, 100)
             aa,bb = meshgrid(a,b)
             j,m,n = 1,1,1
-            zz = wignerD(j,m,n)(aa,bb)
+            zz = _wignerD(j,m,n)(aa,bb)
     '''
 
     return lambda alpha, beta, gamma=0: \
         exp(-1j * m * alpha) \
-        * wignerd(j, m, n, approx_lim)(beta) \
+        * _wignerd(j, m, n, approx_lim)(beta) \
         * exp(-1j * n * gamma)
 
 
 def CG(j1, m1, j2, m2, j3, m3):
-    """
-        returns < j1,m1,j2,m2 | j1,j2, j3, m3 >
+    r"""
+        Clebsch–Gordan (CG) coefficients
+
+        Args:
+            j1, m1, j2, m2, j3, m3: parameters of
+                :math:`\langle j_1, m_1, j_2, m_2 | j_1, j_2, j_3, m_3 \rangle`
+
     """
     return Wigner3j(j1, j2, j3, m1, m2, -m3) * sqrt(2 * j3 + 1) * (-1)**(j1 - j2 + m3)
 
 
-class wignerDmatrix:
+class WignerDmatrix:
+    """
+        WignerD matrices for different `j` states in a specified rotated basis.
+
+        This matrix converts components of angular momentum `j` givne in one
+        basis into components of angular momentum calculated in the basis
+        which is rotated by `phi` around z-axis, and then by `theta` around
+        y-axis. Use::
+
+            wgd = WignerDmatrix(theta,phi)
+            # let's rotate state with angular momentum 1
+            dMatrix = wgd.get(j)
+            stateNewBasis = dMatrix.dot(stateOldBasis)
+
+        Args:
+            theta (float): rotation around y-axis
+            phi (float): rotation around z-axis
+            gamma (flaot): optional, last rotation around z-axis (rotations are
+                in order z-y-z). By default 0.
+    """
 
     def __init__(self, theta, phi, gamma=0.):
         self.matSaved = []
@@ -340,6 +381,17 @@ class wignerDmatrix:
             self.trivial = False
 
     def get(self, j):
+        """
+            WignerD matrix for specified basis for states with angular
+            momenutum `j`.
+
+            Args:
+                j (float): angular momentum of states.
+
+            Returns:
+                matrix of dimensions (2*j+1,2*j+1).
+                `state in new basis = wignerDmatrix * state in original basis`
+        """
         if self.trivial:
             return np.eye(int(roundPy2(2. * j + 1.)), int(roundPy2(2. * j + 1.)), dtype=np.complex128)
         savedIndex = self.matLoc[int(roundPy2(2 * j))]
@@ -355,7 +407,7 @@ class wignerDmatrix:
 
         for index1 in xrange(maxIndex):
             for index2 in xrange(maxIndex):
-                mat[index1, index2] = wignerD(j, jrange[index1], jrange[index2])(
+                mat[index1, index2] = _wignerD(j, jrange[index1], jrange[index2])(
                     self.phi, self.theta, self.gamma)
 
         mat = csr_matrix(mat)

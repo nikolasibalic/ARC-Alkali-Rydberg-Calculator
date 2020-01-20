@@ -54,8 +54,22 @@ Overview
     AlkaliAtom.getAverageSpeed
     AlkaliAtom.getLiteratureDME
 
+.. rubric:: Angular algebra in `arc.wigner`
+
+.. currentmodule:: arc.wigner
+
+.. autosummary::
+    WignerDmatrix
+    Wigner3j
+    Wigner6j
+    WignerDmatrix
+
 Detailed documentation
 ----------------------
 
 .. automodule:: arc.alkali_atom_functions
    :members:
+
+
+.. automodule:: arc.wigner
+    :members:

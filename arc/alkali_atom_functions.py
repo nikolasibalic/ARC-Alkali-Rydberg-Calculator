@@ -26,7 +26,7 @@ import numpy as np
 import re
 import shutil
 
-from .wigner import Wigner6j, Wigner3j, CG, wignerDmatrix
+from .wigner import Wigner6j, Wigner3j, CG, WignerDmatrix
 from scipy.constants import physical_constants, pi, epsilon_0, hbar
 from scipy.constants import k as C_k
 from scipy.constants import c as C_c
@@ -2350,7 +2350,7 @@ class _EFieldCoupling:
             self.conn.commit()
 
         # COUPLINGS IN ROTATED BASIS (depend on theta, phi)
-        self.wgd = wignerDmatrix(self.theta, self.phi)
+        self.wgd = WignerDmatrix(self.theta, self.phi)
 
         self.c.execute('''DROP TABLE IF EXISTS eFieldCoupling''')
         self.c.execute('''SELECT COUNT(*) FROM sqlite_master

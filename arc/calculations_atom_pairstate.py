@@ -30,7 +30,7 @@
 
 from __future__ import division, print_function, absolute_import
 
-from .wigner import Wigner6j, Wigner3j, CG, wignerDmatrix
+from .wigner import Wigner6j, Wigner3j, CG, WignerDmatrix
 from .alkali_atom_functions import _EFieldCoupling, _atomLightAtomCoupling
 from scipy.constants import physical_constants, pi, epsilon_0, hbar
 import gzip
@@ -879,7 +879,7 @@ class PairStateInteractions:
 
         # wigner D matrix allows calculations with arbitrary orientation of
         # the two atoms
-        wgd = wignerDmatrix(theta, phi)
+        wgd = WignerDmatrix(theta, phi)
         # state that we are coupling
         statePart1 = singleAtomState(self.j, self.m1)
         statePart2 = singleAtomState(self.jj, self.m2)
@@ -1070,7 +1070,7 @@ class PairStateInteractions:
         self.Bz = Bz
 
         # wignerDmatrix
-        wgd = wignerDmatrix(theta, phi)
+        wgd = WignerDmatrix(theta, phi)
 
         limitBasisToMj = False
         if (theta < 0.001):
