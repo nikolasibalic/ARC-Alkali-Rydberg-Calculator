@@ -2340,20 +2340,20 @@ class StarkMapResonances:
     def __init__(self, atom1, state1, atom2, state2):
 
         self.atom1 = atom1
-        if (isinstance(self.atom1, AlkalineEarthAtom)
-                and not len(state1) == 5
-                or not(state1[4] == 0 or state1[4] == 1)):
+        if (issubclass(type(self.atom1), AlkalineEarthAtom)
+            and (len(state1) != 5 or (state1[4] != 0 and state1[4] != 1))
+                ):
             raise ValueError("For divalent atoms state specification has to "
                              "include total spin angular momentum s as the last "
-                             "numbre in the state specification [n,l,j,m_j,s].")
+                             "number in the state specification [n,l,j,m_j,s].")
         self.state1 = state1
         # add exlicitly total spin of the state for Alkaline atoms
         if (len(self.state1) == 4): self.state1.append(0.5)
 
         self.atom2 = atom2
-        if (isinstance(self.atom2, AlkalineEarthAtom)
-                and not len(state1) == 5
-                or not(state1[4] == 0 or state1[4] == 1)):
+        if (issubclass(type(self.atom2), AlkalineEarthAtom)
+                and (len(state1) != 5 or (state1[4] != 0 and state1[4] != 1))
+                    ):
             raise ValueError("For divalent atoms state specification has to "
                              "include total spin angular momentum s as the last "
                              "numbre in the state specification [n,l,j,m_j,s].")
