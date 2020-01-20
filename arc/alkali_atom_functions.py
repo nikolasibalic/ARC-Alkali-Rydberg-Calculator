@@ -928,7 +928,9 @@ class AlkaliAtom(object):
                 2 May 2008). http://steck.us/alkalidata
         """
         #
-        if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2) < 0):
+        if (self.getTransitionFrequency(n1, l1, j1,
+                                        n2, l2, j2,
+                                        s1=s, s2=s) < 0):
             temp = n2
             n2 = n1
             n1 = temp
@@ -1083,7 +1085,7 @@ class AlkaliAtom(object):
 
 
         """
-        dme = (- 1)**(f1 - mf1) * Wigner3j(f1, 1, f2, - mf1, q, mf2)
+        dme = (- 1)**(f1 - mf1) * Wigner3j(f1, 1, f2, - mf1, -q, mf2)
         dme *= (- 1)**(j1 + self.I + f2 + 1) * ((2. * f1 + 1)
                                                 * (2 * f2 + 1))**0.5
         dme *= Wigner6j(f1, 1, f2, j2, self.I, j1)
@@ -1424,7 +1426,7 @@ class AlkaliAtom(object):
 
         dipoleRadialPart = 0.0
         if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
-                                        s=s) > 0):
+                                        s1=s, s2=s) > 0):
             dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(
                 n1, l1, j1,
                 n2, l2, j2,
@@ -1441,11 +1443,11 @@ class AlkaliAtom(object):
 
         omega = abs(
             2.0 * pi * self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
-                                                   s=s))
+                                                   s1=s, s2=s))
 
         modeOccupationTerm = 0.
         if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
-                                        s=s) < 0):
+                                        s1=s, s2=s) < 0):
             modeOccupationTerm = 1.
 
         # only possible by absorbing thermal photons ?
@@ -1815,7 +1817,7 @@ class AlkaliAtom(object):
         gs = - physical_constants["electron g factor"][0]
         sumOverMl = 0
 
-        for ml in np.linspace(mj - s, mj + s, 2 * s + 1):
+        for ml in np.linspace(mj - s, mj + s, round(2 * s + 1)):
             if abs(ml) <= l + 0.1:
                 ms = mj - ml
                 sumOverMl += (ml + gs * ms) * \
@@ -2258,7 +2260,7 @@ def printStateString(n, l, j, s=None):
             subscript = " %.0d" % (j)
         else:
             subscript = " %.0d/2" % (j * 2)
-        return str(n) + (" %d" % (2 * s + 1)) + \
+        return str(n) + (" %d" % (round(2 * s + 1))) + \
             printStateLetter(l) + subscript
 
 
@@ -2283,7 +2285,7 @@ def printStateStringLatex(n, l, j, s=None):
             subscript = "_{%.0d}" % (j)
         else:
             subscript = "_{%.0d/2}" % (j * 2)
-        return str(n) + (" ^{%d}" % (2 * s + 1)) + \
+        return str(n) + (" ^{%d}" % (round(2 * s + 1))) + \
             printStateLetter(l) + subscript
 
 
@@ -2379,7 +2381,7 @@ class _EFieldCoupling:
         # calulates sum (See PRA 20:2251 (1979), eq.(10))
         sumPart = 0.
 
-        for ml in np.linspace(mj1 - s, mj1 + s, 2 * s + 1):
+        for ml in np.linspace(mj1 - s, mj1 + s, round(2 * s + 1)):
             if (abs(ml) - 0.1 < l1)and(abs(ml) - 0.1 < l2):
                 angularPart = 0.
                 if (abs(l1 - l2 - 1) < 0.1):

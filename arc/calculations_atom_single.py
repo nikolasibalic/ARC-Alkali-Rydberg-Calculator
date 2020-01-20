@@ -676,7 +676,7 @@ class StarkMap:
         for tn in xrange(nMin, nMax):
 
             for tl in xrange(min(maxL + 1, tn)):
-                for tj in np.linspace(tl - s, tl + s, 2 * s + 1):
+                for tj in np.linspace(tl - s, tl + s, round(2 * s + 1)):
                     if abs(mj) - 0.1 <= tj:
                         states.append([tn, tl, tj, mj])
 
@@ -1507,7 +1507,7 @@ class LevelPlot:
                     # Todo: check with Strontium people!
                     l += 1
                 while l <= min(lTo, n - 1):
-                    for j in np.linspace(l - s, l + s, 2 * s + 1):
+                    for j in np.linspace(l - s, l + s, round(2 * s + 1)):
                         if j > -0.1:
                             self.listX.append(l + xPositionOffset)
                             self.listY.append(self.atom.getEnergy(n, l, j,
@@ -1671,7 +1671,7 @@ class LevelPlot:
         self.ax.xaxis.set_major_locator(majorLocator)
         tickNames = []
         for s in self.sList:
-            sNumber  = 2 * s + 1
+            sNumber  = round(2 * s + 1)
             for l in xrange(self.lFrom, self.lTo + 1):
                 tickNames.append("$^%d %s$" % (sNumber, printStateLetter(l) ) )
         tickNum = len(self.ax.get_xticklabels())
