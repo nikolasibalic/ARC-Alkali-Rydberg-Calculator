@@ -195,13 +195,6 @@ class Calcium40(AlkalineEarthAtom):
     scaledRydbergConstant = 109735.81 * 1e2 * \
         physical_constants["inverse meter-electron volt relationship"][0]
 
-    #: Store list of filenames to read in no data
-    levelDataFromNIST = ["", "", "", "", "", "", "", 'ca_1F3.csv']
-
-    NISTdataLevels = {"1F3": 146}
-
-    level_labels = ["1S0", "3S1", "1P1", "3P1", "1D2", "3D2", "3D1", "1F3"]
-
     quantumDefect = [[[2.33793, -3.96, 0.0, 0.0, 0.0, 0.0],
                       [1.885584, -0.114, -23.8, 0.0, 0.0, 0.0],
                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -232,6 +225,8 @@ class Calcium40(AlkalineEarthAtom):
     groundStateN = 4
     extraLevels = []  #: TODO unkown if such exist at time of writing
     preferQuantumDefects = False
+
+    levelDataFromNIST = "ca_level_data.csv"
 
     precalculatedDB = "ca_precalculated.db"
 
@@ -286,14 +281,6 @@ class Ytterbium174(AlkalineEarthAtom):
     scaledRydbergConstant = 109736.627 * 1e2 * \
         physical_constants["inverse meter-electron volt relationship"][0]
 
-    # : Store list of filenames to read in no data
-    levelDataFromNIST = ["yb_1S0.csv",
-                         "yb_1P1.csv", "yb_1D2.csv", "yb_3D2.csv"]
-
-    NISTdataLevels = {"1S0": 74, "1P1": 48, "1D2": 74, "3D2": 74}
-
-    level_labels = ["1S0", "1P1", "1D2", "3D2"]
-
     quantumDefect = [[[4.27914, -7.06, 565, 0.0, 0.0, 0.0],
                       [3.95433, -12.33, 1729, 0.0, 0.0, 0.0],
                       [2.71363, -2.01, 0.00E+00, 0.0, 0.0, 0.0],
@@ -324,6 +311,9 @@ class Ytterbium174(AlkalineEarthAtom):
     groundStateN = 6
     extraLevels = []  #: TODO unkown if such exist at time of writing
     preferQuantumDefects = False
+
+    # : Store list of filenames to read in no data
+    levelDataFromNIST = "yb_level_data.csv"
 
     precalculatedDB = "yb_precalculated.db"
     dipoleMatrixElementFile = "yb_dipole_matrix_elements.npy"
