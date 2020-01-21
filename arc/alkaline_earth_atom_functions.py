@@ -72,6 +72,10 @@ class AlkalineEarthAtom(AlkaliAtom):
         [ :math:`^3S_{0},^3P_{1},^3D_{2},^3F_{3}`],
         [ :math:`^3S_{1},^3P_{2},^3D_{3},^3F_{4}`]]."""
 
+    #: file with .csv data, each row is
+    #: `[n, l, s, j, energy, source, absolute uncertanty]`
+    levelDataFromNIST = ""
+
     def __init__(self, preferQuantumDefects=True, cpp_numerov=True):
         self.cpp_numerov = cpp_numerov
         self.preferQuantumDefects = preferQuantumDefects
