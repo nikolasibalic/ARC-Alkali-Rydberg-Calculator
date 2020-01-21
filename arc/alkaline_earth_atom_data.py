@@ -83,13 +83,6 @@ class Strontium88(AlkalineEarthAtom):
 
     alphaC = 15
 
-    #: TO-DO need to reference James millesn thesis!
-    modelPotential_coef = {"1S0": [3.762, -6.33, 1.07], "3S1": [2.93, -5.28, 1.22], "1P1": [3.49, -1.86, 1.10],
-                           "3P2": [3.23, -6.20, 1.19], "3P1": [3.35, -6.13, 1.12], "3P0": [3.45, -6.02, -6.13],
-                           "1D2": [2.78, -9.06, 2.31], "3D3": [2.86, -9.71, 2.20], "3D2": [3.12, -4.52, 1.24],
-                           "3D1": [3.41, -6.02, 1.27], "1F3": [9.22, -6.35, 1.00], "3F4": [1.18, -9.04, 1.06],
-                           "3F3": [1.18, -9.04, 1.06], "3F2": [1.18, -9.04, 1.06]}
-
     ionisationEnergy = 5.69486740       #: (eV)  Ref. [#c3]_
 
     Z = 38
@@ -195,8 +188,6 @@ class Calcium40(AlkalineEarthAtom):
 
     ionisationEnergy = 49305.924 / 8065.544  #: eV ref. [#ca2]_
 
-    modelPotential_coef = {}
-
     Z = 20
     I = 0
 
@@ -287,8 +278,6 @@ class Ytterbium174(AlkalineEarthAtom):
 
     ionisationEnergycm = 50443.08  # cm-1  ref. [#yb3]
     ionisationEnergy = ionisationEnergycm / 8065.544  # eV ref.
-
-    modelPotential_coef = {}
 
     Z = 70
     I = 0
