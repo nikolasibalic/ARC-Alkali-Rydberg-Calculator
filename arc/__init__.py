@@ -4,6 +4,5 @@
 from __future__ import division, print_function, absolute_import
 
 from .alkali_atom_data import *
-from .alkaline_earth_atom_data import *
 from .calculations_atom_single import *
 from .calculations_atom_pairstate import *

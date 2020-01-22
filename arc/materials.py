@@ -3,7 +3,11 @@ import os
 from .alkali_atom_functions import DPATH
 
 
-class Material(object):
+class OpticalMaterial(object):
+    """
+    Abstract class implementing calculation of basic properties for optical
+    materials.
+    """
 
     #: Human-friendly name of material
     name = ""
@@ -13,7 +17,7 @@ class Material(object):
     sources = []
     # This array is loaded automatically based on sources list
     sourcesN = []
-    #: Any notes about measred values
+    #: Any notes about measured values
     sourcesComment = []
     #: Array of max and minimal wavelegth pairs [lambdaMin, lambdaMax]
     #: for each of the sources. Automatically loaded from sources list
@@ -44,7 +48,10 @@ class Material(object):
         return "To-do: thermal conductance"
 
 
-class Air(Material):
+class Air(OpticalMaterial):
+    """
+        Air as an optical material at normal conditions
+    """
 
     name = "Air (dry, normal conditions)"
     sources = ["Mathar-1.3.csv",
@@ -75,7 +82,10 @@ class Air(Material):
                              " wavelength %.3f mum" % x)
 
 
-class Sapphire(Material):
+class Sapphire(OpticalMaterial):
+    """
+        Sapphire as optical material.
+    """
 
     name = "Sapphire"
     # data from: https://refractiveindex.info

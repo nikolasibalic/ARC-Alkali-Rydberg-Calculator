@@ -1804,8 +1804,10 @@ class AtomSurfaceVdW:
         :math:`|i\rangle`.
 
         Args:
-            atom (:obj:`AlkaliAtom` or :obj:`AlkalineEarthAtom`): b
-            material (from :obj:`arc.material`): a
+            atom (:obj:`AlkaliAtom` or :obj:`AlkalineEarthAtom`): specified
+                Alkali or Alkaline Earth atom whose interaction with surface
+                we want to explore
+            material (from :obj:`arc.materials`): specified surface material
 
         Note:
             To find frequecy shift of a transition
