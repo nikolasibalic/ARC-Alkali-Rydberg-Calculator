@@ -59,6 +59,7 @@ sqlite3.register_adapter(np.int64, int)
 sqlite3.register_adapter(np.int32, int)
 
 DPATH = os.path.join(os.path.expanduser('~'), '.arc-data')
+__arc_data_version__ = 1
 
 
 def setup_data_folder():
@@ -67,11 +68,32 @@ def setup_data_folder():
     """
     if not os.path.exists(DPATH):
         os.makedirs(DPATH)
+
+    # check what is the local version of data
+    copyDataLocally = True
+    versionFile = os.path.join(DPATH, "version.txt")
+    if os.path.exists(versionFile):
+        version = -1
+        with open(versionFile, "r") as f:
+            version = int(f.readline())
+        if (version == __arc_data_version__):
+            copyDataLocally = False
+
+    if copyDataLocally:
         dataFolder = os.path.join(os.path.dirname(
             os.path.realpath(__file__)), "data")
         for fn in os.listdir(dataFolder):
             if os.path.isfile(os.path.join(dataFolder, fn)):
                 shutil.copy(os.path.join(dataFolder, fn), DPATH)
+
+        dataFolder = os.path.join(dataFolder, "refractive_index_data")
+        refractiveIndexData = os.path.join(DPATH, "refractive_index_data")
+        for fn in os.listdir(dataFolder):
+            if os.path.isfile(os.path.join(dataFolder, fn)):
+                shutil.copy(os.path.join(dataFolder, fn), refractiveIndexData)
+
+        with open(versionFile, "w") as f:
+            f.write("%d" % __arc_data_version__)
 
 
 class AlkaliAtom(object):

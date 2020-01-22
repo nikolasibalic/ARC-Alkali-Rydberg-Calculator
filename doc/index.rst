@@ -31,6 +31,17 @@ Contents
    detailed_doc
    contribute
 
+.. note::
+    Support for Alkaline Earth atoms and some of the functions
+    (`Wavefunction`, `AtomSurfaceVdW`,
+    `OpticalLattice1D`, `DynamicPolarizability`, and optical materials
+    properties)in this modules will be
+    released in the forthcoming ARC 3.0.0 version.
+    To used them now as a beta feature do::
+     from arc.beta import *
+    Publication describing this upgrade is in preparation (check this place
+    soon). For now cite as "E. J. Robertson, N. Šibalić, R. M. Potvliege and
+    M. P. A. Jones, *in preparation* (2020)".
 
 Package structure
 =================

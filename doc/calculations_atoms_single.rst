@@ -5,7 +5,7 @@ Single atom calculations
   Some of the functions (`Wavefunction`, `AtomSurfaceVdW`,
   `OpticalLattice1D`, `DynamicPolarizability`, and optical materials
   properties)in this modules will be
-  released in the forcoming ARC 3.0.0 version.
+  released in the forthcoming ARC 3.0.0 version.
   To used them now as a beta feature do::
     from arc.beta import *
   Publication describing this upgrade is in preparation (check this place

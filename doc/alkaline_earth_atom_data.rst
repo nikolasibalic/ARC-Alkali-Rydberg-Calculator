@@ -2,7 +2,7 @@ Alkaline earth atom data
 ========================
 
 .. note::
-    This is module to be released in the forcoming ARC 3.0.0 version.
+    This is module to be released in the forthcoming ARC 3.0.0 version.
     To used it now as a beta feature do::
       from arc.beta import *
     Publication describing this upgrade is in preparation (check this place
