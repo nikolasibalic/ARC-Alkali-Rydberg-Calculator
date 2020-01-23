@@ -12,7 +12,6 @@ sqlite3.register_adapter(np.float32, float)
 sqlite3.register_adapter(np.int64, int)
 sqlite3.register_adapter(np.int32, int)
 
-import warnings
 
 class AlkalineEarthAtom(AlkaliAtom):
     """
@@ -90,6 +89,11 @@ class AlkalineEarthAtom(AlkaliAtom):
     #:      print("Minimal n = %d" % limits[0])
     #:      print("Maximal n = %d" % limits[1]) 1
     defectFittingRange = {}
+
+    #: flag that is turned to True if the energy levels of this atom were
+    #: calculated by extrapolating with quantum defects values outside the
+    #: quantum defect fitting range.
+    energyLevelsExtrapolated = False
 
     def __init__(self, preferQuantumDefects=True, cpp_numerov=True):
         self.cpp_numerov = cpp_numerov
@@ -275,12 +279,7 @@ class AlkalineEarthAtom(AlkaliAtom):
                 return savedEnergy
             else:
                 if (n < minQuantumDefectN or n > maxQuantumDefectN):
-                    warnings.warn(
-                        'There is no literature value for energy of '
-                        ' %s state. Quantum defects will be used for '
-                        'extrapolation of the state energy beyond '
-                        'their fitting range. Further warnings are supressed.'
-                        % printStateString(n,l,j,s=s))
+                    self.energyLevelsExtrapolated = True
 
         # else, use quantum defects
         defect = self.getQuantumDefect(n, l, j, s=s)
