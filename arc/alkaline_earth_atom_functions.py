@@ -12,6 +12,7 @@ sqlite3.register_adapter(np.float32, float)
 sqlite3.register_adapter(np.int64, int)
 sqlite3.register_adapter(np.int32, int)
 
+import warnings
 
 class AlkalineEarthAtom(AlkaliAtom):
     """
@@ -28,10 +29,10 @@ class AlkalineEarthAtom(AlkaliAtom):
                 Use quantum defects for energy level calculations. If False,
                 uses NIST ASD values where available. If True, uses quantum
                 defects for energy calculations for principal quantum numbers
-                equal or above :obj:`minQuantumDefectN` which is specified for
-                each element separately. For principal quantum numbers below
-                this value, NIST ASD values are used, since quantum defects
-                don't reproduce well low-lying states. Default is True.
+                within the range specified in :obj:`defectFittingRange` which
+                is specified for each element and series separately.
+                For principal quantum numbers below this value, NIST ASD values
+                are used if existing, since quantum defects. Default is True.
             cpp_numerov (bool):
                 This switch for Alkaline Earths at the moment doesn't have
                 any effect since wavefunction calculation function is not
@@ -75,6 +76,20 @@ class AlkalineEarthAtom(AlkaliAtom):
     #: file with .csv data, each row is
     #: `[n, l, s, j, energy, source, absolute uncertanty]`
     levelDataFromNIST = ""
+
+    #: Not used with AlkalineEarthAtom, see :obj:`defectFittingRange` instead.
+    minQuantumDefectN = None
+
+    #: Used for AlkalineEarths to define minimum and maximum principal quantum
+    #: number for which quantum defects are valid. Ranges are stored under
+    #: keys defined as state terms ({'stateLabel':[minN, maxN]}, e.g. '1S0').
+    #: Dictionary returns array
+    #: stating minimal and maximal principal quantum number for which quantum
+    #: defects were fitted. For example::
+    #:      limits = self.defectFittingRange['1S0']
+    #:      print("Minimal n = %d" % limits[0])
+    #:      print("Maximal n = %d" % limits[1]) 1
+    defectFittingRange = {}
 
     def __init__(self, preferQuantumDefects=True, cpp_numerov=True):
         self.cpp_numerov = cpp_numerov
@@ -235,6 +250,41 @@ class AlkalineEarthAtom(AlkaliAtom):
             ) ''')
 
         self.conn.commit()
+
+    def getEnergy(self, n, l, j, s=None):
+        if s is None:
+            raise ValueError("Spin state for AlkalineEarthAtom has to be "
+                             "explicitly defined as a keyword argument "
+                             "s=0 or s=1")
+        if l >= n:
+            raise ValueError(
+                "Requested energy for state l=%d >= n=%d !" % (l, n))
+
+        stateLabel = "%d%s%d" % (int(2*s+1), printStateLetter(l), j)
+        minQuantumDefectN = 10000
+        maxQuantumDefectN = 10001
+        if stateLabel in self.defectFittingRange.keys():
+            minQuantumDefectN = self.defectFittingRange[stateLabel][0]
+            maxQuantumDefectN = self.defectFittingRange[stateLabel][1]
+
+        # use NIST data ?
+        if (not self.preferQuantumDefects
+            or n < minQuantumDefectN or n > maxQuantumDefectN):
+            savedEnergy = self._getSavedEnergy(n, l, j, s=s)
+            if (abs(savedEnergy) > 1e-8):
+                return savedEnergy
+            else:
+                if (n < minQuantumDefectN or n > maxQuantumDefectN):
+                    warnings.warn(
+                        'There is no literature value for energy of '
+                        ' %s state. Quantum defects will be used for '
+                        'extrapolation of the state energy beyond '
+                        'their fitting range. Further warnings are supressed.'
+                        % printStateString(n,l,j,s=s))
+
+        # else, use quantum defects
+        defect = self.getQuantumDefect(n, l, j, s=s)
+        return -self.scaledRydbergConstant / ((n - defect)**2)
 
     def _getSavedEnergy(self, n, l, j, s=0):
         self.c.execute('''SELECT energy FROM energyLevel WHERE
