@@ -159,11 +159,21 @@ def Wigner6j(j1, j2, j3, J1, J2, J3):
 
     # if possible, use precalculated values
     global wignerPrecal
-    if wignerPrecal and ((roundPy2(2 * j2) == 1) and (J2 == 1 or J2 == 2)and
-                         (j1 < wignerPrecalJmax) and (J3 < wignerPrecalJmax)):
+    if wignerPrecal and ((roundPy2(2 * j2) >= -0.1)
+                         and (roundPy2(2 * j2) <= 2.1)
+                         and (J2 == 1 or J2 == 2)
+                         and (j1 <= wignerPrecalJmax)
+                         and (J3 <= wignerPrecalJmax)
+                         and (abs(roundPy2(j1)-j1) < 0.1)
+                         and (abs(roundPy2(J3)-J3) < 0.1)
+                         and abs(j1-J3) < 2.1):
         # we have precalculated value
-        return wignerPrecal6j[j1, J3, int(roundPy2(0.5 + j1 - j3)),
-                              int(roundPy2(0.5 + J3 - J1)), J2 - 1]
+        return wignerPrecal6j[j1,
+                              2 + j1 - J3,
+                              int(roundPy2(2 + 2*(j3-j1))),
+                              int(roundPy2(2 + 2*(J1-J3))),
+                              J2 - 1,
+                              int(roundPy2(2 * j2))]
     ##print("not in database %1.f %1.f %1.f %1.f %1.f %1.f" % (j1,j2,j3,J1,J2,J3))
 
     if (j1 > 50 or j2 > 50 or j3 > 50 or J1 > 50 or J2 > 50 or J3 > 50):
