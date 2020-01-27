@@ -265,15 +265,15 @@ class AlkalineEarthAtom(AlkaliAtom):
                 "Requested energy for state l=%d >= n=%d !" % (l, n))
 
         stateLabel = "%d%s%d" % (int(2*s+1), printStateLetter(l), j)
-        minQuantumDefectN = 10000
-        maxQuantumDefectN = 10001
+        minQuantumDefectN = 100000
+        maxQuantumDefectN = 0
+
         if stateLabel in self.defectFittingRange.keys():
             minQuantumDefectN = self.defectFittingRange[stateLabel][0]
             maxQuantumDefectN = self.defectFittingRange[stateLabel][1]
 
         # use NIST data ?
-        if (not self.preferQuantumDefects
-            or n < minQuantumDefectN or n > maxQuantumDefectN):
+        if (not self.preferQuantumDefects or n < minQuantumDefectN):
             savedEnergy = self._getSavedEnergy(n, l, j, s=s)
             if (abs(savedEnergy) > 1e-8):
                 return savedEnergy
@@ -697,3 +697,17 @@ class AlkalineEarthAtom(AlkaliAtom):
         raise NotImplementedError("potential calculation for alkaline"
                                   " earths has not been implemented yet.")
         return
+
+    def getStateLifetime(self, n, l, j, temperature=0, includeLevelsUpTo=0,
+                         s=0):
+        print("WARNING: for AlkalineEarths lifetime calculations based on "
+              "dipole matrix elements calculated in semiclassical "
+              "approximation are not very accurate and can produce wrong "
+              "lifetime results. Use with caution.")
+        # after waring user, call method from the parent class
+        # (parent of AlkalineEarthAtom is AlkaliAtom)
+        return super(AlkalineEarthAtom, self).getStateLifetime(
+            n, l, j,
+            temperature=temperature,
+            includeLevelsUpTo=includeLevelsUpTo,
+            s=s)
