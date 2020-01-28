@@ -800,76 +800,89 @@ class PairStateInteractions:
         return 2. * (sqrt(sqrt_r1_on2) + sqrt(sqrt_r2_on2))\
             * (physical_constants["Bohr radius"][0] * 1.e6)
 
-    def getC6perturbatively(self, theta, phi, nRange, energyDelta):
-        """
-            Calculates :math:`C_6` from second order perturbation theory.
 
-            Calculates
-            :math:`C_6=\\sum_{\\rm r',r''}|\\langle {\\rm r',r''}|V|\
-            {\\rm r1,r2}\\rangle|^2/\\Delta_{\\rm r',r''}`, where
-            :math:`\\Delta_{\\rm r',r''}\\equiv E({\\rm r',r''})-E({\\rm r1, r2})`
+    def getC6perturbatively(self, theta, phi, nRange, energyDelta,
+                            degeneratePertubation=False):
+        r"""
+        Calculates :math:`C_6` from second order perturbation theory.
 
-            This calculation is faster then full diagonalization, but it is valid
-            only far from the so called spaghetti region that occurs when atoms
-            are close to each other. In that region multiple levels are strongly
-            coupled, and one needs to use full diagonalization. In region where
-            perturbative calculation is correct, energy level shift can be
-            obtained as :math:`V(R)=-C_6/R^6`
+        Calculates
+        :math:`C_6=\sum_{\rm r',r''}|\langle {\rm r',r''}|V|\
+        {\rm r1,r2}\rangle|^2/\\Delta_{\rm r',r''}`, where
+        :math:`\Delta_{\rm r',r''}\equiv E({\rm r',r''})-E({\rm r1, r2})`
 
-            See `perturbative C6 calculations example snippet`_.
+        This calculation is faster then full diagonalization, but it is valid
+        only far from the so called spaghetti region that occurs when atoms
+        are close to each other. In that region multiple levels are strongly
+        coupled, and one needs to use full diagonalization. In region where
+        perturbative calculation is correct, energy level shift can be
+        obtained as :math:`V(R)=-C_6/R^6`
 
-            .. _`perturbative C6 calculations example snippet`:
-                ./Rydberg_atoms_a_primer.html#Dispersion-Coefficients
+        See `perturbative C6 calculations example snippet`_.
 
-            Args:
-                theta (float): orientation of inter-atomic axis with respect
-                    to quantization axis (:math:`z`) in Euler coordinates
-                    (measured in units of radian)
-                phi (float): orientation of inter-atomic axis with respect
-                    to quantization axis (:math:`z`) in Euler coordinates
-                    (measured in units of radian)
-                nRange (int): how much below and above the given principal quantum number
-                    of the pair state we should be looking
-                energyDelta (float): what is maximum energy difference ( :math:`\\Delta E/h` in Hz)
-                    between the original pair state and the other pair states that we are including in
-                    calculation
+        .. _`perturbative C6 calculations example snippet`:
+            ./Rydberg_atoms_a_primer.html#Dispersion-Coefficients
 
-            Returns:
-                float: :math:`C_6` measured in :math:`\\text{GHz }\\mu\\text{m}^6`
+        Args:
+            theta (float): orientation of inter-atomic axis with respect
+                to quantization axis (:math:`z`) in Euler coordinates
+                (measured in units of radian)
+            phi (float): orientation of inter-atomic axis with respect
+                to quantization axis (:math:`z`) in Euler coordinates
+                (measured in units of radian)
+            nRange (int): how much below and above the given principal quantum number
+                of the pair state we should be looking
+            energyDelta (float): what is maximum energy difference ( :math:`\Delta E/h` in Hz)
+                between the original pair state and the other pair states that we are including in
+                calculation
+            degeneratePertubation (bool): optional, default False. Should one
+                use degenerate pertubation theory. This should be used whenever
+                angle between quantisation and interatomic axis is non-zero,
+                as well as when one considers non-stretched states.
 
-            Example:
-                If we want to quickly calculate :math:`C_6` for two Rubidium
-                atoms in state :math:`62 D_{3/2} m_j=3/2`, positioned in space
-                along the shared quantization axis::
+        Returns:
+            float: if **degeneratePertubation=False**, returns
+            :math:`C_6` measured in :math:`\text{GHz }\mu\text{m}^6`;
+            if **degeneratePertubation=True**, returns array of
+            :math:`C_6` measured in :math:`\text{GHz }\mu\text{m}^6`
+            AND array of corresponding eigenvectors in
+            :math:`\{m_{j_1}=-j_1, \ldots, m_{j_1} = +j1\}\bigotimes \{ m_{j_2}=-j_2, \ldots, m_{j_2} = +j2\} `
+            basis
 
-                    from arc import *
-                    calculation = PairStateInteractions(Rubidium(), 62, 2, 1.5, 62, 2, 1.5, 1.5, 1.5)
-                    c6 = calculation.getC6perturbatively(0,0, 5, 25e9)
-                    print "C_6 = %.0f GHz (mu m)^6" % c6
 
-                Which returns::
+        Example:
+            If we want to quickly calculate :math:`C_6` for two Rubidium
+            atoms in state :math:`62 D_{3/2} m_j=3/2`, positioned in space
+            along the shared quantization axis::
 
-                    C_6 = 767 GHz (mu m)^6
+                from arc import *
+                calculation = PairStateInteractions(Rubidium(), 62, 2, 1.5, 62, 2, 1.5, 1.5, 1.5)
+                c6 = calculation.getC6perturbatively(0,0, 5, 25e9)
+                print "C_6 = %.0f GHz (mu m)^6" % c6
 
-                Quick calculation of angular anisotropy of for Rubidium
-                :math:`D_{2/5},m_j=5/2` states::
+            Which returns::
 
-                    # Rb 60 D_{2/5}, mj=2.5 , 60 D_{2/5}, mj=2.5 pair state
-                    calculation1 = PairStateInteractions(Rubidium(), 60, 2, 2.5, 60, 2, 2.5, 2.5, 2.5)
-                    # list of atom orientations
-                    thetaList = np.linspace(0,pi,30)
-                    # do calculation of C6 pertubatively for all atom orientations
-                    c6 = []
-                    for theta in thetaList:
-                        value = calculation1.getC6perturbatively(theta,0,5,25e9)
-                        c6.append(value)
-                        print ("theta = %.2f * pi \tC6 = %.2f GHz  mum^6" % (theta/pi,value))
-                    # plot results
-                    plot(thetaList/pi,c6,"b-")
-                    title("Rb, pairstate  60 $D_{5/2},m_j = 5/2$, 60 $D_{5/2},m_j = 5/2$")
-                    xlabel(r"$\Theta /\pi$")
-                    ylabel(r"$C_6$ (GHz $\mu$m${}^6$")
-                    show()
+                C_6 = 767 GHz (mu m)^6
+
+            Quick calculation of angular anisotropy of for Rubidium
+            :math:`D_{2/5},m_j=5/2` states::
+
+                # Rb 60 D_{2/5}, mj=2.5 , 60 D_{2/5}, mj=2.5 pair state
+                calculation1 = PairStateInteractions(Rubidium(), 60, 2, 2.5, 60, 2, 2.5, 2.5, 2.5)
+                # list of atom orientations
+                thetaList = np.linspace(0,pi,30)
+                # do calculation of C6 pertubatively for all atom orientations
+                c6 = []
+                for theta in thetaList:
+                    value = calculation1.getC6perturbatively(theta,0,5,25e9)
+                    c6.append(value)
+                    print ("theta = %.2f * pi \tC6 = %.2f GHz  mum^6" % (theta/pi,value))
+                # plot results
+                plot(thetaList/pi,c6,"b-")
+                title("Rb, pairstate  60 $D_{5/2},m_j = 5/2$, 60 $D_{5/2},m_j = 5/2$")
+                xlabel(r"$\Theta /\pi$")
+                ylabel(r"$C_6$ (GHz $\mu$m${}^6$")
+                show()
 
         """
         self.__initializeDatabaseForMemoization()
@@ -908,106 +921,130 @@ class PairStateInteractions:
         if lmin2 < -0.1:
             lmin2 = 1
 
+        interactionMatrix = np.zeros((int(round((2 * self.j + 1)
+                                                * (2 * self.jj + 1)
+                                                )
+                                          ),
+                                      int(round((2 * self.j + 1)
+                                                * (2 * self.jj + 1)
+                                                )
+                                          )
+                                      ),
+                                     dtype=np.complex)
+
         for n1 in xrange(max(self.n - nRange, 1), self.n + nRange + 1):
             for n2 in xrange(max(self.nn - nRange, 1), self.nn + nRange + 1):
                 lmax1 = min(self.l + 2, n1)
                 for l1 in xrange(lmin1, lmax1, 2):
                     lmax2 = min(self.ll + 2, n2)
                     for l2 in xrange(lmin2, lmax2, 2):
-                        j1 = l1 - self.s
-                        while j1 < -0.1:
-                            j1 += 1
-                        while j1 <= l1 + self.s + 0.1:
-                            j2 = l2 - self.s
-                            while j2 < -0.1:
-                                j2 += 1
+                        if ((l1+l2) % 2 == Lmod2):
+                            j1 = l1 - self.s
+                            while j1 < -0.1:
+                                j1 += 1
+                            while j1 <= l1 + self.s + 0.1:
+                                j2 = l2 - self.s
+                                while j2 < -0.1:
+                                    j2 += 1
 
-                            while j2 <= l2 + self.s + 0.1:
-                                getEnergyDefect = self.atom.getEnergyDefect2(
-                                    self.n, self.l, self.j,
-                                    self.nn, self.ll, self.jj,
-                                    n1, l1, j1,
-                                    n2, l2, j2,
-                                    s=self.s) / C_h
-                                if (abs(getEnergyDefect) < energyDelta
-                                        and (not (self.interactionsUpTo == 1)
-                                             or (Lmod2 == ((l1 + l2) % 2)))
-                                        and (n1 >= self.atom.groundStateN
-                                             or [n1, l1, j1] in
-                                             self.atom.extraLevels)
-                                        and (n2 >= self.atom.groundStateN
-                                             or [n2, l2, j2] in
-                                             self.atom.extraLevels)
-                                        ):
-                                    getEnergyDefect = getEnergyDefect * 1.0e-9  # GHz
+                                while j2 <= l2 + self.s + 0.1:
+                                    energyDefect = self.atom.getEnergyDefect2(
+                                        self.n, self.l, self.j,
+                                        self.nn, self.ll, self.jj,
+                                        n1, l1, j1,
+                                        n2, l2, j2,
+                                        s=self.s) / C_h
+                                    if (abs(energyDefect) < energyDelta
+                                            and (not (self.interactionsUpTo == 1)
+                                                 or (Lmod2 == ((l1 + l2) % 2)))
+                                            and (n1 >= self.atom.groundStateN
+                                                 or [n1, l1, j1] in
+                                                 self.atom.extraLevels)
+                                            and (n2 >= self.atom.groundStateN
+                                                 or [n2, l2, j2] in
+                                                 self.atom.extraLevels)
+                                            ):
+                                        energyDefect = energyDefect * 1.0e-9  # GHz
+                                        if (abs(energyDefect) < 1e-10):
+                                            raise ValueError(
+                                                "The requested pair-state "
+                                                "is dipole coupled resonatly "
+                                                "(energy defect = 0)"
+                                                "to other pair-states"
+                                                "Aborting pertubative "
+                                                "calculation."
+                                                "(This usually happens for "
+                                                "high-L states for which "
+                                                "identical quantum defects give "
+                                                "raise to degeneracies, making "
+                                                "total L ultimately not "
+                                                "conserved quantum number) ")
 
-                                    # calculate radial part
-                                    couplingStregth = (
-                                        _atomLightAtomCoupling(
-                                            self.n, self.l, self.j,
-                                            self.nn, self.ll, self.jj,
-                                            n1, l1, j1,
-                                            n2, l2, j2, self.atom)
-                                        * (1.0e-9 * (1.e6)**3 / C_h)
-                                        )  # GHz / mum^3
+                                        # calculate radial part
+                                        couplingStregth = (
+                                            _atomLightAtomCoupling(
+                                                self.n, self.l, self.j,
+                                                self.nn, self.ll, self.jj,
+                                                n1, l1, j1,
+                                                n2, l2, j2, self.atom)
+                                            * (1.0e-9 * (1.e6)**3 / C_h)
+                                            )  # GHz / mum^3
 
-                                    pairState2 = (
-                                        "|"
-                                        + printStateString(n1, l1, j1,
-                                                           s=self.s)
-                                        + ","
-                                        + printStateString(n2, l2, j2,
-                                                           s=self.s)
-                                        + ">"
-                                        )
+                                        d = self.__getAngularMatrix_M(
+                                            self.l, self.j,
+                                            self.ll, self.jj,
+                                            l1, j1,
+                                            l2, j2,
+                                            self.atom)
 
-                                    # include relevant mj and add contributions
-                                    for m1c in np.linspace(j1, -j1,
-                                                           round(1 + 2 * j1)):
-                                        for m2c in np.linspace(j2, -j2,
-                                                               round(1 + 2 * j2)):
-                                            if ((not limitBasisToMj)
-                                                or (abs(originalMj
-                                                        - m1c - m2c) == 0)):
-                                                # find angular part
-                                                statePart1 = singleAtomState(
-                                                    j1, m1c)
-                                                statePart2 = singleAtomState(
-                                                    j2, m2c)
-                                                # rotate individual states
-                                                dMatrix = wgd.get(j1)
-                                                statePart1 = dMatrix.dot(
-                                                    statePart1)
-                                                dMatrix = wgd.get(j2)
-                                                statePart2 = dMatrix.dot(
-                                                    statePart2)
-                                                # composite state of two atoms
-                                                stateCom2 = compositeState(
-                                                    statePart1, statePart2)
+                                        interactionMatrix += (
+                                            d.conj().T.dot(d)
+                                            * abs(couplingStregth)**2
+                                            / energyDefect
+                                            )
 
-                                                d = self.__getAngularMatrix_M(
-                                                    self.l, self.j,
-                                                    self.ll, self.jj,
-                                                    l1, j1,
-                                                    l2, j2,
-                                                    self.atom)
+                                    j2 = j2 + 1.0
+                                j1 = j1 + 1.0
 
-                                                angularFactor = conjugate(
-                                                    stateCom2.T).dot(
-                                                        d.dot(stateCom))
-                                                angularFactor = real(
-                                                    angularFactor[0, 0])
+        rotationMatrix = np.kron(wgd.get(self.j).toarray(),
+                                 wgd.get(self.jj).toarray())
 
-                                                C6 += ((couplingStregth
-                                                        * angularFactor)
-                                                       ** 2 / getEnergyDefect)
-
-                                j2 = j2 + 1.0
-                            j1 = j1 + 1.0
-
+        interactionMatrix = rotationMatrix.conj().T.dot(
+            interactionMatrix.dot(rotationMatrix)
+            )
         # ========= END OF THE MAIN CODE ===========
         self.__closeDatabaseForMemoization()
-        return C6
+
+        value, vectors = np.linalg.eigh(interactionMatrix)
+        vectors = vectors.T
+        stateCom = compositeState(singleAtomState(self.j, self.m1),
+                           singleAtomState(self.jj, self.m2)).T
+
+        if not degeneratePertubation:
+            for i, v in enumerate(vectors):
+                if (abs(np.vdot(v, stateCom)) > 1-1e-9):
+                    return value[i]
+            #    else:
+            #        print(np.vdot(v, stateCom))
+            # if initial state is not eigen state print warning and return
+            # results for eigenstates, and eigenstate composition
+            """
+            print("WARNING: Requested state is not eigenstate when dipole-dipole "
+                  "interactions and/or relative position of atoms are "
+                  "taken into account.\n"
+                  "We will use degenerate pertubative theory to correctly "
+                  "calculate C6.\n"
+                  "Method will return values AND eigenvectors in basis \n"
+                  "{mj1 = -j1, ... , mj1 = +j1} x {mj2 = -j2, ... , m2 = +j2}, "
+                  "where x denotes Kronecker product\n"
+                  "To not see this warning request explicitly "
+                  "degeneratePertubation=True in call of this method.\n")
+            """
+            #print(stateCom.conj().dot(interactionMatrix.dot(stateCom.T)))
+            #print(stateCom.conj().dot(interactionMatrix.dot(stateCom.T)).shape)
+            return np.real(stateCom.conj().dot(
+                            interactionMatrix.dot(stateCom.T))[0][0])
+        return np.real(value), vectors
 
     def defineBasis(self, theta, phi, nRange, lrange, energyDelta,
                     Bz=0, progressOutput=False, debugOutput=False):

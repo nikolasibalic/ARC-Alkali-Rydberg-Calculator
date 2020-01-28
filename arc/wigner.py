@@ -16,6 +16,7 @@ from numpy import arange
 import numpy as np
 import os
 from scipy.sparse import csr_matrix
+from scipy.sparse import eye as sparse_eye
 import sys
 if sys.version_info > (2,):
     xrange = range
@@ -403,7 +404,8 @@ class WignerDmatrix:
                 `state in new basis = wignerDmatrix * state in original basis`
         """
         if self.trivial:
-            return np.eye(int(roundPy2(2. * j + 1.)), int(roundPy2(2. * j + 1.)), dtype=np.complex128)
+            return sparse_eye(int(roundPy2(2. * j + 1.)),
+                              int(roundPy2(2. * j + 1.)), dtype=np.complex128)
         savedIndex = self.matLoc[int(roundPy2(2 * j))]
         if savedIndex != 0:
             return self.matSaved[savedIndex - 1]

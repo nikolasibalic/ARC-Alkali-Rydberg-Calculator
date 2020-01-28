@@ -2234,6 +2234,8 @@ def singleAtomState(j, m):
 
 
 def compositeState(s1, s2):
+    # TODO: Check is the following equivalent (for improvement)
+    return np.kron(s1, s2).reshape((s1.shape[0] * s2.shape[0], 1))
     a = np.zeros((s1.shape[0] * s2.shape[0], 1), dtype=np.complex128)
     index = 0
     for br1 in xrange(s1.shape[0]):
