@@ -700,10 +700,10 @@ class AlkalineEarthAtom(AlkaliAtom):
 
     def getStateLifetime(self, n, l, j, temperature=0, includeLevelsUpTo=0,
                          s=0):
-        print("WARNING: for AlkalineEarths lifetime calculations based on "
-              "dipole matrix elements calculated in semiclassical "
-              "approximation are not very accurate and can produce wrong "
-              "lifetime results. Use with caution.")
+        print("WARNING:  For AlkalineEarths, lifetimes are observed to be "
+              "significantly modified by inter-electron correlations that are "
+              "not included in this code (see Vaillant et al., J. Phys B 47 "
+              "155001 (2015) for examples).  Use with caution.")
         # after waring user, call method from the parent class
         # (parent of AlkalineEarthAtom is AlkaliAtom)
         return super(AlkalineEarthAtom, self).getStateLifetime(
