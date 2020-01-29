@@ -153,7 +153,6 @@ class Strontium88(AlkalineEarthAtom):
 
     literatureDMEfilename = 'strontium_literature_dme.csv'
 
-    useLiterature = False
     elementName = 'Sr88'
     meltingPoint = 777 + 273.15  #: in K
 
@@ -227,7 +226,6 @@ class Calcium40(AlkalineEarthAtom):
 
     groundStateN = 4
     extraLevels = []  #: TODO unkown if such exist at time of writing
-    preferQuantumDefects = False
 
     levelDataFromNIST = "ca_level_data.csv"
 
@@ -238,7 +236,6 @@ class Calcium40(AlkalineEarthAtom):
 
     literatureDMEfilename = 'calcium_literature_dme.csv'
 
-    useLiterature = False
     elementName = 'Ca40'
     meltingPoint = 842 + 273.15  #: in K
 
@@ -313,7 +310,6 @@ class Ytterbium174(AlkalineEarthAtom):
 
     groundStateN = 6
     extraLevels = []  #: TODO unkown if such exist at time of writing
-    preferQuantumDefects = False
 
     # : Store list of filenames to read in no data
     levelDataFromNIST = "yb_level_data.csv"
@@ -324,7 +320,6 @@ class Ytterbium174(AlkalineEarthAtom):
 
     literatureDMEfilename = 'ytterbium_literature_dme.csv'
 
-    useLiterature = False
     elementName = 'Yb174'
     meltingPoint = 819 + 273.15  #: in K
 
