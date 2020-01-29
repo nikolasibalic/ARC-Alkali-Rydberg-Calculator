@@ -10,7 +10,7 @@ Install Python and packages for scientific computing in Python (scipy, numpy, ma
 The package is tested and works with **both Python 2.7 and Python 3.***.
 We recommend installing Python distributions that comes with Numpy that is
 connected to the optimized numeric libraries like ATLAS. One such distribution
-is `Anaconda <https://www.continuum.io/downloads>`_, that provides
+is `Anaconda <https://www.anaconda.com/distribution/>`_, that provides
 `ATLAS <https://anaconda.org/anaconda/atlas>`_ support and optimized math kernel.
 
 ****************************************
