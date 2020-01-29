@@ -11,7 +11,7 @@ cite *both* [original ARC publication](https://doi.org/10.1016/j.cpc.2017.06.015
 
 This loads population_lifetime.py for calculating lifetime of Rydberg
 populations based on known spotaneous decay and radiative black body induced
-transitions within the Rydberg manifold. See documentation.
+transitions within the Rydberg manifold. See [documentation](https://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/advanced.html#arc.advanced.population_lifetime.getPopulationLifetime).
 
 **Contributed by:** Alessandro Greco, Dipartimento di Fisica “E. Fermi”,
 Università di Pisa, Largo Bruno Pontecorvo 3, 56127 Pisa, Italy

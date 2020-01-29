@@ -1,17 +1,21 @@
+#########################
 Installation instructions
-=========================
+#########################
+
+********************
 Prerequisite: Python
---------------------
+********************
 
 Install Python and packages for scientific computing in Python (scipy, numpy, matplotlib).
-The package is tested and works with **both Python 2.7 and Python 3.6**.
+The package is tested and works with **both Python 2.7 and Python 3.***.
 We recommend installing Python distributions that comes with Numpy that is
 connected to the optimized numeric libraries like ATLAS. One such distribution
 is `Anaconda <https://www.continuum.io/downloads>`_, that provides
 `ATLAS <https://anaconda.org/anaconda/atlas>`_ support and optimized math kernel.
 
+****************************************
 Recommended installation: via Python pip
-----------------------------------------
+****************************************
 
 Users can simply install the package from command line::
 
@@ -19,9 +23,18 @@ Users can simply install the package from command line::
 
 This finishes installation.
 This should work on all operating systems (Linux, OSX, Windows) with
-Python 2.7 or Python 3.6. Note this is a new feature for Windows, so
-Windows  users should contact developers if unexpected errors occur.
+Python 2.7, Python 3.* .
+Users should contact developers if unexpected errors occur.
+
+That is all, enjoy using ARC package. Check :ref:`get-started-page` to see some ideas where to start.
+
 **Below we describe some old (legacy) installation methods.**
+
+********************************
+Some legacy installation methods
+********************************
+
+This legacy methods are still useful in development process.
 
 Download the ARC library/package
 --------------------------------
@@ -37,9 +50,7 @@ It is important that package is stored somewhere where user has write permission
 Installation of the package globally with setup.py
 --------------------------------------------------
 
-**This is tested on Linux so far**
-
-Do this only if you have Linux/UNIX (as it is tested on it) and you are sure that you don't want to change underlying ARC code.
+If you have Linux/UNIX (as it is tested on it) and you are sure that you don't want to change underlying ARC code.
 Make sure you have C compiler and `python development headers <https://anaconda.org/StatisKit/python-dev>`_ installed. To compile and install for local user ARC call from terminal::
 
     python setup.py build
@@ -99,7 +110,3 @@ Alternative solution, if you don't want to compile anything, is to use pure Pyth
     atom = Rubidium(cpp_numerov=False)
 
 This is not recommended option for complex calculations, since it will run much more slowly then optimized C version, but is fine if you need just a few numbers.
-
-**Finally...**
-
-That is all, enjoy using ARC package. Check :ref:`get-started-page` to see some ideas where to start.

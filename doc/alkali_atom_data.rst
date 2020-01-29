@@ -23,3 +23,4 @@ Alkali atom data
 
 .. automodule:: arc.alkali_atom_data
    :members:
+   :show-inheritance:
