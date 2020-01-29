@@ -2114,9 +2114,9 @@ class OpticalLattice1D:
                     trapPotentialDepth = 40  # units of recoil energy
                     quazimomentum = 0
                     blochBandIndex = 0  # Bloch band lowest in energy is 0
-                    wf = lattice.getBlochFunction(trapPotentialDepth,
-                                                  quazimomentum,
-                                                  blochBandIndex)
+                    wf = lattice.BlochWavefunction(trapPotentialDepth,
+                                                   quazimomentum,
+                                                   blochBandIndex)
                     wf(x)  # returns complex number corresponding to value of Bloch
                            # wavefunction at point x (cooridnate given in units of
                            # 1/k where k = 2 \pi / trapWavenegth )
@@ -2137,7 +2137,7 @@ class OpticalLattice1D:
         self.diagonalise(trapPotentialDepth, [quazimomentum],
                            saveBandIndex = blochBandIndex)
         state = np.copy(self.savedBlochBand[0])
-        print(state)
+        
         self.energy = temp1
         self.quasimomenutm = temp2
         self.savedBlochBand = temp3
