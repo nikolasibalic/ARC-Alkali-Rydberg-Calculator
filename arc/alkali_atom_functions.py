@@ -88,6 +88,10 @@ def setup_data_folder():
 
         dataFolder = os.path.join(dataFolder, "refractive_index_data")
         refractiveIndexData = os.path.join(DPATH, "refractive_index_data")
+
+        if not os.path.exists(refractiveIndexData):
+            os.makedirs(refractiveIndexData)
+
         for fn in os.listdir(dataFolder):
             if os.path.isfile(os.path.join(dataFolder, fn)):
                 shutil.copy(os.path.join(dataFolder, fn), refractiveIndexData)
