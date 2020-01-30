@@ -21,7 +21,7 @@ arc_ext = Extension(
 
 setup(
     name="ARC-Alkali-Rydberg-Calculator",
-    version="2.2.0",
+    version="2.2.1",
     description="Alkali Rydberg Calculator",
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
@@ -30,13 +30,13 @@ setup(
               "quantum optics", "van der Waals", "scientific","atomic-sensors",
               "quantum-simulator","alkali-atoms"],
     url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator",
-    download_url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/archive/2.2.0.tar.gz",
+    download_url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/archive/2.2.1.tar.gz",
     author = 'Nikola Sibalic, Jonathan D. Pritchard, Charles S. Adams, Kevin J. Weatherill',
     author_email = 'nikolasibalic@physics.org',
 
     packages=['arc','arc.advanced'],
 
-    package_data={'arc': ['data/*', 'arc_c_extensions.c']},
+    package_data={'arc': ['data/*', 'data/refractive_index_data/*', 'arc_c_extensions.c']},
 
     install_requires=[
        'scipy>=0.18.1',
