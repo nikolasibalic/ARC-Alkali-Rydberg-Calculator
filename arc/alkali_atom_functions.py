@@ -59,7 +59,7 @@ sqlite3.register_adapter(np.int64, int)
 sqlite3.register_adapter(np.int32, int)
 
 DPATH = os.path.join(os.path.expanduser('~'), '.arc-data')
-__arc_data_version__ = 1
+__arc_data_version__ = 2
 
 
 def setup_data_folder():
