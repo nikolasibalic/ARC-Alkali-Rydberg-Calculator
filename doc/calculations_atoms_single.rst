@@ -65,6 +65,7 @@ Overview
     OpticalLattice1D.defineBasis
     OpticalLattice1D.diagonalise
     OpticalLattice1D.BlochWavefunction
+    OpticalLattice1D.getWannierFunction
 
 .. rubric:: DynamicPolarizability Methods
 
