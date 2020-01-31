@@ -4,73 +4,94 @@
 Data sources
 -------------
 
-.. [#c1] J. A. Armstrong, J. J. Wynne, and P. Esherick,
-        "Bound, odd-parity J = 1 spectra of the alkaline earths: Ca, Sr, and Ba,"
-        J. Opt. Soc. Am. 69, 211-230 (1979)
+.. [#c1] J. A. Armstrong, J. J. Wynne and P. Esherick,
+        "Bound, odd-parity J = 1 spectra of the alkaline earths: Ca, Sr,
+        and Ba",
+        *J. Opt. Soc. Am.* **69**, 211-230 (1979)
 
 
-.. [#c2]R.Beigang K.Lücke A.Timmermann P.J.West D.Frölich
-        Determination of absolute level energies of 5sns1S0 and 5snd1D2 Rydberg series of Sr
-        Opt. Commun. 42, 19 1982.
+.. [#c2] R.Beigang, K.Lücke, A.Timmermann, P.J.West and D.Frölich,
+        Determination of absolute level energies of 5sns1S0 and 5snd1D2
+        Rydberg series of Sr,
+        *Opt. Commun.* **42**, 19 (1982).
 
-.. [#c3] J E Sansonetti and G Nave. Wavelengths,
-        Transition Probabilities, and Energy Levels for the Spectrum of Neutral Strontium (Sr I).
-        Journal of Physical and Chemical Reference Data, 39:033103, 2010.
+.. [#c3] J. E. Sansonetti and G Nave,
+        Wavelengths, Transition Probabilities, and Energy Levels for the
+        Spectrum of Neutral Strontium (Sr I),
+        Journal of Physical and Chemical Reference Data **39**, 033103 (2010).
 
-.. [#c4]Baig M Yaseen M Nadeem A Ali R Bhatti S
-        Three-photon excitation of strontium Rydberg levels
-        Optics Communications, vol: 156 (4-6) pp: 279-284, 1998
+.. [#c4] Baig M, Yaseen M, Nadeem A, Ali R. and Bhatti S.
+        Three-photon excitation of strontium Rydberg levels,
+        *Optics Communications* **156**, 279 (1998)
 
-.. [#c5] P Esherick, J J Wynne, and J A Armstrong.
-        Spectroscopy of 3P0 states of alkaline earths.
-        Optics Letters, 1:19, 1977.
+.. [#c5] P. Esherick, J. J. Wynne and J A Armstrong,
+        Spectroscopy of 3P0 states of alkaline earths,
+        *Optics Letters* **1**, 19 (1977).
 
-.. [#c6] P Esherick.
-        Bound, even-parity J = 0 and J = 2 spectra of Sr.
-        PhysicalReview A, 15:1920, 1977.
+.. [#c6] P Esherick,
+        Bound, even-parity J = 0 and J = 2 spectra of Sr,
+        *Physical Review A* **15**, 1920 (1977).
 
-.. [#c7] R Beigang and D Schmidt.
-        Two-Channel MQDT Analysis of Bound 5snd 3D1,3 Rydberg States of Strontium.
-        Physica Scripta, 27:172, 1983.
+.. [#c7] R. Beigang and D. Schmidt,
+        Two-Channel MQDT Analysis of Bound 5snd 3D1,3 Rydberg States of
+        Strontium,
+        *Physica Scripta* **27**, 172 (1983).
 
-.. [#c8]J R Rubbmark and S A Borgstr¨om.
-        Rydberg Series in Strontium Found in Absorption by Selectively Laser-Excited Atoms.
-        Physica Scripta, 18:196,1978
+.. [#c8]J R. Rubbmark and S. A. Borgstr¨om,
+        Rydberg Series in Strontium Found in Absorption by Selectively,
+        Laser-Excited Atoms.
+        *Physica Scripta* **18**, 196 (1978)
 
-.. [#c9] Beigang R, Lucke K, Schmidt D, Timmermann A and West P J ¨
-        One-Photon Laser Spectroscopy of Rydberg Series from Metastable Levels in Calcium and Strontium
-        Phys. Scr. 26 183, 1982
+.. [#c9] Beigang R, Lucke K, Schmidt D, Timmermann A. and West P. J,
+        One-Photon Laser Spectroscopy of Rydberg Series from Metastable Levels
+        in Calcium and Strontium,
+        *Phys. Scr.* **26**, 183 (1982)
 
-.. [c10] L. Couturier, I. Nosske, F. Hu, C. Tan, C. Qiao, Y. H. Jiang, P. Chen, and M. Weidemüller.
-        Measurement of the strontium triplet Rydberg series by depletion spectroscopy of ultracold atoms
+.. [c10] L. Couturier, I. Nosske, F. Hu, C. Tan, C. Qiao, Y. H. Jiang, P. Chen
+        and M. Weidemüller.
+        Measurement of the strontium triplet Rydberg series by depletion
+        spectroscopy of ultracold atoms
         http://arxiv.org/abs/1810.07611
 
-.. [#yb1] Optical-microwave double-resonance spectroscopy of highly excited Rydberg states of ytterbium
-        H. Maeda Y. Matsuo M. Takami A. Suzuki
-        Physical Review Avol. 45issue 3(1992)pp: 1732-1741Published by American Physical Society
+.. [#yb1] H. Maeda, Y. Matsuo, M. Takami and A. Suzuki,
+        Optical-microwave double-resonance spectroscopy of highly excited
+        Rydberg states of ytterbium,
+        *Physical Review A* **45**, 1732 (1992)
 
-.. [#yb2] Three-step laser spectroscopy and multichannel quantum defect analysis of odd-parity Rydberg states of neutral ytterbium
-        M Aymar R J Champeau C Delsart O Robaux
-        Journal of Physics B: Atomic and Molecular Physicsvol. 17issue 18(1984)pp: 3645-3661
+.. [#yb2] M, Aymar, R. J. Champeau, C. Delsart and O. Robaux,
+        Three-step laser spectroscopy and multichannel quantum defect analysis
+        of odd-parity Rydberg states of neutral ytterbium,
+        *Journal of Physics B: Atomic and Molecular Physics* **17**, 3645 (1984)
 
-.. [#yb3] Laser and microwave spectroscopy of even-parity Rydberg states of neutral ytterbium and multichannel-quantum-defect-theory analysis
-        H. Lehec A. Zuliani W. Maineult E. Luc-Koenig P. Pillet P. Cheinet F. Niyaz T. F. Gallagher
-        Physical Review A vol. 98 issue 6 (2018) pp: 062506 Published by American Physical Society
+.. [#yb3] H. Lehec, A. Zuliani, W. Maineult, E. Luc-Koenig, P. Pillet,
+        P. Cheinet, F. Niyaz and T. F. Gallagher,
+        Laser and microwave spectroscopy of even-parity Rydberg states of
+        neutral ytterbium and multichannel-quantum-defect-theory analysis,
+        *Physical Review A* **98**, 062506 (2018)
 
-.. [#ca1] Microwave spectroscopy of calcium Rydberg states
-        Thomas R. Gentile Barbara J. Hughey Daniel Kleppner Theodore W. Ducas
-        Physical Review Avol. 42issue 1(1990)pp: 440-451Published by American Physical Society
+.. [#ca1] Thomas R. Gentile, Barbara J. Hughey, Daniel Kleppner
+        and Theodore W. Ducas,
+        Microwave spectroscopy of calcium Rydberg states,
+        *Physical Review A* **42**, 440 (1990)
 
-.. [#ca2] Determination of Ionization Potential of Calcium by High-Resolution Resonance Ionization Spectroscopy
-        Masabumi Miyabe, Christopher Geppert, Masaaki Kato, Masaki Oba, Ikuo Wakaida, Kazuo Watanabe, Klaus D. A. Wendt
-        Journal of the Physical Society of Japan, 75, 034302 (2006) 10.1143/JPSJ.75.034302
+.. [#ca2] Masabumi Miyabe, Christopher Geppert, Masaaki Kato, Masaki Oba,
+        Ikuo Wakaida, Kazuo Watanabe and Klaus D. A. Wendt,
+        Determination of Ionization Potential of Calcium by High-Resolution
+        Resonance Ionization Spectroscopy,
+        *Journal of the Physical Society of Japan* **75**, 034302 (2006)
+        10.1143/JPSJ.75.034302
 
-.. [#ca3] Meija, Juris; et al. (2016). "Atomic weights of the elements 2013 (IUPAC Technical Report)". Pure and Applied Chemistry. 88 (3): 265–91. doi:10.1515/pac-2015-0305.
+.. [#ca3] Meija, Juris et al,
+        "Atomic weights of the elements 2013 (IUPAC Technical Report)",
+        *Pure and Applied Chemistry* **88**,265 (2016)
+        doi:10.1515/pac-2015-0305.
 
 
 .. [#pr] C.B.Alcock, V.P.Itkin, M.K.Horrigan,\
         *Canadian Metallurgical Quarterly*, **23**, 309 (1984)
         http://dx.doi.org/10.1179/cmq.1984.23.3.309
+
+.. [#nist] NIST Standard reference database, https://dx.doi.org/10.18434/T4FW23
 """
 
 from .alkaline_earth_atom_functions import *
@@ -156,10 +177,11 @@ class Strontium88(AlkalineEarthAtom):
     elementName = 'Sr88'
     meltingPoint = 777 + 273.15  #: in K
 
-    #: NIST Standard reference database, https://dx.doi.org/10.18434/T4FW23
+    #: Ref. [#nist]_
     mass = 87.905619 * physical_constants["atomic mass constant"][0]
 
-    #: TODO what is docstring here? (fitting ranges have been taken from Pauls fits and christophe)
+    #: Quantum defect principal quantum number fitting ranges for different
+    #: series
     defectFittingRange = {"1S0": [14, 34], "3S1": [13, 45], "1P1": [14, 28],
                           "3P2": [8, 18], "3P1": [8, 22], "3P0": [8, 15],
                           "1D2": [36, 66], "3D3": [20, 45], "3D2": [22, 37],
@@ -239,10 +261,11 @@ class Calcium40(AlkalineEarthAtom):
     elementName = 'Ca40'
     meltingPoint = 842 + 273.15  #: in K
 
-    #: NIST Standard Reference Database 108, https://dx.doi.org/10.18434/T4FW23
+    #: Ref. [#nist]_
     mass = 39.962591 * physical_constants["atomic mass constant"][0]
 
-    #: TODO - what is here docstring? (fitting ranges have been taken from Pauls fits and christophe)
+    #: Quantum defect principal quantum number fitting ranges for different
+    #: series
     defectFittingRange = {"1S0": [14, 34], "3S1": [13, 45], "1P1": [14, 28],
                           "3P2": [8, 18], "3P1": [8, 22], "3P0": [8, 15],
                           "1D2": [36, 66], "3D3": [20, 45], "3D2": [22, 37],
@@ -323,11 +346,12 @@ class Ytterbium174(AlkalineEarthAtom):
     elementName = 'Yb174'
     meltingPoint = 819 + 273.15  #: in K
 
-    #: NIST Standard reference database, https://dx.doi.org/10.18434/T4FW23
+    #: Ref. [#nist]_
     mass = 173.9388664 * \
         physical_constants["atomic mass constant"][0]
 
-    #: TODO what is docstring here? (fitting ranges have been taken from Pauls fits and christophe)
+    #: Quantum defect principal quantum number fitting ranges for different
+    #: series
     defectFittingRange = {"1S0": [15, 43], "1P1": [
         35, 53], "1D2": [28, 75], "3D2": [10, 52]}
 
