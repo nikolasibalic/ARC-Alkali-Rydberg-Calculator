@@ -43,6 +43,8 @@ Overview
 
 .. rubric:: LevelPlot Methods
 
+LevelPlot is also called Grotrian diagram, or term diagram.
+
 .. autosummary::
 
     LevelPlot.makeLevels

@@ -1213,9 +1213,14 @@ class StarkMap:
 
     def getPolarizability(self, maxField=1.e10, showPlot=False,
                           debugOutput=False, minStateContribution=0.0):
-        """
+        r"""
             Returns the polarizability of the state (set during the
-            initalization process)
+            initalization process).
+
+            Fits offset of the energy level of the state to
+            :math:`\frac{1}{2}  \alpha_0  E^2`, where
+            :math:`E` is the applied static electric field,
+            and returns fitted value :math:`\alpha_0`
 
             Args:
                 maxField (:obj:`float`, optional): maximum field (in V/m) to be
@@ -1422,7 +1427,7 @@ class StarkMap:
 
 class LevelPlot:
     """
-        Single atom level plots and decays
+        Single atom level plots and decays (a Grotrian diagram, or term diagram)
 
         For an example see `Rydberg energy levels example snippet`_.
 
@@ -2137,7 +2142,7 @@ class OpticalLattice1D:
         self.diagonalise(trapPotentialDepth, [quazimomentum],
                            saveBandIndex = blochBandIndex)
         state = np.copy(self.savedBlochBand[0])
-        
+
         self.energy = temp1
         self.quasimomenutm = temp2
         self.savedBlochBand = temp3
