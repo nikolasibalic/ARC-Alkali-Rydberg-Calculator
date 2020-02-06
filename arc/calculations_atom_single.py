@@ -1803,7 +1803,7 @@ class AtomSurfaceVdW:
         Van der Waals interaction.
         The interaction potential can be expressed as
 
-        :math:`V_{\rm VdW} = - \frac{C_3}{16 z^3}`
+        :math:`V_{\rm VdW} = - \frac{C_3}{z^3}`
 
         This class calculates :math:`C_3` for individual states
         :math:`|i\rangle`.
@@ -1837,19 +1837,23 @@ class AtomSurfaceVdW:
                           s=0.5):
         r"""
         Contribution to :math:`C_3` of :math:`|n_1, \ell_1, j_1\rangle` state
-        due to dipole coupling to :math:`|n_2, \ell_2, j_2\rangle` state
+        due to dipole coupling to :math:`|n_2, \ell_2, j_2\rangle` state.
 
         Calculates
-        :math:`\left| \langle n_1,\ell_1,j_1| D_x \
-        |n_2,\ell_2,j_2\rangle \right|^2 \
-        + \left| \langle n_1, \ell_1, j_1 | D_y \
-        |n_2, \ell_2, j_2> \right|^2 + \
-        2 \cdot \left|<n_1, \ell_1, j_1|D_z|n_2, \ell_2, j_2>\right|^2`
+        :math:`\frac{1}{4\pi\varepsilon_0}\
+        \frac{ n(\omega_{\rm ab})^2 - 1}{ n(\omega_{\rm ab})^2 + 1}\
+        \frac{
+        \left| \langle a| D_x | b \rangle \right|^2 \
+        + \left| \langle a | D_y  | b \rangle \right|^2 + \
+        2 \cdot \left|\langle a |D_z| b \rangle \right|^2}{16}`
 
-        where
+        where :math:`|{\rm a}\rangle \equiv |n_1, \ell_1, j_1\rangle` ,
+        :math:`|{\rm b}\rangle \equiv |n_2, \ell_2, j_2\rangle`,
         :math:`\mathbf{D} \equiv e \cdot \mathbf{r} \
         \equiv \hat{x} D_x + \hat{y} D_y\
-        + \hat{z} D_z` is atomic dipole operator.
+        + \hat{z} D_z` is atomic dipole operator and :math:`n(\omega_{\rm ab})`
+        is refractive index of the considered surface at transition frequency
+        :math:`\omega_{\rm ab}` .
 
         Args:
             n1 (int): principal quantum number of state 1
@@ -1955,7 +1959,8 @@ class AtomSurfaceVdW:
     def getStateC3(self, n, l, j, coupledStatesList, s=0.5, debugOutput=False):
         r"""
         Van der Waals atom-surface interactoin coefficient for
-        a given state C3 (in J m^3)
+        a given state (:math:`C_3` in units of
+        :math:`\mathrm{J}\cdot\mathrm{m}^3` )
 
         Args:
             n (int): principal quantum number of the state
