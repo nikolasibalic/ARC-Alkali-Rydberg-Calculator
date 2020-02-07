@@ -2087,15 +2087,21 @@ class OpticalLattice1D:
         return 2. * Er / hbar * np.sqrt(trapPotentialDepth / Er)
 
     def _BlochFunction(self, x, stateVector, q, k=1.):
-        """
+        r"""
         Bloch wavefunctions
 
         Args:
-            x ():
-            stateVector:
-            lLimit:
-            q (float):
-            k (float):
+            x (x): position (in units \2 pi/k, for default value of laser
+                wavevector unit k=1, one full wavelength is 2\pi)
+            stateVector: eigen vector obtained by diagonalisation of
+                interaction Hamiltonian in a subspace given by the selected
+                quasimomentum
+            q (float): quasimomentum (in units of driving laser k)
+            k (float): driving laser wavevector, define units for momentum and
+                distance;
+                if k==1 (default value), reciprocal lattice momentum is 2,
+                and the full range of quasimomentum is from -1 to +1;
+                one full wavelength is the 2\pi.
 
         Retruns:
             float:
@@ -2130,12 +2136,15 @@ class OpticalLattice1D:
                     wf(x)  # returns complex number corresponding to value of Bloch
                            # wavefunction at point x (cooridnate given in units of
                            # 1/k where k = 2 \pi / trapWavenegth )
+                           # by default k=1, so one full wavelength is 2\pi
 
             Args:
                 trapPotentialDepth (float): (in units of recoil energy
                     :obj:`OpticalLattice1D.getRecoilEnergy`)
-                quazimomentum (float): (in units of k = 2 \pi /
-                    :obj:`OpticalLattice1D.trapWavenegth` )
+                quazimomentum (float): (in units of 2 \pi /
+                    :obj:`OpticalLattice1D.trapWavenegth`; note that
+                    reciprocal lattice momentum in this units is 2, and that
+                    full range of quasimomentum is from -1 to +1)
 
             Returns:
                 Bloch wavefunction as a **function** of coordinate (see call
@@ -2160,12 +2169,14 @@ class OpticalLattice1D:
 
             Bloch states are calculated suming up all relevant states
             with momenta in range
-            `[-lLimit * 2 * pi /trapWavenegth, +lLimit * 2 * pi /trapWavenegth]`
+            `[-lLimit * 4 * pi /trapWavenegth, +lLimit * 4 * pi /trapWavenegth]`
+            Note that factor of 4 occurs since potential lattice period is
+            twice the `trapWavelength` for standing wave.
 
             Args:
                 lLimit (integer): Optional, defines maximal momentum to be taken
                     for calculation of Bloch States
-                    as `lLimit * 2 * pi / trapWavenegth` . By default set to 35.
+                    as `lLimit * 4 * pi / trapWavenegth` . By default set to 35.
         """
         self.lLimit = lLimit
 
@@ -2223,9 +2234,11 @@ class OpticalLattice1D:
                     (in units of recoil energy).
                 quazimomentumList (array): array of quazimomentum values for
                     which energy levels will be calculated (in units of
-                    :math:`\hbar \cdot \frac{2\pi}{\lambda}`,
-                    where :math:`\lambda` is trapping laser wavelenth,
-                    `trapWavenegth`)
+                    :math:`\hbar \cdot k`,
+                    where :math:`k` is trapping laser wavevector;
+                    since reciprocal lattice has twice the trapping laser
+                    wavevector due to standing wave, full range of
+                    quasimomentum is from -1 to +1)
                 saveBandIndex (int): optional, default None. If provided,
                     specifies for which Bloch band should the eignevectors be
                     also saved. `saveBlochBand=0` corresponds to lowest energy
