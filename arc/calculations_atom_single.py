@@ -2303,7 +2303,7 @@ class OpticalLattice1D:
         for i in range(len(self.quasimomentum)):
             q = self.quasimomentum[i]
             value += np.exp(-1j * q * localizedAt) \
-                * self._BlochFunction(x + localizedAt,
+                * self._BlochFunction(x,
                                          self.savedBlochBand[i],
                                          q, k=k)
         return value
