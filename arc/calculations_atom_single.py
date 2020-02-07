@@ -2247,7 +2247,14 @@ class OpticalLattice1D:
 
     def plotLevelDiagram(self):
         """
+        Plots energy level diagram (Bloch bands).
 
+        Based on diagonalisation of the lattice potential, plots descrete
+        eigen energy spectra obtained for each value of the quasimomentum
+        used in :obj:`OpticalLattice1D.diagonalise` method.
+
+        Returns:
+            matploltib figure with a Bloch bands
         """
         f = plt.figure(figsize=(6, 10))
         ax = f.add_subplot(1, 1, 1)

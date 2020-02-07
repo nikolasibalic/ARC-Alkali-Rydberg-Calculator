@@ -66,6 +66,7 @@ LevelPlot is also called Grotrian diagram, or term diagram.
     OpticalLattice1D.getTrappingFrequency
     OpticalLattice1D.defineBasis
     OpticalLattice1D.diagonalise
+    OpticalLattice1D.plotLevelDiagram
     OpticalLattice1D.BlochWavefunction
     OpticalLattice1D.getWannierFunction
 
