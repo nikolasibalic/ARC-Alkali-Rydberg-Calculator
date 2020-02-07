@@ -2281,14 +2281,20 @@ class OpticalLattice1D:
         return f
 
     def getWannierFunction(self, x, latticeIndex=0, k=1):
-        """
+        r"""
             Gives value at cooridnate x of a Wannier function localized
             at given lattice index.
 
             Args:
-                x (float): offset from the latticeIndex site location
+                x (float): spatial coordinate (in units of :math:`2\pi/k` ; for
+                    default value of laser drivng wavevecto :math:`k=1` , one
+                    trappinWavelength is :math:`2\pi` ). Coordinate origin is
+                    at `latticeIndex=0` .
                 latticeIndex (int): optional, lattice index at which the
                     Wannier function is localised. By defualt 0.
+                k (float): optional; laser driving wavevector, defines unit
+                    of length. Default value is 1, making one trapping laser
+                    wavelenth equal to :math:`2\pi`
         """
         value = 0
         localizedAt = 2. * pi / k * latticeIndex / 2.
