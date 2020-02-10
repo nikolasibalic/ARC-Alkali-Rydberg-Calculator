@@ -559,6 +559,8 @@ class PairStateInteractions:
                                 )
                           )
                         )
+                and not(abs(j)<0.1 and abs(j1)<0.1)
+                and not (abs(jj)<0.1 and abs(j2)<0.1)
                 ):
             # determine coupling
             dl = abs(l - l1)
@@ -657,11 +659,11 @@ class PairStateInteractions:
                     for l2 in xrange(l2start, l2max):
                         j1 = l1 - self.s1
                         while j1 < -0.1:
-                            j1 += 1
+                            j1 += 2 * self.s1
                         while j1 <= l1 + self.s1 + 0.1:
                             j2 = l2 - self.s2
                             while j2 < -0.1:
-                                j2 += 1
+                                j2 += 2 * self.s2
 
                             while j2 <= l2 + self.s2 + 0.1:
                                 ed = self.__getEnergyDefect(n, l, j,
@@ -794,7 +796,8 @@ class PairStateInteractions:
                         states[i][3], states[i][4], states[i][5],
                         states[j][0], states[j][1], states[j][2],
                         states[j][3], states[j][4], states[j][5],
-                        self.atom1, atom2=self.atom2) / C_h * 1.0e-9
+                        self.atom1, atom2=self.atom2,
+                        s=self.s1, s2=self.s2) / C_h * 1.0e-9
 
                     couplingMatConstructor[coupled - 2][0].append(
                         couplingStregth)
@@ -1038,28 +1041,34 @@ class PairStateInteractions:
                         if ((l1+l2) % 2 == Lmod2):
                             j1 = l1 - self.s1
                             while j1 < -0.1:
-                                j1 += 1
+                                j1 += 2 * self.s1
                             while j1 <= l1 + self.s1 + 0.1:
                                 j2 = l2 - self.s2
                                 while j2 < -0.1:
-                                    j2 += 1
+                                    j2 += 2 * self.s2
 
                                 while j2 <= l2 + self.s2 + 0.1:
-                                    energyDefect = self.__getEnergyDefect(
+                                    coupled = self.__isCoupled(
                                         self.n, self.l, self.j,
                                         self.nn, self.ll, self.jj,
                                         n1, l1, j1,
-                                        n2, l2, j2) / C_h
-                                    if (abs(energyDefect) < energyDelta
-                                            and (not (self.interactionsUpTo == 1)
-                                                 or (Lmod2 == ((l1 + l2) % 2)))
-                                            and (n1 >= self.atom1.groundStateN
-                                                 or [n1, l1, j1] in
-                                                 self.atom1.extraLevels)
-                                            and (n2 >= self.atom2.groundStateN
-                                                 or [n2, l2, j2] in
-                                                 self.atom2.extraLevels)
+                                        n2, l2, j2,
+                                        energyDelta)
+                                    if (coupled
+                                        and (not (self.interactionsUpTo == 1)
+                                             or (Lmod2 == ((l1 + l2) % 2)))
+                                        and (n1 >= self.atom1.groundStateN
+                                             or [n1, l1, j1] in
+                                             self.atom1.extraLevels)
+                                        and (n2 >= self.atom2.groundStateN
+                                             or [n2, l2, j2] in
+                                             self.atom2.extraLevels)
                                             ):
+                                        energyDefect = self.__getEnergyDefect(
+                                            self.n, self.l, self.j,
+                                            self.nn, self.ll, self.jj,
+                                            n1, l1, j1,
+                                            n2, l2, j2) / C_h
                                         energyDefect = energyDefect * 1.0e-9  # GHz
                                         if (abs(energyDefect) < 1e-10):
                                             raise ValueError(
@@ -1083,7 +1092,8 @@ class PairStateInteractions:
                                                 self.nn, self.ll, self.jj,
                                                 n1, l1, j1,
                                                 n2, l2, j2,
-                                                self.atom1, atom2=self.atom2)
+                                                self.atom1, atom2=self.atom2,
+                                                s=self.s1, s2=self.s2)
                                             * (1.0e-9 * (1.e6)**3 / C_h)
                                             )  # GHz / mum^3
 

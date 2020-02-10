@@ -2062,7 +2062,7 @@ def NumerovBack(innerLimit, outerLimit, kfun, step, init1, init2):
 
 
 def _atomLightAtomCoupling(n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2,
-                           atom1, atom2=None):
+                           atom1, atom2=None, s=0.5, s2=None):
     """
         Calculates radial part of atom-light coupling
 
@@ -2074,6 +2074,8 @@ def _atomLightAtomCoupling(n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2,
     if atom2 is None:
         # if not explicitly inter-species, assume it's the same species
         atom2 = atom1
+    if s2 is None:
+        s2 = s
 
     # determine coupling
     dl = abs(l - l1)
@@ -2095,8 +2097,8 @@ def _atomLightAtomCoupling(n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2,
     else:
         return False
 
-    radial1 = atom1.getRadialCoupling(n, l, j, n1, l1, j1)
-    radial2 = atom2.getRadialCoupling(nn, ll, jj, n2, l2, j2)
+    radial1 = atom1.getRadialCoupling(n, l, j, n1, l1, j1, s=s)
+    radial2 = atom2.getRadialCoupling(nn, ll, jj, n2, l2, j2, s=s2)
 
     # TO-DO: check exponent of the Boht radius (from where it comes?!)
 
