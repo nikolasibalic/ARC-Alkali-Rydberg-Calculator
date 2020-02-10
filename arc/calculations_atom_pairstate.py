@@ -40,7 +40,7 @@ import matplotlib
 from matplotlib.colors import LinearSegmentedColormap
 from .calculations_atom_single import StarkMap
 from .alkali_atom_functions import *
-from .alkaline_earth_atom_functions import AlkalineEarthAtom
+from .divalent_atom_functions import DivalentAtom
 from scipy.special import factorial
 from scipy import floor
 from scipy.special.specfun import fcoef
@@ -194,7 +194,7 @@ class PairStateInteractions:
             to pair-state interactions up to quadrupole-quadrupole coupling.
         """
 
-        if (issubclass(type(atom),AlkalineEarthAtom) and not (s == 0 or s == 1)):
+        if (issubclass(type(atom),DivalentAtom) and not (s == 0 or s == 1)):
             raise ValueError("total angular spin s has to be defined explicitly "
                              "for calculations, and value has to be 0 or 1 "
                              "for singlet and tripplet states respectively.")
@@ -207,7 +207,7 @@ class PairStateInteractions:
 
         # check that values of spin states are valid for entered atomic species
 
-        if issubclass(type(self.atom1), AlkalineEarthAtom):
+        if issubclass(type(self.atom1), DivalentAtom):
             if (abs(self.s1) > 0.1 and abs(self.s1 - 1) > 0.1):
                 raise ValueError("atom1 is DivalentAtom and its spin has to be "
                                  "s=0 or s=1 (for singlet and triplet states "
@@ -215,7 +215,7 @@ class PairStateInteractions:
         elif (abs(self.s1 - 0.5) > 0.1):
                 raise ValueError("atom1 is AlkaliAtom and its spin has to be "
                                  "s=0.5")
-        if issubclass(type(self.atom2), AlkalineEarthAtom):
+        if issubclass(type(self.atom2), DivalentAtom):
             if (abs(self.s2) > 0.1 and abs(self.s2 - 1) > 0.1):
                 raise ValueError("atom2 is DivalentAtom and its spin has to be "
                                  "s=0 or s=1 (for singlet and triplet states "
@@ -2437,7 +2437,7 @@ class StarkMapResonances:
                  the first atom in the pair-state
             state1 ([int,int,float,float,(float)]): specification of the state
                 of the first state as an array of values :math:`[n,l,j,m_j]`.
-                For obj:`AlkalineEarthAtom` and other divalent atoms, 5th value
+                For obj:`DivalentAtom` and other divalent atoms, 5th value
                 should be added specifying total spin angular momentum `s`.
                 Full definition of state then has format
                 :math:`[n,l,j,m_j,s]`.
@@ -2453,7 +2453,7 @@ class StarkMapResonances:
                  the second atom in the pair-state
             state2 ([int,int,float,float,(float)]): specification of the state
                 of the first state as an array of values :math:`[n,l,j,m_j]`,
-                For obj:`AlkalineEarthAtom` and other divalent atoms, 5th value
+                For obj:`DivalentAtom` and other divalent atoms, 5th value
                 should be added specifying total spin angular momentum `s`.
                 Full definition of state then has format
                 :math:`[n,l,j,m_j,s]`.
@@ -2472,7 +2472,7 @@ class StarkMapResonances:
     def __init__(self, atom1, state1, atom2, state2):
 
         self.atom1 = atom1
-        if (issubclass(type(self.atom1), AlkalineEarthAtom)
+        if (issubclass(type(self.atom1), DivalentAtom)
             and (len(state1) != 5 or (state1[4] != 0 and state1[4] != 1))
                 ):
             raise ValueError("For divalent atoms state specification has to "
@@ -2483,7 +2483,7 @@ class StarkMapResonances:
         if (len(self.state1) == 4): self.state1.append(0.5)
 
         self.atom2 = atom2
-        if (issubclass(type(self.atom2), AlkalineEarthAtom)
+        if (issubclass(type(self.atom2), DivalentAtom)
                 and (len(state1) != 5 or (state1[4] != 0 and state1[4] != 1))
                     ):
             raise ValueError("For divalent atoms state specification has to "

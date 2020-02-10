@@ -1809,7 +1809,7 @@ class AtomSurfaceVdW:
         :math:`|i\rangle`.
 
         Args:
-            atom (:obj:`AlkaliAtom` or :obj:`AlkalineEarthAtom`): specified
+            atom (:obj:`AlkaliAtom` or :obj:`DivalentAtom`): specified
                 Alkali or Alkaline Earth atom whose interaction with surface
                 we want to explore
             material (from :obj:`arc.materials`): specified surface material
@@ -1863,7 +1863,7 @@ class AtomSurfaceVdW:
             l2 (int): orbital angular momentum of state 2
             j2 (float): total angular momentum of state 2
             s (float): optional, spin angular momentum of states. Default value
-                of 0.5 is correct for AlkaliAtoms. For AlkalineEarthAtom it
+                of 0.5 is correct for AlkaliAtoms. For DivalentAtom it
                 has to be explicitly stated
 
         Returns:
@@ -1972,7 +1972,7 @@ class AtomSurfaceVdW:
                 `[[n1,l1,j1],...]`
             s (float, optional): total spin angular momentum for the considered
                 state. Default value of 0.5 is correct for `AlkaliAtoms`, but
-                it has to be explicitly specifiied for `AlkalineEarthAtom`.
+                it has to be explicitly specifiied for `DivalentAtom`.
             debugOutput (bool, optional): prints additional output information,
                 False by default.
 
@@ -2023,7 +2023,7 @@ class OpticalLattice1D:
         Atom properties in optical lattices in 1D
 
         Args:
-            atom: one of AlkaliAtom or AlkalineEarthAtom
+            atom: one of AlkaliAtom or DivalentAtom
             trapWavenegth (float): wavelength of trapping laser light
                 (in units of m)
     """
@@ -2322,7 +2322,7 @@ class DynamicPolarizability:
             j (float): total angular momentum of selected state
             s (float): optional, spin state of the atom. Default value of
                 0.5 is correct for Alkali atoms, but it has to be explicitly
-                specified for AlkalineEarthAtom.
+                specified for DivalentAtom.
     """
 
     def __init__(self, atom, n, l, j, s=0.5):

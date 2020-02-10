@@ -2,4 +2,4 @@
 # enables beta functionality testing
 # Functions found here will soon format main arc distribution
 
-from .alkaline_earth_atom_data import *
+from .divalent_atom_data import *

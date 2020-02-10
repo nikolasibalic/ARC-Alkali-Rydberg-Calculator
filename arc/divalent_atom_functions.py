@@ -13,7 +13,7 @@ sqlite3.register_adapter(np.int64, int)
 sqlite3.register_adapter(np.int32, int)
 
 
-class AlkalineEarthAtom(AlkaliAtom):
+class DivalentAtom(AlkaliAtom):
     """
         Implements general calculations for Alkaline Earths, and other divalent
         atoms.
@@ -76,7 +76,7 @@ class AlkalineEarthAtom(AlkaliAtom):
     #: `[n, l, s, j, energy, source, absolute uncertanty]`
     levelDataFromNIST = ""
 
-    #: Not used with AlkalineEarthAtom, see :obj:`defectFittingRange` instead.
+    #: Not used with DivalentAtom, see :obj:`defectFittingRange` instead.
     minQuantumDefectN = None
 
     #: Used for AlkalineEarths to define minimum and maximum principal quantum
@@ -257,7 +257,7 @@ class AlkalineEarthAtom(AlkaliAtom):
 
     def getEnergy(self, n, l, j, s=None):
         if s is None:
-            raise ValueError("Spin state for AlkalineEarthAtom has to be "
+            raise ValueError("Spin state for DivalentAtom has to be "
                              "explicitly defined as a keyword argument "
                              "s=0 or s=1")
         if l >= n:
@@ -705,8 +705,8 @@ class AlkalineEarthAtom(AlkaliAtom):
               "not included in this code (see Vaillant et al., J. Phys B 47 "
               "155001 (2015) for examples).  Use with caution.")
         # after waring user, call method from the parent class
-        # (parent of AlkalineEarthAtom is AlkaliAtom)
-        return super(AlkalineEarthAtom, self).getStateLifetime(
+        # (parent of DivalentAtom is AlkaliAtom)
+        return super(DivalentAtom, self).getStateLifetime(
             n, l, j,
             temperature=temperature,
             includeLevelsUpTo=includeLevelsUpTo,

@@ -46,7 +46,7 @@ Contents
 Package structure
 =================
 
-.. figure:: ./overview_of_modules2.png
+.. figure:: ./overview_of_modules3.png
     :width: 800px
     :align: center
     :height: 480px

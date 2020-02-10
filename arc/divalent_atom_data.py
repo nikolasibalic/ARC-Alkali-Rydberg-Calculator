@@ -94,10 +94,10 @@ Data sources
 .. [#nist] NIST Standard reference database, https://dx.doi.org/10.18434/T4FW23
 """
 
-from .alkaline_earth_atom_functions import *
+from .divalent_atom_functions import *
 
 
-class Strontium88(AlkalineEarthAtom):
+class Strontium88(DivalentAtom):
     """
     Properties of Strontium 88 atoms
     """
@@ -205,7 +205,7 @@ class Strontium88(AlkalineEarthAtom):
                              % self.meltingPoint)
 
 
-class Calcium40(AlkalineEarthAtom):
+class Calcium40(DivalentAtom):
     """
     Properties of Calcium 40 atoms
     """
@@ -289,7 +289,7 @@ class Calcium40(AlkalineEarthAtom):
                              % self.meltingPoint)
 
 
-class Ytterbium174(AlkalineEarthAtom):
+class Ytterbium174(DivalentAtom):
     """
     Properties of Ytterbium 174 atoms
     """
