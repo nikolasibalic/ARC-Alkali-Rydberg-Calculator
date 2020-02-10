@@ -118,13 +118,21 @@ class PairStateInteractions:
             interactionsUpTo (int): Optional. If set to 1, includes only
                 dipole-dipole interactions. If set to 2 includes interactions
                 up to quadrupole-quadrupole. Default value is 1.
+            s2 (float): optinal, spin state of the second atom. If not
+                specified (left to default value None) it will assume spin
+                state of the first atom.
+            atom2 (:obj:`AlkaliAtom` or :obj:`DivalentAtom`): optional,
+                specifies atomic species for the second atom, enabeling
+                calculation of **inter-species pair-state interactions**.
+                If not specified (left to default value None) it will assume
+                spin state of the first atom.
 
         References:
             .. [1] T. G Walker, M. Saffman, PRA **77**, 032723 (2008)
                 https://doi.org/10.1103/PhysRevA.77.032723
 
         Examples:
-            **Advanced interfacing of pair-state interactions calculations
+            **Advanced interfacing of pair-state is2=None, atom2=Nonenteractions calculations
             (PairStateInteractions class).** This
             is an advanced example intended for building up extensions to the
             existing code. If you want to directly access the pair-state
@@ -161,7 +169,8 @@ class PairStateInteractions:
 
     def __init__(self, atom, n, l, j, nn, ll, jj, m1, m2,
                  interactionsUpTo=1,
-                 s=0.5, s2=None, atom2=None):
+                 s=0.5,
+                 s2=None, atom2=None):
         # alkali atom type, principal quantum number, orbital angular momentum,
         #  total angular momentum projections of the angular momentum on z axis
         self.atom1 = atom  #: atom type
@@ -190,10 +199,37 @@ class PairStateInteractions:
                              "for calculations, and value has to be 0 or 1 "
                              "for singlet and tripplet states respectively.")
         self.s1 = s  #: total spin angular momentum, optional (default 0.5)
+
         if s2 is None:
             self.s2 = s
         else:
             self.s2 = s2
+
+        # check that values of spin states are valid for entered atomic species
+
+        if issubclass(type(self.atom1), AlkalineEarthAtom):
+            if (abs(self.s1) > 0.1 and abs(self.s1 - 1) > 0.1):
+                raise ValueError("atom1 is DivalentAtom and its spin has to be "
+                                 "s=0 or s=1 (for singlet and triplet states "
+                                 "respectively)")
+        elif (abs(self.s1 - 0.5) > 0.1):
+                raise ValueError("atom1 is AlkaliAtom and its spin has to be "
+                                 "s=0.5")
+        if issubclass(type(self.atom2), AlkalineEarthAtom):
+            if (abs(self.s2) > 0.1 and abs(self.s2 - 1) > 0.1):
+                raise ValueError("atom2 is DivalentAtom and its spin has to be "
+                                 "s=0 or s=1 (for singlet and triplet states "
+                                 "respectively)")
+        elif  (abs(self.s2 - 0.5) > 0.1):
+            # we have divalent atom
+            raise ValueError("atom2 is AlkaliAtom and its spin has to be "
+                             "s=0.5")
+        if (abs((self.s1-self.m1) % 1) > 0.1):
+            raise ValueError("atom1 with spin s = %.1d cannot have m1 = %.1d"
+                             % (self.s1, self.m1))
+        if (abs((self.s2-self.m2) % 1) > 0.1):
+            raise ValueError("atom2 with spin s = %.1d cannot have m2 = %.1d"
+                             % (self.s2, self.m2))
 
         # ====================== J basis (not resolving mj) ===================
 
@@ -1398,12 +1434,18 @@ class PairStateInteractions:
                     eigenvectors. This is useful when looking only for couple
                     of off-resonant features.
                 drivingFromState ([int,int,float,float,int]): Optional. State
-                    of the one of the atoms from the original pair-state basis
-                    from which we try to dribe to the excited pair-basis
-                    manifold. By default, program will calculate just
+                    of one of the atoms from the original pair-state basis
+                    from which we try to drive to the excited pair-basis
+                    manifold, **assuming that the first of the two atoms is
+                    already excited to the specified Rydberg state**.
+                    By default, program will calculate just
                     contribution of the original pair-state in the eigenstates
                     obtained by diagonalization, and will highlight it's
                     admixure by colour mapping the obtained eigenstates plot.
+                    State is specified as :math:`[n,\ell,j,mj, d]`
+                    where :math:`d` is +1, 0 or
+                    -1 for driving :math:`\sigma^-` , :math:`\pi`
+                    and :math:`\sigma^+` transitions respectively.
                 sortEigenvectors(bool): optional, False by default. Tries to
                     sort eigenvectors so that given eigen vector index
                     corresponds to adiabatically changing eigenstate, as
@@ -1454,36 +1496,6 @@ class PairStateInteractions:
 
             for i in xrange(dimension):
                 thisCoupling = 0.
-                # if progressOutput:
-                #    sys.stdout.write("\r%d%%" %  (i/float(dimension)*100.))
-                #    sys.stdout.flush()
-                if (int(abs(self.basisStates[i][1] - l1)) == 1
-                    and abs(self.basisStates[i][4]
-                            - self.basisStates[self.originalPairStateIndex][4])
-                        < 0.1
-                    and abs(self.basisStates[i][5]
-                            - self.basisStates[self.originalPairStateIndex][5])
-                            < 0.1
-                    and abs(self.basisStates[i][6]
-                            - self.basisStates[self.originalPairStateIndex][6])
-                            < 0.1
-                    and abs(self.basisStates[i][7]
-                            - self.basisStates[self.originalPairStateIndex][7])
-                            < 0.1
-                        ):
-                    state2 = self.basisStates[i]
-                    n2 = int(state2[0])
-                    l2 = int(state2[1])
-                    j2 = state2[2]
-                    m2 = state2[3]
-                    if debugOutput:
-                        print(n1, " ", l1, " ", j1, " ", m1, " ", n2,
-                              " ", l2, " ", j2, " ", m2, " q=", q)
-                        print(self.basisStates[i])
-                    dme = self.atom.getDipoleMatrixElement(n1, l1, j1, m1,
-                                                           n2, l2, j2, m2,
-                                                           q)
-                    thisCoupling += dme
 
                 if (int(abs(self.basisStates[i][5] - l1)) == 1
                     and abs(self.basisStates[i][0]
@@ -1508,9 +1520,9 @@ class PairStateInteractions:
                         print(n1, " ", l1, " ", j1, " ", m1, " ", n2,
                               " ", l2, " ", j2, " ", m2, " q=", q)
                         print(self.basisStates[i])
-                    dme = self.atom.getDipoleMatrixElement(n1, l1, j1, m1,
+                    dme = self.atom2.getDipoleMatrixElement(n1, l1, j1, m1,
                                                            n2, l2, j2, m2,
-                                                           q)
+                                                           q,  s=self.s2)
                     thisCoupling += dme
 
                 thisCoupling = abs(thisCoupling)**2
