@@ -478,7 +478,7 @@ class AlkalineEarthAtom(AlkaliAtom):
             fn.close()
 
             try:
-                if i > 0:
+                if i > 1:
                     self.c.executemany('''INSERT INTO literatureDME
                                         VALUES (?,?,?, ?,?,?,?
                                                 ?,?,?,?,?,?)''',

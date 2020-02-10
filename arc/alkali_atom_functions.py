@@ -1707,11 +1707,12 @@ class AlkaliAtom(object):
             fn.close()
 
             try:
-                self.c.executemany('''INSERT INTO literatureDME
-                                    VALUES (?,?,?,?,?,?,?,
-                                            ?,?,?,?,?)''',
-                                   literatureDME)
-                self.conn.commit()
+                if i > 1:
+                    self.c.executemany('''INSERT INTO literatureDME
+                                        VALUES (?,?,?,?,?,?,?,
+                                                ?,?,?,?,?)''',
+                                       literatureDME)
+                    self.conn.commit()
             except sqlite3.Error as e:
                 if i > 0:
                     print("Error while loading precalculated values "
@@ -2060,15 +2061,20 @@ def NumerovBack(innerLimit, outerLimit, kfun, step, init1, init2):
     return rad, sol
 
 
-def _atomLightAtomCoupling(n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2, atom):
+def _atomLightAtomCoupling(n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2,
+                           atom1, atom2=None):
     """
         Calculates radial part of atom-light coupling
 
         This function might seem redundant, since similar function exist for
-        each of the atoms. However, function that is not connected to specific
+        each of the atoms. Function that is not connected to specific
         atomic species is provided in order to provides route to implement
-        inter-species coupling in the future.
+        inter-species coupling.
     """
+    if atom2 is None:
+        # if not explicitly inter-species, assume it's the same species
+        atom2 = atom1
+
     # determine coupling
     dl = abs(l - l1)
     dj = abs(j - j1)
@@ -2089,8 +2095,8 @@ def _atomLightAtomCoupling(n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2, atom):
     else:
         return False
 
-    radial1 = atom.getRadialCoupling(n, l, j, n1, l1, j1)
-    radial2 = atom.getRadialCoupling(nn, ll, jj, n2, l2, j2)
+    radial1 = atom1.getRadialCoupling(n, l, j, n1, l1, j1)
+    radial2 = atom2.getRadialCoupling(nn, ll, jj, n2, l2, j2)
 
     # TO-DO: check exponent of the Boht radius (from where it comes?!)
 
