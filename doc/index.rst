@@ -32,7 +32,7 @@ Contents
    contribute
 
 .. note::
-    Support for Alkaline Earth atoms and some of the functions
+    Support for divalent atoms and some of the functions
     (`Wavefunction`, `AtomSurfaceVdW`,
     `OpticalLattice1D`, `DynamicPolarizability`, and optical materials
     properties)in this modules will be

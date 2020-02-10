@@ -1,5 +1,5 @@
-Alkaline earth atom functions
-=============================
+Divalent atom functions
+=======================
 
 .. note::
     This is module to be released in the forthcoming ARC 3.0.0 version.
