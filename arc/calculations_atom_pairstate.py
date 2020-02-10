@@ -161,10 +161,14 @@ class PairStateInteractions:
 
     def __init__(self, atom, n, l, j, nn, ll, jj, m1, m2,
                  interactionsUpTo=1,
-                 s=0.5):
+                 s=0.5, s2=None, atom2=None):
         # alkali atom type, principal quantum number, orbital angular momentum,
         #  total angular momentum projections of the angular momentum on z axis
-        self.atom = atom  #: atom type
+        self.atom1 = atom  #: atom type
+        if atom2 is None:
+            self.atom2 = atom
+        else:
+            self.atom2 = atom2
         self.n = n  # : pair-state definition: principal quantum number of the first atom
         self.l = l  # : pair-state definition: orbital angular momentum of the first atom
         self.j = j  # : pair-state definition: total angular momentum of the first atom
@@ -185,7 +189,11 @@ class PairStateInteractions:
             raise ValueError("total angular spin s has to be defined explicitly "
                              "for calculations, and value has to be 0 or 1 "
                              "for singlet and tripplet states respectively.")
-        self.s = s  #: total spin angular momentum, optional (default 0.5)
+        self.s1 = s  #: total spin angular momentum, optional (default 0.5)
+        if s2 is None:
+            self.s2 = s
+        else:
+            self.s2 = s2
 
         # ====================== J basis (not resolving mj) ===================
 
@@ -290,7 +298,7 @@ class PairStateInteractions:
         self.conn = False
         self.c = False
 
-    def __getAngularMatrix_M(self, l, j, ll, jj, l1, j1, l2, j2, atom):
+    def __getAngularMatrix_M(self, l, j, ll, jj, l1, j1, l2, j2):
         # did we already calculated this matrix?
 
         self.c.execute('''SELECT ind FROM pair_angularMatrix WHERE
@@ -354,14 +362,14 @@ class PairStateInteractions:
                         # angular matrix element from Sa??mannshausen, Heiner,
                         # Merkt, Fr??d??ric, Deiglmayr, Johannes
                         # PRA 92: 032505 (2015)
-                        elem = (-1.0)**(j + jj + 1.0 + l1 + l2) * \
+                        elem = (-1.0)**(j + jj + self.s1 + self.s2 + l1 + l2) * \
                             CG(l, 0, c1, 0, l1, 0) * CG(ll, 0, c2, 0, l2, 0)
                         elem = elem * \
                             sqrt((2.0 * l + 1.0) * (2.0 * ll + 1.0)) * \
                             sqrt((2.0 * j + 1.0) * (2.0 * jj + 1.0))
                         elem = elem * \
-                            Wigner6j(l, self.s, j, j1, c1, l1) * \
-                            Wigner6j(ll, self.s, jj, j2, c2, l2)
+                            Wigner6j(l, self.s1, j, j1, c1, l1) * \
+                            Wigner6j(ll, self.s2, jj, j2, c2, l2)
 
                         sumPol = 0.0  # sum over polarisations
                         limit = min(c1, c2)
@@ -478,20 +486,42 @@ class PairStateInteractions:
             print(sys.exc_info())
 
     def __isCoupled(self, n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2, limit):
-        if ((abs(self.atom.getEnergyDefect2(n, l, j,
-                                            nn, ll, jj,
-                                            n1, l1, j1,
-                                            n2, l2, j2, s=self.s)
+        if ((abs(self.__getEnergyDefect(n, l, j,
+                                        nn, ll, jj,
+                                        n1, l1, j1,
+                                        n2, l2, j2)
                  ) / C_h < limit)
             and not (n == n1 and nn == n2
                      and l == l1 and ll == l2
                      and j == j1 and jj == j2)
                 and not ((abs(l1 - l) != 1
-                          and abs(j - 0.5) < 0.1
-                          and abs(j1 - 0.5) < 0.1)
+                          and( (abs(j - 0.5) < 0.1
+                                and abs(j1 - 0.5) < 0.1) # j = 1/2 and j'=1/2 forbidden
+                                or
+                                (abs(j) < 0.1
+                                and abs(j1) < 0.1)  # j = 0 and j'=0 forbidden
+                                or
+                                (abs(j) < 0.1
+                                and abs(j1 - 1) < 0.1)  # j = 0 and j'=1 forbidden
+                                or
+                                (abs(j-1) < 0.1
+                                and abs(j1) < 0.1)  # j = 1 and j'=0 forbidden
+                                )
+                          )
                          or (abs(l2 - ll) != 1
-                             and abs(jj - 0.5) < 0.1
-                             and abs(j2 - 0.5) < 0.1)
+                            and( (abs(jj - 0.5) < 0.1
+                                and abs(j2 - 0.5) < 0.1) # j = 1/2 and j'=1/2 forbidden
+                                or
+                                (abs(jj) < 0.1
+                                and abs(j2) < 0.1)  # j = 0 and j'=0 forbidden
+                                or
+                                (abs(jj) < 0.1
+                                and abs(j2 - 1) < 0.1)  # j = 0 and j'=1 forbidden
+                                or
+                                (abs(j-1) < 0.1
+                                and abs(j2) < 0.1)  # j = 1 and j'=0 forbidden
+                                )
+                          )
                         )
                 ):
             # determine coupling
@@ -518,6 +548,39 @@ class PairStateInteractions:
             return c1 + c2
         else:
             return False
+
+    def __getEnergyDefect(self,
+                          n, l, j,
+                          nn, ll, jj,
+                          n1, l1, j1,
+                          n2, l2, j2):
+        """
+        Energy defect between |n,l,j>x|nn,ll,jj> state and |n1,l1,j1>x|n1,l1,j1>
+        state of atom1 and atom2 in respective spins states s1 and s2
+
+        Takes spin vales s1 and s2 as the one defined when defining calculation.
+
+        Args:
+            n (int): principal quantum number
+            l (int): orbital angular momenutum
+            j (float): total angular momentum
+            nn (int): principal quantum number
+            ll (int): orbital angular momenutum
+            jj (float): total angular momentum
+            n1 (int): principal quantum number
+            l1 (int): orbital angular momentum
+            j1 (float): total angular momentum
+            n2 (int): principal quantum number
+            l2 (int): orbital angular momentum
+            j2 (float): total angular momentum
+
+        Returns:
+            float:  energy defect (SI units: J)
+        """
+        return C_e * (self.atom1.getEnergy(n1, l1, j1, s=self.s1)
+                      + self.atom2.getEnergy(n2, l2, j2, s=self.s2)
+                      - self.atom1.getEnergy(n, l, j, s=self.s1)
+                      - self.atom2.getEnergy(nn, ll, jj, s=self.s2))
 
     def __makeRawMatrix2(self,
                          n, l, j,
@@ -556,40 +619,39 @@ class PairStateInteractions:
                     l2max = max(ll + self.interactionsUpTo, lrange) + 1
                     l2max = min(l2max, n2 - 1)
                     for l2 in xrange(l2start, l2max):
-                        j1 = l1 - self.s
-                        while j1 < 0.1:
+                        j1 = l1 - self.s1
+                        while j1 < -0.1:
                             j1 += 1
-                        while j1 <= l1 + self.s + 0.1:
-                            j2 = l2 - self.s
-                            while j2 < 0.1:
+                        while j1 <= l1 + self.s1 + 0.1:
+                            j2 = l2 - self.s2
+                            while j2 < -0.1:
                                 j2 += 1
 
-                            while j2 <= l2 + self.s + 0.1:
-                                ed = self.atom.getEnergyDefect2(n, l, j,
-                                                                nn, ll, jj,
-                                                                n1, l1, j1,
-                                                                n2, l2, j2,
-                                                                s=self.s) / C_h
+                            while j2 <= l2 + self.s2 + 0.1:
+                                ed = self.__getEnergyDefect(n, l, j,
+                                                            nn, ll, jj,
+                                                            n1, l1, j1,
+                                                            n2, l2, j2) / C_h
                                 if (abs(ed) < limit
                                     and (not (self.interactionsUpTo == 1)
                                          or (Lmod2 == ((l1 + l2) % 2)))
                                     and ((not limitBasisToMj)
                                          or (j1 + j2 + 0.1
                                              > self.m1 + self.m2))
-                                    and (n1 >= self.atom.groundStateN
-                                         or [n1, l1, j1] in self.atom.extraLevels)
-                                    and (n2 >= self.atom.groundStateN
-                                        or [n2, l2, j2] in self.atom.extraLevels)
+                                    and (n1 >= self.atom1.groundStateN
+                                         or [n1, l1, j1] in self.atom1.extraLevels)
+                                    and (n2 >= self.atom2.groundStateN
+                                        or [n2, l2, j2] in self.atom2.extraLevels)
                                         ):
 
                                     if debugOutput:
                                         pairState = (
                                             "|"
                                             + printStateString(n1, l1, j1,
-                                                               s=self.s)
+                                                               s=self.s1)
                                             + ","
                                             + printStateString(n2, l2, j2,
-                                                               s=self.s)
+                                                               s=self.s2)
                                             + ">")
                                         print(
                                             pairState
@@ -620,14 +682,14 @@ class PairStateInteractions:
                                   for i in xrange(2 * self.interactionsUpTo - 1)]
 
         # original pair-state (i.e. target pair state) Zeeman Shift
-        opZeemanShift = (self.atom.getZeemanEnergyShift(
+        opZeemanShift = (self.atom1.getZeemanEnergyShift(
             self.l, self.j, self.m1,
             self.Bz,
-            s=self.s)
-            + self.atom.getZeemanEnergyShift(
+            s=self.s1)
+            + self.atom2.getZeemanEnergyShift(
                 self.ll, self.jj, self.m2,
                 self.Bz,
-                s=self.s)
+                s=self.s2)
             ) / C_h * 1.0e-9  # in GHz
 
         if debugOutput:
@@ -642,21 +704,20 @@ class PairStateInteractions:
 
         for i in xrange(dimension):
 
-            ed = self.atom.getEnergyDefect2(
+            ed = self.__getEnergyDefect(
                 states[opi][0], states[opi][1], states[opi][2],
                 states[opi][3], states[opi][4], states[opi][5],
                 states[i][0], states[i][1], states[i][2],
-                states[i][3], states[i][4], states[i][5],
-                s=self.s) / C_h * 1.0e-9\
+                states[i][3], states[i][4], states[i][5]) / C_h * 1.0e-9\
                 - opZeemanShift
 
             pairState1 = (
                 "|"
                 + printStateString(states[i][0], states[i][1], states[i][2],
-                                   s=self.s)
+                                   s=self.s1)
                 + ","
                 + printStateString(states[i][3], states[i][4], states[i][5],
-                                   s=self.s)
+                                   s=self.s2)
                 + ">"
                 )
 
@@ -678,18 +739,18 @@ class PairStateInteractions:
 
                 if coupled and (abs(states[i][0] - states[j][0]) <= k
                                 and abs(states[i][3] - states[j][3]) <= k):
-                    pairState2 = ("|"
-                        + printStateString(states[j][0],
-                                           states[j][1],
-                                           states[j][2],
-                                           s=self.s)
-                        + ","
-                        + printStateString(states[j][3],
-                                           states[j][4],
-                                           states[j][5],
-                                           s=self.s)
-                        + ">")
                     if debugOutput:
+                        pairState2 = ("|"
+                            + printStateString(states[j][0],
+                                               states[j][1],
+                                               states[j][2],
+                                               s=self.s1)
+                            + ","
+                            + printStateString(states[j][3],
+                                               states[j][4],
+                                               states[j][5],
+                                               s=self.s2)
+                            + ">")
                         print(pairState1 + " <---> " + pairState2)
 
                     couplingStregth = _atomLightAtomCoupling(
@@ -697,7 +758,7 @@ class PairStateInteractions:
                         states[i][3], states[i][4], states[i][5],
                         states[j][0], states[j][1], states[j][2],
                         states[j][3], states[j][4], states[j][5],
-                        self.atom) / C_h * 1.0e-9
+                        self.atom1, atom2=self.atom2) / C_h * 1.0e-9
 
                     couplingMatConstructor[coupled - 2][0].append(
                         couplingStregth)
@@ -777,20 +838,20 @@ class PairStateInteractions:
                     http://www.nrcresearchpress.com/doi/abs/10.1139/p74-035
         """
         step = 0.001
-        r1, psi1_r1 = self.atom.radialWavefunction(
+        r1, psi1_r1 = self.atom1.radialWavefunction(
             self.l, 0.5, self.j,
-            self.atom.getEnergy(self.n, self.l, self.j) / 27.211,
-            self.atom.alphaC**(1 / 3.0),
+            self.atom1.getEnergy(self.n, self.l, self.j, s=self.s1) / 27.211,
+            self.atom1.alphaC**(1 / 3.0),
             2.0 * self.n * (self.n + 15.0), step)
 
         sqrt_r1_on2 = np.trapz(np.multiply(np.multiply(psi1_r1, psi1_r1),
                                            np.multiply(r1, r1)),
                                x=r1)
 
-        r2, psi2_r2 = self.atom.radialWavefunction(
+        r2, psi2_r2 = self.atom2.radialWavefunction(
             self.ll, 0.5, self.jj,
-            self.atom.getEnergy(self.nn, self.ll, self.jj) / 27.211,
-            self.atom.alphaC**(1 / 3.0),
+            self.atom2.getEnergy(self.nn, self.ll, self.jj, s=self.s2) / 27.211,
+            self.atom2.alphaC**(1 / 3.0),
             2.0 * self.nn * (self.nn + 15.0), step)
 
         sqrt_r2_on2 = np.trapz(np.multiply(np.multiply(psi2_r2, psi2_r2),
@@ -939,30 +1000,29 @@ class PairStateInteractions:
                     lmax2 = min(self.ll + 2, n2)
                     for l2 in xrange(lmin2, lmax2, 2):
                         if ((l1+l2) % 2 == Lmod2):
-                            j1 = l1 - self.s
+                            j1 = l1 - self.s1
                             while j1 < -0.1:
                                 j1 += 1
-                            while j1 <= l1 + self.s + 0.1:
-                                j2 = l2 - self.s
+                            while j1 <= l1 + self.s1 + 0.1:
+                                j2 = l2 - self.s2
                                 while j2 < -0.1:
                                     j2 += 1
 
-                                while j2 <= l2 + self.s + 0.1:
-                                    energyDefect = self.atom.getEnergyDefect2(
+                                while j2 <= l2 + self.s2 + 0.1:
+                                    energyDefect = self.__getEnergyDefect(
                                         self.n, self.l, self.j,
                                         self.nn, self.ll, self.jj,
                                         n1, l1, j1,
-                                        n2, l2, j2,
-                                        s=self.s) / C_h
+                                        n2, l2, j2) / C_h
                                     if (abs(energyDefect) < energyDelta
                                             and (not (self.interactionsUpTo == 1)
                                                  or (Lmod2 == ((l1 + l2) % 2)))
-                                            and (n1 >= self.atom.groundStateN
+                                            and (n1 >= self.atom1.groundStateN
                                                  or [n1, l1, j1] in
-                                                 self.atom.extraLevels)
-                                            and (n2 >= self.atom.groundStateN
+                                                 self.atom1.extraLevels)
+                                            and (n2 >= self.atom2.groundStateN
                                                  or [n2, l2, j2] in
-                                                 self.atom.extraLevels)
+                                                 self.atom2.extraLevels)
                                             ):
                                         energyDefect = energyDefect * 1.0e-9  # GHz
                                         if (abs(energyDefect) < 1e-10):
@@ -986,7 +1046,8 @@ class PairStateInteractions:
                                                 self.n, self.l, self.j,
                                                 self.nn, self.ll, self.jj,
                                                 n1, l1, j1,
-                                                n2, l2, j2, self.atom)
+                                                n2, l2, j2,
+                                                self.atom1, atom2=self.atom2)
                                             * (1.0e-9 * (1.e6)**3 / C_h)
                                             )  # GHz / mum^3
 
@@ -994,8 +1055,7 @@ class PairStateInteractions:
                                             self.l, self.j,
                                             self.ll, self.jj,
                                             l1, j1,
-                                            l2, j2,
-                                            self.atom)
+                                            l2, j2)
 
                                         interactionMatrix += (
                                             d.conj().T.dot(d)
@@ -1106,6 +1166,8 @@ class PairStateInteractions:
         self.energyDelta = energyDelta
         self.Bz = Bz
 
+        self.basisStates = []
+
         # wignerDmatrix
         wgd = WignerDmatrix(theta, phi)
 
@@ -1123,7 +1185,9 @@ class PairStateInteractions:
             progressOutput=progressOutput,
             debugOutput=debugOutput)
 
-        self.atom.updateDipoleMatrixElementsFile()
+        self.atom1.updateDipoleMatrixElementsFile()
+        self.atom2.updateDipoleMatrixElementsFile()
+
         # generate all the states (with mj principal quantum number)
 
         # opi = original pairstate index
@@ -1142,7 +1206,7 @@ class PairStateInteractions:
                 for m2c in np.linspace(stateCoupled[5], -stateCoupled[5],
                                        round(1 + 2 * stateCoupled[5])):
                     if ((not limitBasisToMj) or (abs(originalMj
-                                                     - m1c - m2c) == 0)):
+                                                     - m1c - m2c) < 0.1)):
                         self.basisStates.append(
                             [stateCoupled[0], stateCoupled[1], stateCoupled[2],
                              m1c,
@@ -1216,18 +1280,18 @@ class PairStateInteractions:
 
                     if (matRIndex == 0):
                         zeemanShift = (
-                            self.atom.getZeemanEnergyShift(
+                            self.atom1.getZeemanEnergyShift(
                                 self.basisStates[i][1],
                                 self.basisStates[i][2],
                                 self.basisStates[i][3],
                                 self.Bz,
-                                s=self.s)
-                            + self.atom.getZeemanEnergyShift(
+                                s=self.s1)
+                            + self.atom2.getZeemanEnergyShift(
                                 self.basisStates[i][5],
                                 self.basisStates[i][6],
                                 self.basisStates[i][7],
                                 self.Bz,
-                                s=self.s)
+                                s=self.s2)
                             ) / C_h * 1.0e-9   # in GHz
                         matDiagonalConstructor[0].append(ed + zeemanShift
                                                          + degeneracyOffset)
@@ -1249,8 +1313,7 @@ class PairStateInteractions:
                                 self.basisStates[i][1], self.basisStates[i][2],
                                 self.basisStates[i][5], self.basisStates[i][6],
                                 self.basisStates[j][1], self.basisStates[j][2],
-                                self.basisStates[j][5], self.basisStates[j][6],
-                                self.atom)
+                                self.basisStates[j][5], self.basisStates[j][6])
                             secondPart = d.dot(stateCom)
                         else:
                             print(" - - - ", self.channel[jj])
@@ -1586,17 +1649,18 @@ class PairStateInteractions:
         ts = datetime.datetime.now().strftime(fmt)
 
         commonHeader = "Export from Alkali Rydberg Calculator (ARC) %s.\n" % ts
-        commonHeader += ("\n *** Pair State interactions for %s %s m_j = %d/2 , %s m_j = %d/2 pair-state. ***\n\n" %
-                         (self.atom.elementName,
+        commonHeader += ("\n *** Pair State interactions for %s %s m_j = %d/2 , %s %s m_j = %d/2 pair-state. ***\n\n" %
+                         (self.atom1.elementName,
                           printStateString(self.n, self.l, self.j), int(
                               round(2. * self.m1)),
+                          self.atom2.elementName,
                           printStateString(self.nn, self.ll, self.jj), int(round(2. * self.m2))))
         if (self.interactionsUpTo == 1):
             commonHeader += " - Pair-state interactions included up to dipole-dipole coupling.\n"
         elif (self.interactionsUpTo == 2):
             commonHeader += " - Pair-state interactions included up to quadrupole-quadrupole coupling.\n"
-        commonHeader += (" - Pair-state interactions calculated for manifold with total spin angular momentum s = %.1d .\n"
-                         % self.s)
+        commonHeader += (" - Pair-state interactions calculated for manifold with spin angular momentum s1 = %.1d s2 = %.1d .\n"
+                         % (self.s1, self.s2))
 
         if hasattr(self, 'theta'):
             commonHeader += " - Atom orientation:\n"
@@ -1700,16 +1764,25 @@ class PairStateInteractions:
         return value + "$"
 
     def _addState(self, n1, l1, j1, mj1, n2, l2, j2, mj2):
-        if (abs(self.s-0.5)<0.1):
-            # Alkali atoms
-            return "|%s %d/2,%s %d/2\\rangle" %\
-                (printStateStringLatex(n1, l1, j1, s=self.s), int(2 * mj1),
-                 printStateStringLatex(n2, l2, j2, s=self.s), int(2 * mj2))
+        stateString = ""
+        if (abs(self.s1 - 0.5) < 0.1):
+            # Alkali atom
+            stateString += "|%s %d/2" %\
+                (printStateStringLatex(n1, l1, j1, s=self.s1), int(2 * mj1))
         else:
             # divalent atoms
-            return "|%s %d,%s %d\\rangle" %\
-                (printStateStringLatex(n1, l1, j1, s=self.s), int(mj1),
-                 printStateStringLatex(n2, l2, j2, s=self.s), int(mj2))
+            stateString += "|%s %d" %\
+                (printStateStringLatex(n1, l1, j1, s=self.s1), int(mj1))
+
+        if (abs(self.s2 - 0.5) < 0.1):
+            # Alkali atom
+            stateString += ",%s %d/2\\rangle" %\
+                (printStateStringLatex(n2, l2, j2, s=self.s2), int(2 * mj2))
+        else:
+            # divalent atom
+            stateString += ",%s %d\\rangle" %\
+                (printStateStringLatex(n2, l2, j2, s=self.s2), int(mj2))
+        return stateString
 
     def plotLevelDiagram(self,  highlightColor='red',
                          highlightScale='linear'):
@@ -1774,22 +1847,32 @@ class PairStateInteractions:
 
         if (self.drivingFromState[0] == 0):
             # colouring is based on the contribution of the original pair state here
-            if (abs(self.s-0.5) < 0.1):
-                # Alkali atoms
-                cb.set_label(r"$|\langle %s m_j=%d/2 , %s m_j=%d/2 | \mu \rangle |^2$" %
+            label = ""
+            if (abs(self.s1-0.5) < 0.1):
+                # Alkali atom
+                label += r"$|\langle %s m_j=%d/2 " % \
                              (printStateStringLatex(self.n, self.l, self.j),
-                              int(round(2. * self.m1, 0)),
-                              printStateStringLatex(self.nn, self.ll, self.jj),
-                              int(round(2. * self.m2, 0))))
+                              int(round(2. * self.m1, 0)))
             else:
-                # divalent atoms
-                cb.set_label(r"$|\langle %s m_j=%d , %s m_j=%d | \mu \rangle |^2$" %
+                # divalent atom
+                label += r"$|\langle %s m_j=%d " % \
                              (printStateStringLatex(self.n, self.l, self.j,
-                                                    s=self.s),
-                              int(round(self.m1, 0)),
-                              printStateStringLatex(self.nn, self.ll, self.jj,
-                                                    s=self.s),
-                              int(round(self.m2, 0))))
+                                                    s=self.s1),
+                              int(round(self.m1, 0)))
+
+            if (abs(self.s2-0.5) < 0.1):
+                # Alkali atom
+                label += r", %s m_j=%d/2 | \mu \rangle |^2$" % \
+                             (printStateStringLatex(self.nn, self.ll, self.jj),
+                              int(round(2. * self.m2, 0)))
+            else:
+                # divalent atom
+                label += r", %s m_j=%d | \mu \rangle |^2$" % \
+                             (printStateStringLatex(self.nn, self.ll, self.jj,
+                                                    s=self.s2),
+                              int(round(self.m2, 0)))
+
+            cb.set_label(label)
         else:
             # colouring is based on the coupling to different states
             cb.set_label(r"$(\Omega_\mu/\Omega)^2$")
