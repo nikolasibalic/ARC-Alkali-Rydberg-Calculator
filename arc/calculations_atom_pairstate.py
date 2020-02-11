@@ -535,9 +535,6 @@ class PairStateInteractions:
                                 and abs(j1 - 0.5) < 0.1) # j = 1/2 and j'=1/2 forbidden
                                 or
                                 (abs(j) < 0.1
-                                and abs(j1) < 0.1)  # j = 0 and j'=0 forbidden
-                                or
-                                (abs(j) < 0.1
                                 and abs(j1 - 1) < 0.1)  # j = 0 and j'=1 forbidden
                                 or
                                 (abs(j-1) < 0.1
@@ -549,18 +546,17 @@ class PairStateInteractions:
                                 and abs(j2 - 0.5) < 0.1) # j = 1/2 and j'=1/2 forbidden
                                 or
                                 (abs(jj) < 0.1
-                                and abs(j2) < 0.1)  # j = 0 and j'=0 forbidden
-                                or
-                                (abs(jj) < 0.1
                                 and abs(j2 - 1) < 0.1)  # j = 0 and j'=1 forbidden
                                 or
-                                (abs(j-1) < 0.1
+                                (abs(jj-1) < 0.1
                                 and abs(j2) < 0.1)  # j = 1 and j'=0 forbidden
                                 )
                           )
                         )
-                and not(abs(j)<0.1 and abs(j1)<0.1)
+                and not(abs(j)<0.1 and abs(j1)<0.1)  # j = 0 and j'=0 forbiden
                 and not (abs(jj)<0.1 and abs(j2)<0.1)
+                and not (abs(l)<0.1 and abs(l1)<0.1) # l = 0 and l' = 0 is forbiden
+                and not (abs(ll)<0.1 and abs(l2)<0.1)
                 ):
             # determine coupling
             dl = abs(l - l1)
