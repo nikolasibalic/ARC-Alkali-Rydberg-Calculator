@@ -59,7 +59,7 @@ Overview
 .. currentmodule:: arc.wigner
 
 .. autosummary::
-    WignerDmatrix
+    CG
     Wigner3j
     Wigner6j
     WignerDmatrix

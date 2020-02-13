@@ -37,17 +37,17 @@ Data sources
         Strontium,
         *Physica Scripta* **27**, 172 (1983).
 
-.. [#c8]J R. Rubbmark and S. A. Borgstr¨om,
-        Rydberg Series in Strontium Found in Absorption by Selectively,
-        Laser-Excited Atoms.
-        *Physica Scripta* **18**, 196 (1978)
+.. [#c8] J R. Rubbmark and S. A. Borgstr¨om,
+         Rydberg Series in Strontium Found in Absorption by Selectively,
+         Laser-Excited Atoms.
+         *Physica Scripta* **18**, 196 (1978)
 
 .. [#c9] Beigang R, Lucke K, Schmidt D, Timmermann A. and West P. J,
         One-Photon Laser Spectroscopy of Rydberg Series from Metastable Levels
         in Calcium and Strontium,
         *Phys. Scr.* **26**, 183 (1982)
 
-.. [c10] L. Couturier, I. Nosske, F. Hu, C. Tan, C. Qiao, Y. H. Jiang, P. Chen
+.. [#c10] L. Couturier, I. Nosske, F. Hu, C. Tan, C. Qiao, Y. H. Jiang, P. Chen
         and M. Weidemüller.
         Measurement of the strontium triplet Rydberg series by depletion
         spectroscopy of ultracold atoms
@@ -166,6 +166,9 @@ class Strontium88(DivalentAtom):
                    [4, 2, 2, 0]
                    ]
 
+
+    #: Sources Refs. [#c1]_, [#c2]_, [#c3]_, [#c4]_, [#c5]_, [#c6]_, [#c7]_,
+    #: [#c8]_ , [#c10]_
     levelDataFromNIST = "sr_level_data.csv"
 
     precalculatedDB = "sr_precalculated.db"
@@ -249,6 +252,7 @@ class Calcium40(DivalentAtom):
     groundStateN = 4
     extraLevels = []  #: TODO unkown if such exist at time of writing
 
+    #: Sources Refs. [#c1]_, [#c5]_, [#c9]_, [#ca1]_
     levelDataFromNIST = "ca_level_data.csv"
 
     precalculatedDB = "ca_precalculated.db"
@@ -334,7 +338,7 @@ class Ytterbium174(DivalentAtom):
     groundStateN = 6
     extraLevels = []  #: TODO unkown if such exist at time of writing
 
-    # : Store list of filenames to read in no data
+    #: Sources Refs. [#yb1]_, [#yb2]_, [#yb3]_
     levelDataFromNIST = "yb_level_data.csv"
 
     precalculatedDB = "yb_precalculated.db"

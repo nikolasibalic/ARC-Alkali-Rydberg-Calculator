@@ -1958,7 +1958,7 @@ class AtomSurfaceVdW:
 
     def getStateC3(self, n, l, j, coupledStatesList, s=0.5, debugOutput=False):
         r"""
-        Van der Waals atom-surface interactoin coefficient for
+        Van der Waals atom-surface interaction coefficient for
         a given state (:math:`C_3` in units of
         :math:`\mathrm{J}\cdot\mathrm{m}^3` )
 
