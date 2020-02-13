@@ -1049,7 +1049,7 @@ class StarkMap:
                         cax, cmap=cm, norm=cNorm)
                     if (self.drivingFromState[0] < 0.1):
                         cb.set_label(r"$|\langle %s | \mu \rangle |^2$" %
-                                     printStateStringLatex(n, l, j))
+                                     printStateStringLatex(n, l, j,s=self.s))
                     else:
                         cb.set_label(r"$( \Omega_\mu | \Omega )^2$")
 
