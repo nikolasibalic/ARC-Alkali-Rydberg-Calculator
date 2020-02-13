@@ -47,9 +47,9 @@ Package structure
 =================
 
 .. figure:: ./overview_of_modules3.png
-    :width: 800px
+    :width: 700px
     :align: center
-    :height: 480px
+    :height: 432px
     :alt: module overview image
     :figclass: align-center
 
