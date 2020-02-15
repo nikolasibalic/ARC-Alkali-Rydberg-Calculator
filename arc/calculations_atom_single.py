@@ -2108,7 +2108,7 @@ class OpticalLattice1D:
         """
 
         sign = 1
-        index = len(stateVector) // 2
+        index = len(stateVector) // 2 + 2  # Align Bloch functions in phase
         angle = np.angle(stateVector[index])
         sign = np.exp(-1j*angle)
         temp = 0 + 0j
@@ -2304,8 +2304,8 @@ class OpticalLattice1D:
             q = self.quasimomentum[i]
             value += np.exp(-1j * q * localizedAt) \
                 * self._BlochFunction(x,
-                                         self.savedBlochBand[i],
-                                         q, k=k)
+                                      self.savedBlochBand[i],
+                                      q, k=k)
         return value
 
 
