@@ -2119,7 +2119,7 @@ class OpticalLattice1D:
 
     def BlochWavefunction(self,
                           trapPotentialDepth,
-                          quazimomentum,
+                          quasimomentum,
                           blochBandIndex):
         r"""
             Bloch wavefunction as a **function** of 1D coordinate.
@@ -2128,10 +2128,10 @@ class OpticalLattice1D:
                 Returns Bloch wavefunction. Use as following::
 
                     trapPotentialDepth = 40  # units of recoil energy
-                    quazimomentum = 0
+                    quasimomentum = 0
                     blochBandIndex = 0  # Bloch band lowest in energy is 0
                     wf = lattice.BlochWavefunction(trapPotentialDepth,
-                                                   quazimomentum,
+                                                   quasimomentum,
                                                    blochBandIndex)
                     wf(x)  # returns complex number corresponding to value of Bloch
                            # wavefunction at point x (cooridnate given in units of
@@ -2141,7 +2141,7 @@ class OpticalLattice1D:
             Args:
                 trapPotentialDepth (float): (in units of recoil energy
                     :obj:`OpticalLattice1D.getRecoilEnergy`)
-                quazimomentum (float): (in units of 2 \pi /
+                quasimomentum (float): (in units of 2 \pi /
                     :obj:`OpticalLattice1D.trapWavenegth`; note that
                     reciprocal lattice momentum in this units is 2, and that
                     full range of quasimomentum is from -1 to +1)
@@ -2153,14 +2153,14 @@ class OpticalLattice1D:
         temp1 = self.energy
         temp2 = self.quasimomentum
         temp3 = self.savedBlochBand
-        self.diagonalise(trapPotentialDepth, [quazimomentum],
+        self.diagonalise(trapPotentialDepth, [quasimomentum],
                            saveBandIndex = blochBandIndex)
         state = np.copy(self.savedBlochBand[0])
 
         self.energy = temp1
         self.quasimomenutm = temp2
         self.savedBlochBand = temp3
-        return lambda x: self._BlochFunction(x, state, quazimomentum)
+        return lambda x: self._BlochFunction(x, state, quasimomentum)
 
 
     def defineBasis(self, lLimit=35):
@@ -2214,10 +2214,10 @@ class OpticalLattice1D:
                                   shape=(dimension, dimension))
         return hamiltonianQ
 
-    def diagonalise(self, trapPotentialDepth, quazimomentumList,
+    def diagonalise(self, trapPotentialDepth, quasimomentumList,
                     saveBandIndex=None):
         r"""
-            Calculates energy levels (Bloch bands) for given `quazimomentumList`
+            Calculates energy levels (Bloch bands) for given `quasimomentumList`
 
             Energy levels and their quasimomentum are saved in internal variables
             `energy` and `quasimomentum`. Energies are saved in units of
@@ -2232,7 +2232,7 @@ class OpticalLattice1D:
                     by the standing wave of laser, with wavelength specified
                     during initialisation of the lattice
                     (in units of recoil energy).
-                quazimomentumList (array): array of quazimomentum values for
+                quasimomentumList (array): array of quasimomentum values for
                     which energy levels will be calculated (in units of
                     :math:`\hbar \cdot k`,
                     where :math:`k` is trapping laser wavevector;
@@ -2246,17 +2246,19 @@ class OpticalLattice1D:
         """
 
         self.energy = []
-        self.quasimomentum = quazimomentumList
+        self.quasimomentum = quasimomentumList
         self.savedBlochBand = []
         self.trapPotentialDepth = trapPotentialDepth
-        for q in quazimomentumList:
+        for q in quasimomentumList:
             hamiltonianQ = self._getLatticeHamiltonian(q, trapPotentialDepth)
             ev, egvector = np.linalg.eig(hamiltonianQ.todense())
             egvector = np.transpose(np.array(egvector))
+            orderInEnergy = np.argsort(ev)
+            ev = ev[orderInEnergy]
+            egvector = egvector[orderInEnergy]
             self.energy.append(ev)
             if saveBandIndex is not None:
-                stateId = np.argsort(ev)[saveBandIndex]
-                self.savedBlochBand.append(egvector[stateId])
+                self.savedBlochBand.append(egvector[saveBandIndex])
 
     def plotLevelDiagram(self):
         """
@@ -2274,7 +2276,7 @@ class OpticalLattice1D:
         for i, energyLevels in enumerate(self.energy):
             ax.plot([self.quasimomentum[i]] * len(energyLevels),
                     energyLevels, ".", color="0.8")
-        ax.set_xlabel(r"Quasimomentum, $q$ $(k\hbar)$")
+        ax.set_xlabel(r"Quasimomentum, $q$ $(\hbar k)$")
         ax.set_ylabel(r"State energy, E ($E_{\rm r}$)")
         ax.set_ylim(-0.2, 50)
         ax.set_xlim(-1, 1)
