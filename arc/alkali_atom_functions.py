@@ -581,7 +581,7 @@ class AlkaliAtom(object):
             # j = l+1/2
             self.sEnergy[l, n] = energyNIST - self.ionisationEnergy
 
-    def getTransitionWavelength(self, n1, l1, j1, n2, l2, j2, s1=0.5, s2=0.5):
+    def getTransitionWavelength(self, n1, l1, j1, n2, l2, j2, s=0.5, s2=None):
         """
             Calculated transition wavelength (in vacuum) in m.
 
@@ -601,10 +601,10 @@ class AlkaliAtom(object):
                     **to** which we are going
                 j2 (float): total angular momentum of the state
                     **to** which we are going
-                s1 (float): optional, spin of the intial state
+                s (float): optional, spin of the intial state
                     (for Alkali this is fixed to 0.5)
-                s2 (float): optional, spin of the final state
-                    (for Alkali this is fixed to 0.5)
+                s2 (float): optional, spin of the final state.
+                    If not set, defaults to same value as :obj:`s`
 
             Returns:
                 float:
@@ -612,10 +612,12 @@ class AlkaliAtom(object):
                     negative, level from which we are going is **above**
                     the level to which we are going.
         """
+        if s2 is None:
+            s2 = s
         return (C_h * C_c) / ((self.getEnergy(n2, l2, j2, s=s2)
-                               - self.getEnergy(n1, l1, j1, s=s1)) * C_e)
+                               - self.getEnergy(n1, l1, j1, s=s)) * C_e)
 
-    def getTransitionFrequency(self, n1, l1, j1, n2, l2, j2, s1=0.5, s2=0.5):
+    def getTransitionFrequency(self, n1, l1, j1, n2, l2, j2, s=0.5, s2=None):
         """
             Calculated transition frequency in Hz
 
@@ -635,10 +637,10 @@ class AlkaliAtom(object):
                     **to** which we are going
                 j2 (float): total angular momentum of the state
                     **to** which we are going
-                s1 (float): optional, spin of the intial state
+                s (float): optional, spin of the intial state
                     (for Alkali this is fixed to 0.5)
                 s2 (float): optional, spin of the final state
-                    (for Alkali this is fixed to 0.5)
+                    If not set, defaults to the same value as :obj:`s`
 
             Returns:
                 float:
@@ -646,8 +648,10 @@ class AlkaliAtom(object):
                     negative, level from which we are going is **above**
                     the level to which we are going.
         """
+        if s2 is None:
+            s2 = s
         return (self.getEnergy(n2, l2, j2, s=s2)
-                - self.getEnergy(n1, l1, j1, s=s1)) * C_e / C_h
+                - self.getEnergy(n1, l1, j1, s=s)) * C_e / C_h
 
     def getEnergy(self, n, l, j, s=0.5):
         """

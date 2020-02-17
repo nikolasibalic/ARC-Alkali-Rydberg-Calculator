@@ -1760,7 +1760,7 @@ class LevelPlot:
                                                                         self.state1[2],
                                                                         state[0], state[1],
                                                                         state[2],
-                                                                        s1=self.state1[3],
+                                                                        s=self.state1[3],
                                                                         s2=state[3]) * 1e9,
                                       self.atom.getTransitionFrequency(self.state1[0],
                                                                        self.state1[1],
@@ -1768,7 +1768,7 @@ class LevelPlot:
                                                                        state[0],
                                                                        state[1],
                                                                        state[2],
-                                                                       s1=self.state1[3],
+                                                                       s=self.state1[3],
                                                                        s2=state[3]) * 1e-9))
                     self.ax.set_title(title)
                     self.state1 = [0, 0, 0]
