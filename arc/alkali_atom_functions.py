@@ -960,7 +960,7 @@ class AlkaliAtom(object):
         #
         if (self.getTransitionFrequency(n1, l1, j1,
                                         n2, l2, j2,
-                                        s1=s, s2=s) < 0):
+                                        s=s, s2=s) < 0):
             temp = n2
             n2 = n1
             n1 = temp
@@ -1456,7 +1456,7 @@ class AlkaliAtom(object):
 
         dipoleRadialPart = 0.0
         if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
-                                        s1=s, s2=s) > 0):
+                                        s=s, s2=s) > 0):
             dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(
                 n1, l1, j1,
                 n2, l2, j2,
@@ -1473,11 +1473,11 @@ class AlkaliAtom(object):
 
         omega = abs(
             2.0 * pi * self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
-                                                   s1=s, s2=s))
+                                                   s=s, s2=s))
 
         modeOccupationTerm = 0.
         if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
-                                        s1=s, s2=s) < 0):
+                                        s=s, s2=s) < 0):
             modeOccupationTerm = 1.
 
         # only possible by absorbing thermal photons ?
