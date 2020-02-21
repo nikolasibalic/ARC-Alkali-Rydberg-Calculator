@@ -570,8 +570,11 @@ class StarkMap:
             :obj:`eFieldList`, :obj:`y`, :obj:`diagonalise`
         """
 
-        # pointers towards figure
+        #: pointer towards matplotlib figure after :obj:`plotLevelDiagram`
+        #: is called to create figure
         self.fig = 0
+        #: pointer towards matplotlib figure axis after :obj:`plotLevelDiagram`
+        #: is called to create figure
         self.ax = 0
 
         # values used for fitting polarizability, and fit
@@ -972,7 +975,9 @@ class StarkMap:
             Makes a plot of a stark map of energy levels
 
             To save this plot, see :obj:`savePlot`. To print this plot see
-            :obj:`showPlot`.
+            :obj:`showPlot`. Pointers (handles) towards matplotlib figure
+            and axis used are saved in :obj:`fig` and :obj:`ax` variables
+            respectively.
 
             Args:
                 units (:obj:`int`,optional): possible values {1,2} ; if the
