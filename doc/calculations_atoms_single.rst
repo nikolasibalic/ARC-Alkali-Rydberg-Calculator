@@ -8,6 +8,7 @@ Single atom calculations
   released in the forthcoming ARC 3.0.0 version.
   To used them now as a beta feature do::
     from arc.beta import *
+    
   Publication describing this upgrade is in preparation (check this place
   soon). For now cite as "E. J. Robertson, N. Šibalić, R. M. Potvliege and
   M. P. A. Jones, *in preparation* (2020)".

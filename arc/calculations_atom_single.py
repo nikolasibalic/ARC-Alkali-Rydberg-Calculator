@@ -167,7 +167,7 @@ class Wavefunction:
 
             At a point defined by Cartesian coordinates returns list of
             :math:`r \cdot \psi_{m_s} (x, y, z)`
-             wavefunction values for different
+            wavefunction values for different
             electron spin projection values :math:`m_s`.
 
             Args:
@@ -444,22 +444,22 @@ class StarkMap:
         of calculation see Zimmerman [1]_. For a quick working example
         see `Stark map example snippet`_.
 
-
-
         Args:
-            atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-                :obj:`alkali_atom_data.Lithium7`,
-                :obj:`alkali_atom_data.Sodium`,
-                :obj:`alkali_atom_data.Potassium39`,
-                :obj:`alkali_atom_data.Potassium40`,
-                :obj:`alkali_atom_data.Potassium41`,
-                :obj:`alkali_atom_data.Rubidium85`,
-                :obj:`alkali_atom_data.Rubidium87`,
-                :obj:`alkali_atom_data.Caesium` }
+            atom (:obj:`AlkaliAtom` or :obj:`DivalentAtom`): ={
+                :obj:`arc.alkali_atom_data.Lithium6`,
+                :obj:`arc.alkali_atom_data.Lithium7`,
+                :obj:`arc.alkali_atom_data.Sodium`,
+                :obj:`arc.alkali_atom_data.Potassium39`,
+                :obj:`arc.alkali_atom_data.Potassium40`,
+                :obj:`arc.alkali_atom_data.Potassium41`,
+                :obj:`arc.alkali_atom_data.Rubidium85`,
+                :obj:`arc.alkali_atom_data.Rubidium87`,
+                :obj:`arc.alkali_atom_data.Caesium`,
+                :obj:`arc.divalent_atom_data.Strontium88`,
+                :obj:`arc.divalent_atom_data.Calcium40`
+                :obj:`arc.divalent_atom_data.Ytterbium174` }
                 Select the alkali metal for energy level
                 diagram calculation
-
-
 
         Examples:
             State :math:`28~S_{1/2}~|m_j|=0.5` polarizability calculation
@@ -1440,15 +1440,19 @@ class LevelPlot:
             ./Rydberg_atoms_a_primer.html#Rydberg-Atom-Energy-Levels
 
         Args:
-            atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-                :obj:`alkali_atom_data.Lithium7`,
-                :obj:`alkali_atom_data.Sodium`,
-                :obj:`alkali_atom_data.Potassium39`,
-                :obj:`alkali_atom_data.Potassium40`,
-                :obj:`alkali_atom_data.Potassium41`,
-                :obj:`alkali_atom_data.Rubidium85`,
-                :obj:`alkali_atom_data.Rubidium87`,
-                :obj:`alkali_atom_data.Caesium` }
+            atom (:obj:`AlkaliAtom` or :obj:`DivalentAtom`): ={
+                :obj:`arc.alkali_atom_data.Lithium6`,
+                :obj:`arc.alkali_atom_data.Lithium7`,
+                :obj:`arc.alkali_atom_data.Sodium`,
+                :obj:`arc.alkali_atom_data.Potassium39`,
+                :obj:`arc.alkali_atom_data.Potassium40`,
+                :obj:`arc.alkali_atom_data.Potassium41`,
+                :obj:`arc.alkali_atom_data.Rubidium85`,
+                :obj:`arc.alkali_atom_data.Rubidium87`,
+                :obj:`arc.alkali_atom_data.Caesium`,
+                :obj:`arc.divalent_atom_data.Strontium88`,
+                :obj:`arc.divalent_atom_data.Calcium40`
+                :obj:`arc.divalent_atom_data.Ytterbium174` }
                 Alkali atom type whose levels we
                 want to examine
     """

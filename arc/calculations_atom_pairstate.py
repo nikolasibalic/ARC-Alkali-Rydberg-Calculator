@@ -85,8 +85,9 @@ class PairStateInteractions:
     """
         Calculates Rydberg level diagram (spaghetti) for the given pair state
 
-        Initializes Rydberg level spaghetti calculation for the given atom in
-        the vicinity of the given pair state. For details of calculation see
+        Initializes Rydberg level spaghetti calculation for the given atom
+        species (or for two atoms of different species) in the vicinity
+        of the given pair state. For details of calculation see
         Ref. [1]_. For a quick start point example see
         `interactions example snippet`_.
 
@@ -94,15 +95,19 @@ class PairStateInteractions:
             ./Rydberg_atoms_a_primer.html#Short-range-interactions
 
         Args:
-            atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-                :obj:`alkali_atom_data.Lithium7`,
-                :obj:`alkali_atom_data.Sodium`,
-                :obj:`alkali_atom_data.Potassium39`,
-                :obj:`alkali_atom_data.Potassium40`,
-                :obj:`alkali_atom_data.Potassium41`,
-                :obj:`alkali_atom_data.Rubidium85`,
-                :obj:`alkali_atom_data.Rubidium87`,
-                :obj:`alkali_atom_data.Caesium` }
+            atom (:obj:`AlkaliAtom` or :obj:`DivalentAtom`): = {
+                :obj:`arc.alkali_atom_data.Lithium6`,
+                :obj:`arc.alkali_atom_data.Lithium7`,
+                :obj:`arc.alkali_atom_data.Sodium`,
+                :obj:`arc.alkali_atom_data.Potassium39`,
+                :obj:`arc.alkali_atom_data.Potassium40`,
+                :obj:`arc.alkali_atom_data.Potassium41`,
+                :obj:`arc.alkali_atom_data.Rubidium85`,
+                :obj:`arc.alkali_atom_data.Rubidium87`,
+                :obj:`arc.alkali_atom_data.Caesium`,
+                :obj:`arc.divalent_atom_data.Strontium88`,
+                :obj:`arc.divalent_atom_data.Calcium40`
+                :obj:`arc.divalent_atom_data.Ytterbium174` }
                 Select the alkali metal for energy level
                 diagram calculation
             n (int): principal quantum number for the *first* atom
@@ -118,6 +123,12 @@ class PairStateInteractions:
             interactionsUpTo (int): Optional. If set to 1, includes only
                 dipole-dipole interactions. If set to 2 includes interactions
                 up to quadrupole-quadrupole. Default value is 1.
+            s (float): optional, spin state of the first atom. Default value
+                of 0.5 is correct for :obj:`AlkaliAtom` but for
+                :obj:`DivalentAtom` it has to be explicitly set to 0 or 1 for
+                singlet and triplet states respectively.
+                **If `s2` is not specified, it is assumed that the second
+                atom is in the same spin state.**
             s2 (float): optinal, spin state of the second atom. If not
                 specified (left to default value None) it will assume spin
                 state of the first atom.
@@ -904,8 +915,11 @@ class PairStateInteractions:
 
         Calculates
         :math:`C_6=\sum_{\rm r',r''}|\langle {\rm r',r''}|V|\
-        {\rm r1,r2}\rangle|^2/\\Delta_{\rm r',r''}`, where
+        {\rm r1,r2}\rangle|^2/\Delta_{\rm r',r''}`, where
         :math:`\Delta_{\rm r',r''}\equiv E({\rm r',r''})-E({\rm r1, r2})`
+        When second order pertubation couples to multiple energy degenerate
+        states, users shold use **degenerate pertubation calculations** by
+        setting `degeneratePertubation=True` .
 
         This calculation is faster then full diagonalization, but it is valid
         only far from the so called spaghetti region that occurs when atoms
@@ -942,7 +956,8 @@ class PairStateInteractions:
             if **degeneratePertubation=True**, returns array of
             :math:`C_6` measured in :math:`\text{GHz }\mu\text{m}^6`
             AND array of corresponding eigenvectors in
-            :math:`\{m_{j_1}=-j_1, \ldots, m_{j_1} = +j1\}\bigotimes \{ m_{j_2}=-j_2, \ldots, m_{j_2} = +j2\} `
+            :math:`\{m_{j_1}=-j_1, \ldots, m_{j_1} = +j1\}\bigotimes \
+            \{ m_{j_2}=-j_2, \ldots, m_{j_2} = +j2\}`
             basis
 
 
