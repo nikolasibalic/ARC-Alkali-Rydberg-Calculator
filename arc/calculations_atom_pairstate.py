@@ -909,7 +909,7 @@ class PairStateInteractions:
 
 
     def getC6perturbatively(self, theta, phi, nRange, energyDelta,
-                            degeneratePertubation=False):
+                            degeneratePerturbation=False):
         r"""
         Calculates :math:`C_6` from second order perturbation theory.
 
@@ -919,7 +919,7 @@ class PairStateInteractions:
         :math:`\Delta_{\rm r',r''}\equiv E({\rm r',r''})-E({\rm r1, r2})`
         When second order pertubation couples to multiple energy degenerate
         states, users shold use **degenerate pertubation calculations** by
-        setting `degeneratePertubation=True` .
+        setting `degeneratePerturbation=True` .
 
         This calculation is faster then full diagonalization, but it is valid
         only far from the so called spaghetti region that occurs when atoms
@@ -945,15 +945,15 @@ class PairStateInteractions:
             energyDelta (float): what is maximum energy difference ( :math:`\Delta E/h` in Hz)
                 between the original pair state and the other pair states that we are including in
                 calculation
-            degeneratePertubation (bool): optional, default False. Should one
+            degeneratePerturbation (bool): optional, default False. Should one
                 use degenerate pertubation theory. This should be used whenever
                 angle between quantisation and interatomic axis is non-zero,
                 as well as when one considers non-stretched states.
 
         Returns:
-            float: if **degeneratePertubation=False**, returns
+            float: if **degeneratePerturbation=False**, returns
             :math:`C_6` measured in :math:`\text{GHz }\mu\text{m}^6`;
-            if **degeneratePertubation=True**, returns array of
+            if **degeneratePerturbation=True**, returns array of
             :math:`C_6` measured in :math:`\text{GHz }\mu\text{m}^6`
             AND array of corresponding eigenvectors in
             :math:`\{m_{j_1}=-j_1, \ldots, m_{j_1} = +j1\}\bigotimes \
@@ -1137,7 +1137,7 @@ class PairStateInteractions:
         stateCom = compositeState(singleAtomState(self.j, self.m1),
                            singleAtomState(self.jj, self.m2)).T
 
-        if not degeneratePertubation:
+        if not degeneratePerturbation:
             for i, v in enumerate(vectors):
                 if (abs(np.vdot(v, stateCom)) > 1-1e-9):
                     return value[i]
@@ -1155,7 +1155,7 @@ class PairStateInteractions:
                   "{mj1 = -j1, ... , mj1 = +j1} x {mj2 = -j2, ... , m2 = +j2}, "
                   "where x denotes Kronecker product\n"
                   "To not see this warning request explicitly "
-                  "degeneratePertubation=True in call of this method.\n")
+                  "degeneratePerturbation=True in call of this method.\n")
             """
             #print(stateCom.conj().dot(interactionMatrix.dot(stateCom.T)))
             #print(stateCom.conj().dot(interactionMatrix.dot(stateCom.T)).shape)
