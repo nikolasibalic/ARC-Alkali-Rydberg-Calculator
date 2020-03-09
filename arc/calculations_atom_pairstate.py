@@ -917,8 +917,8 @@ class PairStateInteractions:
         :math:`C_6=\sum_{\rm r',r''}|\langle {\rm r',r''}|V|\
         {\rm r1,r2}\rangle|^2/\Delta_{\rm r',r''}`, where
         :math:`\Delta_{\rm r',r''}\equiv E({\rm r',r''})-E({\rm r1, r2})`
-        When second order pertubation couples to multiple energy degenerate
-        states, users shold use **degenerate pertubation calculations** by
+        When second order perturbation couples to multiple energy degenerate
+        states, users shold use **degenerate perturbation calculations** by
         setting `degeneratePerturbation=True` .
 
         This calculation is faster then full diagonalization, but it is valid
@@ -946,7 +946,7 @@ class PairStateInteractions:
                 between the original pair state and the other pair states that we are including in
                 calculation
             degeneratePerturbation (bool): optional, default False. Should one
-                use degenerate pertubation theory. This should be used whenever
+                use degenerate perturbation theory. This should be used whenever
                 angle between quantisation and interatomic axis is non-zero,
                 as well as when one considers non-stretched states.
 
