@@ -57,7 +57,7 @@ def Wigner3j(j1, j2, j3, m1, m2, m3):
             # that value is 0
             return 0
 
-    if (j1 > 50 or j2 > 50 or j3 > 50 or m1 > 50 or m2 > 50 or m3 > 50):
+    if (j1 > 40 or j2 > 40 or j3 > 40 or m1 > 40 or m2 > 40 or m3 > 40):
         # usual implementation of coefficient calculation that uses factorials
         # would fail (overflow). Use instead something slower verion from Sympy
         return float(sympyEvaluate(Wigner3j_sympy(j1, j2, j3, m1, m2, m3).doit()))
