@@ -38,14 +38,12 @@ environment:
       PYTHON_VERSION: "3.7.x"
       PYTHON_ARCH: "64"
 
-    # legacy support
-
-    - PYTHON: "C:\\Python35"
-      PYTHON_VERSION: "3.5.x"
+    - PYTHON: "C:\\Python38"
+      PYTHON_VERSION: "3.8.x"
       PYTHON_ARCH: "32"
 
-    - PYTHON: "C:\\Python35-x64"
-      PYTHON_VERSION: "3.5.x"
+    - PYTHON: "C:\\Python38-x64"
+      PYTHON_VERSION: "3.8.x"
       PYTHON_ARCH: "64"
 
 install:
