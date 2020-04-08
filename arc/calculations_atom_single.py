@@ -26,6 +26,7 @@ from scipy.constants import k as C_k
 from scipy.constants import c as C_c
 from scipy.constants import h as C_h
 from scipy.constants import e as C_e
+from scipy.constants import m_e as C_m_e
 from scipy.optimize import curve_fit
 from scipy import interpolate
 
@@ -1950,7 +1951,7 @@ class AtomSurfaceVdW:
         if self.surfaceMaterial is not None:
             wavelength = np.abs(self.atom.getTransitionWavelength(n1, l1, j1,
                                                                   n2, l2, j2,
-                                                                  s1=s, s2=s)
+                                                                  s=s, s2=s)
                                 ) * 1e6  # in mum
             n = self.surfaceMaterial.getN(vacuumWavelength=wavelength)
             materialFactor = (n**2 - 1.) / (n**2 + 1.)
@@ -2012,7 +2013,7 @@ class AtomSurfaceVdW:
                      err/C_h*(1e6)**3*1e-3,
                      self.atom.getTransitionWavelength(
                          n, l, j,
-                         state[0], state[1], state[2], s1=s, s2=s) * 1e6,
+                         state[0], state[1], state[2], s=s, s2=s) * 1e6,
                      refIndex)
                     )
             totalShift += c3
@@ -2356,9 +2357,10 @@ class DynamicPolarizability:
         self.nMin = nMin
         self.nMax = nMax
 
+
     def getPolarizability(self, driveWavelength, mj=None, units="SI"):
         """
-            Calculates of scalar and tensor polarizability
+            Calculates of scalar, tensor and pondermotive polarizability
 
             Args:
                 driveWavelength (float): wavelength of driving field
@@ -2370,6 +2372,9 @@ class DynamicPolarizability:
                     (:math:`Hz V^-2 m^2` )
                     and atomic units (":math:`a_0^3` "). Defaul 'SI'
 
+            Returns:
+                scalar, tensor, pondermotive polarisability of state, and
+                atomic state whose resonance is closest in energy.
         """
         if mj is None:
             mj = self.j
@@ -2382,7 +2387,7 @@ class DynamicPolarizability:
             lmin = self.l - 1
             if (lmin < - 0.1):
                 lmin = self.l + 1
-            for l1 in range(lmin, self.l + 2):
+            for l1 in range(lmin, min(self.l + 2, n1)):
                 j1 = l1 - self.s
                 if j1 < 0.1:
                     j1 += 1
@@ -2451,10 +2456,15 @@ class DynamicPolarizability:
 
         alpha2 = - 4 * prefactor2 * alpha2 / C_h
 
+        # add podermotive shift
+        driveOmega = 2 *  np.pi / driveWavelength * C_c
+        alphaP = C_e**2 / (2 * C_m_e * driveOmega**2 * C_h)
+
         if (units == "SI"):
-            return alpha0, alpha2, closestState   # in Hz m^2 / V^2
+            return alpha0, alpha2, alphaP, closestState   # in Hz m^2 / V^2
         elif (units == "a.u." or units == "au"):
-            return alpha0 / 2.48832e-8, alpha2 / 2.48832e-8, closestState
+            return alpha0 / 2.48832e-8, alpha2 / 2.48832e-8, \
+                alphaP / 2.48832e-8, closestState
         else:
             raise ValueError("Only 'SI' and 'a.u' (atomic units) are recognised"
                              " as 'units' parameter. Entered value '%s' is"
@@ -2465,6 +2475,7 @@ class DynamicPolarizability:
                            addToPlotAxis=None,
                            line="b-",
                            units="SI",
+                           addPondermotivePolarisability=False,
                            debugOutput=False):
         """
         Plots of polarisability for a range of wavelengths.
@@ -2487,6 +2498,13 @@ class DynamicPolarizability:
                 switches between SI units for returned result
                 (:math:`Hz V^-2 m^2` )
                 and atomic units (":math:`a_0^3` "). Deafault 'SI'.
+            addPondermotivePolarisability (bool): optional, should pondermotive
+                polarisability (also called free-electron polarisability)
+                be added to the total polarisability. Default is
+                False. It assumes that there is no significant variation of
+                trapping field intensity over the range of the electric cloud.
+                If this condition is not satisfied, one has to calculate
+                total shift as average over the electron wavefunction.
             debugOutput (bool): optonal. Print additional output on resonances
                 Default value False.
         """
@@ -2507,12 +2525,15 @@ class DynamicPolarizability:
             tensorPrefactor = 0
 
         for wavelength in wavelengthList:
-            scalarP, tensorP, state = self.getPolarizability(wavelength,
-                                                             mj=mj,
-                                                             units=units)
+            scalarP, tensorP, pondermotiveP, state = self.getPolarizability(
+                wavelength,
+                mj=mj,
+                units=units)
             if (scalarP is not None):
                 # we are not hitting directly the resonance
                 totalP = scalarP + tensorPrefactor * tensorP
+                if addPondermotivePolarisability:
+                    totalP += pondermotiveP
                 if ((len(p) > 0) and p[-1] * totalP < 0
                     and (len(p) > 2 and (p[-2] - p[-1]) * totalP > 0)
                         ):
