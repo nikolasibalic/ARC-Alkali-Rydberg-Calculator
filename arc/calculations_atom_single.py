@@ -2357,9 +2357,64 @@ class DynamicPolarizability:
         self.nMin = nMin
         self.nMax = nMax
 
+        self.basis = []
 
-    def getPolarizability(self, driveWavelength, mj=None, units="SI"):
-        """
+        for n1 in np.arange(self.nMin, self.nMax + 1):
+            lmin = self.l - 1
+            if (lmin < - 0.1):
+                lmin = self.l + 1
+            for l1 in range(lmin, min(self.l + 2, n1)):
+                j1 = l1 - self.s
+                if j1 < 0.1:
+                    j1 += 1
+                while j1 <= l1 + self.s + 0.1:
+                    if self.__isDipoleCoupled(
+                        self.n, self.l, self.j,
+                        n1, l1, j1
+                            ):
+                        # print([n1, l1, j1, self.s])
+                        self.basis.append([n1, l1, j1, self.s])
+                    j1 += 1
+
+        for state in self.atom.extraLevels:
+            if (len(state)==3 or abs(state[3] - self.s) < 0.1
+                and
+                self.__isDipoleCoupled(
+                    self.n, self.l, self.j,
+                    state[0], state[1], state[2 ])
+                        ):
+                self.basis.append(state)
+
+    def __isDipoleCoupled(self,
+                          n1, l1, j1,
+                          n2, l2, j2,
+                          s=0.5):
+        if ( not (abs(l1 - l2) != 1
+                and( (abs(j1 - 0.5) < 0.1
+                      and abs(j2 - 0.5) < 0.1) # j = 1/2 and j'=1/2 forbidden
+                      or
+                      (abs(j1) < 0.1
+                       and abs(j2 - 1) < 0.1)  # j = 0 and j'=1 forbidden
+                      or
+                      (abs(j1-1) < 0.1
+                       and abs(j2) < 0.1)  # j = 1 and j'=0 forbidden
+                   )
+                )
+                and not(abs(j1)<0.1 and abs(j2)<0.1)  # j = 0 and j'=0 forbiden
+                and not (abs(l1)<0.1 and abs(l2)<0.1) # l = 0 and l' = 0 is forbiden
+                ):
+            dl = abs(l1 - l2)
+            dj = abs(j1 - j2)
+            if dl == 1 and (dj < 1.1):
+                return True
+        return False
+
+
+    def getPolarizability(self, driveWavelength,
+                          mj=None,
+                          units="SI"
+                          ):
+        r"""
             Calculates of scalar, tensor and pondermotive polarizability
 
             Args:
@@ -2380,23 +2435,9 @@ class DynamicPolarizability:
             mj = self.j
 
         driveEnergy = C_c / driveWavelength * C_h
-        intialLevelEnergy = self.atom.getEnergy(self.n, self.l, self.j) * C_e
-        levels = []
+        intialLevelEnergy = self.atom.getEnergy(self.n, self.l, self.j,
+                                                s=self.s) * C_e
 
-        for n1 in np.arange(self.nMin, self.nMax + 1):
-            lmin = self.l - 1
-            if (lmin < - 0.1):
-                lmin = self.l + 1
-            for l1 in range(lmin, min(self.l + 2, n1)):
-                j1 = l1 - self.s
-                if j1 < 0.1:
-                    j1 += 1
-                while j1 <= l1 + self.s + 0.1:
-                    levels.append([n1, l1, j1])
-                    j1 += 1
-
-        for state in self.atom.extraLevels:
-            levels.append(state)
 
         prefactor2 = (6 * self.j * (2 * self.j - 1)
                       / (6 * (self.j + 1)
@@ -2408,13 +2449,14 @@ class DynamicPolarizability:
         alpha2 = 0.
         closestState = []
         closestEnergy = -1
-        for state in levels:
+        for state in self.basis:
             n1 = state[0]
             l1 = state[1]
             j1 = state[2]
             if abs(j1 - self.j) < 1.1 and (abs(l1 - self.l) > 0.5
                                            and abs(l1 - self.l) < 1.1):
-                coupledLevelEnergy = self.atom.getEnergy(n1, l1, j1) * C_e
+                coupledLevelEnergy = self.atom.getEnergy(n1, l1, j1,
+                                                         s=self.s) * C_e
 
                 diffEnergy = abs((coupledLevelEnergy
                                   - intialLevelEnergy)**2 - driveEnergy**2)
@@ -2425,11 +2467,12 @@ class DynamicPolarizability:
 
                 if diffEnergy < 1e-65:
                     # print("For given frequency we are in exact resonance with state %s" % printStateString(n1,l1,j1,s=s))
-                    return None, None, state
+                    return None, None, None, state
 
                 if (abs(mj) < state[2]+0.1):
                     d = self.atom.getReducedMatrixElementJ(self.n, self.l, self.j,
-                                                           n1, l1, j1)**2 \
+                                                           n1, l1, j1,
+                                                           s=self.s)**2 \
                         * (C_e * physical_constants["Bohr radius"][0])**2\
                         * (coupledLevelEnergy - intialLevelEnergy) \
                         / ((coupledLevelEnergy - intialLevelEnergy)**2
@@ -2443,7 +2486,8 @@ class DynamicPolarizability:
                             * self.atom.getReducedMatrixElementJ(self.n,
                                                                  self.l,
                                                                  self.j,
-                                                                 n1, l1, j1)**2 \
+                                                                 n1, l1, j1,
+                                                                 s=self.s)**2 \
                             * (C_e * physical_constants["Bohr radius"][0])**2\
                             * Wigner6j(self.j, 1, j1, 1, self.j, 2) \
                             * (coupledLevelEnergy - intialLevelEnergy) \
@@ -2477,7 +2521,7 @@ class DynamicPolarizability:
                            units="SI",
                            addPondermotivePolarisability=False,
                            debugOutput=False):
-        """
+        r"""
         Plots of polarisability for a range of wavelengths.
 
         Can be combined for different states to allow finding magic wavelengths
