@@ -1,4 +1,4 @@
-language: generic
+  language: generic
 env:
   global:
     - TWINE_USERNAME=nikolasibalic
@@ -44,8 +44,8 @@ script:
     source activate py36;
   fi;
 - conda update -n base --yes conda
-- pip install -r requirements.txt
-- conda install --yes wheel
+- pip install --user -r requirements.txt
+- pip install --user wheel
 - python  -m compileall -f arc/*.py
 - python setup.py build
 - rm -rf build
