@@ -2500,15 +2500,24 @@ class DynamicPolarizability:
 
         alpha2 = - 4 * prefactor2 * alpha2 / C_h
 
-        # add podermotive shift
-        driveOmega = 2 *  np.pi / driveWavelength * C_c
-        alphaP = C_e**2 / (2 * C_m_e * driveOmega**2 * C_h)
+        # core polarizability -> assumes static polarisability
+        alphaC = self.atom.alphaC * 2.48832e-8
+
+        # podermotive shift
+        driveOmega = 2 * np.pi / driveWavelength * C_c
+        # add pondermotive shift if driving couples to continuum states
+        if (driveOmega * C_h/(2*np.pi)
+            > np.abs(self.atom.getEnergy(self.n, self.l, self.j,
+                                         s=self.s)*C_e)):
+            alphaP = C_e**2 / (2 * C_m_e * driveOmega**2 * C_h)
+        else:
+            alphaP = 0
 
         if (units == "SI"):
-            return alpha0, alpha2, alphaP, closestState   # in Hz m^2 / V^2
+            return alpha0, alpha2, alphaC, alphaP, closestState   # in Hz m^2 / V^2
         elif (units == "a.u." or units == "au"):
             return alpha0 / 2.48832e-8, alpha2 / 2.48832e-8, \
-                alphaP / 2.48832e-8, closestState
+                alphaC / 2.48832e-8, alphaP / 2.48832e-8, closestState
         else:
             raise ValueError("Only 'SI' and 'a.u' (atomic units) are recognised"
                              " as 'units' parameter. Entered value '%s' is"
@@ -2519,6 +2528,7 @@ class DynamicPolarizability:
                            addToPlotAxis=None,
                            line="b-",
                            units="SI",
+                           addCorePolarisability=True,
                            addPondermotivePolarisability=False,
                            debugOutput=False):
         r"""
@@ -2542,6 +2552,8 @@ class DynamicPolarizability:
                 switches between SI units for returned result
                 (:math:`Hz V^-2 m^2` )
                 and atomic units (":math:`a_0^3` "). Deafault 'SI'.
+            addCorePolarisability (bool): optional, should ionic core
+                polarisability be taken into account. By default True.
             addPondermotivePolarisability (bool): optional, should pondermotive
                 polarisability (also called free-electron polarisability)
                 be added to the total polarisability. Default is
@@ -2569,13 +2581,15 @@ class DynamicPolarizability:
             tensorPrefactor = 0
 
         for wavelength in wavelengthList:
-            scalarP, tensorP, pondermotiveP, state = self.getPolarizability(
+            scalarP, tensorP, coreP, pondermotiveP, state = self.getPolarizability(
                 wavelength,
                 mj=mj,
                 units=units)
             if (scalarP is not None):
                 # we are not hitting directly the resonance
                 totalP = scalarP + tensorPrefactor * tensorP
+                if addCorePolarisability:
+                    totalP += coreP
                 if addPondermotivePolarisability:
                     totalP += pondermotiveP
                 if ((len(p) > 0) and p[-1] * totalP < 0
