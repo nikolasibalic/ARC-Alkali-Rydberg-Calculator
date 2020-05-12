@@ -121,6 +121,20 @@ class AlkaliAtom(object):
                 implementation that is much slower. Default is True.
 
     """
+    
+    #: Hyperfine Splitting Coefficients (SI Units)
+    Ahfs = 0.0        #: Ground-state Hyperfine Magnetic Dipole Constant (Hz)
+    AhfsD1 = 0.0      #: ngP1/2 Hyperfine Magnetic Dipole Constant (Hz)
+    AhfsD2 = 0.0      #: ngP3/2 Hyperfine Magnetic Dipole Constant (Hz)
+    BhfsD2 = 0.0      #: ngP3/2 Hyperfine Magnetic Quadrupole Constant (Hz)
+    AhfsiP12 = 0.0    #: (ng+1)P1/2 Hyperfine Magnetic Dipole Constant (Hz)
+    AhfsiP32 = 0.0    #: (ng+1)P3/2 Hyperfine Magnetic Dipole Constant (Hz)
+    BhfsiP32 = 0.0    #: (ng+1)P3/2 Hyperfine Magnetic Quadrupole Constant (Hz)
+    
+    gS = 2.0023193043737 #: Electron Spin g-factor [Steck]
+    gL = 0.0          #: Electron Orbital g-factor
+    gI = 0.0          #: Nuclear g-factor
+    
     # ALL PARAMETERS ARE IN ATOMIC UNITS (Hatree)
     alpha = physical_constants["fine-structure constant"][0]
 
@@ -1063,8 +1077,10 @@ class AlkaliAtom(object):
         """
         if abs(q) > 1.1:
             return 0
-        return (-1)**(int(j1 - mj1)) *\
-            Wigner3j(j1, 1, j2, -mj1, -q, mj2) *\
+#        return (-1)**(int(j1 - mj1)) *\
+#            Wigner3j(j1, 1, j2, -mj1, -q, mj2) *\
+#            self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
+        return self.sphericalDipoleMatrixElement(j1,mj1,j2,mj2,q)* \
             self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
 
     def getDipoleMatrixElementHFS(self,
@@ -1115,10 +1131,13 @@ class AlkaliAtom(object):
 
 
         """
-        dme = (- 1)**(f1 - mf1) * Wigner3j(f1, 1, f2, - mf1, -q, mf2)
-        dme *= (- 1)**(j1 + self.I + f2 + 1) * ((2. * f1 + 1)
-                                                * (2 * f2 + 1))**0.5
-        dme *= Wigner6j(f1, 1, f2, j2, self.I, j1)
+#        dme = (- 1)**(f1 - mf1) * Wigner3j(f1, 1, f2, - mf1, -q, mf2)
+#        dme *= (- 1)**(j1 + self.I + f2 + 1) * ((2. * f1 + 1)
+#                                                * (2 * f2 + 1))**0.5
+#        dme *= Wigner6j(f1, 1, f2, j2, self.I, j1)
+
+        dme = self.sphericalDipoleMatrixElement(f1,mf1,f2,mf2,q)
+        dme *=self._reducedMatrixElementFJ(j1,f1,j2,f2)
         dme *= self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
         return dme
 
@@ -1947,6 +1966,162 @@ class AlkaliAtom(object):
         else:
             return 0
 
+
+    # Additional AMO Functions
+    def getHFSCoefficients(self,n, l, j, s=None):
+        """
+            Returns hyperfine splitting coefficients for state :math:`n`,
+            :math:`l`, :math:`j`.
+
+            Args:
+                n (int): principal quantum number
+                l (int): orbital angular momentum
+                j (float): total angular momentum
+                s (float): (optional) total spin momentum
+
+            Returns:
+                float: A,B hyperfine splitting constants (in Hz)
+        """
+        
+        #Place-holder for adding nice table / look up for storing other values
+        A=0
+        B=0
+        
+        if (n==self.groundStateN) & (l == 0):
+            A=self.Ahfs
+            B=0
+            
+        elif (n==self.groundStateN) & (l == 1) & (j==0.5):
+            A=self.AhfsD1
+            B=0
+            
+        elif (n==self.groundStateN)& (l == 1) & (j==1.5):
+            A=self.AhfsD2
+            B=self.BhfsD2
+            
+        elif (n==self.groundStateN+1) & (l == 1) & (j==0.5):
+            A=self.AhfsiP12
+            B=0
+                
+        elif (n==self.groundStateN+1) & (l == 1) & (j==1.5):
+            A=self.AhfsiP32
+            B=self.BhfsiP32
+
+        return A,B
+    
+    def _reducedMatrixElementFJ(self,j1, f1, j2, f2):
+        #Reduced Matrix Element <f||er||f'> in units of reduced matrix element <j||er||j'>
+        sph = (-1.0)**(j1+self.I+f2+1.0)*((2. * f1 + 1)* (2 * f2 + 1))** \
+            0.5*Wigner6j(f1,1,f2,j2,self.I,j1)
+        return sph
+    
+    def sphericalDipoleMatrixElement(self,j1, mj1, j2, mj2,q):
+        #Spherical Component of Angular Matrix Element in units of reduced matrix element <j||er||j'>
+        return (- 1)**(j1 - mj1) * Wigner3j(j1, 1, j2, -mj1, -q, mj2)
+
+    def getSphericalMatrixElementHFStoFS(self,j1, f1,mf1, j2, mj2,q):
+        r"""
+             Spherical matrix element for transition from hyperfine  resolved state
+             to unresolved fine-structure state
+             :math:`\langle f,m_f \vert\mu_q\vert j',m_j'\rangle`
+             in units of :math:`\langle j\vert\vert\mu\vert\vert j'\rangle`
+         
+     
+             Args:
+                 j1, f1, mf1: total orbital,
+                     fine basis (total atomic) angular momentum,
+                     and projection of total angular momenutum for state 1
+                 j2, mj2: total orbital,
+                     fine basis (total atomic) angular momentum,
+                     and projection of total orbital angular momenutum for state 2
+                 q (int): specifies transition that the driving field couples to,
+                     +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
+                     :math:`\pi` and :math:`\sigma^-` transitions respectively.
+                 s (float): optional, total spin angular momentum of state.
+                     By default 0.5 for Alkali atoms.
+     
+             Returns:
+                 float: spherical dipole matrix element( :math:`\langle j\vert\vert\mu\vert\vert j'\rangle`)
+         """
+        mf2=mf1+q
+        mI=mf2-mj2
+        sph=0.0        
+        for f2 in np.arange(max(self.I-j2,abs(mf2),f1-1),1+min(self.I+j2,f1+1)):
+            #CG multiplied by <j1 f1 mf1|er_q|j2 f2 mf2> in units of <j1 || er || j2 >
+            sph+=CG(j2,mj2,self.I,mI,f2,mf2) \
+                *self.sphericalDipoleMatrixElement(f1,mf1,f2,mf2,q) \
+                    *self._reducedMatrixElementFJ(j1, f1, j2, f2)
+    
+        return sph
+
+
+
+    def getDipoleMatrixElementHFStoFS(self,n1, l1, j1, f1, mf1,n2, l2, j2, mj2,q,s=0.5):
+        r"""
+            Dipole matrix element for transition from hyperfine  resolved state
+            to unresolved fine-structure state
+            :math:`\langle n_1 l_1 j_1 f_1 m_{f_1} |e\mathbf{r}|\
+            n_2 l_2 j_2 m_{j_2}\rangle`
+            in units of :math:`a_0 e`
+    
+            For hyperfine resolved transitions, the dipole matrix element is
+            :math:`\langle n_1,\ell_1,j_1,f_1,m_{f1} |  \
+            \mathbf{\hat{r}}\cdot \mathbf{\varepsilon}_q  \
+            | n_2,\ell_2,j_2,f_2,m_{f2} \rangle = (-1)^{f_1-m_{f1}} \
+            \left( \
+            \begin{matrix} \
+            f_1 & 1 & f_2 \\ \
+            -m_{f1} & q & m_{f2} \
+            \end{matrix}\right) \
+            \langle n_1 \ell_1 j_1 f_1|| r || n_2 \ell_2 j_2 f_2 \rangle,` where
+            :math:`\langle n_1 \ell_1 j_1 f_1 ||r|| n_2 \ell_2 j_2 f_2 \rangle \
+            = (-1)^{j_1+I+F_2+1}\sqrt{(2f_1+1)(2f_2+1)} ~ \
+            \left\{ \begin{matrix}\
+            F_1 & 1 & F_2 \\ \
+            j_2 & I & j_1 \
+            \end{matrix}\right\}~ \
+            \langle n_1 \ell_1 j_1||r || n_2 \ell_2 j_2 \rangle.`
+    
+    
+            Args:
+                n1. l1, j1, f1, mf1: principal, orbital, total orbital,
+                    fine basis (total atomic) angular momentum,
+                    and projection of total angular momenutum for state 1
+                n2. l2, j2, mj2: principal, orbital, total orbital,
+                    fine basis (total atomic) angular momentum,
+                    and projection of total orbital angular momenutum for state 2
+                q (int): specifies transition that the driving field couples to,
+                    +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
+                    :math:`\pi` and :math:`\sigma^-` transitions respectively.
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
+    
+            Returns:
+                float: dipole matrix element( :math:`a_0 e`)
+        """
+        return self.getSphericalMatrixElementHFStoFS(j1, f1,mf1, j2, mj2,q) \
+            *self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
+            
+    def getLandegj(self,l,j,s=0.5):
+        #Lande g-factor
+        return 1.0+(j*(j+1.0)+s*(s+1.0)-l*(l+1.0))/(2.0*j*(j+1.0))
+    
+    def getLandegjExact(self,l,j,s=0.5):
+        #Lande g-factor
+        return self.gL*(j*(j+1.0)-s*(s+1.0)+l*(l+1.0))/(2.0*j*(j+1.0)) \
+            +self.gS*(j*(j+1.0)+s*(s+1.0)-l*(l+1.0))/(2.0*j*(j+1.0))
+                                                                    
+    def getLandegf(self,l,j,f,s=0.5):
+        #Lande g-factor  
+        gf = self.getLandegj(l,j,s)*(f*(f+1)-self.I*(self.I+1)+j*(j+1))/(2*f*(f+1))
+        return gf
+    
+    def getLandegfExact(self,l,j,f,s=0.5):
+        #Lande g-factor     
+        gf = self.getLandegjExact(l,j,s)*(f*(f+1)-self.I*(self.I+1)+j*(j+1))/(2*f*(f+1)) \
+            + self.gI*(f*(f+1)+self.I*(self.I+1)-j*(j+1))/(2*f*(f+1))
+        return gf
+                    
 
 def NumerovBack(innerLimit, outerLimit, kfun, step, init1, init2):
     """

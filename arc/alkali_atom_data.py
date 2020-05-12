@@ -79,6 +79,19 @@
     .. [#Sanguinetti2009] B. Sanguinetti, H. O. Majeed, M. L. Jones and
         B. T. H. Varcoe, *J. Phys. B* **42**, 165004 (2009)
         http://iopscience.iop.org/article/10.1088/0953-4075/42/16/165004/meta
+        
+    .. [#SteckCs] D. Steck, Cesium D Line Data v2.2.1
+        https://steck.us/alkalidata/cesiumnumbers.1.6.pdf
+        
+    .. [#Steck85Rb] D. Steck, Rubidium 85 D Line Data v2.2.1
+        https://steck.us/alkalidata/rubidium85numbers.pdf
+        
+    .. [#Steck87Rb] D. Steck, Rubidium 87 D Line Data v2.2.1
+        https://steck.us/alkalidata/rubidium87numbers.pdf
+    
+    .. [#Feiertag72] D. Feiertag, A. Sahm, and G. zu Putlitz, Z. Phys. 255, 93 (1972)
+    
+    .. [#Arrimondo77] E. Arrimondo, M. Inguscio and P. Violino, Rev. Mod. Phys. 49, 31 (1977)
 
     Module
     ------
@@ -228,6 +241,25 @@ class Caesium(AlkaliAtom):
 
     elementName = "Cs133"
     meltingPoint = 28.44 + 273.15  #: in K
+    
+    Ahfs = 2.2981579425e9 #: Ground-state Hyperfine Magnetic Dipole Constant (Hz)
+    AhfsD1 = 291.9201e6   #: ngP1/2 Hyperfine Magnetic Dipole Constant (Hz)
+    AhfsD2 = 50.275e6     #: ngP3/2 Hyperfine Magnetic Dipole Constant (Hz)
+    BhfsD2 = -0.53e6      #: ngP3/2 Hyperfine Magnetic Quadrupole Constant (Hz)
+    AhfsiP12 = 94.35e6    #: (ng+1)P1/2 Hyperfine Magnetic Dipole Constant (Hz)
+    AhfsiP32 = 16.65e6    #: (ng+1)P3/2 Hyperfine Magnetic Dipole Constant (Hz)
+    BhfsiP32 = -0.15e6    #: (ng+1)P3/2 Hyperfine Magnetic Quadrupole Constant (Hz)
+
+    """
+           Hyperfine splitting constants
+           
+           math:`6S_{1/2},6P_{1/2},6P_{3/2}` from [#SteckCs]_
+           math:`7P_{1/2}` from [#Feiertag72]_
+           math:`7P_{3/2}` from [#Arrimondo77]_
+    """
+    gL = 0.99999587;      #: Electron orbital g-factor [#SteckCs]_
+    gI = -0.00039885395;  #: Nuclear g-factor  [#SteckCs]_
+    
 
     def getPressure(self, temperature):
         """
@@ -376,6 +408,24 @@ class Rubidium85(AlkaliAtom):
 
     elementName = "Rb85"
     meltingPoint = 39.31 + 273.15  #: in K
+    
+    Ahfs = 1.011910813e9 #: Ground-state Hyperfine Magnetic Dipole Constant (Hz)
+    AhfsD1 = 120.527e6   #: ngP1/2 Hyperfine Magnetic Dipole Constant (Hz)
+    AhfsD2 = 25.0020e6     #: ngP3/2 Hyperfine Magnetic Dipole Constant (Hz)
+    BhfsD2 = 25.790e6      #: ngP3/2 Hyperfine Magnetic Quadrupole Constant (Hz)
+    AhfsiP12 = 39.11e6    #: (ng+1)P1/2 Hyperfine Magnetic Dipole Constant (Hz)
+    AhfsiP32 = 8.163e6    #: (ng+1)P3/2 Hyperfine Magnetic Dipole Constant (Hz)
+    BhfsiP32 = 8.191e6    #: (ng+1)P3/2 Hyperfine Magnetic Quadrupole Constant (Hz)
+
+    """
+           Hyperfine splitting constants
+           
+           math:`7S_{1/2},6P_{1/2},6P_{3/2}` from [#Steck85Rb]_
+           math:`6P_{1/2}` from [#Feiertag72]_
+           math:`6P_{3/2}` from [#Arrimondo77]_
+    """
+    gL = 0.99999354;      #: Electron orbital g-factor [#Steck85Rb]_
+    gI = -0.00029364000;  #: Nuclear g-factor  [#Steck85Rb]_
 
     def getPressure(self, temperature):
         """
@@ -503,6 +553,25 @@ class Rubidium87(AlkaliAtom):
 
     elementName = "Rb87"
     meltingPoint = 39.31 + 273.15  #: in K
+    
+    
+    Ahfs = 3.417341305452145e9 #: Ground-state Hyperfine Magnetic Dipole Constant (Hz)
+    AhfsD1 = 408.328e6   #: ngP1/2 Hyperfine Magnetic Dipole Constant (Hz)
+    AhfsD2 = 84.7185e6     #: ngP3/2 Hyperfine Magnetic Dipole Constant (Hz)
+    BhfsD2 = 12.4965e6      #: ngP3/2 Hyperfine Magnetic Quadrupole Constant (Hz)
+    AhfsiP12 = 132.56e6    #: (ng+1)P1/2 Hyperfine Magnetic Dipole Constant (Hz)
+    AhfsiP32 = 27.674e6    #: (ng+1)P3/2 Hyperfine Magnetic Dipole Constant (Hz)
+    BhfsiP32 = 3.945e6    #: (ng+1)P3/2 Hyperfine Magnetic Quadrupole Constant (Hz)
+
+    """
+           Hyperfine splitting constants
+           
+           math:`7S_{1/2},6P_{1/2},6P_{3/2}` from [#Steck87Rb]_
+           math:`6P_{1/2}` from [#Feiertag72]_
+           math:`6P_{3/2}` from [#Arrimondo77]_
+    """
+    gL = 0.99999369;      #: Electron orbital g-factor [#Steck87Rb]_
+    gI = -0.0009951414;  #: Nuclear g-factor  [#Steck87Rb]_
 
     def getPressure(self, temperature):
         """
