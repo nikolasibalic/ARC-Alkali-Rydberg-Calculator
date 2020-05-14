@@ -121,7 +121,7 @@ class AlkaliAtom(object):
                 implementation that is much slower. Default is True.
 
     """
-    
+
     #: Hyperfine Splitting Coefficients (SI Units)
     Ahfs = 0.0        #: Ground-state Hyperfine Magnetic Dipole Constant (Hz)
     AhfsD1 = 0.0      #: ngP1/2 Hyperfine Magnetic Dipole Constant (Hz)
@@ -130,11 +130,11 @@ class AlkaliAtom(object):
     AhfsiP12 = 0.0    #: (ng+1)P1/2 Hyperfine Magnetic Dipole Constant (Hz)
     AhfsiP32 = 0.0    #: (ng+1)P3/2 Hyperfine Magnetic Dipole Constant (Hz)
     BhfsiP32 = 0.0    #: (ng+1)P3/2 Hyperfine Magnetic Quadrupole Constant (Hz)
-    
+
     gS = 2.0023193043737 #: Electron Spin g-factor [Steck]
     gL = 0.0          #: Electron Orbital g-factor
     gI = 0.0          #: Nuclear g-factor
-    
+
     # ALL PARAMETERS ARE IN ATOMIC UNITS (Hatree)
     alpha = physical_constants["fine-structure constant"][0]
 
@@ -1679,7 +1679,9 @@ class AlkaliAtom(object):
         try:
             fn = open(os.path.join(self.dataFolder,
                                    self.literatureDMEfilename), 'r')
-            data = csv.reader(fn, delimiter=";", quotechar='"')
+            dialect = csv.Sniffer().sniff(fn.read(1024), delimiters=";,\t")
+            fn.seek(0)
+            data = csv.reader(fn, dialect, quotechar='"')
 
             literatureDME = []
 
@@ -1982,43 +1984,43 @@ class AlkaliAtom(object):
             Returns:
                 float: A,B hyperfine splitting constants (in Hz)
         """
-        
+
         #Place-holder for adding nice table / look up for storing other values
         A=0
         B=0
-        
+
         if (n==self.groundStateN) & (l == 0):
             A=self.Ahfs
             B=0
-            
+
         elif (n==self.groundStateN) & (l == 1) & (j==0.5):
             A=self.AhfsD1
             B=0
-            
+
         elif (n==self.groundStateN)& (l == 1) & (j==1.5):
             A=self.AhfsD2
             B=self.BhfsD2
-            
+
         elif (n==self.groundStateN+1) & (l == 1) & (j==0.5):
             A=self.AhfsiP12
             B=0
-                
+
         elif (n==self.groundStateN+1) & (l == 1) & (j==1.5):
             A=self.AhfsiP32
             B=self.BhfsiP32
 
         return A,B
-    
+
     def _reducedMatrixElementFJ(self,j1, f1, j2, f2):
-        
+
         sph=0.0
         if((abs(f2-f1)<2) & (int(abs(j2-j1))<2)):
             #Reduced Matrix Element <f||er||f'> in units of reduced matrix element <j||er||j'>
             sph = (-1.0)**(j1+self.I+f2+1.0)*((2. * f1 + 1)* (2 * f2 + 1))** \
                 0.5*Wigner6j(f1,1,f2,j2,self.I,j1)
-                
+
         return sph
-    
+
     def getSphericalDipoleMatrixElement(self,j1, mj1, j2, mj2,q):
         #Spherical Component of Angular Matrix Element in units of reduced matrix element <j||er||j'>
         return (- 1)**(j1 - mj1) * Wigner3j(j1, 1, j2, -mj1, -q, mj2)
@@ -2029,8 +2031,8 @@ class AlkaliAtom(object):
              to unresolved fine-structure state
              :math:`\langle f,m_f \vert\mu_q\vert j',m_j'\rangle`
              in units of :math:`\langle j\vert\vert\mu\vert\vert j'\rangle`
-         
-     
+
+
              Args:
                  j1, f1, mf1: total orbital,
                      fine basis (total atomic) angular momentum,
@@ -2043,13 +2045,13 @@ class AlkaliAtom(object):
                      :math:`\pi` and :math:`\sigma^-` transitions respectively.
                  s (float): optional, total spin angular momentum of state.
                      By default 0.5 for Alkali atoms.
-     
+
              Returns:
                  float: spherical dipole matrix element( :math:`\langle j\vert\vert\mu\vert\vert j'\rangle`)
          """
         mf2=mf1+q
         mI=mf2-mj2
-        sph=0.0        
+        sph=0.0
         if(abs(mI)<=self.I):
             for f2 in np.arange(max(self.I-j2,abs(mf2),f1-1),1+min(self.I+j2,f1+1)):
                 #CG multiplied by <j1 f1 mf1|er_q|j2 f2 mf2> in units of <j1 || er || j2 >
@@ -2068,7 +2070,7 @@ class AlkaliAtom(object):
             :math:`\langle n_1 l_1 j_1 f_1 m_{f_1} |e\mathbf{r}|\
             n_2 l_2 j_2 m_{j_2}\rangle`
             in units of :math:`a_0 e`
-    
+
             For hyperfine resolved transitions, the dipole matrix element is
             :math:`\langle n_1,\ell_1,j_1,f_1,m_{f1} |  \
             \mathbf{\hat{r}}\cdot \mathbf{\varepsilon}_q  \
@@ -2086,8 +2088,8 @@ class AlkaliAtom(object):
             j_2 & I & j_1 \
             \end{matrix}\right\}~ \
             \langle n_1 \ell_1 j_1||r || n_2 \ell_2 j_2 \rangle.`
-    
-    
+
+
             Args:
                 n1. l1, j1, f1, mf1: principal, orbital, total orbital,
                     fine basis (total atomic) angular momentum,
@@ -2100,91 +2102,91 @@ class AlkaliAtom(object):
                     :math:`\pi` and :math:`\sigma^-` transitions respectively.
                 s (float): optional, total spin angular momentum of state.
                     By default 0.5 for Alkali atoms.
-    
+
             Returns:
                 float: dipole matrix element( :math:`a_0 e`)
         """
         return self.getSphericalMatrixElementHFStoFS(j1, f1,mf1, j2, mj2,q) \
             *self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
-            
+
     def getLandegj(self,l,j,s=0.5):
         r"""
             Lande g-factor :math: `g_J`
             :math:`g_J\simeq 1+\frac{j(j+1)+s(s+1)-l(l+1)}{2j(j+1)}`
-    
+
             Args:
                 l (float): orbital angular momentum
                 j (float): total orbital angular momentum
                 s (float): optional, total spin angular momentum of state.
                     By default 0.5 for Alkali atoms.
-    
+
             Returns:
                 float: Lande g-factor ( :math:`g_J`)
         """
         return 1.0+(j*(j+1.0)+s*(s+1.0)-l*(l+1.0))/(2.0*j*(j+1.0))
-    
+
     def getLandegjExact(self,l,j,s=0.5):
         r"""
             Lande g-factor :math: `g_J`
             :math:`g_J=g_L\frac{j(j+1)-s(s+1)+l(l+1)}{2j(j+1)}+g_S\frac{j(j+1)+s(s+1)-l(l+1)}{2j(j+1)}`
-    
+
             Args:
                 l (float): orbital angular momentum
                 j (float): total orbital angular momentum
                 s (float): optional, total spin angular momentum of state.
                     By default 0.5 for Alkali atoms.
-    
+
             Returns:
                 float: Lande g-factor ( :math:`g_J`)
         """
         return self.gL*(j*(j+1.0)-s*(s+1.0)+l*(l+1.0))/(2.0*j*(j+1.0)) \
             +self.gS*(j*(j+1.0)+s*(s+1.0)-l*(l+1.0))/(2.0*j*(j+1.0))
-                                                                    
+
     def getLandegf(self,l,j,f,s=0.5):
         r"""
             Lande g-factor :math: `g_F`
             :math:`g_F\simeq g_J\frac{f(f+1)-I(I+1)+j(j+1)}{2f(f+1)}`
-    
+
             Args:
                 l (float): orbital angular momentum
                 j (float): total orbital angular momentum
                 f (float): total atomic angular momentum
                 s (float): optional, total spin angular momentum of state.
                     By default 0.5 for Alkali atoms.
-    
+
             Returns:
                 float: Lande g-factor ( :math:`g_F`)
         """
         gf = self.getLandegj(l,j,s)*(f*(f+1.0)-self.I*(self.I+1.0)+j*(j+1.0))/(2.0*f*(f+1.0))
         return gf
-    
+
     def getLandegfExact(self,l,j,f,s=0.5):
         r"""
             Lande g-factor :math: `g_F`
             :math:`g_F=g_J\frac{f(f+1)-I(I+1)+j(j+1)}{2f(f+1)}+g_I\frac{f(f+1)+I(I+1)-j(j+1)}{2f(f+1)}`
-    
+
             Args:
                 l (float): orbital angular momentum
                 j (float): total orbital angular momentum
                 f (float): total atomic angular momentum
                 s (float): optional, total spin angular momentum of state.
                     By default 0.5 for Alkali atoms.
-    
+
             Returns:
                 float: Lande g-factor ( :math:`g_F`)
         """
         gf = self.getLandegjExact(l,j,s)*(f*(f+1)-self.I*(self.I+1)+j*(j+1.0))/(2*f*(f+1.0)) \
             + self.gI*(f*(f+1.0)+self.I*(self.I+1.0)-j*(j+1.0))/(2.0*f*(f+1.0))
         return gf
-                    
+
     def getHFSEnergyShift(self,j,f,A,B=0,s=0.5):
         r"""
              Energy shift of HFS from centre of mass :math: `\Delta E_\mathrm{hfs}`
-             
+
             :math:`\Delta E_\mathrm{hfs} = \frac{A}{2}K+B\frac{\frac{3}{2}K(K+1)-2I(I+1)J(J+1)}{2I(2I-1)2J(2J-1)}`
-            
+
             where :math:`K=F(F+1)-I(I+1)-J(J+1)`
-    
+
             Args:
                 j (float): total orbital angular momentum
                 f (float): total atomic angular momentum
@@ -2192,7 +2194,7 @@ class AlkaliAtom(object):
                 B (float): HFS magnetic quadrupole constant
                 s (float): optional, total spin angular momentum of state.
                     By default 0.5 for Alkali atoms.
-    
+
             Returns:
                 float: Energy shift ( :math:`\Delta E_\mathrm{hfs}`)
         """
@@ -2200,13 +2202,13 @@ class AlkaliAtom(object):
         Ehfs = A/2.0*K
         if abs(B)>0:
            Ehfs+=B*(3.0/2.0*K*(K+1)-2.0*self.I*(self.I+1.0)*j*(j+1.0))/(2.0*self.I*(2.0*self.I-1.0)*2.0*j*(2.0*j-1))
-           
+
         return Ehfs
 
     def getBranchingRatio(self,jg,fg,mfg,je,fe,mfe,s=0.5):
         r"""
              Branching ratio for decay from :math: `\vert j_e,f_e,m_{f_e}\rangle\rightarrow\vert j_g,f_g,m_{f_g}\rangle`
-             
+
             :math:`b = \displaystyle\sum_q (2j_e+1)\left(\begin{matrix} \
             f_1 & 1 & f_2 \\ \
            -m_{f1} & q & m_{f2} \
@@ -2227,16 +2229,16 @@ class AlkaliAtom(object):
         b=0.0
         for q in np.arange(-1,2):
             b+=self.getSphericalDipoleMatrixElement(fg,mfg,fe,mfe,q)**2*self._reducedMatrixElementFJ(jg,fg,je,fe)**2
-            
+
         #Rescale
         return b*(2.0*je+1.0)
 
     def getSaturationIntensity(self,ng,lg,jg,fg,mfg,ne,le,je,fe,mfe,s=0.5):
         r"""
              Saturation Intensity :math:`I_\mathrm{sat}` for transition :math: `\vert j_g,f_g,m_{f_g}\rangle\rightarrow\vert j_e,f_e,m_{f_e}\rangle` in units of :math:`\mathrm{W}/\mathrm{m}^2`.
-             
+
             :math:`I_\mathrm{sat} = \frac{c\epsilon_0\Gamma^2\hbar^2}{4\vert \epsilon_q\cdot\mathrm{d}\vert^2}`
-            
+
             Args:
                 ng, lg, jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
                     and projection of total angular momenutum for ground state
@@ -2255,15 +2257,15 @@ class AlkaliAtom(object):
             Is = C_c*epsilon_0*Gamma**2*hbar**2/(4.0*d**2)
         else:
             Is = NaN
-            
+
         return Is
-        
+
     def getSaturationIntensityIsotropic(self,ng,lg,jg,fg,ne,le,je,fe):
            r"""
                 Isotropic Saturation Intensity :math:`I_\mathrm{sat}` for transition :math: `f_g\rightarrow f_e` averaged over all polarisations in units of :math:`\mathrm{W}/\mathrm{m}^2`.
-                
+
                :math:`I_\mathrm{sat} = \frac{c\epsilon_0\Gamma^2\hbar^2}{4\vert \epsilon_q\cdot\mathrm{d}\vert^2}`
-               
+
                Args:
                    ng, lg, jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
                        and projection of total angular momenutum for ground state
@@ -2283,9 +2285,9 @@ class AlkaliAtom(object):
 
            Gamma = 1./self.getStateLifetime(ne,le,je)
            Is = C_c*epsilon_0*Gamma**2*hbar**2/(4.0*d_iso_sq)
-               
+
            return Is
-           
+
     def groundstateRamanTransition(self,Pa,wa,qa,Pb,wb,qb,Delta,f0,mf0,f1,mf1,ne,le,je):
         r"""
              Returns two-photon Rabi frequency :math:`\Omega_R`, differential\
@@ -2294,23 +2296,23 @@ class AlkaliAtom(object):
                 for two-photon ground-state Raman transitions from :math:`\vert \
                 f_g,m_{f_g}\rangle\rightarrow\vert nL_{j_r} j_r,m_{j_r}\rangle` via \
                 an intermediate excited state :math:`n_e,\ell_e,j_e`.
-             
+
             :math:`\Omega_R=\displaystyle\sum_{f_e,m_{f_e}} \
                 \frac{\Omega^a_{0\rightarrow f_e}\Omega^b_{1\rightarrow f_e}}{2(\Delta-\Delta_{f_e})},`
-            
+
             :math:`\Delta_{\mathrm{AC}} = \displaystyle\sum_{f_e,m_{f_e}}\left[ \
                 \frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2-\vert\Omega^b_{1\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})} \
                 +\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})} \
                 -\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})}\right],`
-            
+
             :math:`P_\mathrm{sc} = \frac{\Gamma_et_\pi}{2}\displaystyle\sum_{f_e,m_{f_e}}\left[ \
                 \frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2} \
                 +\frac{\vert\Omega^b_{1\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2} \
                 +\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})^2} \
                 +\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})^2}\right],'
-                
+
                 where :math:`\tau_\pi=\pi/\Omega_R`.
-                        
+
             Args:
                 Pa,wa,qa: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of laser a :math:`\vert 0 \rangle\rightarrow\vert e\rangle`
                 Pb,wb,qb: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of laser b :math:`\vert 1 \rangle\rightarrow\vert e\rangle`
@@ -2318,11 +2320,11 @@ class AlkaliAtom(object):
                 f0,mf0: Lower hyperfine level
                 f1,mf1: Upper hyperfine level
                 ne, le, je: principal, orbital, total orbital quantum numbers of excited state
-    
+
             Returns:
                 float: Two-Photon Rabi frequency :math:`\Omega_R` (units rads:math:`^{-1}`), differential AC Stark shift :math:`\Delta_\mathrm{AC}` (units rads:math:`^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
         """
-      
+
         #Intensity/beam (W/m^2)
         Ia=2.0*Pa/(pi*wa**2)
         Ib=2.0*Pb/(pi*wa**2)
@@ -2334,89 +2336,89 @@ class AlkaliAtom(object):
         rme_j = self.getReducedMatrixElementJ(ng,lg,jg,ne,le,je)
         #Rescale to (Cm)
         rme_j *= C_e * physical_constants["Bohr radius"][0]
-     
+
         #Qubit level energy separation (rad s-1)
         [A,B]=self.getHFSCoefficients(ng,lg,jg)
         omega01 = (jg+self.I)*A*2.0*pi
-        
+
         #Excited State Properties
-    
+
         #Hyperfine Coefficients (Hz)
         [A,B]=self.getHFSCoefficients(ne,le,je)
         #Linewidth (rad s-1)
         Gamma=1.0/self.getStateLifetime(ne,le,je)
-    
+
         #Initialise Output Variables
         OmegaR=np.zeros(np.shape(Delta))
         AC1=np.zeros(np.shape(Delta))
         AC0=np.zeros(np.shape(Delta))
         Pe=np.zeros(np.shape(Delta))
-    
+
         #Loop over excited state energylevels
         for fe in range(int(abs(je-self.I)),int(1.0+(je+self.I))):
             Ehfs=2.0*np.pi*self.getHFSEnergyShift(je,fe,A,B); #Hyperfine energy shift (rad s-1)
             for mfe in range(max(-fe,min(mf1,mf0)-1),1+min(fe,max(mf1,mf0)+1)):
-    
+
                 #Rabi frequency of each laser from each transition (rad s-1)
                 Omaf0 = Ea*rme_j/hbar*self.getSphericalDipoleMatrixElement(f0,mf0,fe,mfe,qa) \
                     *self._reducedMatrixElementFJ(jg,f0,je,fe)
-                
+
                 Omaf1 = Ea*rme_j/hbar*self.getSphericalDipoleMatrixElement(f1,mf1,fe,mfe,qa) \
                     *self._reducedMatrixElementFJ(jg,f1,je,fe)
-                
+
                 Ombf0 = Eb*rme_j/hbar*self.getSphericalDipoleMatrixElement(f0,mf0,fe,mfe,qb) \
                     *self._reducedMatrixElementFJ(jg,f0,je,fe)
-                    
+
                 Ombf1 = Eb*rme_j/hbar*self.getSphericalDipoleMatrixElement(f1,mf1,fe,mfe,qb) \
                     *self._reducedMatrixElementFJ(jg,f1,je,fe)
-                    
+
                 #AC Stark shift on qubit states
                 AC1+=Ombf1**2/(4*(Delta-Ehfs))+Omaf1**2/(4*(Delta+omega01-Ehfs))
                 AC0+=Omaf0**2/(4*(Delta-Ehfs))+Ombf0**2/(4*(Delta-omega01-Ehfs))
-                
+
                 #Two-Photon Rabi Frequency
                 OmegaR+=Omaf0*Ombf1/(2*(Delta-Ehfs))
-                
+
                 #Excitated state population Pe
                 Pe+=0.5*Omaf0**2/(2*(Delta-Ehfs)**2)+0.5*Ombf1**2/(2*(Delta-Ehfs)**2) \
                     +0.5*Omaf1**2/(2*(Delta+omega01-Ehfs)**2)+0.5*Ombf0**2/(2*(Delta-omega01-Ehfs)**2)
-    
+
         #Total Differential Shift
         AC = AC0-AC1
-     
+
         #Pi-rotation time (s)
         tau_pi = pi/abs(OmegaR)
         #Spontaneous Emission Probability
         Psc=Gamma*tau_pi*Pe;
-    
+
         return OmegaR,AC,Psc
 
     def twoPhotonRydbergExcitation(self,Pp,wp,qp,Pc,wc,qc,Delta,fg,mfg,ne,le,je,nr,lr,jr,mjr):
         r"""
-             Returns two-photon Rabi frequency :math:`\Omega_R`, \ 
+             Returns two-photon Rabi frequency :math:`\Omega_R`, \
                 ground AC Stark shift :math:`\Delta_\mathrm{AC}_g`, \
                 Rydberg state AC Stark shift :math:`\Delta_\mathrm{AC}_r` \
                 and probability to scatter a photon during a  \
                 :math:`\pi`-pulse :math:`P_\mathrm{sc}` for two-photon  \
                 excitation from :math:`\vert f_h,m_{f_g}\rangle\rightarrow \
                 \vert j_r,m_{j_r}\rangle` via intermediate excited state
-             
+
             :math:`\Omega_R=\displaystyle\sum_{f_e,m_{f_e}} \
                 \frac{\Omega_p^{g\rightarrow f_e}\Omega_c^{f_e\rightarrow r}} \
                 {2(\Delta-\Delta_{f_e})}`
-            
+
             :math:`\Delta_{\mathrm{AC}_g} &= \displaystyle\sum_{f_e,m_{f_e}} \
                 \frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}`
 
             :math:`\Delta_{\mathrm{AC}_r} &= \displaystyle\sum_{f_e,m_{f_e}} \
                 \frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}``
-            
+
             :math:`P_\mathrm{sc} = \frac{\Gamma_et_\pi}{2}\displaystyle\sum_{f_e,m_{f_e}}\left[ \
                 \frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2} \
                 +\frac{\vert\Omega_c^{f_e\rightarrow r}\vert^2}{2(\Delta-\Delta_{f_e})^2}\right]`
-                
+
             where :math:`\tau_\pi=\pi/\Omega_R`.
-                        
+
             Args:
                 Pp,wp,qp: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
                 Pb,wb,qb: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
@@ -2425,7 +2427,7 @@ class AlkaliAtom(object):
                 f1,mf1: Upper hyperfine level
                 ne, le, je: principal, orbital, total orbital quantum numbers of excited state
                 nr,lr,jr,mjr : principal quantum number, orbital, total orbital and projection quantum number of target Rydberg state
-        
+
             Returns:
                 float: Two-Photon Rabi frequency :math:`\Omega_R`  \
                     (units rads:math:`^{-1}`), ground-state AC Stark shift \
@@ -2434,23 +2436,23 @@ class AlkaliAtom(object):
                     (units rads:math:`^{-1}`) and probability to scatter \
                     a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
         """
-        
+
         #Intensity/beam (W/m^2)
         Ip=2.0*Pp/(pi*wp**2)
         Ic=2.0*Pc/(pi*wc**2)
         #Electric field (V/m)
         Ep=np.sqrt(2.0*Ip/(epsilon_0*C_c))
         Ec=np.sqrt(2.0*Ic/(epsilon_0*C_c))
-        
+
         #Excited State Properties
-        
+
         #Reduced Matrix Element (au)
         ng=self.groundStateN;lg=0;jg=0.5;
         rme_j = self.getReducedMatrixElementJ(ng,lg,jg,ne,le,je)
 
         #Rescale to (Cm)
         rme_j *= C_e * physical_constants["Bohr radius"][0]
-                
+
         #Hyperfine Coefficients (Hz)
         [A,B]=self.getHFSCoefficients(ne,le,je)
         #Linewidth (rad s-1)
@@ -2460,40 +2462,40 @@ class AlkaliAtom(object):
         rme_jRyd = self.getReducedMatrixElementJ(ne,le,je,nr,lr,jr)
         #Rescale to (Cm)
         rme_jRyd *= C_e * physical_constants["Bohr radius"][0]
-        
+
         #Initialise Output Variables
         OmegaR=np.zeros(np.shape(Delta))
         ACg=np.zeros(np.shape(Delta))
         ACr=np.zeros(np.shape(Delta))
         Pe=np.zeros(np.shape(Delta))
-        
+
         #Loop over excited state energylevels
         for fe in range(int(abs(je-self.I)),1+int(je+self.I)):
             Ehfs=2.0*np.pi*self.getHFSEnergyShift(je,fe,A,B); #Hyperfine energy shift (rad s-1)
             for mfe in range(-fe,fe+1): #range(max(-fe,min(mf1,mf0)-1),1+min(fe,max(mf1,mf0)+1)):
-        
+
                 #Probe Rabi Frequency (rad s-1)
                 OmP = Ep*rme_j/hbar*self.getSphericalDipoleMatrixElement(fg,mfg,fe,mfe,qp) \
                     *self._reducedMatrixElementFJ(jg,fg,je,fe)
                 #Coupling Rabi Frequency (rad s-1)
                 OmC = Ec*rme_jRyd/hbar*self.getSphericalMatrixElementHFStoFS(je,fe,mfe,jr,mjr,qc)
-    
+
                 #AC Stark shift on ground state (rad s-1)
                 ACg+=(OmP**2)/(4*(Delta-Ehfs))
                 #AC Stark shift on Rydberg state (rad s-1)
                 ACr+=(OmC**2)/(4*(Delta-Ehfs))
-                
+
                 #Two-Photon Rabi Frequency (rad s-1)
                 OmegaR+=OmP*OmC/(2*(Delta-Ehfs))
-                
+
                 #Excitated state population Pe
-                Pe+=0.5*(OmP**2+OmC**2)/(2*(Delta-Ehfs)**2)        
-        
+                Pe+=0.5*(OmP**2+OmC**2)/(2*(Delta-Ehfs)**2)
+
         #Pi-rotation time (s)
         tau_pi = pi/abs(OmegaR)
         #Spontaneous Emission Probability
         Psc=Gamma*tau_pi*Pe;
-        
+
         return OmegaR,ACg,ACr,Psc
 
 
