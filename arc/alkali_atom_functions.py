@@ -741,6 +741,13 @@ class AlkaliAtom(object):
         if (l < 5):
             # find correct part in table of quantum defects
             modifiedRRcoef = self.quantumDefect[int(floor(s) + s + j - l)][l]
+            if (l<3 and abs(modifiedRRcoef[0])<1e-9
+                and self.Z != 1):
+                # it's not Hydrogen but for l in {s,p,d} quantum defect is 0
+                raise ValueError("Quantum defects for requested state "
+                                 +("(n = %d, l = %d, j = %.1f, s=%.1f) are"
+                                 % (n, l, j, s))+
+                                 " uknown. Aborting calculation.")
             defect = modifiedRRcoef[0] + \
                 modifiedRRcoef[1] / ((n - modifiedRRcoef[0])**2) + \
                 modifiedRRcoef[2] / ((n - modifiedRRcoef[0])**4) + \
