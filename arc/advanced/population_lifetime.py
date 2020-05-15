@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from scipy.integrate import odeint
-from lmfit import minimize, Parameters, Parameter, report_fit
+from lmfit import minimize, Parameters, report_fit
 from ..alkali_atom_data import *
 
 
@@ -203,8 +203,6 @@ def getPopulationLifetime(atom, n, l, j,
     partg = 2.0
 
     #########################################################
-    # What is the ground state?
-    NGround = atom.groundStateN
 
     # It takes into account of the extra levels
     extraL = atom.extraLevels[1][:]
@@ -609,7 +607,6 @@ def getPopulationLifetime(atom, n, l, j,
             ListRedAus[i] = max(ListRed) - ListRed[i]
 
         t = np.array(ListTime)
-        x0 = np.array([0, 0, 0])
 
         data = np.zeros(shape=(len(t), 3))
 

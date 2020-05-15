@@ -2,7 +2,6 @@
 # -*- mode: Python; coding: utf-8 -*-
 
 
-import sys
 try:
     from setuptools import setup, Extension
 except ImportError:

@@ -1002,15 +1002,6 @@ class PairStateInteractions:
         # wigner D matrix allows calculations with arbitrary orientation of
         # the two atoms
         wgd = WignerDmatrix(theta, phi)
-        # state that we are coupling
-        statePart1 = singleAtomState(self.j, self.m1)
-        statePart2 = singleAtomState(self.jj, self.m2)
-        # rotate individual states
-        dMatrix = wgd.get(self.j)
-        statePart1 = dMatrix.dot(statePart1)
-
-        dMatrix = wgd.get(self.jj)
-        statePart2 = dMatrix.dot(statePart2)
 
         # any conservation?
         # this numbers are conserved if we use only dipole-dipole interactions

@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 import numpy as np
 import re
-from .wigner import Wigner6j, Wigner3j, CG
+from .wigner import Wigner6j, CG
 from scipy.constants import physical_constants, pi, epsilon_0, hbar
 from scipy.constants import k as C_k
 from scipy.constants import c as C_c
@@ -36,7 +36,6 @@ from numpy.linalg import eigh
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import eigsh
 from scipy.special import sph_harm
-from mpl_toolkits.mplot3d import Axes3D
 
 import sys
 if sys.version_info > (2,):

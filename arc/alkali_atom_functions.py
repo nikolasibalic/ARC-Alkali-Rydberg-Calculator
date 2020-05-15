@@ -16,12 +16,11 @@ from __future__ import division, print_function, absolute_import
 import sqlite3
 import csv
 import gzip
-from math import exp, log, sqrt
+from math import exp, sqrt
 from mpmath import angerj
 # for web-server execution, uncomment the following two lines
-#import matplotlib
+# import matplotlib
 # matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import numpy as np
 import re
 import shutil
@@ -35,12 +34,7 @@ from scipy.constants import e as C_e
 from scipy.constants import m_e as C_m_e
 
 # for matrices
-from numpy.linalg import eigvalsh, eig, eigh
-from numpy.ma import conjugate
-from numpy.lib.polynomial import real
-
 from scipy.sparse import csr_matrix
-from scipy.special.specfun import fcoef
 from scipy import floor
 
 import sys
@@ -1479,7 +1473,7 @@ class AlkaliAtom(object):
 
         degeneracyTerm = 1.
 
-        dipoleRadialPart = 0.0
+        # find dipoleRadialPart
         if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
                                         s=s, s2=s) > 0):
             dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(
@@ -2751,7 +2745,8 @@ def saveCalculation(calculation, fileName):
         calculation.fig = fig
         calculation.atom.conn = atomDatabaseConn
         calculation.atom.c = atomDatabaseC
-    except:
+    except Exception as ex:
+        print(ex)
         print("ERROR: saving of the calculation failed.")
         print(sys.exc_info())
         return 1
@@ -2803,8 +2798,6 @@ def singleAtomState(j, m):
     a = np.zeros((int(round(2.0 * j + 1.0, 0)), 1), dtype=np.complex128)
     a[int(round(j + m, 0))] = 1
     return a
-    return csr_matrix(([1], ([j + m], [0])),
-                      shape=(round(2.0 * j + 1.0, 0), 1))
 
 
 def compositeState(s1, s2):
