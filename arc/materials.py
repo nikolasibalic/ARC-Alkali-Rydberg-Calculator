@@ -32,7 +32,7 @@ class OpticalMaterial(object):
             self.sourcesRange.append([self.sourcesN[-1][0].min(),
                                       self.sourcesN[-1][0].max()])
 
-    def getN(self):
+    def getN(self, *args, **kwargs):
         """
         Refractive index of material
         """
@@ -60,7 +60,7 @@ class Air(OpticalMaterial):
                "Mathar-7.5.csv"]
     sourcesComment = ['vacuum', 'vacuum', 'vacuum', 'vacuum']
 
-    def getN(self, vacuumWavelength=None):
+    def getN(self, vacuumWavelength=None, *args, **kwargs):
         """
 
             Assumes temperature: 15 °C, pressure: 101325 Pa
@@ -95,7 +95,7 @@ class Sapphire(OpticalMaterial):
 
     def getN(self, vacuumWavelength=None,
              airWavelength=None,
-             axis='ordinary'):
+             axis='ordinary', *args, **kwargs):
         """
 
         """

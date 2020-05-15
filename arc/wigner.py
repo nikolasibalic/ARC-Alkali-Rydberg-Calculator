@@ -8,11 +8,9 @@ from numpy import floor, sqrt, sin, cos, exp, power
 from scipy.special import comb
 from scipy import floor, sqrt
 from scipy.special import factorial
-from sympy.physics.wigner import clebsch_gordan as CG_sympy
 from sympy.physics.wigner import wigner_3j as Wigner3j_sympy
 from sympy.physics.wigner import wigner_6j as Wigner6j_sympy
 from sympy import N as sympyEvaluate
-from numpy import arange
 import numpy as np
 import os
 from scipy.sparse import csr_matrix
@@ -120,7 +118,7 @@ def Wigner3j(j1, j2, j3, m1, m2, m3):
 
     tmin = max(0, max(t1, t2))
     tmax = min(t3, min(t4, t5))
-    tvec = arange(tmin, tmax + 1, 1)
+    tvec = np.arange(tmin, tmax + 1, 1)
 
     wigner = 0
 
@@ -236,7 +234,7 @@ def Wigner6j(j1, j2, j3, J1, J2, J3):
     # Finding summation borders
     tmin = max(0, max(t1, max(t2, max(t3, t4))))
     tmax = min(t5, min(t6, t7))
-    tvec = arange(tmin, tmax + 1, 1)
+    tvec = np.arange(tmin, tmax + 1, 1)
 
     # Calculation the sum part of the 6j-Symbol
     WignerReturn = 0
