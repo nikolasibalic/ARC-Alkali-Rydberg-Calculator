@@ -1313,7 +1313,8 @@ class StarkMap:
                                    xOriginalState,
                                    yOriginalState,
                                    [0, 0])
-        except:
+        except Exception as ex:
+            print(ex)
             print("\nERROR: fitting energy levels for extracting polarizability\
                     of the state failed. Please check the range of electric \
                     fields where you are trying to fit polarizability and ensure\

@@ -485,7 +485,8 @@ class PairStateInteractions:
                 )
             data = np.load(fileHandle, encoding='latin1', allow_pickle=True)
             fileHandle.close()
-        except:
+        except Exception as ex:
+            print(ex)
             print("Note: No saved angular matrix metadata files to be loaded.")
             print(sys.exc_info())
             return
@@ -527,7 +528,8 @@ class PairStateInteractions:
                 encoding='latin1',
                 allow_pickle=True).tolist()
             fileHandle.close()
-        except:
+        except Exception as ex:
+            print(ex)
             print("Note: No saved angular matrix files to be loaded.")
             print(sys.exc_info())
 
@@ -2071,7 +2073,8 @@ class PairStateInteractions:
                                    initialStateDetuningX,
                                    initialStateDetuning,
                                    [1, 0])
-        except:
+        except Exception as ex:
+            print(ex)
             print("ERROR: unable to find a fit for C6.")
             return False
         print("c6 = ", popt[0], " GHz /R^6 (mu m)^6")
@@ -2218,7 +2221,8 @@ class PairStateInteractions:
                                    initialStateDetuningX,
                                    initialStateDetuning,
                                    [1, 0])
-        except:
+        except Exception as ex:
+            print(ex)
             print("ERROR: unable to find a fit for C3.")
             return False
         print("c3 = ", popt[0], " GHz /R^3 (mu m)^3")
@@ -2373,7 +2377,8 @@ class PairStateInteractions:
                                    initialStateDetuning,
                                    [0, initialStateDetuning[noOfPoints // 2],
                                     initialStateDetuningX[noOfPoints // 2]])
-        except:
+        except Exception as ex:
+            print(ex)
             print("ERROR: unable to find a fit for van der Waals distance.")
             return False
 

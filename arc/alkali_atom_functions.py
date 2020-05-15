@@ -50,7 +50,7 @@ if sys.version_info > (2,):
 
 try:
     import cPickle as pickle   # fast, C implementation of the pickle
-except:
+except Exception:
     # Python 3 already has efficient pickle (instead of cPickle)
     import pickle
 sqlite3.register_adapter(np.float64, float)
@@ -2230,7 +2230,8 @@ def loadSavedCalculation(fileName):
     try:
         calcInput = gzip.GzipFile(fileName, 'rb')
         calculation = pickle.load(calcInput)
-    except:
+    except Exception as ex:
+        print(ex)
         print("ERROR: loading of the calculation from '%s' failed" % fileName)
         print(sys.exc_info())
         return False
