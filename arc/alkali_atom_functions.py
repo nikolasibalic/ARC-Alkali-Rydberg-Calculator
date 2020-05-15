@@ -50,7 +50,7 @@ if sys.version_info > (2,):
 
 try:
     import cPickle as pickle   # fast, C implementation of the pickle
-except:
+except Exception:
     # Python 3 already has efficient pickle (instead of cPickle)
     import pickle
 sqlite3.register_adapter(np.float64, float)
@@ -73,7 +73,6 @@ def setup_data_folder():
     copyDataLocally = True
     versionFile = os.path.join(DPATH, "version.txt")
     if os.path.exists(versionFile):
-        version = -1
         with open(versionFile, "r") as f:
             version = int(f.readline())
         if (version == __arc_data_version__):
@@ -2782,7 +2781,8 @@ def loadSavedCalculation(fileName):
     try:
         calcInput = gzip.GzipFile(fileName, 'rb')
         calculation = pickle.load(calcInput)
-    except:
+    except Exception as ex:
+        print(ex)
         print("ERROR: loading of the calculation from '%s' failed" % fileName)
         print(sys.exc_info())
         return False
@@ -2808,15 +2808,7 @@ def singleAtomState(j, m):
 
 
 def compositeState(s1, s2):
-    # TODO: Check is the following equivalent (for improvement)
     return np.kron(s1, s2).reshape((s1.shape[0] * s2.shape[0], 1))
-    a = np.zeros((s1.shape[0] * s2.shape[0], 1), dtype=np.complex128)
-    index = 0
-    for br1 in xrange(s1.shape[0]):
-        for br2 in xrange(s2.shape[0]):
-            a[index] = s1[br1] * s2[br2]
-            index += 1
-    return a
 
 
 def printState(n, l, j, s=None):

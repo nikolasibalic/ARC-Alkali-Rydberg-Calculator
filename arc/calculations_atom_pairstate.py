@@ -31,8 +31,8 @@
 from __future__ import division, print_function, absolute_import
 
 from .wigner import Wigner6j, Wigner3j, CG, WignerDmatrix
-from .alkali_atom_functions import _EFieldCoupling, _atomLightAtomCoupling
-from scipy.constants import physical_constants, pi, epsilon_0, hbar
+from .alkali_atom_functions import _atomLightAtomCoupling
+from scipy.constants import physical_constants, pi
 import gzip
 import sys
 import datetime
@@ -43,7 +43,6 @@ from .alkali_atom_functions import *
 from .divalent_atom_functions import DivalentAtom
 from scipy.special import factorial
 from scipy import floor
-from scipy.special.specfun import fcoef
 from scipy.sparse.linalg import eigsh
 from scipy.sparse import csr_matrix
 from numpy.lib.polynomial import real
@@ -55,7 +54,7 @@ from scipy.constants import c as C_c
 from scipy.constants import k as C_k
 import re
 import numpy as np
-from math import exp, log, sqrt
+from math import exp, sqrt
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 mpl.rcParams['xtick.minor.visible'] = True
@@ -369,7 +368,7 @@ class PairStateInteractions:
             c1 = 2  # quadrupole coupling
         else:
             raise ValueError("error in __getAngularMatrix_M")
-            exit()
+
         dl = abs(ll - l2)
         dj = abs(jj - j2)
         c2 = 0
@@ -379,7 +378,6 @@ class PairStateInteractions:
             c2 = 2  # quadrupole coupling
         else:
             raise ValueError("error in __getAngularMatrix_M")
-            exit()
 
         am = np.zeros((int(round((2 * j1 + 1) * (2 * j2 + 1), 0)),
                        int(round((2 * j + 1) * (2 * jj + 1), 0))),
@@ -486,7 +484,8 @@ class PairStateInteractions:
                 )
             data = np.load(fileHandle, encoding='latin1', allow_pickle=True)
             fileHandle.close()
-        except:
+        except Exception as ex:
+            print(ex)
             print("Note: No saved angular matrix metadata files to be loaded.")
             print(sys.exc_info())
             return
@@ -528,7 +527,8 @@ class PairStateInteractions:
                 encoding='latin1',
                 allow_pickle=True).tolist()
             fileHandle.close()
-        except:
+        except Exception as ex:
+            print(ex)
             print("Note: No saved angular matrix files to be loaded.")
             print(sys.exc_info())
 
@@ -719,7 +719,6 @@ class PairStateInteractions:
 
         if debugOutput:
             print("\tMatrix dimension\t=\t", dimension)
-        m = np.zeros((dimension, dimension), dtype=np.float64)
 
         # mat_value, mat_row, mat_column for each sparce matrix describing
         # dipole-dipole, dipole-quadrupole (and quad-dipole) and quadrupole-quadrupole
@@ -999,7 +998,6 @@ class PairStateInteractions:
         self.__initializeDatabaseForMemoization()
 
         # ========= START OF THE MAIN CODE ===========
-        C6 = 0.
 
         # wigner D matrix allows calculations with arbitrary orientation of
         # the two atoms
@@ -1013,13 +1011,8 @@ class PairStateInteractions:
 
         dMatrix = wgd.get(self.jj)
         statePart2 = dMatrix.dot(statePart2)
-        stateCom = compositeState(statePart1, statePart2)
 
         # any conservation?
-        limitBasisToMj = False
-        if theta < 0.001:
-            limitBasisToMj = True  # Mj will be conserved in calculations
-        originalMj = self.m1 + self.m2
         # this numbers are conserved if we use only dipole-dipole interactions
         Lmod2 = ((self.l + self.ll) % 2)
 
@@ -1600,7 +1593,6 @@ class PairStateInteractions:
 
                 if previousEigenvectors == []:
                     previousEigenvectors = np.copy(egvector)
-                    previousEigenvalues = np.copy(ev)
                 rowPicked = [False for i in range(len(ev))]
                 columnPicked = [False for i in range(len(ev))]
 
@@ -2073,7 +2065,8 @@ class PairStateInteractions:
                                    initialStateDetuningX,
                                    initialStateDetuning,
                                    [1, 0])
-        except:
+        except Exception as ex:
+            print(ex)
             print("ERROR: unable to find a fit for C6.")
             return False
         print("c6 = ", popt[0], " GHz /R^6 (mu m)^6")
@@ -2220,7 +2213,8 @@ class PairStateInteractions:
                                    initialStateDetuningX,
                                    initialStateDetuning,
                                    [1, 0])
-        except:
+        except Exception as ex:
+            print(ex)
             print("ERROR: unable to find a fit for C3.")
             return False
         print("c3 = ", popt[0], " GHz /R^3 (mu m)^3")
@@ -2375,7 +2369,8 @@ class PairStateInteractions:
                                    initialStateDetuning,
                                    [0, initialStateDetuning[noOfPoints // 2],
                                     initialStateDetuningX[noOfPoints // 2]])
-        except:
+        except Exception as ex:
+            print(ex)
             print("ERROR: unable to find a fit for van der Waals distance.")
             return False
 
@@ -2761,37 +2756,33 @@ class StarkMapResonances:
             event.canvas.draw()
 
     def _onPick2(self, xdata, ydata):
-        if True:
+        x = xdata * 100.
+        y = ydata
 
-            x = xdata * 100.
-            y = ydata
+        i = np.searchsorted(self.eFieldList, x)
+        if i == len(self.eFieldList):
+            i -= 1
+        if ((i > 0) and (abs(self.eFieldList[i - 1] - x)
+                         < abs(self.eFieldList[i] - x))):
+            i -= 1
 
-            i = np.searchsorted(self.eFieldList, x)
-            if i == len(self.eFieldList):
-                i -= 1
-            if ((i > 0) and (abs(self.eFieldList[i - 1] - x)
-                             < abs(self.eFieldList[i] - x))):
-                i -= 1
+        j = 0
+        for jj in xrange(len(self.y[i])):
+            if (abs(self.y[i][jj] - y) < abs(self.y[i][j] - y)):
+                j = jj
 
-            j = 0
-            for jj in xrange(len(self.y[i])):
-                if (abs(self.y[i][jj] - y) < abs(self.y[i][j] - y)):
-                    j = jj
+        if (self.clickedPoint != 0):
+            self.clickedPoint.remove()
 
-            if (self.clickedPoint != 0):
-                self.clickedPoint.remove()
+        self.clickedPoint, = self.ax.plot([self.eFieldList[i] / 100.],
+                                          [self.y[i][j]], "bs",
+                                          linewidth=0, zorder=3)
 
-            self.clickedPoint, = self.ax.plot([self.eFieldList[i] / 100.],
-                                              [self.y[i][j]], "bs",
-                                              linewidth=0, zorder=3)
-
-            atom1 = self.atom1.elementName
-            atom2 = self.atom2.elementName
-            composition1 = str(self.composition[i][j][0])
-            composition2 = str(self.composition[i][j][1])
-            self.ax.set_title(("[%s,%s]=[" % (atom1, atom2))
-                              + composition1 + ","
-                              + composition2 + "]",
-                              fontsize=10)
-
-            # event.canvas.draw()
+        atom1 = self.atom1.elementName
+        atom2 = self.atom2.elementName
+        composition1 = str(self.composition[i][j][0])
+        composition2 = str(self.composition[i][j][1])
+        self.ax.set_title(("[%s,%s]=[" % (atom1, atom2))
+                          + composition1 + ","
+                          + composition2 + "]",
+                          fontsize=10)

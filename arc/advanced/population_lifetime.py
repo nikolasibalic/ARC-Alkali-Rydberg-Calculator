@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import lmfit
 from scipy.integrate import odeint
 from lmfit import minimize, Parameters, Parameter, report_fit
-from scipy.integrate import odeint
 from ..alkali_atom_data import *
 
 
@@ -421,7 +419,7 @@ def getPopulationLifetime(atom, n, l, j,
             """Lotka-Volterra predator-prey model."""
             try:
                 gammaTarget = ps['gammaTarget'].value
-            except:
+            except Exception:
                 gammaTarget = ps
 
             x, y = xs
@@ -506,7 +504,7 @@ def getPopulationLifetime(atom, n, l, j,
             try:
                 gammaEnsemble = ps['gammaEnsemble'].value
                 gammaTarget = ps['gammaTarget'].value
-            except:
+            except Exception:
                 gammaEnsemble, gammaTarget = ps
 
             x, y = xs
@@ -585,7 +583,7 @@ def getPopulationLifetime(atom, n, l, j,
                 gammaTargetBBR = ps['gammaTargetBBR'].value
                 gammaSupportSpont = ps['gammaSupportSpont'].value
                 gammaSupportBBR = ps['gammaSupportBBR'].value
-            except:
+            except Exception:
                 gammaTargetSpont, gammaTargetBBR, gammaSupportSpont, gammaSupportBBR = ps
 
             x, y, z = xs

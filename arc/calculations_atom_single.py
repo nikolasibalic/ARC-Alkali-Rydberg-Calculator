@@ -15,9 +15,9 @@ import datetime
 import sqlite3
 import matplotlib
 from matplotlib.colors import LinearSegmentedColormap
-from math import exp, log, sqrt
+from math import sqrt
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+from matplotlib.ticker import MultipleLocator
 import numpy as np
 import re
 from .wigner import Wigner6j, Wigner3j, CG
@@ -32,12 +32,9 @@ from scipy import interpolate
 
 # for matrices
 from numpy.linalg import eigh
-from numpy.ma import conjugate
-from numpy.lib.polynomial import real
 
-from scipy.sparse import lil_matrix, csr_matrix
+from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import eigsh
-from scipy.special.specfun import fcoef
 from scipy.special import sph_harm
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -94,7 +91,6 @@ class Wavefunction:
             n = state[0]
             l = state[1]
             j = state[2]
-            mj = state[3]
 
             # calculate radial wavefunction
             step = 0.001
@@ -409,7 +405,7 @@ class Wavefunction:
 
         # Plot the surface.
 
-        surf = ax.plot_surface(x, y, f, cmap='Reds',
+        ax.plot_surface(x, y, f, cmap='Reds',
                                vmin=0, vmax=f.max(),
                                linewidth=0, antialiased=False,
                                rstride=1, cstride=1)
@@ -1313,7 +1309,8 @@ class StarkMap:
                                    xOriginalState,
                                    yOriginalState,
                                    [0, 0])
-        except:
+        except Exception as ex:
+            print(ex)
             print("\nERROR: fitting energy levels for extracting polarizability\
                     of the state failed. Please check the range of electric \
                     fields where you are trying to fit polarizability and ensure\
@@ -1509,7 +1506,6 @@ class LevelPlot:
         self.lFrom = lFrom
         self.lTo = lTo
         self.sList = sList
-        spinOptions = len(sList)
 
         # find all the levels within this space restrictions
         xPositionOffset = 0
@@ -2117,7 +2113,6 @@ class OpticalLattice1D:
             float:
         """
 
-        sign = 1
         index = len(stateVector) // 2 + 2  # Align Bloch functions in phase
         angle = np.angle(stateVector[index])
         sign = np.exp(-1j*angle)
@@ -2467,7 +2462,7 @@ class DynamicPolarizability:
 
                 if diffEnergy < 1e-65:
                     # print("For given frequency we are in exact resonance with state %s" % printStateString(n1,l1,j1,s=s))
-                    return None, None, None, state
+                    return None, None, None, None, state
 
                 if (abs(mj) < state[2]+0.1):
                     d = self.atom.getReducedMatrixElementJ(self.n, self.l, self.j,
