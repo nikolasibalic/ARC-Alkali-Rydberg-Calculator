@@ -31,8 +31,8 @@
 from __future__ import division, print_function, absolute_import
 
 from .wigner import Wigner6j, Wigner3j, CG, WignerDmatrix
-from .alkali_atom_functions import _EFieldCoupling, _atomLightAtomCoupling
-from scipy.constants import physical_constants, pi, epsilon_0, hbar
+from .alkali_atom_functions import _atomLightAtomCoupling
+from scipy.constants import physical_constants, pi
 import gzip
 import sys
 import datetime
@@ -43,7 +43,6 @@ from .alkali_atom_functions import *
 from .divalent_atom_functions import DivalentAtom
 from scipy.special import factorial
 from scipy import floor
-from scipy.special.specfun import fcoef
 from scipy.sparse.linalg import eigsh
 from scipy.sparse import csr_matrix
 from numpy.lib.polynomial import real
@@ -55,7 +54,7 @@ from scipy.constants import c as C_c
 from scipy.constants import k as C_k
 import re
 import numpy as np
-from math import exp, log, sqrt
+from math import exp, sqrt
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 mpl.rcParams['xtick.minor.visible'] = True
@@ -720,7 +719,6 @@ class PairStateInteractions:
 
         if debugOutput:
             print("\tMatrix dimension\t=\t", dimension)
-        m = np.zeros((dimension, dimension), dtype=np.float64)
 
         # mat_value, mat_row, mat_column for each sparce matrix describing
         # dipole-dipole, dipole-quadrupole (and quad-dipole) and quadrupole-quadrupole
@@ -1000,7 +998,6 @@ class PairStateInteractions:
         self.__initializeDatabaseForMemoization()
 
         # ========= START OF THE MAIN CODE ===========
-        C6 = 0.
 
         # wigner D matrix allows calculations with arbitrary orientation of
         # the two atoms
@@ -1016,10 +1013,6 @@ class PairStateInteractions:
         statePart2 = dMatrix.dot(statePart2)
 
         # any conservation?
-        limitBasisToMj = False
-        if theta < 0.001:
-            limitBasisToMj = True  # Mj will be conserved in calculations
-        originalMj = self.m1 + self.m2
         # this numbers are conserved if we use only dipole-dipole interactions
         Lmod2 = ((self.l + self.ll) % 2)
 
@@ -1600,7 +1593,6 @@ class PairStateInteractions:
 
                 if previousEigenvectors == []:
                     previousEigenvectors = np.copy(egvector)
-                    previousEigenvalues = np.copy(ev)
                 rowPicked = [False for i in range(len(ev))]
                 columnPicked = [False for i in range(len(ev))]
 

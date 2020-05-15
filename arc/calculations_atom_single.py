@@ -15,9 +15,9 @@ import datetime
 import sqlite3
 import matplotlib
 from matplotlib.colors import LinearSegmentedColormap
-from math import exp, log, sqrt
+from math import sqrt
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+from matplotlib.ticker import MultipleLocator
 import numpy as np
 import re
 from .wigner import Wigner6j, Wigner3j, CG
@@ -32,12 +32,9 @@ from scipy import interpolate
 
 # for matrices
 from numpy.linalg import eigh
-from numpy.ma import conjugate
-from numpy.lib.polynomial import real
 
-from scipy.sparse import lil_matrix, csr_matrix
+from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import eigsh
-from scipy.special.specfun import fcoef
 from scipy.special import sph_harm
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -94,7 +91,6 @@ class Wavefunction:
             n = state[0]
             l = state[1]
             j = state[2]
-            mj = state[3]
 
             # calculate radial wavefunction
             step = 0.001
@@ -409,7 +405,7 @@ class Wavefunction:
 
         # Plot the surface.
 
-        surf = ax.plot_surface(x, y, f, cmap='Reds',
+        ax.plot_surface(x, y, f, cmap='Reds',
                                vmin=0, vmax=f.max(),
                                linewidth=0, antialiased=False,
                                rstride=1, cstride=1)
@@ -1510,7 +1506,6 @@ class LevelPlot:
         self.lFrom = lFrom
         self.lTo = lTo
         self.sList = sList
-        spinOptions = len(sList)
 
         # find all the levels within this space restrictions
         xPositionOffset = 0

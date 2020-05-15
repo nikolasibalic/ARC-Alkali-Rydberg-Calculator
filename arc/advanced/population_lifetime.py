@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import lmfit
 from scipy.integrate import odeint
 from lmfit import minimize, Parameters, Parameter, report_fit
-from scipy.integrate import odeint
 from ..alkali_atom_data import *
 
 
