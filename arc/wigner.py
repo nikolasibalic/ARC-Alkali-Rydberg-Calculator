@@ -177,7 +177,6 @@ def Wigner6j(j1, j2, j3, J1, J2, J3):
         | (2 * J3 != roundPy2(2 * J3))
             ):
         raise ValueError('All arguments must be integers or half-integers.')
-        return -1
 
     # Check if the 4 triads ( (j1 j2 j3), (j1 J2 J3), (J1 j2 J3), (J1 J2 j3) )
     # satisfy the triangular inequalities

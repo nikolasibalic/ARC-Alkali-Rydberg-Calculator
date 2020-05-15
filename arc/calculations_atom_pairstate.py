@@ -369,7 +369,7 @@ class PairStateInteractions:
             c1 = 2  # quadrupole coupling
         else:
             raise ValueError("error in __getAngularMatrix_M")
-            exit()
+
         dl = abs(ll - l2)
         dj = abs(jj - j2)
         c2 = 0
@@ -379,7 +379,6 @@ class PairStateInteractions:
             c2 = 2  # quadrupole coupling
         else:
             raise ValueError("error in __getAngularMatrix_M")
-            exit()
 
         am = np.zeros((int(round((2 * j1 + 1) * (2 * j2 + 1), 0)),
                        int(round((2 * j + 1) * (2 * jj + 1), 0))),
@@ -1013,7 +1012,6 @@ class PairStateInteractions:
 
         dMatrix = wgd.get(self.jj)
         statePart2 = dMatrix.dot(statePart2)
-        stateCom = compositeState(statePart1, statePart2)
 
         # any conservation?
         limitBasisToMj = False
@@ -2761,37 +2759,33 @@ class StarkMapResonances:
             event.canvas.draw()
 
     def _onPick2(self, xdata, ydata):
-        if True:
+        x = xdata * 100.
+        y = ydata
 
-            x = xdata * 100.
-            y = ydata
+        i = np.searchsorted(self.eFieldList, x)
+        if i == len(self.eFieldList):
+            i -= 1
+        if ((i > 0) and (abs(self.eFieldList[i - 1] - x)
+                         < abs(self.eFieldList[i] - x))):
+            i -= 1
 
-            i = np.searchsorted(self.eFieldList, x)
-            if i == len(self.eFieldList):
-                i -= 1
-            if ((i > 0) and (abs(self.eFieldList[i - 1] - x)
-                             < abs(self.eFieldList[i] - x))):
-                i -= 1
+        j = 0
+        for jj in xrange(len(self.y[i])):
+            if (abs(self.y[i][jj] - y) < abs(self.y[i][j] - y)):
+                j = jj
 
-            j = 0
-            for jj in xrange(len(self.y[i])):
-                if (abs(self.y[i][jj] - y) < abs(self.y[i][j] - y)):
-                    j = jj
+        if (self.clickedPoint != 0):
+            self.clickedPoint.remove()
 
-            if (self.clickedPoint != 0):
-                self.clickedPoint.remove()
+        self.clickedPoint, = self.ax.plot([self.eFieldList[i] / 100.],
+                                          [self.y[i][j]], "bs",
+                                          linewidth=0, zorder=3)
 
-            self.clickedPoint, = self.ax.plot([self.eFieldList[i] / 100.],
-                                              [self.y[i][j]], "bs",
-                                              linewidth=0, zorder=3)
-
-            atom1 = self.atom1.elementName
-            atom2 = self.atom2.elementName
-            composition1 = str(self.composition[i][j][0])
-            composition2 = str(self.composition[i][j][1])
-            self.ax.set_title(("[%s,%s]=[" % (atom1, atom2))
-                              + composition1 + ","
-                              + composition2 + "]",
-                              fontsize=10)
-
-            # event.canvas.draw()
+        atom1 = self.atom1.elementName
+        atom2 = self.atom2.elementName
+        composition1 = str(self.composition[i][j][0])
+        composition2 = str(self.composition[i][j][1])
+        self.ax.set_title(("[%s,%s]=[" % (atom1, atom2))
+                          + composition1 + ","
+                          + composition2 + "]",
+                          fontsize=10)

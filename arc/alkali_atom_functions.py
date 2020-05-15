@@ -73,7 +73,6 @@ def setup_data_folder():
     copyDataLocally = True
     versionFile = os.path.join(DPATH, "version.txt")
     if os.path.exists(versionFile):
-        version = -1
         with open(versionFile, "r") as f:
             version = int(f.readline())
         if (version == __arc_data_version__):
@@ -2257,15 +2256,7 @@ def singleAtomState(j, m):
 
 
 def compositeState(s1, s2):
-    # TODO: Check is the following equivalent (for improvement)
     return np.kron(s1, s2).reshape((s1.shape[0] * s2.shape[0], 1))
-    a = np.zeros((s1.shape[0] * s2.shape[0], 1), dtype=np.complex128)
-    index = 0
-    for br1 in xrange(s1.shape[0]):
-        for br2 in xrange(s2.shape[0]):
-            a[index] = s1[br1] * s2[br2]
-            index += 1
-    return a
 
 
 def printState(n, l, j, s=None):

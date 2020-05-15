@@ -446,9 +446,6 @@ class DivalentAtom(AlkaliAtom):
                         temp = j1
                         j1 = j2
                         j2 = temp
-                        temp = s1
-                        s1 = s2
-                        s2 = temp
 
                     # convered from reduced DME in J basis (symmetric notation)
                     # to radial part of dme as it is saved for calculated
@@ -672,7 +669,6 @@ class DivalentAtom(AlkaliAtom):
         """
         raise NotImplementedError("radialWavefunction calculation for alkaline"
                                   " earths has not been implemented yet.")
-        return
 
     def effectiveCharge(self, l, r):
         """
@@ -680,7 +676,6 @@ class DivalentAtom(AlkaliAtom):
         """
         raise NotImplementedError("effectiveCharge calculation for alkaline"
                                   " earths has not been implemented yet.")
-        return
 
     def corePotential(self, l, r):
         """
@@ -688,7 +683,6 @@ class DivalentAtom(AlkaliAtom):
         """
         raise NotImplementedError("corePotential calculation for alkaline"
                                   " earths has not been implemented yet.")
-        return
 
     def potential(self, l, s, j, r):
         """
@@ -696,7 +690,6 @@ class DivalentAtom(AlkaliAtom):
         """
         raise NotImplementedError("potential calculation for alkaline"
                                   " earths has not been implemented yet.")
-        return
 
     def getStateLifetime(self, n, l, j, temperature=0, includeLevelsUpTo=0,
                          s=0):

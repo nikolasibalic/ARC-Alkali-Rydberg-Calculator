@@ -2117,7 +2117,6 @@ class OpticalLattice1D:
             float:
         """
 
-        sign = 1
         index = len(stateVector) // 2 + 2  # Align Bloch functions in phase
         angle = np.angle(stateVector[index])
         sign = np.exp(-1j*angle)
@@ -2467,7 +2466,7 @@ class DynamicPolarizability:
 
                 if diffEnergy < 1e-65:
                     # print("For given frequency we are in exact resonance with state %s" % printStateString(n1,l1,j1,s=s))
-                    return None, None, None, state
+                    return None, None, None, None, state
 
                 if (abs(mj) < state[2]+0.1):
                     d = self.atom.getReducedMatrixElementJ(self.n, self.l, self.j,
