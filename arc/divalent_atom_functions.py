@@ -100,6 +100,7 @@ class DivalentAtom(AlkaliAtom):
         self.preferQuantumDefects = preferQuantumDefects
 
         self._databaseInit()
+        c = self.conn.cursor()
 
         if self.cpp_numerov:
             from .arc_c_extensions import NumerovWavefunction
@@ -123,11 +124,11 @@ class DivalentAtom(AlkaliAtom):
                 print(e)
         # save to SQLite database
         try:
-            self.c.execute('''SELECT COUNT(*) FROM sqlite_master
+            c.execute('''SELECT COUNT(*) FROM sqlite_master
                             WHERE type='table' AND name='dipoleME';''')
-            if (self.c.fetchone()[0] == 0):
+            if (c.fetchone()[0] == 0):
                 # create table
-                self.c.execute('''CREATE TABLE IF NOT EXISTS dipoleME
+                c.execute('''CREATE TABLE IF NOT EXISTS dipoleME
                  (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED,
                  j1 TINYINT UNSIGNED,
                  n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED,
@@ -136,7 +137,7 @@ class DivalentAtom(AlkaliAtom):
                  PRIMARY KEY (n1,l1,j1,n2,l2,j2,s)
                 ) ''')
                 if (len(data) > 0):
-                    self.c.executemany(
+                    c.executemany(
                         'INSERT INTO dipoleME VALUES (?,?,?,?,?,?,?,?)',
                         data)
                 self.conn.commit()
@@ -163,11 +164,11 @@ class DivalentAtom(AlkaliAtom):
                 print(e)
         # save to SQLite database
         try:
-            self.c.execute('''SELECT COUNT(*) FROM sqlite_master
+            c.execute('''SELECT COUNT(*) FROM sqlite_master
                             WHERE type='table' AND name='quadrupoleME';''')
-            if (self.c.fetchone()[0] == 0):
+            if (c.fetchone()[0] == 0):
                 # create table
-                self.c.execute('''CREATE TABLE IF NOT EXISTS quadrupoleME
+                c.execute('''CREATE TABLE IF NOT EXISTS quadrupoleME
                  (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED,
                  j1 TINYINT UNSIGNED,
                  n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED,
@@ -176,7 +177,7 @@ class DivalentAtom(AlkaliAtom):
                  PRIMARY KEY (n1,l1,j1,n2,l2,j2,s)
                 ) ''')
                 if (len(data) > 0):
-                    self.c.executemany(
+                    c.executemany(
                         'INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?,?,?)',
                         data)
                 self.conn.commit()
@@ -225,7 +226,8 @@ class DivalentAtom(AlkaliAtom):
                 s: spin quantum number
                 energy: energy in cm^-1 relative to the ground state
         """
-        self.c.execute(
+        c = self.conn.cursor()
+        c.execute(
             'INSERT INTO energyLevel VALUES (?,?,?,?,?)',
             (int(n), int(l), int(j), int(s),
              energy * 1.e2
@@ -238,15 +240,15 @@ class DivalentAtom(AlkaliAtom):
     def _databaseInit(self):
         self.conn = sqlite3.connect(os.path.join(self.dataFolder,
                                                  self.precalculatedDB))
-        self.c = self.conn.cursor()
+        c = self.conn.cursor()
 
         # create space for storing NIST/literature energy levels
-        self.c.execute('''SELECT COUNT(*) FROM sqlite_master
+        c.execute('''SELECT COUNT(*) FROM sqlite_master
                         WHERE type='table' AND name='energyLevel';''')
-        if (self.c.fetchone()[0] != 0):
-            self.c.execute('''DROP TABLE energyLevel''')
+        if (c.fetchone()[0] != 0):
+            c.execute('''DROP TABLE energyLevel''')
         # create fresh table
-        self.c.execute('''CREATE TABLE IF NOT EXISTS energyLevel
+        c.execute('''CREATE TABLE IF NOT EXISTS energyLevel
              (n TINYINT UNSIGNED, l TINYINT UNSIGNED, j TINYINT UNSIGNED,
              s TINYINT UNSIGNED,
              energy DOUBLE,
@@ -286,10 +288,11 @@ class DivalentAtom(AlkaliAtom):
         return -self.scaledRydbergConstant / ((n - defect)**2)
 
     def _getSavedEnergy(self, n, l, j, s=0):
-        self.c.execute('''SELECT energy FROM energyLevel WHERE
+        c = self.conn.cursor()
+        c.execute('''SELECT energy FROM energyLevel WHERE
             n= ? AND l = ? AND j = ? AND
             s = ? ''', (n, l, j, s))
-        energy = self.c.fetchone()
+        energy = c.fetchone()
         if (energy):
             return energy[0]
         else:
@@ -344,28 +347,30 @@ class DivalentAtom(AlkaliAtom):
         l1 = int(l1)
         l2 = int(l2)
 
+        c = self.conn.cursor()
+
         if useLiterature:
             # is there literature value for this DME? If there is,
             # use the best one (smalles error)
-            self.c.execute('''SELECT dme FROM literatureDME WHERE
+            c.execute('''SELECT dme FROM literatureDME WHERE
              n1= ? AND l1 = ? AND j1 = ? AND
              n2 = ? AND l2 = ? AND j2 = ? AND s = ?
              ORDER BY errorEstimate ASC''',
              (n1, l1, j1, n2, l2, j2, s))
 
-            answer = self.c.fetchone()
+            answer = c.fetchone()
             if (answer):
                 # we did found literature value
                 return answer[0]
         # was this calculated before? If it was, retrieve from memory
 
-        self.c.execute(
+        c.execute(
             '''SELECT dme FROM dipoleME WHERE
             n1= ? AND l1 = ? AND j1 = ? AND
             n2 = ? AND l2 = ? AND j2 = ? AND s = ?''',
             (n1, l1, j1, n2, l2, j2, s)
             )
-        dme = self.c.fetchone()
+        dme = c.fetchone()
         if (dme):
             return dme[0]
 
@@ -373,7 +378,7 @@ class DivalentAtom(AlkaliAtom):
             n1, l1, j1, n2, l2, j2, s=s
             )
 
-        self.c.execute(
+        c.execute(
             ''' INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?, ?)''',
             [n1, l1, j1,
              n2, l2, j2, s,
@@ -385,12 +390,13 @@ class DivalentAtom(AlkaliAtom):
     def _readLiteratureValues(self):
         # clear previously saved results, since literature file
         # might have been updated in the meantime
-        self.c.execute('''DROP TABLE IF EXISTS literatureDME''')
-        self.c.execute('''SELECT COUNT(*) FROM sqlite_master
+        c = self.conn.cursor()
+        c.execute('''DROP TABLE IF EXISTS literatureDME''')
+        c.execute('''SELECT COUNT(*) FROM sqlite_master
                         WHERE type='table' AND name='literatureDME';''')
-        if (self.c.fetchone()[0] == 0):
+        if (c.fetchone()[0] == 0):
             # create table
-            self.c.execute('''CREATE TABLE IF NOT EXISTS literatureDME
+            c.execute('''CREATE TABLE IF NOT EXISTS literatureDME
              (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED, j1 TINYINT UNSIGNED,
              n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED, j2 TINYINT UNSIGNED,
              s TINYINT UNSIGNED,
@@ -401,7 +407,7 @@ class DivalentAtom(AlkaliAtom):
              ref TINYTEXT,
              refdoi TINYTEXT
             );''')
-            self.c.execute('''CREATE INDEX compositeIndex
+            c.execute('''CREATE INDEX compositeIndex
             ON literatureDME (n1,l1,j1,n2,l2,j2,s); ''')
         self.conn.commit()
 
@@ -478,7 +484,7 @@ class DivalentAtom(AlkaliAtom):
 
             try:
                 if i > 1:
-                    self.c.executemany('''INSERT INTO literatureDME
+                    c.executemany('''INSERT INTO literatureDME
                                         VALUES (?,?,?, ?,?,?,?
                                                 ?,?,?,?,?,?)''',
                                        literatureDME)
@@ -576,7 +582,8 @@ class DivalentAtom(AlkaliAtom):
         # is there literature value for this DME? If there is,
         # use the best one (wit the smallest error)
 
-        self.c.execute('''SELECT dme, typeOfSource,
+        c = self.conn.cursor()
+        c.execute('''SELECT dme, typeOfSource,
                      errorEstimate ,
                      comment ,
                      ref,
@@ -585,7 +592,7 @@ class DivalentAtom(AlkaliAtom):
                      n2 = ? AND l2 = ? AND j2 = ? AND s = ?
                      ORDER BY errorEstimate ASC''',
                        (n1, l1, j1, n2, l2, j2, s))
-        answer = self.c.fetchone()
+        answer = c.fetchone()
         if (answer):
             # we did found literature value
             return True, answer[0], [answer[1], answer[2], answer[3],
@@ -644,11 +651,12 @@ class DivalentAtom(AlkaliAtom):
         l2 = int(l2)
 
         # was this calculated before? If yes, retrieve from memory.
-        self.c.execute('''SELECT qme FROM quadrupoleME WHERE
+        c = self.conn.cursor()
+        c.execute('''SELECT qme FROM quadrupoleME WHERE
             n1= ? AND l1 = ? AND j1 = ? AND
             n2 = ? AND l2 = ? AND j2 = ? AND s= ?''',
             (n1, l1, j1, n2, l2, j2, s))
-        qme = self.c.fetchone()
+        qme = c.fetchone()
         if (qme):
             return qme[0]
 
@@ -658,7 +666,7 @@ class DivalentAtom(AlkaliAtom):
             n1, l1, j1, n2, l2, j2, s=s
         )
 
-        self.c.execute(''' INSERT INTO quadrupoleME VALUES (?,?,?, ?,?,?,?, ?)''',
+        c.execute(''' INSERT INTO quadrupoleME VALUES (?,?,?, ?,?,?,?, ?)''',
                        [n1, l1, j1, n2, l2, j2, s, quadrupoleElement])
         self.conn.commit()
 
