@@ -2239,13 +2239,9 @@ class AlkaliAtom(object):
 
     def getBranchingRatio(self,jg,fg,mfg,je,fe,mfe,s=0.5):
         r"""
-             Branching ratio for decay from :math: `\vert j_e,f_e,m_{f_e}\rangle\rightarrow\vert j_g,f_g,m_{f_g}\rangle`
+             Branching ratio for decay from :math:`\vert j_e,f_e,m_{f_e} \rangle \rightarrow \vert j_g,f_g,m_{f_g}\rangle`
 
-            :math:`b = \displaystyle\sum_q (2j_e+1)\left(\begin{matrix} \
-            f_1 & 1 & f_2 \\ \
-           -m_{f1} & q & m_{f2} \
-           \end{matrix}\right)^2 \
-            \vert \langle j_e,f_e\vert \vert er \vert\vert j_g,f_g\rangle\vert^2`
+                :math:`b = \displaystyle\sum_q (2j_e+1)\left(\begin{matrix}f_1 & 1 & f_2 \\-m_{f1} & q & m_{f2}\end{matrix}\right)^2\vert \langle j_e,f_e\vert \vert er \vert\vert j_g,f_g\rangle\vert^2`
 
             Args:
                 jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
@@ -2267,9 +2263,9 @@ class AlkaliAtom(object):
 
     def getSaturationIntensity(self,ng,lg,jg,fg,mfg,ne,le,je,fe,mfe,s=0.5):
         r"""
-             Saturation Intensity :math:`I_\mathrm{sat}` for transition :math: `\vert j_g,f_g,m_{f_g}\rangle\rightarrow\vert j_e,f_e,m_{f_e}\rangle` in units of :math:`\mathrm{W}/\mathrm{m}^2`.
+             Saturation Intensity :math:`I_\mathrm{sat}` for transition :math:`\vert j_g,f_g,m_{f_g}\rangle\rightarrow\vert j_e,f_e,m_{f_e}\rangle` in units of :math:`\mathrm{W}/\mathrm{m}^2`.
 
-            :math:`I_\mathrm{sat} = \frac{c\epsilon_0\Gamma^2\hbar^2}{4\vert \epsilon_q\cdot\mathrm{d}\vert^2}`
+                :math:`I_\mathrm{sat} = \frac{c\epsilon_0\Gamma^2\hbar^2}{4\vert \epsilon_q\cdot\mathrm{d}\vert^2}`
 
             Args:
                 ng, lg, jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
@@ -2294,9 +2290,9 @@ class AlkaliAtom(object):
 
     def getSaturationIntensityIsotropic(self,ng,lg,jg,fg,ne,le,je,fe):
            r"""
-                Isotropic Saturation Intensity :math:`I_\mathrm{sat}` for transition :math: `f_g\rightarrow f_e` averaged over all polarisations in units of :math:`\mathrm{W}/\mathrm{m}^2`.
+                Isotropic Saturation Intensity :math:`I_\mathrm{sat}` for transition :math:`f_g\rightarrow f_e` averaged over all polarisations in units of :math:`\mathrm{W}/\mathrm{m}^2`.
 
-               :math:`I_\mathrm{sat} = \frac{c\epsilon_0\Gamma^2\hbar^2}{4\vert \epsilon_q\cdot\mathrm{d}\vert^2}`
+                   :math:`I_\mathrm{sat} = \frac{c\epsilon_0\Gamma^2\hbar^2}{4\vert \epsilon_q\cdot\mathrm{d}\vert^2}`
 
                Args:
                    ng, lg, jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
@@ -2322,28 +2318,15 @@ class AlkaliAtom(object):
 
     def groundstateRamanTransition(self,Pa,wa,qa,Pb,wb,qb,Delta,f0,mf0,f1,mf1,ne,le,je):
         r"""
-             Returns two-photon Rabi frequency :math:`\Omega_R`, differential\
-                 AC Stark shift :math:`\Delta_\mathrm{AC}` and probability to\
-                scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}` \
-                for two-photon ground-state Raman transitions from :math:`\vert \
-                f_g,m_{f_g}\rangle\rightarrow\vert nL_{j_r} j_r,m_{j_r}\rangle` via \
-                an intermediate excited state :math:`n_e,\ell_e,j_e`.
+                Returns two-photon Rabi frequency :math:`\Omega_R`, differential AC Stark shift :math:`\Delta_\mathrm{AC}` and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}` for two-photon ground-state Raman transitions from :math:`\vert f_g,m_{f_g}\rangle\rightarrow\vert nL_{j_r} j_r,m_{j_r}\rangle` via an intermediate excited state :math:`n_e,\ell_e,j_e`.
 
-            :math:`\Omega_R=\displaystyle\sum_{f_e,m_{f_e}} \
-                \frac{\Omega^a_{0\rightarrow f_e}\Omega^b_{1\rightarrow f_e}}{2(\Delta-\Delta_{f_e})},`
+                    :math:`\Omega_R=\displaystyle\sum_{f_e,m_{f_e}}\frac{\Omega^a_{0\rightarrow f_e}\Omega^b_{1\rightarrow f_e}}{2(\Delta-\Delta_{f_e})},`
 
-            :math:`\Delta_{\mathrm{AC}} = \displaystyle\sum_{f_e,m_{f_e}}\left[ \
-                \frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2-\vert\Omega^b_{1\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})} \
-                +\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})} \
-                -\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})}\right],`
+                    :math:`\Delta_{\mathrm{AC}} = \displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2-\vert\Omega^b_{1\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}+\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})}-\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})}\right],`
 
-            :math:`P_\mathrm{sc} = \frac{\Gamma_et_\pi}{2}\displaystyle\sum_{f_e,m_{f_e}}\left[ \
-                \frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2} \
-                +\frac{\vert\Omega^b_{1\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2} \
-                +\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})^2} \
-                +\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})^2}\right],'
+                    :math:`P_\mathrm{sc} =\frac{\Gamma_e t_\pi}{2}\displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega^b_{1\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})^2}+\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})^2}\right]`
 
-                where :math:`\tau_\pi=\pi/\Omega_R`.
+                    where :math:`\tau_\pi=\pi/\Omega_R`.
 
             Args:
                 Pa,wa,qa: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of laser a :math:`\vert 0 \rangle\rightarrow\vert e\rangle`
@@ -2354,7 +2337,7 @@ class AlkaliAtom(object):
                 ne, le, je: principal, orbital, total orbital quantum numbers of excited state
 
             Returns:
-                float: Two-Photon Rabi frequency :math:`\Omega_R` (units rads:math:`^{-1}`), differential AC Stark shift :math:`\Delta_\mathrm{AC}` (units rads:math:`^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
+                float: Two-Photon Rabi frequency :math:`\Omega_R` (units :math:`\mathrm{rads}^{-1}`), differential AC Stark shift :math:`\Delta_\mathrm{AC}` (units :math:`\mathrm{rads}^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
         """
 
         #Intensity/beam (W/m^2)
@@ -2427,46 +2410,29 @@ class AlkaliAtom(object):
 
     def twoPhotonRydbergExcitation(self,Pp,wp,qp,Pc,wc,qc,Delta,fg,mfg,ne,le,je,nr,lr,jr,mjr):
         r"""
-             Returns two-photon Rabi frequency :math:`\Omega_R`, \
-                ground AC Stark shift :math:`\Delta_\mathrm{AC}_g`, \
-                Rydberg state AC Stark shift :math:`\Delta_\mathrm{AC}_r` \
-                and probability to scatter a photon during a  \
-                :math:`\pi`-pulse :math:`P_\mathrm{sc}` for two-photon  \
-                excitation from :math:`\vert f_h,m_{f_g}\rangle\rightarrow \
-                \vert j_r,m_{j_r}\rangle` via intermediate excited state
-
-            :math:`\Omega_R=\displaystyle\sum_{f_e,m_{f_e}} \
-                \frac{\Omega_p^{g\rightarrow f_e}\Omega_c^{f_e\rightarrow r}} \
-                {2(\Delta-\Delta_{f_e})}`
-
-            :math:`\Delta_{\mathrm{AC}_g} &= \displaystyle\sum_{f_e,m_{f_e}} \
-                \frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}`
-
-            :math:`\Delta_{\mathrm{AC}_r} &= \displaystyle\sum_{f_e,m_{f_e}} \
-                \frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}``
-
-            :math:`P_\mathrm{sc} = \frac{\Gamma_et_\pi}{2}\displaystyle\sum_{f_e,m_{f_e}}\left[ \
-                \frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2} \
-                +\frac{\vert\Omega_c^{f_e\rightarrow r}\vert^2}{2(\Delta-\Delta_{f_e})^2}\right]`
-
-            where :math:`\tau_\pi=\pi/\Omega_R`.
-
-            Args:
-                Pp,wp,qp: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
-                Pb,wb,qb: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
-                Delta : Detuning from excited state centre of mass (rad s:math:`^{-1}`)
-                fg,mfg: Ground state hyperfine level
-                f1,mf1: Upper hyperfine level
-                ne, le, je: principal, orbital, total orbital quantum numbers of excited state
-                nr,lr,jr,mjr : principal quantum number, orbital, total orbital and projection quantum number of target Rydberg state
-
-            Returns:
-                float: Two-Photon Rabi frequency :math:`\Omega_R`  \
-                    (units rads:math:`^{-1}`), ground-state AC Stark shift \
-                    :math:`\Delta_{\mathrm{AC}_g}` (units rads:math:`^{-1}`) \
-                    Rydberg-state AC Stark shift :math:`\Delta_{\mathrm{AC}_r}` \
-                    (units rads:math:`^{-1}`) and probability to scatter \
-                    a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
+                Returns two-photon Rabi frequency :math:`\Omega_R`, ground AC Stark shift :math:`\Delta_{\mathrm{AC}_g}`, Rydberg state AC Stark shift :math:`\Delta_{\mathrm{AC}_r}` and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}` for two-photon  excitation from :math:`\vert f_h,m_{f_g}\rangle\rightarrow \vert j_r,m_{j_r}\rangle` via intermediate excited state
+        
+                    :math:`\Omega_R=\displaystyle\sum_{f_e,m_{f_e}}\frac{\Omega_p^{g\rightarrow f_e}\Omega_c^{f_e\rightarrow r}}{2(\Delta-\Delta_{f_e})}`
+        
+                    :math:`\Delta_{\mathrm{AC}_g} = \displaystyle\sum_{f_e,m_{f_e}}\frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}`
+        
+                    :math:`\Delta_{\mathrm{AC}_r} = \displaystyle\sum_{f_e,m_{f_e}}\frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}``
+        
+                    :math:`P_\mathrm{sc} = \frac{\Gamma_et_\pi}{2}\displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega_c^{f_e\rightarrow r}\vert^2}{2(\Delta-\Delta_{f_e})^2}\right]`
+        
+                where :math:`\tau_\pi=\pi/\Omega_R`.
+        
+                Args:
+                    Pp,wp,qp: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
+                    Pb,wb,qb: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
+                    Delta : Detuning from excited state centre of mass (rad s:math:`^{-1}`)
+                    fg,mfg: Ground state hyperfine level
+                    f1,mf1: Upper hyperfine level
+                    ne, le, je: principal, orbital, total orbital quantum numbers of excited state
+                    nr,lr,jr,mjr : principal quantum number, orbital, total orbital and projection quantum number of target Rydberg state
+        
+                Returns:
+                    float: Two-Photon Rabi frequency :math:`\Omega_R` (units :math:`\mathrm{rads}^{-1}`), ground-state AC Stark shift :math:`\Delta_{\mathrm{AC}_g}` (units :math:`\mathrm{rads}^{-1}`) Rydberg-state AC Stark shift :math:`\Delta_{\mathrm{AC}_r}` (units :math:`\mathrm{rads}^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
         """
 
         #Intensity/beam (W/m^2)
@@ -2548,25 +2514,20 @@ class AlkaliAtom(object):
     
     def breitRabi(self,n,l,j,B):
         r"""
-             Returns exact Zeeman energies math:`E_z` for states :math:`\vert F,m_f\rangle` \
-                in the :math:`\ell,j` manifold via exact diagonalisation of the \
-                Zeeman interaction :math:`\mathcal{H}_z` and the hyperfine interaction \
-                :math:`\mathcal{H}_\mathrm{hfs}` given by equations
+             Returns exact Zeeman energies math:`E_z` for states :math:`\vert F,m_f\rangle` in the :math:`\ell,j` manifold via exact diagonalisation of the Zeeman interaction :math:`\mathcal{H}_z` and the hyperfine interaction :math:`\mathcal{H}_\mathrm{hfs}` given by equations
         
-                :math:`\mathcal{H}_Z=\frac{\mu_B}{\hbar}(g_J J_z+g_I I_z)B_z`
+                    :math:`\mathcal{H}_Z=\frac{\mu_B}{\hbar}(g_J J_z+g_I I_z)B_z`
             
                 and
 
-                :math:`\mathcal{H}_\mathrm{hfs}=A_\mathrm{hfs}I\cdot J + \
-                    B_\mathrm{hfs}\frac{3(I\cdot J)^2+3/2 I\cdot J -I^2J^2} \
-                    {2I(2I+1)2J(2J+1)}`.
+                    :math:`\mathcal{H}_\mathrm{hfs}=A_\mathrm{hfs}I\cdot J + B_\mathrm{hfs}\frac{3(I\cdot J)^2+3/2 I\cdot J -I^2J^2}{2I(2I+1)2J(2J+1)}`.
         
             Args:
                 n,l,j: principal,orbital, total orbital quantum numbers
                 B: Magnetic Field (units T)
  
             Returns:
-                float: State energy :math:`E_z` in SI units (Hz)
+                float: State energy :math:`E_z` in SI units (Hz), state f, state mf
         """
         
         [Ahfs,Bhfs]=self.getHFSCoefficients(n,l,j)
@@ -2591,7 +2552,7 @@ class AlkaliAtom(object):
         Fx=Jx+Ix
         Fy=Jy+Iy
         Fz=Jz+Iz
-        F2=Jx**2+Jy**2+Jz**2
+        F2=Fx**2+Fy**2+Fz**2
  
         #Hyperfine Interaction
         Hhfs=Ahfs*IJ
@@ -2610,7 +2571,20 @@ class AlkaliAtom(object):
             eVal,eVec = eigh(Hhfs+b*Hz)    
             en[ctr,:]=eVal
             
-        return en
+            
+        #Determine States
+        eVal,eVec = eigh(Hhfs+1e-4*Hz)    
+        eVec=np.matrix(eVec)
+        f=np.zeros(N)
+        mf=np.zeros(N)
+        for ctr in range(N):
+            f2=eVec[:,ctr].conj().T*F2*eVec[:,ctr]
+            f[ctr]=np.round(1/2*(-1+np.sqrt(1+4*np.real(f2[0,0]))))
+            m=eVec[:,ctr].conj().T*Fz*eVec[:,ctr]
+            mf[ctr]=np.round(np.real(m[0,0]))
+        
+            
+        return en,f,mf
         
 ### JDP EDITS FINISH ###
 
