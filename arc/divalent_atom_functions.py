@@ -411,7 +411,7 @@ class DivalentAtom(AlkaliAtom):
         try:
             fn = open(os.path.join(self.dataFolder,
                                    self.literatureDMEfilename), 'r')
-            dialect = csv.Sniffer().sniff(fn.read(1024), delimiters=";,\t")
+            dialect = csv.Sniffer().sniff(fn.read(2024), delimiters=";,\t")
             fn.seek(0)
             data = csv.reader(fn, dialect, quotechar='"')
 
