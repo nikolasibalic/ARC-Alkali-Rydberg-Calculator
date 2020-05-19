@@ -201,14 +201,11 @@ class AlkaliAtom(object):
     #: uses measured energy levels otherwise
     minQuantumDefectN = 0
 
-    # SQLite connection and cursor
-    conn = False
-    c = False
-
     def __init__(self, preferQuantumDefects=True, cpp_numerov=True):
         # should the wavefunction be calculated with Numerov algorithm
         # implemented in C; if false, it uses Python implementation
         # that is much slower
+
         self.cpp_numerov = cpp_numerov
         self.preferQuantumDefects = preferQuantumDefects
 
@@ -324,6 +321,7 @@ class AlkaliAtom(object):
         return
 
     def _databaseInit(self):
+        # SQL connection and cursor
         self.conn = sqlite3.connect(os.path.join(self.dataFolder,
                                                  self.precalculatedDB))
         self.c = self.conn.cursor()
