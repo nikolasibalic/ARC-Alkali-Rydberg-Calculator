@@ -126,7 +126,7 @@ class AlkaliAtom(object):
     AhfsiP32 = 0.0    #: (ng+1)P3/2 Hyperfine Magnetic Dipole Constant (Hz)
     BhfsiP32 = 0.0    #: (ng+1)P3/2 Hyperfine Magnetic Quadrupole Constant (Hz)
 
-    gS = 2.0023193043737 #: Electron Spin g-factor [Steck]
+    gS = 2.0023193043737  # : Electron Spin g-factor [Steck]
     gL = 0.0          #: Electron Orbital g-factor
     gI = 0.0          #: Nuclear g-factor
 
@@ -183,8 +183,7 @@ class AlkaliAtom(object):
     #: level, but are above in energy due to angular part
     extraLevels = []
 
-
-     #: principal quantum number for the ground state
+    #: principal quantum number for the ground state
     groundStateN = 0
 
     #: swich - should the wavefunction be calculated with Numerov algorithm
@@ -230,7 +229,7 @@ class AlkaliAtom(object):
                                encoding='latin1', allow_pickle=True)
             except IOError as e:
                 print("Error reading dipoleMatrixElement File "
-                  + os.path.join(self.dataFolder, self.dipoleMatrixElementFile))
+                      + os.path.join(self.dataFolder, self.dipoleMatrixElementFile))
                 print(e)
         # save to SQLite database
         try:
@@ -260,7 +259,7 @@ class AlkaliAtom(object):
         if (self.quadrupoleMatrixElementFile != ""):
             if preferQuantumDefects is False:
                 self.quadrupoleMatrixElementFile = \
-                     "NIST_" + self.quadrupoleMatrixElementFile
+                    "NIST_" + self.quadrupoleMatrixElementFile
             try:
                 data = np.load(os.path.join(self.dataFolder,
                                             self.quadrupoleMatrixElementFile),
@@ -268,8 +267,8 @@ class AlkaliAtom(object):
 
             except IOError as e:
                 print("Error reading quadrupoleMatrixElementFile File "
-                    + os.path.join(self.dataFolder,
-                                   self.quadrupoleMatrixElementFile))
+                      + os.path.join(self.dataFolder,
+                                     self.quadrupoleMatrixElementFile))
                 print(e)
         # save to SQLite database
         try:
@@ -508,7 +507,7 @@ class AlkaliAtom(object):
                 return -3. / (4. * r) + 4. * r * (
                     2. * mu * (stateEnergy - self.potential(l, s, j, r))
                     - l * (l + 1) / (r**2)
-                    )
+                )
 
             r, psi_r = NumerovBack(innerLimit, outerLimit, potential,
                                    step, 0.01, 0.01)
@@ -734,12 +733,12 @@ class AlkaliAtom(object):
         if (l < 5):
             # find correct part in table of quantum defects
             modifiedRRcoef = self.quantumDefect[int(floor(s) + s + j - l)][l]
-            if (l<3 and abs(modifiedRRcoef[0])<1e-9
-                and self.Z != 1):
+            if (l < 3 and abs(modifiedRRcoef[0]) < 1e-9
+                    and self.Z != 1):
                 # it's not Hydrogen but for l in {s,p,d} quantum defect is 0
                 raise ValueError("Quantum defects for requested state "
-                                 +("(n = %d, l = %d, j = %.1f, s=%.1f) are"
-                                 % (n, l, j, s))+
+                                 + ("(n = %d, l = %d, j = %.1f, s=%.1f) are"
+                                    % (n, l, j, s)) +
                                  " uknown. Aborting calculation.")
             defect = modifiedRRcoef[0] + \
                 modifiedRRcoef[1] / ((n - modifiedRRcoef[0])**2) + \
@@ -839,10 +838,10 @@ class AlkaliAtom(object):
             np.multiply(np.multiply(psi1_r1[0:upTo], psi2_r2[0:upTo]),
                         r1[0:upTo]),
             x=r1[0:upTo]
-            )
+        )
 
         c.execute(''' INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?)''',
-                       [n1, l1, j1_x2, n2, l2, j2_x2, dipoleElement])
+                  [n1, l1, j1_x2, n2, l2, j2_x2, dipoleElement])
         self.conn.commit()
 
         return dipoleElement
@@ -928,10 +927,10 @@ class AlkaliAtom(object):
                         np.multiply(r1[0:upTo], r1[0:upTo])
                         ),
             x=r1[0:upTo]
-            )
+        )
 
         c.execute(''' INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?, ?)''',
-                       [n1, l1, j1_x2, n2, l2, j2_x2, quadrupoleElement])
+                  [n1, l1, j1_x2, n2, l2, j2_x2, quadrupoleElement])
         self.conn.commit()
 
         return quadrupoleElement
@@ -1037,7 +1036,7 @@ class AlkaliAtom(object):
         """
 
         return (-1)**(int(l1 + s + j2 + 1.)) * sqrt((2. * j1 + 1.)
-                                                      * (2. * j2 + 1.)) *\
+                                                    * (2. * j2 + 1.)) *\
             Wigner6j(j1, 1., j2, l2, s, l1) *\
             self.getReducedMatrixElementL(n1, l1, j1, n2, l2, j2, s=s)
 
@@ -1083,7 +1082,7 @@ class AlkaliAtom(object):
 #        return (-1)**(int(j1 - mj1)) *\
 #            Wigner3j(j1, 1, j2, -mj1, -q, mj2) *\
 #            self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
-        return self.getSphericalDipoleMatrixElement(j1,mj1,j2,mj2,q)* \
+        return self.getSphericalDipoleMatrixElement(j1, mj1, j2, mj2, q) * \
             self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
 
     def getDipoleMatrixElementHFS(self,
@@ -1139,8 +1138,8 @@ class AlkaliAtom(object):
 #                                                * (2 * f2 + 1))**0.5
 #        dme *= Wigner6j(f1, 1, f2, j2, self.I, j1)
 
-        dme = self.getSphericalDipoleMatrixElement(f1,mf1,f2,mf2,q)
-        dme *=self._reducedMatrixElementFJ(j1,f1,j2,f2)
+        dme = self.getSphericalDipoleMatrixElement(f1, mf1, f2, mf2, q)
+        dme *= self._reducedMatrixElementFJ(j1, f1, j2, f2)
         dme *= self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
         return dme
 
@@ -1606,7 +1605,7 @@ class AlkaliAtom(object):
                     state[0], state[1], state[2],
                     temperature,
                     s=s
-                    )
+                )
 
         return 1. / transitionRate
 
@@ -1702,7 +1701,7 @@ class AlkaliAtom(object):
                     j2 = float(row[5])
                     if (
                         self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2)
-                            ):
+                    ):
                         temp = n1
                         n1 = n2
                         n2 = temp
@@ -1741,7 +1740,7 @@ class AlkaliAtom(object):
                     c.executemany('''INSERT INTO literatureDME
                                         VALUES (?,?,?,?,?,?,?,
                                                 ?,?,?,?,?)''',
-                                       literatureDME)
+                                  literatureDME)
                     self.conn.commit()
             except sqlite3.Error as e:
                 if i > 0:
@@ -1841,7 +1840,7 @@ class AlkaliAtom(object):
                      n1= ? AND l1 = ? AND j1_x2 = ? AND
                      n2 = ? AND l2 = ? AND j2_x2 = ?
                      ORDER BY errorEstimate ASC''',
-                       (n1, l1, j1_x2, n2, l2, j2_x2))
+                  (n1, l1, j1_x2, n2, l2, j2_x2))
         answer = c.fetchone()
         if (answer):
             # we did found literature value
@@ -1974,9 +1973,8 @@ class AlkaliAtom(object):
         else:
             return 0
 
-
     # Additional AMO Functions
-    def getHFSCoefficients(self,n, l, j, s=None):
+    def getHFSCoefficients(self, n, l, j, s=None):
         """
             Returns hyperfine splitting coefficients for state :math:`n`,
             :math:`l`, :math:`j`.
@@ -1991,47 +1989,47 @@ class AlkaliAtom(object):
                 float: A,B hyperfine splitting constants (in Hz)
         """
 
-        #Place-holder for adding nice table / look up for storing other values
-        A=0
-        B=0
+        # Place-holder for adding nice table / look up for storing other values
+        A = 0
+        B = 0
 
-        if (n==self.groundStateN) & (l == 0):
-            A=self.Ahfs
-            B=0
+        if (n == self.groundStateN) & (l == 0):
+            A = self.Ahfs
+            B = 0
 
-        elif (n==self.groundStateN) & (l == 1) & (j==0.5):
-            A=self.AhfsD1
-            B=0
+        elif (n == self.groundStateN) & (l == 1) & (j == 0.5):
+            A = self.AhfsD1
+            B = 0
 
-        elif (n==self.groundStateN)& (l == 1) & (j==1.5):
-            A=self.AhfsD2
-            B=self.BhfsD2
+        elif (n == self.groundStateN) & (l == 1) & (j == 1.5):
+            A = self.AhfsD2
+            B = self.BhfsD2
 
-        elif (n==self.groundStateN+1) & (l == 1) & (j==0.5):
-            A=self.AhfsiP12
-            B=0
+        elif (n == self.groundStateN + 1) & (l == 1) & (j == 0.5):
+            A = self.AhfsiP12
+            B = 0
 
-        elif (n==self.groundStateN+1) & (l == 1) & (j==1.5):
-            A=self.AhfsiP32
-            B=self.BhfsiP32
+        elif (n == self.groundStateN + 1) & (l == 1) & (j == 1.5):
+            A = self.AhfsiP32
+            B = self.BhfsiP32
 
-        return A,B
+        return A, B
 
-    def _reducedMatrixElementFJ(self,j1, f1, j2, f2):
+    def _reducedMatrixElementFJ(self, j1, f1, j2, f2):
 
-        sph=0.0
-        if((abs(f2-f1)<2) & (int(abs(j2-j1))<2)):
-            #Reduced Matrix Element <f||er||f'> in units of reduced matrix element <j||er||j'>
-            sph = (-1.0)**(j1+self.I+f2+1.0)*((2. * f1 + 1)* (2 * f2 + 1))** \
-                0.5*Wigner6j(f1,1,f2,j2,self.I,j1)
+        sph = 0.0
+        if((abs(f2 - f1) < 2) & (int(abs(j2 - j1)) < 2)):
+            # Reduced Matrix Element <f||er||f'> in units of reduced matrix element <j||er||j'>
+            sph = (-1.0)**(j1 + self.I + f2 + 1.0) * ((2. * f1 + 1) * (2 * f2 + 1)) ** \
+                0.5 * Wigner6j(f1, 1, f2, j2, self.I, j1)
 
         return sph
 
-    def getSphericalDipoleMatrixElement(self,j1, mj1, j2, mj2,q):
-        #Spherical Component of Angular Matrix Element in units of reduced matrix element <j||er||j'>
+    def getSphericalDipoleMatrixElement(self, j1, mj1, j2, mj2, q):
+        # Spherical Component of Angular Matrix Element in units of reduced matrix element <j||er||j'>
         return (- 1)**(j1 - mj1) * Wigner3j(j1, 1, j2, -mj1, -q, mj2)
 
-    def getSphericalMatrixElementHFStoFS(self,j1, f1,mf1, j2, mj2,q):
+    def getSphericalMatrixElementHFStoFS(self, j1, f1, mf1, j2, mj2, q):
         r"""
              Spherical matrix element for transition from hyperfine  resolved state
              to unresolved fine-structure state
@@ -2055,21 +2053,19 @@ class AlkaliAtom(object):
              Returns:
                  float: spherical dipole matrix element( :math:`\langle j\vert\vert\mu\vert\vert j'\rangle`)
          """
-        mf2=mf1+q
-        mI=mf2-mj2
-        sph=0.0
-        if(abs(mI)<=self.I):
-            for f2 in np.arange(max(self.I-j2,abs(mf2),f1-1),1+min(self.I+j2,f1+1)):
-                #CG multiplied by <j1 f1 mf1|er_q|j2 f2 mf2> in units of <j1 || er || j2 >
-                sph+=CG(j2,mj2,self.I,mI,f2,mf2) \
-                    *self.getSphericalDipoleMatrixElement(f1,mf1,f2,mf2,q) \
-                        *self._reducedMatrixElementFJ(j1, f1, j2, f2)
+        mf2 = mf1 + q
+        mI = mf2 - mj2
+        sph = 0.0
+        if(abs(mI) <= self.I):
+            for f2 in np.arange(max(self.I - j2, abs(mf2), f1 - 1), 1 + min(self.I + j2, f1 + 1)):
+                # CG multiplied by <j1 f1 mf1|er_q|j2 f2 mf2> in units of <j1 || er || j2 >
+                sph += CG(j2, mj2, self.I, mI, f2, mf2) \
+                    * self.getSphericalDipoleMatrixElement(f1, mf1, f2, mf2, q) \
+                    * self._reducedMatrixElementFJ(j1, f1, j2, f2)
 
         return sph
 
-
-
-    def getDipoleMatrixElementHFStoFS(self,n1, l1, j1, f1, mf1,n2, l2, j2, mj2,q,s=0.5):
+    def getDipoleMatrixElementHFStoFS(self, n1, l1, j1, f1, mf1, n2, l2, j2, mj2, q, s=0.5):
         r"""
             Dipole matrix element for transition from hyperfine  resolved state
             to unresolved fine-structure state
@@ -2112,20 +2108,19 @@ class AlkaliAtom(object):
             Returns:
                 float: dipole matrix element( :math:`a_0 e`)
         """
-        return self.getSphericalMatrixElementHFStoFS(j1, f1,mf1, j2, mj2,q) \
-            *self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
-            
-            
-    def getMagneticDipoleMatrixElementHFS(self,l, j, f1, mf1,f2,mf2,q,s=0.5):
+        return self.getSphericalMatrixElementHFStoFS(j1, f1, mf1, j2, mj2, q) \
+            * self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
+
+    def getMagneticDipoleMatrixElementHFS(self, l, j, f1, mf1, f2, mf2, q, s=0.5):
         r"""
-          
+
           Magnetic dipole matrix element :math:`\langle f_1,m_{f_1} \vert \mu_q \vert f_2,m_{f_2}\rangle` \for transitions from :math:`\vert f_1,m_{f_1}\rangle\rightarrow\vert f_2,m_{f_2}\rangle` within the same :math:`n,\ell,j` state in units of :math:`\mu_B B_q`.
-          
+
             The magnetic dipole matrix element is given by
             :math:`\langle f_1,m_{f_1}\vert \mu_q \vert f_2,m_{f_2}\rangle = g_J \mu_B B_q (-1)^{f_2+j+I+1+f_1-m_{f_1}} \sqrt{(2f_1+1)(2f_2+1)j(j+1)(2j+1)} \begin{pmatrix}f_1&1&f_2\\-m_{f_1} & -q & m_{f_2}\end{pmatrix}                \begin{Bmatrix}f_1&1&f_2\\j & I & j\end{Bmatrix}`
 
 
-        
+
             Args:
                 l, j, f1, mf1: orbital, total orbital,
                     fine basis (total atomic) angular momentum,total anuglar momentum
@@ -2142,13 +2137,12 @@ class AlkaliAtom(object):
             Returns:
                 float: magnetic dipole matrix element (in units of :math:`\mu_BB_q`)
         """
-        return self.getLandegj(l, j,s)*(-1)**(f2+j+self.I+1)\
-            *np.sqrt((2*f1+1)*(2*f2+1)*j*(j+1)*(2*j+1)) \
-            *self.getSphericalDipoleMatrixElement(f1, mf1, f2, mf2,q) \
-            *Wigner6j(f1, 1, f2, j, self.I, j)            
-            
+        return self.getLandegj(l, j, s) * (-1)**(f2 + j + self.I + 1)\
+            * np.sqrt((2 * f1 + 1) * (2 * f2 + 1) * j * (j + 1) * (2 * j + 1)) \
+            * self.getSphericalDipoleMatrixElement(f1, mf1, f2, mf2, q) \
+            * Wigner6j(f1, 1, f2, j, self.I, j)
 
-    def getLandegj(self,l,j,s=0.5):
+    def getLandegj(self, l, j, s=0.5):
         r"""
             Lande g-factor :math:`g_J\simeq 1+\frac{j(j+1)+s(s+1)-l(l+1)}{2j(j+1)}`
 
@@ -2161,9 +2155,9 @@ class AlkaliAtom(object):
             Returns:
                 float: Lande g-factor ( :math:`g_J`)
         """
-        return 1.0+(j*(j+1.0)+s*(s+1.0)-l*(l+1.0))/(2.0*j*(j+1.0))
+        return 1.0 + (j * (j + 1.0) + s * (s + 1.0) - l * (l + 1.0)) / (2.0 * j * (j + 1.0))
 
-    def getLandegjExact(self,l,j,s=0.5):
+    def getLandegjExact(self, l, j, s=0.5):
         r"""
             Lande g-factor :math:`g_J=g_L\frac{j(j+1)-s(s+1)+l(l+1)}{2j(j+1)}+g_S\frac{j(j+1)+s(s+1)-l(l+1)}{2j(j+1)}`
 
@@ -2176,10 +2170,11 @@ class AlkaliAtom(object):
             Returns:
                 float: Lande g-factor ( :math:`g_J`)
         """
-        return self.gL*(j*(j+1.0)-s*(s+1.0)+l*(l+1.0))/(2.0*j*(j+1.0)) \
-            +self.gS*(j*(j+1.0)+s*(s+1.0)-l*(l+1.0))/(2.0*j*(j+1.0))
+        return self.gL * (j * (j + 1.0) - s * (s + 1.0) + l * (l + 1.0)) / (2.0 * j * (j + 1.0)) \
+            + self.gS * (j * (j + 1.0) + s * (s + 1.0) - l *
+                         (l + 1.0)) / (2.0 * j * (j + 1.0))
 
-    def getLandegf(self,l,j,f,s=0.5):
+    def getLandegf(self, l, j, f, s=0.5):
         r"""
             Lande g-factor :math:`g_F\simeq g_J\frac{f(f+1)-I(I+1)+j(j+1)}{2f(f+1)}`
 
@@ -2193,10 +2188,11 @@ class AlkaliAtom(object):
             Returns:
                 float: Lande g-factor ( :math:`g_F`)
         """
-        gf = self.getLandegj(l,j,s)*(f*(f+1.0)-self.I*(self.I+1.0)+j*(j+1.0))/(2.0*f*(f+1.0))
+        gf = self.getLandegj(l, j, s) * (f * (f + 1.0) - self.I *
+                                         (self.I + 1.0) + j * (j + 1.0)) / (2.0 * f * (f + 1.0))
         return gf
 
-    def getLandegfExact(self,l,j,f,s=0.5):
+    def getLandegfExact(self, l, j, f, s=0.5):
         r"""
             Lande g-factor :math: `g_F`
             :math:`g_F=g_J\frac{f(f+1)-I(I+1)+j(j+1)}{2f(f+1)}+g_I\frac{f(f+1)+I(I+1)-j(j+1)}{2f(f+1)}`
@@ -2211,11 +2207,12 @@ class AlkaliAtom(object):
             Returns:
                 float: Lande g-factor ( :math:`g_F`)
         """
-        gf = self.getLandegjExact(l,j,s)*(f*(f+1)-self.I*(self.I+1)+j*(j+1.0))/(2*f*(f+1.0)) \
-            + self.gI*(f*(f+1.0)+self.I*(self.I+1.0)-j*(j+1.0))/(2.0*f*(f+1.0))
+        gf = self.getLandegjExact(l, j, s) * (f * (f + 1) - self.I * (self.I + 1) + j * (j + 1.0)) / (2 * f * (f + 1.0)) \
+            + self.gI * (f * (f + 1.0) + self.I * (self.I + 1.0) -
+                         j * (j + 1.0)) / (2.0 * f * (f + 1.0))
         return gf
 
-    def getHFSEnergyShift(self,j,f,A,B=0,s=0.5):
+    def getHFSEnergyShift(self, j, f, A, B=0, s=0.5):
         r"""
              Energy shift of HFS from centre of mass :math:`\Delta E_\mathrm{hfs}`
 
@@ -2234,14 +2231,15 @@ class AlkaliAtom(object):
             Returns:
                 float: Energy shift ( :math:`\Delta E_\mathrm{hfs}`)
         """
-        K=f*(f+1.0)-self.I*(self.I+1.0)-j*(j+1.0)
-        Ehfs = A/2.0*K
-        if abs(B)>0:
-           Ehfs+=B*(3.0/2.0*K*(K+1)-2.0*self.I*(self.I+1.0)*j*(j+1.0))/(2.0*self.I*(2.0*self.I-1.0)*2.0*j*(2.0*j-1))
+        K = f * (f + 1.0) - self.I * (self.I + 1.0) - j * (j + 1.0)
+        Ehfs = A / 2.0 * K
+        if abs(B) > 0:
+            Ehfs += B * (3.0 / 2.0 * K * (K + 1) - 2.0 * self.I * (self.I + 1.0) * j *
+                         (j + 1.0)) / (2.0 * self.I * (2.0 * self.I - 1.0) * 2.0 * j * (2.0 * j - 1))
 
         return Ehfs
 
-    def getBranchingRatio(self,jg,fg,mfg,je,fe,mfe,s=0.5):
+    def getBranchingRatio(self, jg, fg, mfg, je, fe, mfe, s=0.5):
         r"""
              Branching ratio for decay from :math:`\vert j_e,f_e,m_{f_e} \rangle \rightarrow \vert j_g,f_g,m_{f_g}\rangle`
 
@@ -2258,14 +2256,15 @@ class AlkaliAtom(object):
             Returns:
                 float: branching ratio
         """
-        b=0.0
-        for q in np.arange(-1,2):
-            b+=self.getSphericalDipoleMatrixElement(fg,mfg,fe,mfe,q)**2*self._reducedMatrixElementFJ(jg,fg,je,fe)**2
+        b = 0.0
+        for q in np.arange(-1, 2):
+            b += self.getSphericalDipoleMatrixElement(
+                fg, mfg, fe, mfe, q)**2 * self._reducedMatrixElementFJ(jg, fg, je, fe)**2
 
-        #Rescale
-        return b*(2.0*je+1.0)
+        # Rescale
+        return b * (2.0 * je + 1.0)
 
-    def getSaturationIntensity(self,ng,lg,jg,fg,mfg,ne,le,je,fe,mfe,s=0.5):
+    def getSaturationIntensity(self, ng, lg, jg, fg, mfg, ne, le, je, fe, mfe, s=0.5):
         r"""
              Saturation Intensity :math:`I_\mathrm{sat}` for transition :math:`\vert j_g,f_g,m_{f_g}\rangle\rightarrow\vert j_e,f_e,m_{f_e}\rangle` in units of :math:`\mathrm{W}/\mathrm{m}^2`.
 
@@ -2282,55 +2281,58 @@ class AlkaliAtom(object):
             Returns:
                 float: Saturation Intensity in units of :math:`\mathrm{W}/\mathrm{m}^2`
         """
-        q=mfe-mfg
-        if abs(q)<=1:
-            d = self.getDipoleMatrixElementHFS(ng,lg,jg,fg,mfg,ne,le,je,fe,mfe,q)*C_e * physical_constants["Bohr radius"][0]
-            Gamma = 1./self.getStateLifetime(ne,le,je)
-            Is = C_c*epsilon_0*Gamma**2*hbar**2/(4.0*d**2)
+        q = mfe - mfg
+        if abs(q) <= 1:
+            d = self.getDipoleMatrixElementHFS(
+                ng, lg, jg, fg, mfg, ne, le, je, fe, mfe, q) * C_e * physical_constants["Bohr radius"][0]
+            Gamma = 1. / self.getStateLifetime(ne, le, je)
+            Is = C_c * epsilon_0 * Gamma**2 * hbar**2 / (4.0 * d**2)
         else:
             Is = NaN
 
         return Is
 
-    def getSaturationIntensityIsotropic(self,ng,lg,jg,fg,ne,le,je,fe):
-           r"""
-                Isotropic Saturation Intensity :math:`I_\mathrm{sat}` for transition :math:`f_g\rightarrow f_e` averaged over all polarisations in units of :math:`\mathrm{W}/\mathrm{m}^2`.
-
-                   :math:`I_\mathrm{sat} = \frac{c\epsilon_0\Gamma^2\hbar^2}{4\vert \epsilon_q\cdot\mathrm{d}\vert^2}`
-
-               Args:
-                   ng, lg, jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
-                       and projection of total angular momentum for ground state
-                   ne, le, je, fe, mfe: total orbital, fine basis (total atomic) angular momentum,
-                   and projection of total angular momentum for excited state
-
-               Returns:
-                   float: Saturation Intensity in units of :math:`\mathrm{W}/\mathrm{m}^2`
-           """
-           d_iso_sq=0.0
-           for q in range(-1,2):
-               for mfg in range(-fg,fg+1):
-                   d_iso_sq+=self.getDipoleMatrixElementHFS(ng,lg,jg,fg,mfg,ne,le,je,fe,mfg+q,q)**2
-
-           #Avergage over (2fg+1) levels and 3 polarisationsand rescale
-           d_iso_sq=d_iso_sq/3.0/(2*fg+1)*(C_e * physical_constants["Bohr radius"][0])**2
-
-           Gamma = 1./self.getStateLifetime(ne,le,je)
-           Is = C_c*epsilon_0*Gamma**2*hbar**2/(4.0*d_iso_sq)
-
-           return Is
-
-    def groundstateRamanTransition(self,Pa,wa,qa,Pb,wb,qb,Delta,f0,mf0,f1,mf1,ne,le,je):
+    def getSaturationIntensityIsotropic(self, ng, lg, jg, fg, ne, le, je, fe):
         r"""
-                Returns two-photon Rabi frequency :math:`\Omega_R`, differential AC Stark shift :math:`\Delta_\mathrm{AC}` and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}` for two-photon ground-state Raman transitions from :math:`\vert f_g,m_{f_g}\rangle\rightarrow\vert nL_{j_r} j_r,m_{j_r}\rangle` via an intermediate excited state :math:`n_e,\ell_e,j_e`.
+             Isotropic Saturation Intensity :math:`I_\mathrm{sat}` for transition :math:`f_g\rightarrow f_e` averaged over all polarisations in units of :math:`\mathrm{W}/\mathrm{m}^2`.
 
-                    :math:`\Omega_R=\displaystyle\sum_{f_e,m_{f_e}}\frac{\Omega^a_{0\rightarrow f_e}\Omega^b_{1\rightarrow f_e}}{2(\Delta-\Delta_{f_e})},`
+                :math:`I_\mathrm{sat} = \frac{c\epsilon_0\Gamma^2\hbar^2}{4\vert \epsilon_q\cdot\mathrm{d}\vert^2}`
 
-                    :math:`\Delta_{\mathrm{AC}} = \displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2-\vert\Omega^b_{1\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}+\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})}-\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})}\right],`
+            Args:
+                ng, lg, jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
+                    and projection of total angular momentum for ground state
+                ne, le, je, fe, mfe: total orbital, fine basis (total atomic) angular momentum,
+                and projection of total angular momentum for excited state
 
-                    :math:`P_\mathrm{sc} =\frac{\Gamma_e t_\pi}{2}\displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega^b_{1\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})^2}+\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})^2}\right]`
+            Returns:
+                float: Saturation Intensity in units of :math:`\mathrm{W}/\mathrm{m}^2`
+        """
+        d_iso_sq = 0.0
+        for q in range(-1, 2):
+            for mfg in range(-fg, fg + 1):
+                d_iso_sq += self.getDipoleMatrixElementHFS(
+                    ng, lg, jg, fg, mfg, ne, le, je, fe, mfg + q, q)**2
 
-                    where :math:`\tau_\pi=\pi/\Omega_R`.
+        # Avergage over (2fg+1) levels and 3 polarisationsand rescale
+        d_iso_sq = d_iso_sq / 3.0 / \
+            (2 * fg + 1) * (C_e * physical_constants["Bohr radius"][0])**2
+
+        Gamma = 1. / self.getStateLifetime(ne, le, je)
+        Is = C_c * epsilon_0 * Gamma**2 * hbar**2 / (4.0 * d_iso_sq)
+
+        return Is
+
+    def groundstateRamanTransition(self, Pa, wa, qa, Pb, wb, qb, Delta, f0, mf0, f1, mf1, ne, le, je):
+        r"""
+            Returns two-photon Rabi frequency :math:`\Omega_R`, differential AC Stark shift :math:`\Delta_\mathrm{AC}` and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}` for two-photon ground-state Raman transitions from :math:`\vert f_g,m_{f_g}\rangle\rightarrow\vert nL_{j_r} j_r,m_{j_r}\rangle` via an intermediate excited state :math:`n_e,\ell_e,j_e`.
+
+                :math:`\Omega_R=\displaystyle\sum_{f_e,m_{f_e}}\frac{\Omega^a_{0\rightarrow f_e}\Omega^b_{1\rightarrow f_e}}{2(\Delta-\Delta_{f_e})},`
+
+                :math:`\Delta_{\mathrm{AC}} = \displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2-\vert\Omega^b_{1\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}+\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})}-\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})}\right],`
+
+                :math:`P_\mathrm{sc} =\frac{\Gamma_e t_\pi}{2}\displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega^b_{1\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})^2}+\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})^2}\right]`
+
+                where :math:`\tau_\pi=\pi/\Omega_R`.
 
             Args:
                 Pa,wa,qa: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of laser a :math:`\vert 0 \rangle\rightarrow\vert e\rangle`
@@ -2345,87 +2347,93 @@ class AlkaliAtom(object):
         """
 
         #Intensity/beam (W/m^2)
-        Ia=2.0*Pa/(pi*wa**2)
-        Ib=2.0*Pb/(pi*wa**2)
-        #Electric field (V/m)
-        Ea=np.sqrt(2.0*Ia/(epsilon_0*C_c))
-        Eb=np.sqrt(2.0*Ib/(epsilon_0*C_c))
-        #Reduced Matrix Element (au)
-        ng=self.groundStateN;lg=0;jg=0.5;
-        rme_j = self.getReducedMatrixElementJ(ng,lg,jg,ne,le,je)
-        #Rescale to (Cm)
+        Ia = 2.0 * Pa / (pi * wa**2)
+        Ib = 2.0 * Pb / (pi * wa**2)
+        # Electric field (V/m)
+        Ea = np.sqrt(2.0 * Ia / (epsilon_0 * C_c))
+        Eb = np.sqrt(2.0 * Ib / (epsilon_0 * C_c))
+        # Reduced Matrix Element (au)
+        ng = self.groundStateN
+        lg = 0
+        jg = 0.5
+        rme_j = self.getReducedMatrixElementJ(ng, lg, jg, ne, le, je)
+        # Rescale to (Cm)
         rme_j *= C_e * physical_constants["Bohr radius"][0]
 
-        #Qubit level energy separation (rad s-1)
-        [A,B]=self.getHFSCoefficients(ng,lg,jg)
-        omega01 = (jg+self.I)*A*2.0*pi
+        # Qubit level energy separation (rad s-1)
+        [A, B] = self.getHFSCoefficients(ng, lg, jg)
+        omega01 = (jg + self.I) * A * 2.0 * pi
 
-        #Excited State Properties
+        # Excited State Properties
 
-        #Hyperfine Coefficients (Hz)
-        [A,B]=self.getHFSCoefficients(ne,le,je)
-        #Linewidth (rad s-1)
-        Gamma=1.0/self.getStateLifetime(ne,le,je)
+        # Hyperfine Coefficients (Hz)
+        [A, B] = self.getHFSCoefficients(ne, le, je)
+        # Linewidth (rad s-1)
+        Gamma = 1.0 / self.getStateLifetime(ne, le, je)
 
-        #Initialise Output Variables
-        OmegaR=np.zeros(np.shape(Delta))
-        AC1=np.zeros(np.shape(Delta))
-        AC0=np.zeros(np.shape(Delta))
-        Pe=np.zeros(np.shape(Delta))
+        # Initialise Output Variables
+        OmegaR = np.zeros(np.shape(Delta))
+        AC1 = np.zeros(np.shape(Delta))
+        AC0 = np.zeros(np.shape(Delta))
+        Pe = np.zeros(np.shape(Delta))
 
-        #Loop over excited state energylevels
-        for fe in range(int(abs(je-self.I)),int(1.0+(je+self.I))):
-            Ehfs=2.0*np.pi*self.getHFSEnergyShift(je,fe,A,B); #Hyperfine energy shift (rad s-1)
-            for mfe in range(max(-fe,min(mf1,mf0)-1),1+min(fe,max(mf1,mf0)+1)):
+        # Loop over excited state energylevels
+        for fe in range(int(abs(je - self.I)), int(1.0 + (je + self.I))):
+            # Hyperfine energy shift (rad s-1)
+            Ehfs = 2.0 * np.pi * self.getHFSEnergyShift(je, fe, A, B)
+            for mfe in range(max(-fe, min(mf1, mf0) - 1), 1 + min(fe, max(mf1, mf0) + 1)):
 
-                #Rabi frequency of each laser from each transition (rad s-1)
-                Omaf0 = Ea*rme_j/hbar*self.getSphericalDipoleMatrixElement(f0,mf0,fe,mfe,qa) \
-                    *self._reducedMatrixElementFJ(jg,f0,je,fe)
+                # Rabi frequency of each laser from each transition (rad s-1)
+                Omaf0 = Ea * rme_j / hbar * self.getSphericalDipoleMatrixElement(f0, mf0, fe, mfe, qa) \
+                    * self._reducedMatrixElementFJ(jg, f0, je, fe)
 
-                Omaf1 = Ea*rme_j/hbar*self.getSphericalDipoleMatrixElement(f1,mf1,fe,mfe,qa) \
-                    *self._reducedMatrixElementFJ(jg,f1,je,fe)
+                Omaf1 = Ea * rme_j / hbar * self.getSphericalDipoleMatrixElement(f1, mf1, fe, mfe, qa) \
+                    * self._reducedMatrixElementFJ(jg, f1, je, fe)
 
-                Ombf0 = Eb*rme_j/hbar*self.getSphericalDipoleMatrixElement(f0,mf0,fe,mfe,qb) \
-                    *self._reducedMatrixElementFJ(jg,f0,je,fe)
+                Ombf0 = Eb * rme_j / hbar * self.getSphericalDipoleMatrixElement(f0, mf0, fe, mfe, qb) \
+                    * self._reducedMatrixElementFJ(jg, f0, je, fe)
 
-                Ombf1 = Eb*rme_j/hbar*self.getSphericalDipoleMatrixElement(f1,mf1,fe,mfe,qb) \
-                    *self._reducedMatrixElementFJ(jg,f1,je,fe)
+                Ombf1 = Eb * rme_j / hbar * self.getSphericalDipoleMatrixElement(f1, mf1, fe, mfe, qb) \
+                    * self._reducedMatrixElementFJ(jg, f1, je, fe)
 
-                #AC Stark shift on qubit states
-                AC1+=Ombf1**2/(4*(Delta-Ehfs))+Omaf1**2/(4*(Delta+omega01-Ehfs))
-                AC0+=Omaf0**2/(4*(Delta-Ehfs))+Ombf0**2/(4*(Delta-omega01-Ehfs))
+                # AC Stark shift on qubit states
+                AC1 += Ombf1**2 / (4 * (Delta - Ehfs)) + \
+                    Omaf1**2 / (4 * (Delta + omega01 - Ehfs))
+                AC0 += Omaf0**2 / (4 * (Delta - Ehfs)) + \
+                    Ombf0**2 / (4 * (Delta - omega01 - Ehfs))
 
-                #Two-Photon Rabi Frequency
-                OmegaR+=Omaf0*Ombf1/(2*(Delta-Ehfs))
+                # Two-Photon Rabi Frequency
+                OmegaR += Omaf0 * Ombf1 / (2 * (Delta - Ehfs))
 
-                #Excitated state population Pe
-                Pe+=0.5*Omaf0**2/(2*(Delta-Ehfs)**2)+0.5*Ombf1**2/(2*(Delta-Ehfs)**2) \
-                    +0.5*Omaf1**2/(2*(Delta+omega01-Ehfs)**2)+0.5*Ombf0**2/(2*(Delta-omega01-Ehfs)**2)
+                # Excitated state population Pe
+                Pe += 0.5 * Omaf0**2 / (2 * (Delta - Ehfs)**2) + 0.5 * Ombf1**2 / (2 * (Delta - Ehfs)**2) \
+                    + 0.5 * Omaf1**2 / (2 * (Delta + omega01 - Ehfs)**2) + \
+                    0.5 * Ombf0**2 / (2 * (Delta - omega01 - Ehfs)**2)
 
-        #Total Differential Shift
-        AC = AC0-AC1
+        # Total Differential Shift
+        AC = AC0 - AC1
 
-        #Pi-rotation time (s)
-        tau_pi = pi/abs(OmegaR)
-        #Spontaneous Emission Probability
-        Psc=Gamma*tau_pi*Pe;
+        # Pi-rotation time (s)
+        tau_pi = pi / abs(OmegaR)
+        # Spontaneous Emission Probability
+        Psc = Gamma * tau_pi * Pe
 
-        return OmegaR,AC,Psc
+        return OmegaR, AC, Psc
 
-    def twoPhotonRydbergExcitation(self,Pp,wp,qp,Pc,wc,qc,Delta,fg,mfg,ne,le,je,nr,lr,jr,mjr):
+    def twoPhotonRydbergExcitation(self, Pp, wp, qp, Pc, wc, qc, Delta, fg, mfg, ne, le, je, nr, lr, jr, mjr):
         r"""
                 Returns two-photon Rabi frequency :math:`\Omega_R`, ground AC Stark shift :math:`\Delta_{\mathrm{AC}_g}`, Rydberg state AC Stark shift :math:`\Delta_{\mathrm{AC}_r}` and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}` for two-photon  excitation from :math:`\vert f_h,m_{f_g}\rangle\rightarrow \vert j_r,m_{j_r}\rangle` via intermediate excited state
-        
+
                     :math:`\Omega_R=\displaystyle\sum_{f_e,m_{f_e}}\frac{\Omega_p^{g\rightarrow f_e}\Omega_c^{f_e\rightarrow r}}{2(\Delta-\Delta_{f_e})}`
-        
+
                     :math:`\Delta_{\mathrm{AC}_g} = \displaystyle\sum_{f_e,m_{f_e}}\frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}`
-        
+
                     :math:`\Delta_{\mathrm{AC}_r} = \displaystyle\sum_{f_e,m_{f_e}}\frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}``
-        
+
                     :math:`P_\mathrm{sc} = \frac{\Gamma_et_\pi}{2}\displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega_c^{f_e\rightarrow r}\vert^2}{2(\Delta-\Delta_{f_e})^2}\right]`
-        
+
                 where :math:`\tau_\pi=\pi/\Omega_R`.
-        
+
                 Args:
                     Pp,wp,qp: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
                     Pb,wb,qb: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
@@ -2434,162 +2442,170 @@ class AlkaliAtom(object):
                     f1,mf1: Upper hyperfine level
                     ne, le, je: principal, orbital, total orbital quantum numbers of excited state
                     nr,lr,jr,mjr : principal quantum number, orbital, total orbital and projection quantum number of target Rydberg state
-        
+
                 Returns:
                     float: Two-Photon Rabi frequency :math:`\Omega_R` (units :math:`\mathrm{rads}^{-1}`), ground-state AC Stark shift :math:`\Delta_{\mathrm{AC}_g}` (units :math:`\mathrm{rads}^{-1}`) Rydberg-state AC Stark shift :math:`\Delta_{\mathrm{AC}_r}` (units :math:`\mathrm{rads}^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
         """
 
-        #Intensity/beam (W/m^2)
-        Ip=2.0*Pp/(pi*wp**2)
-        Ic=2.0*Pc/(pi*wc**2)
-        #Electric field (V/m)
-        Ep=np.sqrt(2.0*Ip/(epsilon_0*C_c))
-        Ec=np.sqrt(2.0*Ic/(epsilon_0*C_c))
+        # Intensity/beam (W/m^2)
+        Ip = 2.0 * Pp / (pi * wp**2)
+        Ic = 2.0 * Pc / (pi * wc**2)
+        # Electric field (V/m)
+        Ep = np.sqrt(2.0 * Ip / (epsilon_0 * C_c))
+        Ec = np.sqrt(2.0 * Ic / (epsilon_0 * C_c))
 
-        #Excited State Properties
+        # Excited State Properties
 
-        #Reduced Matrix Element (au)
-        ng=self.groundStateN;lg=0;jg=0.5;
-        rme_j = self.getReducedMatrixElementJ(ng,lg,jg,ne,le,je)
+        # Reduced Matrix Element (au)
+        ng = self.groundStateN
+        lg = 0
+        jg = 0.5
+        rme_j = self.getReducedMatrixElementJ(ng, lg, jg, ne, le, je)
 
-        #Rescale to (Cm)
+        # Rescale to (Cm)
         rme_j *= C_e * physical_constants["Bohr radius"][0]
 
-        #Hyperfine Coefficients (Hz)
-        [A,B]=self.getHFSCoefficients(ne,le,je)
-        #Linewidth (rad s-1)
-        Gamma=1.0/self.getStateLifetime(ne,le,je)
+        # Hyperfine Coefficients (Hz)
+        [A, B] = self.getHFSCoefficients(ne, le, je)
+        # Linewidth (rad s-1)
+        Gamma = 1.0 / self.getStateLifetime(ne, le, je)
 
-        #Rydberg State Reduced Matrix Element (au)
-        rme_jRyd = self.getReducedMatrixElementJ(ne,le,je,nr,lr,jr)
-        #Rescale to (Cm)
+        # Rydberg State Reduced Matrix Element (au)
+        rme_jRyd = self.getReducedMatrixElementJ(ne, le, je, nr, lr, jr)
+        # Rescale to (Cm)
         rme_jRyd *= C_e * physical_constants["Bohr radius"][0]
 
-        #Initialise Output Variables
-        OmegaR=np.zeros(np.shape(Delta))
-        ACg=np.zeros(np.shape(Delta))
-        ACr=np.zeros(np.shape(Delta))
-        Pe=np.zeros(np.shape(Delta))
+        # Initialise Output Variables
+        OmegaR = np.zeros(np.shape(Delta))
+        ACg = np.zeros(np.shape(Delta))
+        ACr = np.zeros(np.shape(Delta))
+        Pe = np.zeros(np.shape(Delta))
 
-        #Loop over excited state energylevels
-        for fe in range(int(abs(je-self.I)),1+int(je+self.I)):
-            Ehfs=2.0*np.pi*self.getHFSEnergyShift(je,fe,A,B); #Hyperfine energy shift (rad s-1)
-            for mfe in range(-fe,fe+1): #range(max(-fe,min(mf1,mf0)-1),1+min(fe,max(mf1,mf0)+1)):
+        # Loop over excited state energylevels
+        for fe in range(int(abs(je - self.I)), 1 + int(je + self.I)):
+            # Hyperfine energy shift (rad s-1)
+            Ehfs = 2.0 * np.pi * self.getHFSEnergyShift(je, fe, A, B)
+            # range(max(-fe,min(mf1,mf0)-1),1+min(fe,max(mf1,mf0)+1)):
+            for mfe in range(-fe, fe + 1):
 
-                #Probe Rabi Frequency (rad s-1)
-                OmP = Ep*rme_j/hbar*self.getSphericalDipoleMatrixElement(fg,mfg,fe,mfe,qp) \
-                    *self._reducedMatrixElementFJ(jg,fg,je,fe)
-                #Coupling Rabi Frequency (rad s-1)
-                OmC = Ec*rme_jRyd/hbar*self.getSphericalMatrixElementHFStoFS(je,fe,mfe,jr,mjr,qc)
+                # Probe Rabi Frequency (rad s-1)
+                OmP = Ep * rme_j / hbar * self.getSphericalDipoleMatrixElement(fg, mfg, fe, mfe, qp) \
+                    * self._reducedMatrixElementFJ(jg, fg, je, fe)
+                # Coupling Rabi Frequency (rad s-1)
+                OmC = Ec * rme_jRyd / hbar * \
+                    self.getSphericalMatrixElementHFStoFS(
+                        je, fe, mfe, jr, mjr, qc)
 
-                #AC Stark shift on ground state (rad s-1)
-                ACg+=(OmP**2)/(4*(Delta-Ehfs))
-                #AC Stark shift on Rydberg state (rad s-1)
-                ACr+=(OmC**2)/(4*(Delta-Ehfs))
+                # AC Stark shift on ground state (rad s-1)
+                ACg += (OmP**2) / (4 * (Delta - Ehfs))
+                # AC Stark shift on Rydberg state (rad s-1)
+                ACr += (OmC**2) / (4 * (Delta - Ehfs))
 
-                #Two-Photon Rabi Frequency (rad s-1)
-                OmegaR+=OmP*OmC/(2*(Delta-Ehfs))
+                # Two-Photon Rabi Frequency (rad s-1)
+                OmegaR += OmP * OmC / (2 * (Delta - Ehfs))
 
-                #Excitated state population Pe
-                Pe+=0.5*(OmP**2+OmC**2)/(2*(Delta-Ehfs)**2)
+                # Excitated state population Pe
+                Pe += 0.5 * (OmP**2 + OmC**2) / (2 * (Delta - Ehfs)**2)
 
-        #Pi-rotation time (s)
-        tau_pi = pi/abs(OmegaR)
-        #Spontaneous Emission Probability
-        Psc=Gamma*tau_pi*Pe;
+        # Pi-rotation time (s)
+        tau_pi = pi / abs(OmegaR)
+        # Spontaneous Emission Probability
+        Psc = Gamma * tau_pi * Pe
 
-        return OmegaR,ACg,ACr,Psc
+        return OmegaR, ACg, ACr, Psc
 
-
-    def _spinMatrices(self,j):
-        #SPINMATRICES Generates spin-matrices for spin S
+    def _spinMatrices(self, j):
+        # SPINMATRICES Generates spin-matrices for spin S
         #   [Sx,Sy,Sz]=SPINMATRICES(S) returns the Sx,Sy,Sz spin
-        #   matrices calculated using raising and lowering operators        
-        mj=-np.arange(-j+1,j+1)
-        jm=np.sqrt(j*(j+1)-mj*(mj+1))
-        Jplus=np.matrix(np.diag(jm,1))     #Raising Operator
-        Jminus=np.matrix(np.diag(jm,-1))   #Lowering Operator
-        Jx=(Jplus+Jminus)/2.0
-        Jy=(-Jplus+Jminus)*1j/2.0
-        Jz=(Jplus*Jminus-Jminus*Jplus)/2.0
-        #J2=Jx**2+Jy**2+Jz**2
-        return Jx,Jy,Jz
-    
-    
-    def breitRabi(self,n,l,j,B):
+        #   matrices calculated using raising and lowering operators
+        mj = -np.arange(-j + 1, j + 1)
+        jm = np.sqrt(j * (j + 1) - mj * (mj + 1))
+        Jplus = np.matrix(np.diag(jm, 1))  # Raising Operator
+        Jminus = np.matrix(np.diag(jm, -1))  # Lowering Operator
+        Jx = (Jplus + Jminus) / 2.0
+        Jy = (-Jplus + Jminus) * 1j / 2.0
+        Jz = (Jplus * Jminus - Jminus * Jplus) / 2.0
+        # J2=Jx**2+Jy**2+Jz**2
+        return Jx, Jy, Jz
+
+    def breitRabi(self, n, l, j, B):
         r"""
              Returns exact Zeeman energies math:`E_z` for states :math:`\vert F,m_f\rangle` in the :math:`\ell,j` manifold via exact diagonalisation of the Zeeman interaction :math:`\mathcal{H}_z` and the hyperfine interaction :math:`\mathcal{H}_\mathrm{hfs}` given by equations
-        
+
                     :math:`\mathcal{H}_Z=\frac{\mu_B}{\hbar}(g_J J_z+g_I I_z)B_z`
-            
+
                 and
 
                     :math:`\mathcal{H}_\mathrm{hfs}=A_\mathrm{hfs}I\cdot J + B_\mathrm{hfs}\frac{3(I\cdot J)^2+3/2 I\cdot J -I^2J^2}{2I(2I+1)2J(2J+1)}`.
-        
+
             Args:
                 n,l,j: principal,orbital, total orbital quantum numbers
                 B: Magnetic Field (units T)
- 
+
             Returns:
                 float: State energy :math:`E_z` in SI units (Hz), state f, state mf
         """
-        
-        [Ahfs,Bhfs]=self.getHFSCoefficients(n,l,j)
-        
-        #Bohr Magneton
+
+        [Ahfs, Bhfs] = self.getHFSCoefficients(n, l, j)
+
+        # Bohr Magneton
         uB = physical_constants["Bohr magneton in Hz/T"][0]
-        
-        #Define Spin Matrices
-        N=int((2*j+1)*(2*self.I+1))
-        [jx,jy,jz]=self._spinMatrices(j)
-        ji=np.eye(int(2.0*j+1.0))
-        [ix,iy,iz]=self._spinMatrices(self.I)
-        ii=np.eye(int(2.0*self.I+1.0))
-        
-        #Calculate Tensor Products
-        Jx=np.kron(jx,ii);Jy=np.kron(jy,ii);Jz=np.kron(jz,ii);
-        Ix=np.kron(ji,ix);Iy=np.kron(ji,iy);Iz=np.kron(ji,iz);
-        J2=Jx**2+Jy**2+Jz**2
-        I2=Ix**2+Iy**2+Iz**2
-        IJ=Ix*Jx+Iy*Jy+Iz*Jz
-        #F Basis
-        Fx=Jx+Ix
-        Fy=Jy+Iy
-        Fz=Jz+Iz
-        F2=Fx**2+Fy**2+Fz**2
- 
-        #Hyperfine Interaction
-        Hhfs=Ahfs*IJ
-        if(Bhfs!=0):
-            Hhfs+=Bhfs*(3*IJ*IJ+3/2*IJ-I2*J2)/(2*self.I*(2*self.I-1)*j*(2*j-1))
-        
-        #Zeeman Interaction
-        Hz=uB*(self.getLandegjExact(l,j)*Jz+self.gI*Iz)
-        
-        #Initialise Output
-        en = np.zeros([B.size,N])
-        
-        ctr=-1
+
+        # Define Spin Matrices
+        N = int((2 * j + 1) * (2 * self.I + 1))
+        [jx, jy, jz] = self._spinMatrices(j)
+        ji = np.eye(int(2.0 * j + 1.0))
+        [ix, iy, iz] = self._spinMatrices(self.I)
+        ii = np.eye(int(2.0 * self.I + 1.0))
+
+        # Calculate Tensor Products
+        Jx = np.kron(jx, ii)
+        Jy = np.kron(jy, ii)
+        Jz = np.kron(jz, ii)
+        Ix = np.kron(ji, ix)
+        Iy = np.kron(ji, iy)
+        Iz = np.kron(ji, iz)
+        J2 = Jx**2 + Jy**2 + Jz**2
+        I2 = Ix**2 + Iy**2 + Iz**2
+        IJ = Ix * Jx + Iy * Jy + Iz * Jz
+        # F Basis
+        Fx = Jx + Ix
+        Fy = Jy + Iy
+        Fz = Jz + Iz
+        F2 = Fx**2 + Fy**2 + Fz**2
+
+        # Hyperfine Interaction
+        Hhfs = Ahfs * IJ
+        if(Bhfs != 0):
+            Hhfs += Bhfs * (3 * IJ * IJ + 3 / 2 * IJ - I2 * J2) / \
+                (2 * self.I * (2 * self.I - 1) * j * (2 * j - 1))
+
+        # Zeeman Interaction
+        Hz = uB * (self.getLandegjExact(l, j) * Jz + self.gI * Iz)
+
+        # Initialise Output
+        en = np.zeros([B.size, N])
+
+        ctr = -1
         for b in B:
-            ctr=ctr+1
-            eVal,eVec = eigh(Hhfs+b*Hz)    
-            en[ctr,:]=eVal
-            
-            
-        #Determine States
-        eVal,eVec = eigh(Hhfs+1e-4*Hz)    
-        eVec=np.matrix(eVec)
-        f=np.zeros(N)
-        mf=np.zeros(N)
+            ctr = ctr + 1
+            eVal, eVec = eigh(Hhfs + b * Hz)
+            en[ctr, :] = eVal
+
+        # Determine States
+        eVal, eVec = eigh(Hhfs + 1e-4 * Hz)
+        eVec = np.matrix(eVec)
+        f = np.zeros(N)
+        mf = np.zeros(N)
         for ctr in range(N):
-            f2=eVec[:,ctr].conj().T*F2*eVec[:,ctr]
-            f[ctr]=np.round(1/2*(-1+np.sqrt(1+4*np.real(f2[0,0]))))
-            m=eVec[:,ctr].conj().T*Fz*eVec[:,ctr]
-            mf[ctr]=np.round(np.real(m[0,0]))
-        
-            
-        return en,f,mf
-        
+            f2 = eVec[:, ctr].conj().T * F2 * eVec[:, ctr]
+            f[ctr] = np.round(
+                1 / 2 * (-1 + np.sqrt(1 + 4 * np.real(f2[0, 0]))))
+            m = eVec[:, ctr].conj().T * Fz * eVec[:, ctr]
+            mf[ctr] = np.round(np.real(m[0, 0]))
+
+        return en, f, mf
+
 ### JDP EDITS FINISH ###
 
 
@@ -3073,8 +3089,8 @@ class _EFieldCoupling:
 
         c.execute(''' INSERT INTO eFieldCoupling_angular
                             VALUES (?,?,?, ?,?,?, ?, ?)''',
-                       [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2,
-                        s * 2, sumPart])
+                  [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2,
+                   s * 2, sumPart])
         self.conn.commit()
 
         return sumPart
@@ -3116,8 +3132,8 @@ class _EFieldCoupling:
 
         c.execute(''' INSERT INTO eFieldCoupling
                             VALUES (?,?,?, ?,?,?, ?, ?)''',
-                       [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2,
-                        coupling])
+                  [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2,
+                   coupling])
         self.conn.commit()
 
         # return result
