@@ -70,3 +70,5 @@
 6;2;1.5;4;3;2.5;9.938;"table II";1;0.001;"Physical Review A, 69 022509 (2004)";"10.1103/PhysRevA.69.022509"
 6;2;2.5;4;3;2.5;2.642;"table II";1;0.001;"Physical Review A, 69 022509 (2004)";"10.1103/PhysRevA.69.022509"
 6;2;2.5;4;3;3.5;11.813;"table II";1;0.001;"Physical Review A, 69 022509 (2004)";"10.1103/PhysRevA.69.022509"
+5;0;0.5;5;1;0.5;4.2321;"table 7, average 87+85 Rb";0;0.0001;"Rubidium 8x D Line Data";"http://steck.us/alkalidata"
+5;0;0.5;5;1;1.5;5.9783;"table 7, average 87+85 Rb";0;0.0001;"Rubidium 8x D Line Data";"http://steck.us/alkalidata"

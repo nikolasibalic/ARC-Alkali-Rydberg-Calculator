@@ -163,3 +163,5 @@ n1,l1,j1,n2,l2,j2,dipole matrix element reduced l basis (a.u.),comment,"theory =
 7,2,2.5,11,1,1.5,1.97,"table I, absolute",1,0.06,"Physical Review A, 94 012505 (2016)",10.1103/PhysRevA.94.012505
 6,0,0.5,7,1,0.5,0.2757,"table I, reduced",0,0.001,"Physical Review A, 66 020101 (2002)",10.1103/PhysRevA.66.020101
 6,0,0.5,7,1,1.5,0.5856,"table I, reduced",0,0.001,"Physical Review A, 66 020101 (2002)",10.1103/PhysRevA.66.020101
+6,0,0.5,6,1,0.5,4.5003,"table 7, reduced*sqrt(2*1/2+1)",0,0.001,"Cesium D Line Data", https://steck.us/alkalidata/cesiumnumbers.pdf
+6,0,0.5,6,1,1.5,6.3337,"table 7, reduced*sqrt(2*1/2+1)",0,0.001,"Cesium D Line Data", https://steck.us/alkalidata/cesiumnumbers.pdf

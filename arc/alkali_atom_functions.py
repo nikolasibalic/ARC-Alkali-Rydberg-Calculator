@@ -25,6 +25,8 @@ import numpy as np
 import re
 import shutil
 
+from numpy.linalg import eigh
+
 from .wigner import Wigner6j, Wigner3j, CG, WignerDmatrix
 from scipy.constants import physical_constants, pi, epsilon_0, hbar
 from scipy.constants import k as C_k
@@ -1048,9 +1050,9 @@ class AlkaliAtom(object):
 
             Args:
                 n1. l1, j1, mj1: principal, orbital, total angular momentum,
-                    and projection of total angular momenutum for state 1
+                    and projection of total angular momentum for state 1
                 n2. l2, j2, mj2: principal, orbital, total angular momentum,
-                    and projection of total angular momenutum for state 2
+                    and projection of total angular momentum for state 2
                 q (int): specifies transition that the driving field couples to,
                     +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
                     :math:`\pi` and :math:`\sigma^-` transitions respectively.
@@ -1116,10 +1118,10 @@ class AlkaliAtom(object):
         Args:
             n1. l1, j1, f1, mf1: principal, orbital, total orbital,
                 fine basis (total atomic) angular momentum,
-                and projection of total angular momenutum for state 1
+                and projection of total angular momentum for state 1
             n2. l2, j2, f2, mf2: principal, orbital, total orbital,
                 fine basis (total atomic) angular momentum,
-                and projection of total angular momenutum for state 2
+                and projection of total angular momentum for state 2
             q (int): specifies transition that the driving field couples to,
                 +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
                 :math:`\pi` and :math:`\sigma^-` transitions respectively.
@@ -1216,7 +1218,7 @@ class AlkaliAtom(object):
 
             Args:
                 n (int): principal quantum number
-                l (int): orbital angular momenutum
+                l (int): orbital angular momentum
                 j (float): total angular momentum
                 n1 (int): principal quantum number
                 l1 (int): orbital angular momentum
@@ -1300,7 +1302,7 @@ class AlkaliAtom(object):
 
             Args:
                 n (int): principal quantum number
-                l (int): orbital angular momenutum
+                l (int): orbital angular momentum
                 j (float): total angular momentum
                 n1 (int): principal quantum number
                 l1 (int): orbital angular momentum
@@ -1334,7 +1336,7 @@ class AlkaliAtom(object):
 
             Args:
                 n (int): principal quantum number
-                l (int): orbital angular momenutum
+                l (int): orbital angular momentum
                 j (float): total angular momentum
                 n1 (int): principal quantum number
                 l1 (int): orbital angular momentum
@@ -1368,10 +1370,10 @@ class AlkaliAtom(object):
 
             Args:
                 n (int): principal quantum number
-                l (int): orbital angular momenutum
+                l (int): orbital angular momentum
                 j (float): total angular momentum
                 nn (int): principal quantum number
-                ll (int): orbital angular momenutum
+                ll (int): orbital angular momentum
                 jj (float): total angular momentum
                 n1 (int): principal quantum number
                 l1 (int): orbital angular momentum
@@ -2036,10 +2038,10 @@ class AlkaliAtom(object):
              Args:
                  j1, f1, mf1: total orbital,
                      fine basis (total atomic) angular momentum,
-                     and projection of total angular momenutum for state 1
+                     and projection of total angular momentum for state 1
                  j2, mj2: total orbital,
                      fine basis (total atomic) angular momentum,
-                     and projection of total orbital angular momenutum for state 2
+                     and projection of total orbital angular momentum for state 2
                  q (int): specifies transition that the driving field couples to,
                      +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
                      :math:`\pi` and :math:`\sigma^-` transitions respectively.
@@ -2093,10 +2095,10 @@ class AlkaliAtom(object):
             Args:
                 n1. l1, j1, f1, mf1: principal, orbital, total orbital,
                     fine basis (total atomic) angular momentum,
-                    and projection of total angular momenutum for state 1
+                    and projection of total angular momentum for state 1
                 n2. l2, j2, mj2: principal, orbital, total orbital,
                     fine basis (total atomic) angular momentum,
-                    and projection of total orbital angular momenutum for state 2
+                    and projection of total orbital angular momentum for state 2
                 q (int): specifies transition that the driving field couples to,
                     +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
                     :math:`\pi` and :math:`\sigma^-` transitions respectively.
@@ -2108,11 +2110,43 @@ class AlkaliAtom(object):
         """
         return self.getSphericalMatrixElementHFStoFS(j1, f1,mf1, j2, mj2,q) \
             *self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
+            
+            
+    def getMagneticDipoleMatrixElementHFS(self,l, j, f1, mf1,f2,mf2,q,s=0.5):
+        r"""
+          
+          Magnetic dipole matrix element :math:`\langle f_1,m_{f_1} \vert \mu_q \vert f_2,m_{f_2}\rangle` \for transitions from :math:`\vert f_1,m_{f_1}\rangle\rightarrow\vert f_2,m_{f_2}\rangle` within the same :math:`n,\ell,j` state in units of :math:`\mu_B B_q`.
+          
+            The magnetic dipole matrix element is given by
+            :math:`\langle f_1,m_{f_1}\vert \mu_q \vert f_2,m_{f_2}\rangle = g_J \mu_B B_q (-1)^{f_2+j+I+1+f_1-m_{f_1}} \sqrt{(2f_1+1)(2f_2+1)j(j+1)(2j+1)} \begin{pmatrix}f_1&1&f_2\\-m_{f_1} & -q & m_{f_2}\end{pmatrix}                \begin{Bmatrix}f_1&1&f_2\\j & I & j\end{Bmatrix}`
+
+
+        
+            Args:
+                l, j, f1, mf1: orbital, total orbital,
+                    fine basis (total atomic) angular momentum,total anuglar momentum
+                    and projection of total angular momentum for state 1
+                f2,mf2: principal, orbital, total orbital,
+                    fine basis (total atomic) angular momentum,
+                    and projection of total orbital angular momentum for state 2
+                q (int): specifies transition that the driving field couples to,
+                    +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
+                    :math:`\pi` and :math:`\sigma^-` transitions respectively.
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
+
+            Returns:
+                float: magnetic dipole matrix element (in units of :math:`\mu_BB_q`)
+        """
+        return self.getLandegj(l, j,s)*(-1)**(f2+j+self.I+1)\
+            *np.sqrt((2*f1+1)*(2*f2+1)*j*(j+1)*(2*j+1)) \
+            *self.getSphericalDipoleMatrixElement(f1, mf1, f2, mf2,q) \
+            *Wigner6j(f1, 1, f2, j, self.I, j)            
+            
 
     def getLandegj(self,l,j,s=0.5):
         r"""
-            Lande g-factor :math: `g_J`
-            :math:`g_J\simeq 1+\frac{j(j+1)+s(s+1)-l(l+1)}{2j(j+1)}`
+            Lande g-factor :math:`g_J\simeq 1+\frac{j(j+1)+s(s+1)-l(l+1)}{2j(j+1)}`
 
             Args:
                 l (float): orbital angular momentum
@@ -2127,8 +2161,7 @@ class AlkaliAtom(object):
 
     def getLandegjExact(self,l,j,s=0.5):
         r"""
-            Lande g-factor :math: `g_J`
-            :math:`g_J=g_L\frac{j(j+1)-s(s+1)+l(l+1)}{2j(j+1)}+g_S\frac{j(j+1)+s(s+1)-l(l+1)}{2j(j+1)}`
+            Lande g-factor :math:`g_J=g_L\frac{j(j+1)-s(s+1)+l(l+1)}{2j(j+1)}+g_S\frac{j(j+1)+s(s+1)-l(l+1)}{2j(j+1)}`
 
             Args:
                 l (float): orbital angular momentum
@@ -2144,8 +2177,7 @@ class AlkaliAtom(object):
 
     def getLandegf(self,l,j,f,s=0.5):
         r"""
-            Lande g-factor :math: `g_F`
-            :math:`g_F\simeq g_J\frac{f(f+1)-I(I+1)+j(j+1)}{2f(f+1)}`
+            Lande g-factor :math:`g_F\simeq g_J\frac{f(f+1)-I(I+1)+j(j+1)}{2f(f+1)}`
 
             Args:
                 l (float): orbital angular momentum
@@ -2181,7 +2213,7 @@ class AlkaliAtom(object):
 
     def getHFSEnergyShift(self,j,f,A,B=0,s=0.5):
         r"""
-             Energy shift of HFS from centre of mass :math: `\Delta E_\mathrm{hfs}`
+             Energy shift of HFS from centre of mass :math:`\Delta E_\mathrm{hfs}`
 
             :math:`\Delta E_\mathrm{hfs} = \frac{A}{2}K+B\frac{\frac{3}{2}K(K+1)-2I(I+1)J(J+1)}{2I(2I-1)2J(2J-1)}`
 
@@ -2217,9 +2249,9 @@ class AlkaliAtom(object):
 
             Args:
                 jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
-                    and projection of total angular momenutum for ground state
+                    and projection of total angular momentum for ground state
                 je, fe, mfe: total orbital, fine basis (total atomic) angular momentum,
-                and projection of total angular momenutum for excited state
+                and projection of total angular momentum for excited state
                 s (float): optional, total spin angular momentum of state.
                     By default 0.5 for Alkali atoms.
 
@@ -2241,9 +2273,9 @@ class AlkaliAtom(object):
 
             Args:
                 ng, lg, jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
-                    and projection of total angular momenutum for ground state
+                    and projection of total angular momentum for ground state
                 ne, le, je, fe, mfe: total orbital, fine basis (total atomic) angular momentum,
-                and projection of total angular momenutum for excited state
+                and projection of total angular momentum for excited state
                 s (float): optional, total spin angular momentum of state.
                     By default 0.5 for Alkali atoms.
 
@@ -2268,9 +2300,9 @@ class AlkaliAtom(object):
 
                Args:
                    ng, lg, jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
-                       and projection of total angular momenutum for ground state
+                       and projection of total angular momentum for ground state
                    ne, le, je, fe, mfe: total orbital, fine basis (total atomic) angular momentum,
-                   and projection of total angular momenutum for excited state
+                   and projection of total angular momentum for excited state
 
                Returns:
                    float: Saturation Intensity in units of :math:`\mathrm{W}/\mathrm{m}^2`
@@ -2497,6 +2529,90 @@ class AlkaliAtom(object):
         Psc=Gamma*tau_pi*Pe;
 
         return OmegaR,ACg,ACr,Psc
+
+
+    def _spinMatrices(self,j):
+        #SPINMATRICES Generates spin-matrices for spin S
+        #   [Sx,Sy,Sz]=SPINMATRICES(S) returns the Sx,Sy,Sz spin
+        #   matrices calculated using raising and lowering operators        
+        mj=-np.arange(-j+1,j+1)
+        jm=np.sqrt(j*(j+1)-mj*(mj+1))
+        Jplus=np.matrix(np.diag(jm,1))     #Raising Operator
+        Jminus=np.matrix(np.diag(jm,-1))   #Lowering Operator
+        Jx=(Jplus+Jminus)/2.0
+        Jy=(-Jplus+Jminus)*1j/2.0
+        Jz=(Jplus*Jminus-Jminus*Jplus)/2.0
+        #J2=Jx**2+Jy**2+Jz**2
+        return Jx,Jy,Jz
+    
+    
+    def breitRabi(self,n,l,j,B):
+        r"""
+             Returns exact Zeeman energies math:`E_z` for states :math:`\vert F,m_f\rangle` \
+                in the :math:`\ell,j` manifold via exact diagonalisation of the \
+                Zeeman interaction :math:`\mathcal{H}_z` and the hyperfine interaction \
+                :math:`\mathcal{H}_\mathrm{hfs}` given by equations
+        
+                :math:`\mathcal{H}_Z=\frac{\mu_B}{\hbar}(g_J J_z+g_I I_z)B_z`
+            
+                and
+
+                :math:`\mathcal{H}_\mathrm{hfs}=A_\mathrm{hfs}I\cdot J + \
+                    B_\mathrm{hfs}\frac{3(I\cdot J)^2+3/2 I\cdot J -I^2J^2} \
+                    {2I(2I+1)2J(2J+1)}`.
+        
+            Args:
+                n,l,j: principal,orbital, total orbital quantum numbers
+                B: Magnetic Field (units T)
+ 
+            Returns:
+                float: State energy :math:`E_z` in SI units (Hz)
+        """
+        
+        [Ahfs,Bhfs]=self.getHFSCoefficients(n,l,j)
+        
+        #Bohr Magneton
+        uB = physical_constants["Bohr magneton in Hz/T"][0]
+        
+        #Define Spin Matrices
+        N=int((2*j+1)*(2*self.I+1))
+        [jx,jy,jz]=self._spinMatrices(j)
+        ji=np.eye(int(2.0*j+1.0))
+        [ix,iy,iz]=self._spinMatrices(self.I)
+        ii=np.eye(int(2.0*self.I+1.0))
+        
+        #Calculate Tensor Products
+        Jx=np.kron(jx,ii);Jy=np.kron(jy,ii);Jz=np.kron(jz,ii);
+        Ix=np.kron(ji,ix);Iy=np.kron(ji,iy);Iz=np.kron(ji,iz);
+        J2=Jx**2+Jy**2+Jz**2
+        I2=Ix**2+Iy**2+Iz**2
+        IJ=Ix*Jx+Iy*Jy+Iz*Jz
+        #F Basis
+        Fx=Jx+Ix
+        Fy=Jy+Iy
+        Fz=Jz+Iz
+        F2=Jx**2+Jy**2+Jz**2
+ 
+        #Hyperfine Interaction
+        Hhfs=Ahfs*IJ
+        if(Bhfs!=0):
+            Hhfs+=Bhfs*(3*IJ*IJ+3/2*IJ-I2*J2)/(2*self.I*(2*self.I-1)*j*(2*j-1))
+        
+        #Zeeman Interaction
+        Hz=uB*(self.getLandegjExact(l,j)*Jz+self.gI*Iz)
+        
+        #Initialise Output
+        en = np.zeros([B.size,N])
+        
+        ctr=-1
+        for b in B:
+            ctr=ctr+1
+            eVal,eVec = eigh(Hhfs+b*Hz)    
+            en[ctr,:]=eVal
+            
+        return en
+        
+### JDP EDITS FINISH ###
 
 
 def NumerovBack(innerLimit, outerLimit, kfun, step, init1, init2):
