@@ -203,18 +203,16 @@ class AlkaliAtom(object):
     #: uses measured energy levels otherwise
     minQuantumDefectN = 0
 
-    # SQLite connection and cursor
-    conn = False
-    c = False
-
     def __init__(self, preferQuantumDefects=True, cpp_numerov=True):
         # should the wavefunction be calculated with Numerov algorithm
         # implemented in C; if false, it uses Python implementation
         # that is much slower
+
         self.cpp_numerov = cpp_numerov
         self.preferQuantumDefects = preferQuantumDefects
 
         self._databaseInit()
+        c = self.conn.cursor()
 
         if self.cpp_numerov:
             from .arc_c_extensions import NumerovWavefunction
@@ -236,11 +234,11 @@ class AlkaliAtom(object):
                 print(e)
         # save to SQLite database
         try:
-            self.c.execute('''SELECT COUNT(*) FROM sqlite_master
+            c.execute('''SELECT COUNT(*) FROM sqlite_master
                             WHERE type='table' AND name='dipoleME';''')
-            if (self.c.fetchone()[0] == 0):
+            if (c.fetchone()[0] == 0):
                 # create table
-                self.c.execute('''CREATE TABLE IF NOT EXISTS dipoleME
+                c.execute('''CREATE TABLE IF NOT EXISTS dipoleME
                  (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED,
                  j1_x2 TINYINT UNSIGNED,
                  n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED,
@@ -249,7 +247,7 @@ class AlkaliAtom(object):
                  PRIMARY KEY (n1,l1,j1_x2,n2,l2,j2_x2)
                 ) ''')
                 if (len(data) > 0):
-                    self.c.executemany(
+                    c.executemany(
                         'INSERT INTO dipoleME VALUES (?,?,?,?,?,?,?)', data)
                 self.conn.commit()
         except sqlite3.Error as e:
@@ -275,11 +273,11 @@ class AlkaliAtom(object):
                 print(e)
         # save to SQLite database
         try:
-            self.c.execute('''SELECT COUNT(*) FROM sqlite_master
+            c.execute('''SELECT COUNT(*) FROM sqlite_master
                             WHERE type='table' AND name='quadrupoleME';''')
-            if (self.c.fetchone()[0] == 0):
+            if (c.fetchone()[0] == 0):
                 # create table
-                self.c.execute('''CREATE TABLE IF NOT EXISTS quadrupoleME
+                c.execute('''CREATE TABLE IF NOT EXISTS quadrupoleME
                  (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED,
                  j1_x2 TINYINT UNSIGNED,
                  n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED,
@@ -288,7 +286,7 @@ class AlkaliAtom(object):
                  PRIMARY KEY (n1,l1,j1_x2,n2,l2,j2_x2)
                 ) ''')
                 if (len(data) > 0):
-                    self.c.executemany(
+                    c.executemany(
                         'INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?,?)',
                         data)
                 self.conn.commit()
@@ -326,9 +324,9 @@ class AlkaliAtom(object):
         return
 
     def _databaseInit(self):
+        # SQL connection and cursor
         self.conn = sqlite3.connect(os.path.join(self.dataFolder,
                                                  self.precalculatedDB))
-        self.c = self.conn.cursor()
 
     def getPressure(self, temperature):
         """ Vapour pressure (in Pa) at given temperature
@@ -799,23 +797,25 @@ class AlkaliAtom(object):
         j1_x2 = int(round(2 * j1))
         j2_x2 = int(round(2 * j2))
 
+        c = self.conn.cursor()
+
         if useLiterature:
             # is there literature value for this DME? If there is,
             # use the best one (smalles error)
-            self.c.execute('''SELECT dme FROM literatureDME WHERE
+            c.execute('''SELECT dme FROM literatureDME WHERE
              n1= ? AND l1 = ? AND j1_x2 = ? AND
              n2 = ? AND l2 = ? AND j2_x2 = ?
              ORDER BY errorEstimate ASC''', (n1, l1, j1_x2, n2, l2, j2_x2))
-            answer = self.c.fetchone()
+            answer = c.fetchone()
             if (answer):
                 # we did found literature value
                 return answer[0]
 
         # was this calculated before? If it was, retrieve from memory
-        self.c.execute('''SELECT dme FROM dipoleME WHERE
+        c.execute('''SELECT dme FROM dipoleME WHERE
          n1= ? AND l1 = ? AND j1_x2 = ? AND
          n2 = ? AND l2 = ? AND j2_x2 = ?''', (n1, l1, j1_x2, n2, l2, j2_x2))
-        dme = self.c.fetchone()
+        dme = c.fetchone()
         if (dme):
             return dme[0]
 
@@ -841,7 +841,7 @@ class AlkaliAtom(object):
             x=r1[0:upTo]
             )
 
-        self.c.execute(''' INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?)''',
+        c.execute(''' INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?)''',
                        [n1, l1, j1_x2, n2, l2, j2_x2, dipoleElement])
         self.conn.commit()
 
@@ -896,11 +896,12 @@ class AlkaliAtom(object):
         j1_x2 = int(round(2 * j1))
         j2_x2 = int(round(2 * j2))
 
+        c = self.conn.cursors()
         # was this calculated before? If yes, retrieve from memory.
-        self.c.execute('''SELECT qme FROM quadrupoleME WHERE
+        c.execute('''SELECT qme FROM quadrupoleME WHERE
          n1= ? AND l1 = ? AND j1_x2 = ? AND
          n2 = ? AND l2 = ? AND j2_x2 = ?''', (n1, l1, j1_x2, n2, l2, j2_x2))
-        qme = self.c.fetchone()
+        qme = c.fetchone()
         if (qme):
             return qme[0]
 
@@ -929,7 +930,7 @@ class AlkaliAtom(object):
             x=r1[0:upTo]
             )
 
-        self.c.execute(''' INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?, ?)''',
+        c.execute(''' INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?, ?)''',
                        [n1, l1, j1_x2, n2, l2, j2_x2, quadrupoleElement])
         self.conn.commit()
 
@@ -1403,15 +1404,16 @@ class AlkaliAtom(object):
         # obtain dipole matrix elements from the database
 
         dipoleMatrixElement = []
-        self.c.execute('''SELECT * FROM dipoleME ''')
-        for v in self.c.fetchall():
+        c = self.conn.cursor()
+        c.execute('''SELECT * FROM dipoleME ''')
+        for v in c.fetchall():
             dipoleMatrixElement.append(v)
 
         # obtain quadrupole matrix elements from the database
 
         quadrupoleMatrixElement = []
-        self.c.execute('''SELECT * FROM quadrupoleME ''')
-        for v in self.c.fetchall():
+        c.execute('''SELECT * FROM quadrupoleME ''')
+        for v in c.fetchall():
             quadrupoleMatrixElement.append(v)
 
         # save dipole elements
@@ -1656,12 +1658,13 @@ class AlkaliAtom(object):
     def _readLiteratureValues(self):
         # clear previously saved results, since literature file
         # might have been updated in the meantime
-        self.c.execute('''DROP TABLE IF EXISTS literatureDME''')
-        self.c.execute('''SELECT COUNT(*) FROM sqlite_master
+        c = self.conn.cursor()
+        c.execute('''DROP TABLE IF EXISTS literatureDME''')
+        c.execute('''SELECT COUNT(*) FROM sqlite_master
                         WHERE type='table' AND name='literatureDME';''')
-        if (self.c.fetchone()[0] == 0):
+        if (c.fetchone()[0] == 0):
             # create table
-            self.c.execute('''CREATE TABLE IF NOT EXISTS literatureDME
+            c.execute('''CREATE TABLE IF NOT EXISTS literatureDME
              (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED, j1_x2 TINYINT UNSIGNED,
              n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED, j2_x2 TINYINT UNSIGNED,
              dme DOUBLE,
@@ -1671,7 +1674,7 @@ class AlkaliAtom(object):
              ref TINYTEXT,
              refdoi TINYTEXT
             );''')
-            self.c.execute('''CREATE INDEX compositeIndex
+            c.execute('''CREATE INDEX compositeIndex
             ON literatureDME (n1,l1,j1_x2,n2,l2,j2_x2); ''')
         self.conn.commit()
 
@@ -1681,7 +1684,7 @@ class AlkaliAtom(object):
         try:
             fn = open(os.path.join(self.dataFolder,
                                    self.literatureDMEfilename), 'r')
-            dialect = csv.Sniffer().sniff(fn.read(1024), delimiters=";,\t")
+            dialect = csv.Sniffer().sniff(fn.read(2024), delimiters=";,\t")
             fn.seek(0)
             data = csv.reader(fn, dialect, quotechar='"')
 
@@ -1735,7 +1738,7 @@ class AlkaliAtom(object):
 
             try:
                 if i > 1:
-                    self.c.executemany('''INSERT INTO literatureDME
+                    c.executemany('''INSERT INTO literatureDME
                                         VALUES (?,?,?,?,?,?,?,
                                                 ?,?,?,?,?)''',
                                        literatureDME)
@@ -1829,7 +1832,8 @@ class AlkaliAtom(object):
 
         j1_x2 = 2 * j1
         j2_x2 = 2 * j2
-        self.c.execute('''SELECT dme, typeOfSource,
+        c = self.conn.cursor()
+        c.execute('''SELECT dme, typeOfSource,
                      errorEstimate ,
                      comment ,
                      ref,
@@ -1838,7 +1842,7 @@ class AlkaliAtom(object):
                      n2 = ? AND l2 = ? AND j2_x2 = ?
                      ORDER BY errorEstimate ASC''',
                        (n1, l1, j1_x2, n2, l2, j2_x2))
-        answer = self.c.fetchone()
+        answer = c.fetchone()
         if (answer):
             # we did found literature value
             return True, answer[0], [answer[1], answer[2], answer[3],
@@ -3005,16 +3009,15 @@ class _EFieldCoupling:
         # STARK memoization
         self.conn = sqlite3.connect(os.path.join(self.dataFolder,
                                                  "precalculated_stark.db"))
-        self.c = self.conn.cursor()
 
         # ANGULAR PARTS
-
-        self.c.execute('''SELECT COUNT(*) FROM sqlite_master
+        c = self.conn.cursors()
+        c.execute('''SELECT COUNT(*) FROM sqlite_master
                             WHERE type='table'
                             AND name='eFieldCoupling_angular';''')
-        if (self.c.fetchone()[0] == 0):
+        if (c.fetchone()[0] == 0):
             # create table
-            self.c.execute('''CREATE TABLE IF NOT EXISTS eFieldCoupling_angular
+            c.execute('''CREATE TABLE IF NOT EXISTS eFieldCoupling_angular
              (l1 TINYINT UNSIGNED, j1_x2 TINYINT UNSIGNED,
              j1_mj1 TINYINT UNSIGNED,
               l2 TINYINT UNSIGNED, j2_x2 TINYINT UNSIGNED,
@@ -3027,12 +3030,12 @@ class _EFieldCoupling:
         # COUPLINGS IN ROTATED BASIS (depend on theta, phi)
         self.wgd = WignerDmatrix(self.theta, self.phi)
 
-        self.c.execute('''DROP TABLE IF EXISTS eFieldCoupling''')
-        self.c.execute('''SELECT COUNT(*) FROM sqlite_master
+        c.execute('''DROP TABLE IF EXISTS eFieldCoupling''')
+        c.execute('''SELECT COUNT(*) FROM sqlite_master
                             WHERE type='table' AND name='eFieldCoupling';''')
-        if (self.c.fetchone()[0] == 0):
+        if (c.fetchone()[0] == 0):
             # create table
-            self.c.execute('''CREATE TABLE IF NOT EXISTS eFieldCoupling
+            c.execute('''CREATE TABLE IF NOT EXISTS eFieldCoupling
              (l1 TINYINT UNSIGNED, j1_x2 TINYINT UNSIGNED,
              j1_mj1 TINYINT UNSIGNED,
               l2 TINYINT UNSIGNED, j2_x2 TINYINT UNSIGNED,
@@ -3043,11 +3046,12 @@ class _EFieldCoupling:
             self.conn.commit()
 
     def getAngular(self, l1, j1, mj1, l2, j2, mj2, s=0.5):
-        self.c.execute('''SELECT sumPart FROM eFieldCoupling_angular WHERE
+        c = self.conn.cursor()
+        c.execute('''SELECT sumPart FROM eFieldCoupling_angular WHERE
          l1= ? AND j1_x2 = ? AND j1_mj1 = ? AND
          l2 = ? AND j2_x2 = ? AND j2_mj2 = ? AND s_x2 = ?
          ''', (l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2))
-        answer = self.c.fetchone()
+        answer = c.fetchone()
         if (answer):
             return answer[0]
 
@@ -3067,7 +3071,7 @@ class _EFieldCoupling:
                     * CG(l2, ml, s, mj1 - ml, j2, mj2) \
                     * angularPart
 
-        self.c.execute(''' INSERT INTO eFieldCoupling_angular
+        c.execute(''' INSERT INTO eFieldCoupling_angular
                             VALUES (?,?,?, ?,?,?, ?, ?)''',
                        [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2,
                         s * 2, sumPart])
@@ -3079,11 +3083,12 @@ class _EFieldCoupling:
         # returns angular coupling without radial part and electric field
 
         # if calculated before, retrieve from memory
-        self.c.execute('''SELECT coupling FROM eFieldCoupling WHERE
+        c = self.conn.cursor()
+        c.execute('''SELECT coupling FROM eFieldCoupling WHERE
          l1= ? AND j1_x2 = ? AND j1_mj1 = ? AND
          l2 = ? AND j2_x2 = ? AND j2_mj2 = ? AND s_x2 = ?
          ''', (l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2))
-        answer = self.c.fetchone()
+        answer = c.fetchone()
         if (answer):
             return answer[0]
 
@@ -3109,7 +3114,7 @@ class _EFieldCoupling:
 
         # save in memory for later use
 
-        self.c.execute(''' INSERT INTO eFieldCoupling
+        c.execute(''' INSERT INTO eFieldCoupling
                             VALUES (?,?,?, ?,?,?, ?, ?)''',
                        [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2,
                         coupling])
@@ -3123,7 +3128,6 @@ class _EFieldCoupling:
         self.conn.commit()
         self.conn.close()
         self.conn = False
-        self.c = False
 
 # =================== E FIELD Coupling (END) ===================
 

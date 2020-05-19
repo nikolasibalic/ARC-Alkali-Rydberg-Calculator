@@ -342,19 +342,18 @@ class PairStateInteractions:
                     self.fcp[c1, c2, p + x] = fcoef(c1, c2, p)
 
         self.conn = False
-        self.c = False
 
     def __getAngularMatrix_M(self, l, j, ll, jj, l1, j1, l2, j2):
         # did we already calculated this matrix?
-
-        self.c.execute('''SELECT ind FROM pair_angularMatrix WHERE
+        c = self.conn.cursor()
+        c.execute('''SELECT ind FROM pair_angularMatrix WHERE
              l1 = ? AND j1_x2 = ? AND
              l2 = ? AND j2_x2 = ? AND
              l3 = ? AND j3_x2 = ? AND
              l4 = ? AND j4_x2 = ?
              ''', (l, j * 2, ll, jj * 2, l1, j1 * 2, l2, j2 * 2))
 
-        index = self.c.fetchone()
+        index = c.fetchone()
         if (index):
             return self.savedAngularMatrix_matrix[index[0]]
 
@@ -427,7 +426,7 @@ class PairStateInteractions:
 
         index = len(self.savedAngularMatrix_matrix)
 
-        self.c.execute(''' INSERT INTO pair_angularMatrix
+        c.execute(''' INSERT INTO pair_angularMatrix
                             VALUES (?,?, ?,?, ?,?, ?,?, ?)''',
                        (l, j * 2, ll, jj * 2, l1, j1 * 2, l2, j2 * 2, index))
         self.conn.commit()
@@ -442,9 +441,10 @@ class PairStateInteractions:
             return
 
         try:
-            self.c.execute('''SELECT * FROM pair_angularMatrix ''')
+            c = self.conn.cursor()
+            c.execute('''SELECT * FROM pair_angularMatrix ''')
             data = []
-            for v in self.c.fetchall():
+            for v in c.fetchall():
                 data.append(v)
 
             data = np.array(data, dtype=np.float32)
@@ -498,8 +498,8 @@ class PairStateInteractions:
         data = np.array(np.rint(data), dtype=np.int)
 
         try:
-
-            self.c.executemany('''INSERT INTO pair_angularMatrix
+            c = self.conn.cursor()
+            c.executemany('''INSERT INTO pair_angularMatrix
                 (l1, j1_x2 ,
                  l2 , j2_x2 ,
                  l3, j3_x2,
@@ -835,16 +835,16 @@ class PairStateInteractions:
         # memoization of angular parts
         self.conn = sqlite3.connect(os.path.join(self.dataFolder,
                                                  "precalculated_pair.db"))
-        self.c = self.conn.cursor()
+        c = self.conn.cursor()
 
         # ANGULAR PARTS
-        self.c.execute('''DROP TABLE IF EXISTS pair_angularMatrix''')
-        self.c.execute('''SELECT COUNT(*) FROM sqlite_master
+        c.execute('''DROP TABLE IF EXISTS pair_angularMatrix''')
+        c.execute('''SELECT COUNT(*) FROM sqlite_master
                             WHERE type='table' AND name='pair_angularMatrix';''')
-        if (self.c.fetchone()[0] == 0):
+        if (c.fetchone()[0] == 0):
             # create table
             try:
-                self.c.execute('''CREATE TABLE IF NOT EXISTS pair_angularMatrix
+                c.execute('''CREATE TABLE IF NOT EXISTS pair_angularMatrix
                  (l1 TINYINT UNSIGNED, j1_x2 TINYINT UNSIGNED,
                  l2 TINYINT UNSIGNED, j2_x2 TINYINT UNSIGNED,
                  l3 TINYINT UNSIGNED, j3_x2 TINYINT UNSIGNED,
@@ -862,7 +862,6 @@ class PairStateInteractions:
         self.conn.commit()
         self.conn.close()
         self.conn = False
-        self.c = False
 
     def getLeRoyRadius(self):
         """
