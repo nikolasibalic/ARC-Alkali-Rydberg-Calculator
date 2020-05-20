@@ -202,6 +202,10 @@ class AlkaliAtom(object):
     #: uses measured energy levels otherwise
     minQuantumDefectN = 0
 
+    #: file cotaining data on hyperfine structure (magnetic dipole A and
+    #: magnetic quadrupole B constnats).
+    hyperfineStructureData = ""
+
     def __init__(self, preferQuantumDefects=True, cpp_numerov=True):
         # should the wavefunction be calculated with Numerov algorithm
         # implemented in C; if false, it uses Python implementation
@@ -319,6 +323,7 @@ class AlkaliAtom(object):
 
         # read Literature values for dipole matrix elements
         self._readLiteratureValues()
+        self._readHFSdata()
 
         return
 
@@ -1654,6 +1659,78 @@ class AlkaliAtom(object):
         """
         return sqrt(8. * C_k * temperature / (pi * self.mass))
 
+    def _readHFSdata(self):
+        c = self.conn.cursor()
+        c.execute('''DROP TABLE IF EXISTS hfsDataAB''')
+        c.execute('''SELECT COUNT(*) FROM sqlite_master
+                 WHERE type='table' AND name='hfsDataAB';''')
+        if (c.fetchone()[0] == 0):
+            # create table
+            c.execute('''CREATE TABLE IF NOT EXISTS hfsDataAB
+                (n TINYINT UNSIGNED, l TINYINT UNSIGNED, j_x2 TINYINT UNSIGNED,
+                hfsA DOUBLE, hfsB DOUBLE,
+                typeOfSource TINYINT,
+                comment TINYTEXT,
+                ref TINYTEXT,
+                refdoi TINYTEXT
+                );''')
+            c.execute('''CREATE INDEX compositeIndexHFS
+                ON hfsDataAB (n,l,j_x2);''')
+        self.conn.commit()
+
+        if (self.hyperfineStructureData == ""):
+            return 0  # no file specified for literature values
+
+        try:
+            fn = open(os.path.join(self.dataFolder,
+                                   self.hyperfineStructureData), 'r')
+            dialect = csv.Sniffer().sniff(fn.read(2024), delimiters=";,\t")
+            fn.seek(0)
+            data = csv.reader(fn, dialect, quotechar='"')
+
+            literatureHFS = []
+            count = 0
+            for row in data:
+                if count != 0:
+                    # if not header
+                    n = int(row[0])
+                    l = int(row[1])
+                    j = float(row[2])
+                    A = float(row[3])
+                    B = float(row[4])
+                    typeOfSource = row[5]
+                    comment = row[6]
+                    ref = row[7]
+                    refdoi = row[8]
+
+                    literatureHFS.append([n, l, j * 2, A, B,
+                                          typeOfSource,
+                                          comment,
+                                          ref, refdoi])
+                count += 1
+
+            fn.close()
+            try:
+                if count > 1:
+                    c.executemany('''INSERT INTO hfsDataAB
+                                        VALUES (?,?,?,?,?,
+                                                ?,?,?,?)''',
+                                  literatureHFS)
+                    self.conn.commit()
+            except sqlite3.Error as e:
+                if count > 0:
+                    print("Error while loading precalculated values "
+                          "into the database")
+                    print(e)
+                    return
+
+        except IOError as e:
+            print("Error reading literature values File "
+                      + self.hyperfineStructureData)
+            print(e)
+
+
+
     def _readLiteratureValues(self):
         # clear previously saved results, since literature file
         # might have been updated in the meantime
@@ -1988,32 +2065,17 @@ class AlkaliAtom(object):
             Returns:
                 float: A,B hyperfine splitting constants (in Hz)
         """
+        c = self.conn.cursor()
 
-        # Place-holder for adding nice table / look up for storing other values
-        A = 0
-        B = 0
-
-        if (n == self.groundStateN) & (l == 0):
-            A = self.Ahfs
-            B = 0
-
-        elif (n == self.groundStateN) & (l == 1) & (j == 0.5):
-            A = self.AhfsD1
-            B = 0
-
-        elif (n == self.groundStateN) & (l == 1) & (j == 1.5):
-            A = self.AhfsD2
-            B = self.BhfsD2
-
-        elif (n == self.groundStateN + 1) & (l == 1) & (j == 0.5):
-            A = self.AhfsiP12
-            B = 0
-
-        elif (n == self.groundStateN + 1) & (l == 1) & (j == 1.5):
-            A = self.AhfsiP32
-            B = self.BhfsiP32
-
-        return A, B
+        c.execute('''SELECT hfsA, hfsB FROM hfsDataAB WHERE
+            n= ? AND l = ? AND j_x2 = ?''', (n, l, j*2))
+        answer = c.fetchone()
+        if (answer):
+            # we did found literature value  (A and B respectively)
+            return answer[0], answer[1]
+        else:
+            raise ValueError("There is no data available on HFS structure"
+                             " of %s state" % printStateString(n,l,j,s=s))
 
     def _reducedMatrixElementFJ(self, j1, f1, j2, f2):
 
