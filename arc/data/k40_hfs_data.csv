@@ -1,0 +1,4 @@
+n,l,j,"Hyperfine Magnetic Dipole Constant, A(Hz)","Hyperfine Magnetic Quadrupole Constant, B(Hz)","error A (Hz)","error B (Hz)","theory = 1, experiment = 0",comment,source,DOI
+4,0,0.5,-285730800.00,0.00,2400.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+4,1,1.5,-7590000.00,-3500000.00,60000.00,500000.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+5,1,1.5,-2450000.00,-1160000.00,20000.00,220000.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31

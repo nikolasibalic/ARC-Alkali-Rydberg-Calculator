@@ -1669,6 +1669,7 @@ class AlkaliAtom(object):
             c.execute('''CREATE TABLE IF NOT EXISTS hfsDataAB
                 (n TINYINT UNSIGNED, l TINYINT UNSIGNED, j_x2 TINYINT UNSIGNED,
                 hfsA DOUBLE, hfsB DOUBLE,
+                errorA DOUBLE, errorB DOUBLE,
                 typeOfSource TINYINT,
                 comment TINYTEXT,
                 ref TINYTEXT,
@@ -1698,12 +1699,15 @@ class AlkaliAtom(object):
                     j = float(row[2])
                     A = float(row[3])
                     B = float(row[4])
-                    typeOfSource = row[5]
-                    comment = row[6]
-                    ref = row[7]
-                    refdoi = row[8]
+                    errorA = float(row[5])
+                    errorB = float(row[6])
+                    typeOfSource = row[7]
+                    comment = row[8]
+                    ref = row[9]
+                    refdoi = row[10]
 
                     literatureHFS.append([n, l, j * 2, A, B,
+                                          errorA, errorB,
                                           typeOfSource,
                                           comment,
                                           ref, refdoi])
@@ -1714,6 +1718,7 @@ class AlkaliAtom(object):
                 if count > 1:
                     c.executemany('''INSERT INTO hfsDataAB
                                         VALUES (?,?,?,?,?,
+                                                ?, ?,
                                                 ?,?,?,?)''',
                                   literatureHFS)
                     self.conn.commit()

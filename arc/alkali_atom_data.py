@@ -244,16 +244,9 @@ class Caesium(AlkaliAtom):
 
     #: source of HFS magnetic dipole and quadrupole constants
     hyperfineStructureData = "cs_hfs_data.csv"
-    
-    """
-           Hyperfine splitting constants
 
-           math:`6S_{1/2},6P_{1/2},6P_{3/2}` from [#SteckCs]_
-           math:`7P_{1/2}` from [#Feiertag72]_
-           math:`7P_{3/2}` from [#Arrimondo77]_
-    """
-    gL = 0.99999587;      #: Electron orbital g-factor [#SteckCs]_
-    gI = -0.00039885395;  #: Nuclear g-factor  [#SteckCs]_
+    gL = 0.99999587      #: Electron orbital g-factor [#SteckCs]_
+    gI = -0.00039885395  #: Nuclear g-factor  [#SteckCs]_
 
 
     def getPressure(self, temperature):
@@ -407,15 +400,8 @@ class Rubidium85(AlkaliAtom):
     #: source of HFS magnetic dipole and quadrupole constants
     hyperfineStructureData = "rb85_hfs_data.csv"
 
-    """
-           Hyperfine splitting constants
-
-           math:`7S_{1/2},6P_{1/2},6P_{3/2}` from [#Steck85Rb]_
-           math:`6P_{1/2}` from [#Feiertag72]_
-           math:`6P_{3/2}` from [#Arrimondo77]_
-    """
-    gL = 0.99999354;      #: Electron orbital g-factor [#Steck85Rb]_
-    gI = -0.00029364000;  #: Nuclear g-factor  [#Steck85Rb]_
+    gL = 0.99999354      #: Electron orbital g-factor [#Steck85Rb]_
+    gI = -0.00029364000  #: Nuclear g-factor  [#Steck85Rb]_
 
     def getPressure(self, temperature):
         """
@@ -547,15 +533,8 @@ class Rubidium87(AlkaliAtom):
     #: source of HFS magnetic dipole and quadrupole constants
     hyperfineStructureData = "rb87_hfs_data.csv"
 
-    """
-           Hyperfine splitting constants
-
-           math:`7S_{1/2},6P_{1/2},6P_{3/2}` from [#Steck87Rb]_
-           math:`6P_{1/2}` from [#Feiertag72]_
-           math:`6P_{3/2}` from [#Arrimondo77]_
-    """
-    gL = 0.99999369;      #: Electron orbital g-factor [#Steck87Rb]_
-    gI = -0.0009951414;  #: Nuclear g-factor  [#Steck87Rb]_
+    gL = 0.99999369      #: Electron orbital g-factor [#Steck87Rb]_
+    gI = -0.0009951414   #: Nuclear g-factor  [#Steck87Rb]_
 
     def getPressure(self, temperature):
         """
@@ -673,6 +652,9 @@ class Lithium6(AlkaliAtom):  # Li
     elementName = "Li6"
     meltingPoint = 180.54 + 273.15  #: in K
 
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "li6_hfs_data.csv"
+
     def getPressure(self, temperature):
         """
             Pressure of atomic vapour at given temperature.
@@ -784,6 +766,9 @@ class Lithium7(AlkaliAtom):  # Li
 
     elementName = "Li7"
     meltingPoint = 180.54 + 273.15  #: in K
+
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "li7_hfs_data.csv"
 
     def getPressure(self, temperature):
         """
@@ -901,6 +886,9 @@ class Sodium(AlkaliAtom):  # Na23
     elementName = "Na23"
     meltingPoint = 97.794 + 273.15  #: in K
 
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "na23_hfs_data.csv"
+
     def getPressure(self, temperature):
         """
             Pressure of atomic vapour at given temperature.
@@ -1011,6 +999,9 @@ class Potassium39(AlkaliAtom):
 
     elementName = "K39"
     meltingPoint = 63.5 + 273.15  #: in K
+
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "k39_hfs_data.csv"
 
     def getPressure(self, temperature):
         """
@@ -1132,6 +1123,9 @@ class Potassium40(AlkaliAtom):
     elementName = "K40"
     meltingPoint = 63.5 + 273.15  #: in K
 
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "k40_hfs_data.csv"
+
     def getPressure(self, temperature):
         """
             Pressure of atomic vapour at given temperature.
@@ -1242,6 +1236,9 @@ class Potassium41(AlkaliAtom):
 
     elementName = "K41"
     meltingPoint = 63.5 + 273.15  #: in K
+
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "k41_hfs_data.csv"
 
     def getPressure(self, temperature):
         """
