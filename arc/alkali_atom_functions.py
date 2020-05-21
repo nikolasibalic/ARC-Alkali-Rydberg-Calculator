@@ -880,7 +880,7 @@ class AlkaliAtom(object):
         j1_x2 = int(round(2 * j1))
         j2_x2 = int(round(2 * j2))
 
-        c = self.conn.cursors()
+        c = self.conn.cursor()
         # was this calculated before? If yes, retrieve from memory.
         c.execute('''SELECT qme FROM quadrupoleME WHERE
          n1= ? AND l1 = ? AND j1_x2 = ? AND
@@ -2370,7 +2370,7 @@ class _EFieldCoupling:
                                                  "precalculated_stark.db"))
 
         # ANGULAR PARTS
-        c = self.conn.cursors()
+        c = self.conn.cursor()
         c.execute('''SELECT COUNT(*) FROM sqlite_master
                             WHERE type='table'
                             AND name='eFieldCoupling_angular';''')
