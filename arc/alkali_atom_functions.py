@@ -1587,7 +1587,8 @@ class AlkaliAtom(object):
                     s=s
                     )
 
-        return 1. / transitionRate
+        # add something small decay (1e-50) rate to prevent division by zero
+        return 1. / (transitionRate + 1e-50)
 
     def getRadialCoupling(self, n, l, j, n1, l1, j1, s=0.5):
         """

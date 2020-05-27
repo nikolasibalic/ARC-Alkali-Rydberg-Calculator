@@ -2352,6 +2352,7 @@ class DynamicPolarizability:
         self.nMax = nMax
 
         self.basis = []
+        self.lifetimes = []
 
         for n1 in np.arange(self.nMin, self.nMax + 1):
             lmin = self.l - 1
@@ -2371,13 +2372,19 @@ class DynamicPolarizability:
                     j1 += 1
 
         for state in self.atom.extraLevels:
-            if ((len(state)==3 or abs(state[3] - self.s) < 0.1)
+            if ((len(state) == 3 or abs(state[3] - self.s) < 0.1)
                 and
                 self.__isDipoleCoupled(
                     self.n, self.l, self.j,
                     state[0], state[1], state[2])
-                        ):
+                    ):
                 self.basis.append(state)
+
+        for state in self.basis:
+            self.lifetimes.append(self.atom.getStateLifetime(state[0],
+                                                             state[1],
+                                                             state[2],
+                                                             s=self.s))
 
     def __isDipoleCoupled(self,
                           n1, l1, j1,
@@ -2407,8 +2414,8 @@ class DynamicPolarizability:
 
 
     def getPolarizability(self, driveWavelength,
-                          mj=None,
-                          units="SI"
+                          units="SI",
+                          accountForStateLifetime=True
                           ):
         r"""
             Calculates of scalar, tensor and pondermotive polarizability
@@ -2416,23 +2423,21 @@ class DynamicPolarizability:
             Args:
                 driveWavelength (float): wavelength of driving field
                     (in units of m)
-                mj (float): optional, mj of the state for which we calculate
-                    polarizability. Default value is value of :obj:`self.j` .
                 units (string): optional, 'SI' or 'a.u.' (equivalently 'au'),
                     switches between SI units for returned result
                     (:math:`Hz V^-2 m^2` )
                     and atomic units (":math:`a_0^3` "). Defaul 'SI'
-
+                accountForStateLifetime (bool): optional, should we account
+                    for finite transition linewidths caused by finite state
+                    lifetimes. By default True.
             Returns:
                 scalar, tensor, pondermotive polarisability of state, and
                 atomic state whose resonance is closest in energy.
         """
-        if mj is None:
-            mj = self.j
 
         driveEnergy = C_c / driveWavelength * C_h
         initialLevelEnergy = self.atom.getEnergy(self.n, self.l, self.j,
-                                                s=self.s) * C_e
+                                                 s=self.s) * C_e
 
         # prefactor for vector polarisability
         prefactor1 = 1. / ((self.j + 1) * (2 * self.j + 1))
@@ -2449,10 +2454,17 @@ class DynamicPolarizability:
         alpha2 = 0.
         closestState = []
         closestEnergy = -1
-        for state in self.basis:
+
+        targetStateLifetime = self.atom.getStateLifetime(self.n, self.l,
+                                                         self.j, s=self.s)
+
+        for i, state in enumerate(self.basis):
             n1 = state[0]
             l1 = state[1]
             j1 = state[2]
+
+
+
             if abs(j1 - self.j) < 1.1 and (abs(l1 - self.l) > 0.5
                                            and abs(l1 - self.l) < 1.1):
                 coupledLevelEnergy = self.atom.getEnergy(n1, l1, j1,
@@ -2469,44 +2481,61 @@ class DynamicPolarizability:
                     # print("For given frequency we are in exact resonance with state %s" % printStateString(n1,l1,j1,s=s))
                     return None, None, None, None, None, state
 
-                if (abs(mj) < state[2]+0.1):
-                    d = self.atom.getReducedMatrixElementJ(self.n, self.l, self.j,
+                # common factors
+                if accountForStateLifetime:
+                    transitionLinewidth = (1 / self.lifetimes[i]
+                                           + 1 / targetStateLifetime) * C_h
+                else:
+                    accountForStateLifetime = 0.
+
+                # transitionEnergy
+                transitionEnergy = (coupledLevelEnergy
+                                    - initialLevelEnergy)
+
+
+                d = self.atom.getReducedMatrixElementJ(self.n, self.l, self.j,
                                                            n1, l1, j1,
                                                            s=self.s)**2 \
                         * (C_e * physical_constants["Bohr radius"][0])**2\
-                        * (coupledLevelEnergy - initialLevelEnergy) \
-                        / ((coupledLevelEnergy - initialLevelEnergy)**2
-                           - driveEnergy**2)
+                        * transitionEnergy \
+                        * (transitionEnergy**2 - driveEnergy**2
+                           + transitionLinewidth**2 / 4) \
+                        / ((transitionEnergy**2 - driveEnergy**2
+                            + transitionLinewidth**2 / 4)**2
+                           + transitionLinewidth**2 * driveEnergy**2)
 
-                    alpha0 += d
+                alpha0 += d
 
-                    # vector polarsizavility
-                    alpha1 += (-1) * (self.j * (self.j+1) + 2 - j1 * (j1 + 1)) \
-                        * driveEnergy \
+                # vector polarsizavility
+                alpha1 += (-1) * (self.j * (self.j+1) + 2 - j1 * (j1 + 1)) \
+                    * self.atom.getReducedMatrixElementJ(self.n,
+                                                         self.l,
+                                                         self.j,
+                                                         n1, l1, j1,
+                                                         s=self.s)**2\
+                    * (C_e * physical_constants["Bohr radius"][0])**2\
+                    * driveEnergy \
+                    * (transitionEnergy**2 - driveEnergy**2
+                       - transitionLinewidth**2 / 4) \
+                     / ((transitionEnergy**2 - driveEnergy**2
+                         + transitionLinewidth**2 / 4)**2
+                        + transitionLinewidth**2 * driveEnergy**2)
+
+                # tensor polarizability vanishes for j=1/2 states
+                # because Wigner6j is then zero
+                if abs(self.j - 0.5) > 0.1:
+                    alpha2 += \
+                        (- 1)**(self.j + j1 + 1) \
                         * self.atom.getReducedMatrixElementJ(self.n,
                                                              self.l,
                                                              self.j,
                                                              n1, l1, j1,
-                                                             s=self.s)**2\
+                                                             s=self.s)**2 \
                         * (C_e * physical_constants["Bohr radius"][0])**2\
+                        * Wigner6j(self.j, 1, j1, 1, self.j, 2) \
+                        * (coupledLevelEnergy - initialLevelEnergy) \
                         / ((coupledLevelEnergy - initialLevelEnergy)**2
                            - driveEnergy**2)
-
-                    # tensor polarizability vanishes for j=1/2 states
-                    # because Wigner6j is then zero
-                    if abs(self.j - 0.5) > 0.1:
-                        alpha2 += \
-                            (- 1)**(self.j + j1 + 1) \
-                            * self.atom.getReducedMatrixElementJ(self.n,
-                                                                 self.l,
-                                                                 self.j,
-                                                                 n1, l1, j1,
-                                                                 s=self.s)**2 \
-                            * (C_e * physical_constants["Bohr radius"][0])**2\
-                            * Wigner6j(self.j, 1, j1, 1, self.j, 2) \
-                            * (coupledLevelEnergy - initialLevelEnergy) \
-                            / ((coupledLevelEnergy - initialLevelEnergy)**2
-                               - driveEnergy**2)
 
         alpha0 = 2. * alpha0/(3. * (2. * self.j + 1.))
         alpha0 = alpha0 / C_h  # Hz m^2 / V^2
@@ -2539,6 +2568,7 @@ class DynamicPolarizability:
                            units="SI",
                            addCorePolarisability=True,
                            addPondermotivePolarisability=False,
+                           accountForStateLifetime=True,
                            debugOutput=False):
         r"""
         Plots of polarisability for a range of wavelengths.
@@ -2570,6 +2600,9 @@ class DynamicPolarizability:
                 trapping field intensity over the range of the electric cloud.
                 If this condition is not satisfied, one has to calculate
                 total shift as average over the electron wavefunction.
+            accountForStateLifetime (bool): optional, should we account
+                for finite transition linewidths caused by finite state
+                lifetimes. By default True.
             debugOutput (bool): optonal. Print additional output on resonances
                 Default value False.
         """
@@ -2592,7 +2625,7 @@ class DynamicPolarizability:
         for wavelength in wavelengthList:
             scalarP, vectorP, tensorP, coreP, pondermotiveP, state = self.getPolarizability(
                 wavelength,
-                mj=mj,
+                accountForStateLifetime=accountForStateLifetime,
                 units=units)
             if (scalarP is not None):
                 # we are not hitting directly the resonance
