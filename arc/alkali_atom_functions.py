@@ -16,7 +16,7 @@ from __future__ import division, print_function, absolute_import
 import sqlite3
 import csv
 import gzip
-from math import exp, sqrt
+from math import log, exp, sqrt
 from mpmath import angerj
 # for web-server execution, uncomment the following two lines
 # import matplotlib

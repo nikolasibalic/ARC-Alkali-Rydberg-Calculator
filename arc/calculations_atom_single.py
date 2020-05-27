@@ -2371,11 +2371,11 @@ class DynamicPolarizability:
                     j1 += 1
 
         for state in self.atom.extraLevels:
-            if (len(state)==3 or abs(state[3] - self.s) < 0.1
+            if ((len(state)==3 or abs(state[3] - self.s) < 0.1)
                 and
                 self.__isDipoleCoupled(
                     self.n, self.l, self.j,
-                    state[0], state[1], state[2 ])
+                    state[0], state[1], state[2])
                         ):
                 self.basis.append(state)
 
@@ -2401,6 +2401,8 @@ class DynamicPolarizability:
             dj = abs(j1 - j2)
             if dl == 1 and (dj < 1.1):
                 return True
+            else:
+                return False
         return False
 
 
@@ -2429,10 +2431,13 @@ class DynamicPolarizability:
             mj = self.j
 
         driveEnergy = C_c / driveWavelength * C_h
-        intialLevelEnergy = self.atom.getEnergy(self.n, self.l, self.j,
+        initialLevelEnergy = self.atom.getEnergy(self.n, self.l, self.j,
                                                 s=self.s) * C_e
 
+        # prefactor for vector polarisability
+        prefactor1 = 1. / ((self.j + 1) * (2 * self.j + 1))
 
+        # prefactor for tensor polarisability
         prefactor2 = (6 * self.j * (2 * self.j - 1)
                       / (6 * (self.j + 1)
                          * (2 * self.j + 1)
@@ -2440,6 +2445,7 @@ class DynamicPolarizability:
                       )**0.5
 
         alpha0 = 0.
+        alpha1 = 0.
         alpha2 = 0.
         closestState = []
         closestEnergy = -1
@@ -2453,7 +2459,7 @@ class DynamicPolarizability:
                                                          s=self.s) * C_e
 
                 diffEnergy = abs((coupledLevelEnergy
-                                  - intialLevelEnergy)**2 - driveEnergy**2)
+                                  - initialLevelEnergy)**2 - driveEnergy**2)
                 if ((diffEnergy < closestEnergy) or (closestEnergy < 0)
                     ):
                     closestEnergy = diffEnergy
@@ -2461,20 +2467,34 @@ class DynamicPolarizability:
 
                 if diffEnergy < 1e-65:
                     # print("For given frequency we are in exact resonance with state %s" % printStateString(n1,l1,j1,s=s))
-                    return None, None, None, None, state
+                    return None, None, None, None, None, state
 
                 if (abs(mj) < state[2]+0.1):
                     d = self.atom.getReducedMatrixElementJ(self.n, self.l, self.j,
                                                            n1, l1, j1,
                                                            s=self.s)**2 \
                         * (C_e * physical_constants["Bohr radius"][0])**2\
-                        * (coupledLevelEnergy - intialLevelEnergy) \
-                        / ((coupledLevelEnergy - intialLevelEnergy)**2
+                        * (coupledLevelEnergy - initialLevelEnergy) \
+                        / ((coupledLevelEnergy - initialLevelEnergy)**2
                            - driveEnergy**2)
 
                     alpha0 += d
 
-                    if abs(self.j - 2) <= self.j:
+                    # vector polarsizavility
+                    alpha1 += (-1) * (self.j * (self.j+1) + 2 - j1 * (j1 + 1)) \
+                        * driveEnergy \
+                        * self.atom.getReducedMatrixElementJ(self.n,
+                                                             self.l,
+                                                             self.j,
+                                                             n1, l1, j1,
+                                                             s=self.s)**2\
+                        * (C_e * physical_constants["Bohr radius"][0])**2\
+                        / ((coupledLevelEnergy - initialLevelEnergy)**2
+                           - driveEnergy**2)
+
+                    # tensor polarizability vanishes for j=1/2 states
+                    # because Wigner6j is then zero
+                    if abs(self.j - 0.5) > 0.1:
                         alpha2 += \
                             (- 1)**(self.j + j1 + 1) \
                             * self.atom.getReducedMatrixElementJ(self.n,
@@ -2484,33 +2504,28 @@ class DynamicPolarizability:
                                                                  s=self.s)**2 \
                             * (C_e * physical_constants["Bohr radius"][0])**2\
                             * Wigner6j(self.j, 1, j1, 1, self.j, 2) \
-                            * (coupledLevelEnergy - intialLevelEnergy) \
-                            / ((coupledLevelEnergy - intialLevelEnergy)**2
+                            * (coupledLevelEnergy - initialLevelEnergy) \
+                            / ((coupledLevelEnergy - initialLevelEnergy)**2
                                - driveEnergy**2)
-
 
         alpha0 = 2. * alpha0/(3. * (2. * self.j + 1.))
         alpha0 = alpha0 / C_h  # Hz m^2 / V^2
 
+        alpha1 = prefactor1 * alpha1 / C_h
+
         alpha2 = - 4 * prefactor2 * alpha2 / C_h
 
         # core polarizability -> assumes static polarisability
-        alphaC = self.atom.alphaC * 2.48832e-8
+        alphaC = self.atom.alphaC * 2.48832e-8  # convert to Hz m^2 / V^2
 
         # podermotive shift
         driveOmega = 2 * np.pi / driveWavelength * C_c
-        # add pondermotive shift if driving couples to continuum states
-        if (driveOmega * C_h/(2*np.pi)
-            > np.abs(self.atom.getEnergy(self.n, self.l, self.j,
-                                         s=self.s)*C_e)):
-            alphaP = C_e**2 / (2 * C_m_e * driveOmega**2 * C_h)
-        else:
-            alphaP = 0
+        alphaP = C_e**2 / (2 * C_m_e * driveOmega**2 * C_h)
 
         if (units == "SI"):
-            return alpha0, alpha2, alphaC, alphaP, closestState   # in Hz m^2 / V^2
+            return alpha0, alpha1, alpha2, alphaC, alphaP, closestState   # in Hz m^2 / V^2
         elif (units == "a.u." or units == "au"):
-            return alpha0 / 2.48832e-8, alpha2 / 2.48832e-8, \
+            return alpha0 / 2.48832e-8, alpha1 / 2.48832e-8, alpha2 / 2.48832e-8, \
                 alphaC / 2.48832e-8, alphaP / 2.48832e-8, closestState
         else:
             raise ValueError("Only 'SI' and 'a.u' (atomic units) are recognised"
@@ -2575,7 +2590,7 @@ class DynamicPolarizability:
             tensorPrefactor = 0
 
         for wavelength in wavelengthList:
-            scalarP, tensorP, coreP, pondermotiveP, state = self.getPolarizability(
+            scalarP, vectorP, tensorP, coreP, pondermotiveP, state = self.getPolarizability(
                 wavelength,
                 mj=mj,
                 units=units)
