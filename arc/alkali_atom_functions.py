@@ -1864,8 +1864,10 @@ class AlkaliAtom(object):
                                       s=0.5):
 
         # get the effective principal number of both states
-        nu = n1 - self.getQuantumDefect(n1, l1, j1, s=s)
-        nu1 = n2 - self.getQuantumDefect(n2, l2, j2, s=s)
+        nu = np.sqrt( - self.scaledRydbergConstant
+                     / self.getEnergy(n1, l1, j1, s=s))
+        nu1 = np.sqrt( - self.scaledRydbergConstant
+                      / self.getEnergy(n2, l2, j2, s=s))
 
         # get the parameters required to calculate the sum
         l_c = (l1 + l2 + 1.) / 2.
