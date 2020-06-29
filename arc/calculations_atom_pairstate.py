@@ -1109,8 +1109,8 @@ class PairStateInteractions:
         rotationMatrix = np.kron(wgd.get(self.j).toarray(),
                                  wgd.get(self.jj).toarray())
 
-        interactionMatrix = rotationMatrix.conj().T.dot(
-            interactionMatrix.dot(rotationMatrix)
+        interactionMatrix = rotationMatrix.dot(
+            interactionMatrix.dot(rotationMatrix.conj().T)
             )
         # ========= END OF THE MAIN CODE ===========
         self.__closeDatabaseForMemoization()
@@ -1313,8 +1313,8 @@ class PairStateInteractions:
                         self.basisStates[i][6], self.basisStates[i][7])
                     # rotate individual states
 
-                    statePart1 = dMatrix1.dot(statePart1)
-                    statePart2 = dMatrix2.dot(statePart2)
+                    statePart1 = dMatrix1.T.conjugate().dot(statePart1)
+                    statePart2 = dMatrix2.T.conjugate().dot(statePart2)
 
                     stateCom = compositeState(statePart1, statePart2)
 
@@ -1365,18 +1365,20 @@ class PairStateInteractions:
                                 self.basisStates[j][6], self.basisStates[j][7])
                             # rotate individual states
 
-                            statePart1 = dMatrix3.dot(statePart1)
-                            statePart2 = dMatrix4.dot(statePart2)
+                            statePart1 = dMatrix3.T.conjugate().dot(statePart1)
+                            statePart2 = dMatrix4.T.conjugate().dot(statePart2)
                             # composite state of two atoms
                             stateCom2 = compositeState(statePart1, statePart2)
 
-                            angularFactor = conjugate(
-                                stateCom2.T).dot(secondPart)
-                            angularFactor = real(angularFactor[0, 0])
+                            angularFactor = stateCom2.T.conjugate().dot(secondPart)
+                            if (abs(self.phi) < 1e-9):
+                                angularFactor = angularFactor[0, 0].real
+                            else:
+                                angularFactor = angularFactor[0, 0]
 
                             if (abs(angularFactor) > 1.e-5):
                                 matRConstructor[matRIndex][0].append(
-                                    radialPart * angularFactor)
+                                    (radialPart * angularFactor).conj())
                                 matRConstructor[matRIndex][1].append(i)
                                 matRConstructor[matRIndex][2].append(j)
 
@@ -1766,11 +1768,17 @@ class PairStateInteractions:
         value = "$"
         while (index > -5) and (totalContribution < 0.95):
             i = order[index]
-            if (index != -1 and stateVector[i] > 0):
+            if (index != -1 and
+                (stateVector[i].real > 0 or abs(stateVector[i].imag) > 1e-9)):
                 value += "+"
-            value = value + \
-                ("%.2f" % stateVector[i]) + \
-                self._addState(*self.basisStates[i])
+            if (abs(self.phi) < 1e-9):
+                value = value + \
+                    ("%.2f" % stateVector[i]) + \
+                    self._addState(*self.basisStates[i])
+            else:
+                value = value + \
+                    ("(%.2f+i%.2f)" % (stateVector[i].real, stateVector[i].imag)) + \
+                    self._addState(*self.basisStates[i])
             totalContribution += contribution[i]**2
             index -= 1
 
