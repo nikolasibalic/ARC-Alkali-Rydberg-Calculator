@@ -104,13 +104,13 @@ class Strontium88(DivalentAtom):
 
     alphaC = 15
 
-    ionisationEnergy = 5.69486740       #: (eV)  Ref. [#c3]_
+    ionisationEnergy = 1377012721e6 * C_h / C_e  #: (eV)  Ref. [#c10]_
 
     Z = 38
     I = 0.
 
-    #: TODO source
-    scaledRydbergConstant = 109736.627 * 1.e2\
+    #: Ref. [#c10]_
+    scaledRydbergConstant = 109736.631 * 1.e2\
         * physical_constants["inverse meter-electron volt relationship"][0]
 
     quantumDefect = [[[3.26923346261, -0.252029996277, 12.6529707842,
@@ -213,13 +213,15 @@ class Calcium40(DivalentAtom):
     Properties of Calcium 40 atoms
     """
 
-    ionisationEnergy = 49305.924 / 8065.544  #: eV ref. [#ca2]_
+    #: eV Ref. [#ca2]_
+    ionisationEnergy = 49305.9240 * 1e2 * \
+        physical_constants["inverse meter-electron volt relationship"][0]
 
     Z = 20
     I = 0
 
-    #: TODO source
-    scaledRydbergConstant = 109735.81 * 1e2 * \
+    #: eV Ref. [#ca2]_
+    scaledRydbergConstant = 109735.81037 * 1e2 * \
         physical_constants["inverse meter-electron volt relationship"][0]
 
     quantumDefect = [[[2.33793, -3.96, 0.0, 0.0, 0.0, 0.0],
@@ -298,14 +300,15 @@ class Ytterbium174(DivalentAtom):
     Properties of Ytterbium 174 atoms
     """
 
-    ionisationEnergycm = 50443.08  # cm-1  ref. [#yb3]
-    ionisationEnergy = ionisationEnergycm / 8065.544  # eV ref.
+    ionisationEnergy = 50443.07041 * 1e2 * \
+        physical_constants["inverse meter-electron volt relationship"][0]
+    #: eV Ref. [#yb3]_
 
     Z = 70
     I = 0
 
-    #: TODO source
-    scaledRydbergConstant = 109736.627 * 1e2 * \
+    #: eV Ref. [#yb3]_
+    scaledRydbergConstant = 109736.96959 * 1e2 * \
         physical_constants["inverse meter-electron volt relationship"][0]
 
     quantumDefect = [[[4.27914, -7.06, 565, 0.0, 0.0, 0.0],
