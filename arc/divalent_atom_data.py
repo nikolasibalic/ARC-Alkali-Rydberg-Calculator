@@ -58,10 +58,12 @@ Data sources
         Rydberg states of ytterbium,
         *Physical Review A* **45**, 1732 (1992)
 
-.. [#yb2] M, Aymar, R. J. Champeau, C. Delsart and O. Robaux,
-        Three-step laser spectroscopy and multichannel quantum defect analysis
-        of odd-parity Rydberg states of neutral ytterbium,
-        *Journal of Physics B: Atomic and Molecular Physics* **17**, 3645 (1984)
+.. [#yb2] M. Aymar, A. Debarre and O. Robaux,
+        Highly excited levels of neutral ytterbium. II. Multichannel quantum
+        defect analysis of odd- and even-parity spectra,
+        *Journal of Physics B: Atomic and Molecular Physics* **13**,
+        1089 (1980)
+        https://doi.org/10.1088/0022-3700/13/6/016
 
 .. [#yb3] H. Lehec, A. Zuliani, W. Maineult, E. Luc-Koenig, P. Pillet,
         P. Cheinet, F. Niyaz and T. F. Gallagher,
