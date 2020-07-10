@@ -81,12 +81,12 @@ Data sources
         Determination of Ionization Potential of Calcium by High-Resolution
         Resonance Ionization Spectroscopy,
         *Journal of the Physical Society of Japan* **75**, 034302 (2006)
-        10.1143/JPSJ.75.034302
+        https://doi.org/10.1143/JPSJ.75.034302
 
 .. [#ca3] Meija, Juris et al,
         "Atomic weights of the elements 2013 (IUPAC Technical Report)",
         *Pure and Applied Chemistry* **88**,265 (2016)
-        doi:10.1515/pac-2015-0305.
+        https://doi.org/10.1515/pac-2015-0305.
 
 
 .. [#pr] C.B.Alcock, V.P.Itkin, M.K.Horrigan,\
