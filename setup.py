@@ -20,7 +20,7 @@ arc_ext = Extension(
 
 setup(
     name="ARC-Alkali-Rydberg-Calculator",
-    version="2.2.18",
+    version="2.2.19",
     description="Alkali Rydberg Calculator",
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
@@ -29,7 +29,7 @@ setup(
               "quantum optics", "van der Waals", "scientific","atomic-sensors",
               "quantum-simulator","alkali-atoms"],
     url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator",
-    download_url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/archive/2.2.18.tar.gz",
+    download_url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/archive/2.2.19.tar.gz",
     author = 'Nikola Sibalic, Jonathan D. Pritchard, Charles S. Adams, Kevin J. Weatherill',
     author_email = 'nikolasibalic@physics.org',
 
