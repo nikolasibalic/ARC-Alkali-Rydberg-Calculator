@@ -2577,7 +2577,8 @@ class DynamicPolarizability:
         Plots of polarisability for a range of wavelengths.
 
         Can be combined for different states to allow finding magic wavelengths
-        for pairs of states. See example
+        for pairs of states. Currently supports only driving with
+        linearly polarised light. See example
 
         Todo:
             Add link to example calculation of magic wavelengths
