@@ -1,9 +1,9 @@
 
-ARC (Alkali Rydberg Calculator)
-===============================
+ARC (Alkali.ne Rydberg Calculator)
+==================================
 
 
-ARC (Alkali Rydberg Calculator)  is package of routines written in Python, using object-oriented programming (OOP) to make modular, reusable and extendable collection of routines and data for performing useful calculations of single atom and two-atom properties, like level diagrams, interactions and transition strengths for alkali metal and divalent atoms.
+ARC (Alkali.ne Rydberg Calculator)  is package of routines written in Python, using object-oriented programming (OOP) to make modular, reusable and extendable collection of routines and data for performing useful calculations of single atom and two-atom properties, like level diagrams, interactions and transition strengths for alkali metal and divalent atoms.
 
 Start by installing the latest version of the ARC package calling Python pip ([see prerequisites](https://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/installation.html)) from the command line:
 
