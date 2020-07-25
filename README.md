@@ -32,7 +32,7 @@ N. Šibalić, J. D. Pritchard, K. J. Weatherill, C. S. Adams,
 ARC: An open-source library for calculating properties of alkali Rydberg atoms,
 *Computer Physics Communications* **220**, 319 (2017), [https://doi.org/10.1016/j.cpc.2017.06.015](https://doi.org/10.1016/j.cpc.2017.06.015)
 
-If you use divalent atoms (alkaline earths...) or new featutures from ARC 3.0:
+If you use divalent atoms (Sr, Ca, Yb ...) or new featutures from ARC 3.0:
 E. J. Robertson, N. Šibalić, R. M. Potvliege, M. P. A. Jones,
 ARC 3.0: An expanded Python toolbox for atomic physics calculations, [arXiv:2007.12016](https://arxiv.org/abs/2007.12016)
 
