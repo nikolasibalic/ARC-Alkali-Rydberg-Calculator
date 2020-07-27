@@ -18,7 +18,7 @@ ARC (Alkali.ne Rydberg Calculator)  is package of routines written in Python,
 using object-oriented programming (OOP) to make modular, reusable and extendable
 collection of routines and data for performing useful calculations of
 single atom and two-atom properties, like level diagrams, interactions and
-transition strengths for alkali and alkaline earth metal atoms.
+transition strengths for alkali and divalent atoms.
 
 Contents
 ========
@@ -32,16 +32,12 @@ Contents
    contribute
 
 .. note::
-    Support for divalent atoms and some of the functions
+    ARC 3.0 added support for divalent atoms and some of the functions
     (`Wavefunction`, `AtomSurfaceVdW`,
     `OpticalLattice1D`, `DynamicPolarizability`, and optical materials
-    properties)in this modules will be
-    released in the forthcoming ARC 3.0.0 version.
-    To used them now as a beta feature do::
-     from arc.beta import *
-    Publication describing this upgrade is in preparation (check this place
-    soon). For now cite as "E. J. Robertson, N. Šibalić, R. M. Potvliege and
-    M. P. A. Jones, *in preparation* (2020)".
+    properties).
+    See more at `E. J. Robertson, N. Šibalić, R. M. Potvliege and
+    M. P. A. Jones, arXiv:2007.12016 <https://arxiv.org/abs/2007.12016>`_ .
 
 Package structure
 =================
@@ -70,10 +66,32 @@ Credits
 
 :Authors:
     Nikola Šibalić,
+    Elizabeth J. Robertson,
     Jonathan D. Pritchard,
+    Robert M. Potvliege,
+    Matthew P. A. Jones,
     Charles S. Adams,
-    Kevin J. Weatherill
+    Kevin J. Weatherill,
+    and contributors.
+
+:Cite as:
+  If you use **alkali** atoms:
+
+  N. Šibalić, J. D. Pritchard, K. J. Weatherill, C. S. Adams,
+  ARC: An open-source library for calculating properties of alkali Rydberg atoms,
+  *Computer Physics Communications* **220**, 319 (2017)
+  `https://doi.org/10.1016/j.cpc.2017.06.015 <https://doi.org/10.1016/j.cpc.2017.06.015>`_
+
+
+  If you use **divalent** atoms or new features introduced in ARC 3.0:
+
+  E. J. Robertson, N. Šibalić, R. M. Potvliege, M. P. A. Jones,
+  ARC 3.0: An expanded Python toolbox for atomic physics calculations,
+  `arXiv:2007.12016 <https://arxiv.org/abs/2007.12016>`_
+
+  In addition, if you use *arc_advanced* extensions check
+  `arc.advanced <./advanced.html>`_ .
 
 :Licence: BSD 3-Clause
 
-:Version: 3.0.0 of 2020/01/17
+:Version: 3.0.0 of 2020/07/27

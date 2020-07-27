@@ -2,12 +2,9 @@ Divalent atom functions
 =======================
 
 .. note::
-    This is module to be released in the forthcoming ARC 3.0.0 version.
-    To used it now as a beta feature do::
-      from arc.beta import *
-    Publication describing this upgrade is in preparation (check this place
-    soon). For now cite as "E. J. Robertson, N. Šibalić, R. M. Potvliege and
-    M. P. A. Jones, *in preparation* (2020)".
+    This is a completely new module added in ARC 3.0.0 version.
+    See more at `E. J. Robertson, N. Šibalić, R. M. Potvliege and
+    M. P. A. Jones, arXiv:2007.12016 <https://arxiv.org/abs/2007.12016>`_ .
 
 Overview
 --------
