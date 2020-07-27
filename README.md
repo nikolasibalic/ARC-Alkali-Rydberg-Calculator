@@ -1,9 +1,9 @@
 
-ARC (Alkali Rydberg Calculator)
-===============================
+ARC (Alkali.ne Rydberg Calculator)
+==================================
 
 
-ARC (Alkali Rydberg Calculator)  is package of routines written in Python, using object-oriented programming (OOP) to make modular, reusable and extendable collection of routines and data for performing useful calculations of single atom and two-atom properties, like level diagrams, interactions and transition strengths for alkali metal atoms.
+ARC (Alkali.ne Rydberg Calculator)  is package of routines written in Python, using object-oriented programming (OOP) to make modular, reusable and extendable collection of routines and data for performing useful calculations of single atom and two-atom properties, like level diagrams, interactions and transition strengths for alkali metal and divalent atoms.
 
 Start by installing the latest version of the ARC package calling Python pip ([see prerequisites](https://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/installation.html)) from the command line:
 
@@ -23,11 +23,18 @@ If you want to contribute to the project, [check this page](https://arc-alkali-r
 Authors
 -------
 
-[Nikola Šibalić](https://github.com/nikolasibalic), [Jonathan D. Pritchard](http://photonics.phys.strath.ac.uk/people/dr-jonathan-pritchard/), [Charles S. Adams](https://www.dur.ac.uk/physics/staff/profiles/?id=523), [Kevin J. Weatherill](https://www.dur.ac.uk/physics/staff/profiles/?id=1882)
+[Nikola Šibalić](https://github.com/nikolasibalic), Elizabeth J. Robertson, [Jonathan D. Pritchard](http://photonics.phys.strath.ac.uk/people/dr-jonathan-pritchard/), [Robert M. Potvliege](https://www.dur.ac.uk/physics/staff/profiles/?id=550), [Matthew P. A. Jones](https://www.dur.ac.uk/physics/staff/profiles/?id=4705), [Charles S. Adams](https://www.dur.ac.uk/physics/staff/profiles/?id=523), [Kevin J. Weatherill](https://www.dur.ac.uk/physics/staff/profiles/?id=1882)
 
-**Please cite as:** N. Šibalić, J. D. Pritchard, K. J. Weatherill, C. S. Adams,
+**Please cite as:** 
+
+If you use alkali atoms:
+N. Šibalić, J. D. Pritchard, K. J. Weatherill, C. S. Adams,
 ARC: An open-source library for calculating properties of alkali Rydberg atoms,
 *Computer Physics Communications* **220**, 319 (2017), [https://doi.org/10.1016/j.cpc.2017.06.015](https://doi.org/10.1016/j.cpc.2017.06.015)
+
+If you use divalent atoms (Sr, Ca, Yb ...) or new featutures from ARC 3.0:
+E. J. Robertson, N. Šibalić, R. M. Potvliege, M. P. A. Jones,
+ARC 3.0: An expanded Python toolbox for atomic physics calculations, [arXiv:2007.12016](https://arxiv.org/abs/2007.12016)
 
 If you are using modules from `arc.advanced` please **also cite** [paper](arc/advanced/README.md) that introduced relevant ARC extension.
 
