@@ -38,7 +38,7 @@ ARC 3.0: An expanded Python toolbox for atomic physics calculations, [arXiv:2007
 
 If you are using modules from `arc.advanced` please **also cite** [paper](arc/advanced/README.md) that introduced relevant ARC extension.
 
-**Who are the users of this library?** Check papers that cite us in [ADS](https://ui.adsabs.harvard.edu/abs/2017CoPhC.220..319S/citations) and [Google Scholar](https://scholar.google.com/scholar?cites=17451096747440945721&as_sdt=2005&sciodt=0,5&hl=en).
+**Who are the users of this library?** Check papers that cite us in [ADS](https://ui.adsabs.harvard.edu/abs/2017CoPhC.220..319S/citations) and [Google Scholar](https://scholar.google.com/scholar?cites=3162548955488940394&as_sdt=2005&sciodt=0,5&hl=en).
 
 -------
 License
