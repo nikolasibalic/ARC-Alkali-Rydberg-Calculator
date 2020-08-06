@@ -676,7 +676,10 @@ class StarkMap:
 
             for tl in xrange(min(maxL + 1, tn)):
                 for tj in np.linspace(tl - s, tl + s, round(2 * s + 1)):
-                    if abs(mj) - 0.1 <= tj:
+                    if (abs(mj) - 0.1 <= tj) and (
+                        tn >= self.atom.groundStateN
+                        or [tn, tl, tj] in self.atom.extraLevels
+                            ):
                         states.append([tn, tl, tj, mj])
 
         dimension = len(states)
