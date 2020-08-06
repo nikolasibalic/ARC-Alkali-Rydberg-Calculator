@@ -2527,9 +2527,9 @@ class DynamicPolarizability:
                              + transitionLinewidth**2 / 4)**2
                             + transitionLinewidth**2 * driveEnergy**2)
 
-                    # tensor polarizability vanishes for j=1/2 states
+                    # tensor polarizability vanishes for j=1/2 and j=0 states
                     # because Wigner6j is then zero
-                    if abs(self.j - 0.5) > 0.1:
+                    if self.j > 0.6:
                         alpha2 += \
                             (- 1)**(self.j + j1 + 1) \
                             * self.atom.getReducedMatrixElementJ(self.n,
