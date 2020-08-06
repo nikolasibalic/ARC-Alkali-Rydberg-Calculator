@@ -7,7 +7,9 @@ Prerequisite: Python
 ********************
 
 Install Python and packages for scientific computing in Python (scipy, numpy, matplotlib).
-The package is tested and works with **both Python 2.7 and Python 3.***.
+The package is tested and works with **Python 3.*** (Note: Python 2.7 EOL is
+January 2020, and the last ARC version that supported this Python version for
+Windows was 2.2.21).
 We recommend installing Python distributions that comes with Numpy that is
 connected to the optimized numeric libraries like ATLAS. One such distribution
 is `Anaconda <https://www.anaconda.com/distribution/>`_, that provides
@@ -23,7 +25,7 @@ Users can simply install the package from command line::
 
 This finishes installation.
 This should work on all operating systems (Linux, OSX, Windows) with
-Python 2.7, Python 3.* .
+Python 3.* .
 Users should contact developers if unexpected errors occur.
 
 That is all, enjoy using ARC package. Check :ref:`get-started-page` to see some ideas where to start.
