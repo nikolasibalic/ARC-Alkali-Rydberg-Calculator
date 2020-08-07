@@ -1,0 +1,31 @@
+n,l,j,"Hyperfine Magnetic Dipole Constant, A(Hz)","Hyperfine Magnetic Quadrupole Constant, B(Hz)","Error A (Hz)","Error B (Hz)","theory = 1, experiment = 0",comment,source,DOI
+6,0,0.5,2298157942.50,0.00,0.00,0.00,1,comment,"Steck Cs data","https://steck.us/alkalidata/cesiumnumbers.1.6.pdf"
+6,1,0.5,291920100.00,0.00,0.00,0.00,0,comment,"Steck Cs data","https://steck.us/alkalidata/cesiumnumbers.1.6.pdf"
+6,1,1.5,50275000.00,-530000.00,0.00,0.00,0,comment,"Steck Cs data","https://steck.us/alkalidata/cesiumnumbers.1.6.pdf"
+7,1,0.5,94350000.00,0.00,40000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+7,1,1.5,16605000.00,-150000.00,6000.00,30000.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+6,2,1.5,16300000.00,0.00,150000.00,8000000.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+6,2,2.5,-3600000.00,0.00,1000000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+7,0,0.5,546300000.00,0.00,3000000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+7,2,2.5,-1700000.00,0.00,200000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+8,0,0.5,218900000.00,0.00,1600000.00,9.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+8,1,0.5,42970000.00,0.00,100000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+8,1,1.5,7580000.00,-140000.00,10000.00,50000.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+8,2,1.5,3940000.00,0.00,80000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+8,2,2.5,-850000.00,0.00,200000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+9,0,0.5,110100000.00,0.00,500000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+9,1,0.5,23190000.00,0.00,150000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+9,1,1.5,4123000.00,-51000.00,3000.00,25000.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+9,2,1.5,2350000.00,0.00,40000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+9,2,2.5,-450000.00,0.00,100000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+10,0,0.5,63200000.00,0.00,100000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+10,1,1.5,2481000.00,0.00,9000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+10,2,1.5,1510000.00,0.00,20000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+10,2,2.5,-350000.00,0.00,100000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+11,0,0.5,39400000.00,0.00,200000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+11,1,1.5,1600000.00,0.00,15000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+12,0,0.5,26310000.00,0.00,100000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+12,1,1.5,1100000.00,0.00,30000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+13,0,0.5,18400000.00,0.00,110000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+13,1,1.5,770000.00,0.00,50000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+14,0,0.5,13410000.00,0.00,120000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
