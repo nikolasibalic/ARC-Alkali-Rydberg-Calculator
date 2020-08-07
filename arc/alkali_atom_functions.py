@@ -2188,10 +2188,17 @@ def saveCalculation(calculation, fileName):
         calculation.fig = 0
 
         # close database connections
-        atomDatabaseConn = calculation.atom.conn
-        atomDatabaseC = calculation.atom.c
-        calculation.atom.conn = False
-        calculation.atom.c = False
+        atomNumber = 0
+        if hasattr(calculation, 'atom'):
+            atomNumber = 1
+            atomDatabaseConn1 = calculation.atom.conn
+            calculation.atom.conn = False
+        elif hasattr(calculation, 'atom1'):
+            atomNumber = 2
+            atomDatabaseConn1 = calculation.atom1.conn
+            calculation.atom1.conn = False
+            atomDatabaseConn2 = calculation.atom2.conn
+            calculation.atom2.conn = False
 
         output = gzip.GzipFile(fileName, 'wb')
         pickle.dump(calculation, output, pickle.HIGHEST_PROTOCOL)
@@ -2199,8 +2206,11 @@ def saveCalculation(calculation, fileName):
 
         calculation.ax = ax
         calculation.fig = fig
-        calculation.atom.conn = atomDatabaseConn
-        calculation.atom.c = atomDatabaseC
+        if atomNumber == 1:
+            calculation.atom.conn = atomDatabaseConn1
+        elif atomNumber == 2:
+            calculation.atom1.conn = atomDatabaseConn1
+            calculation.atom2.conn = atomDatabaseConn2
     except Exception as ex:
         print(ex)
         print("ERROR: saving of the calculation failed.")
@@ -2241,7 +2251,11 @@ def loadSavedCalculation(fileName):
           + fileName + "' successful.")
 
     # establish conneciton to the database
-    calculation.atom._databaseInit()
+    if hasattr(calculation, 'atom'):
+        calculation.atom._databaseInit()
+    elif hasattr(calculation, 'atom'):
+        calculation.atom1._databaseInit()
+        calculation.atom2._databaseInit()
 
     return calculation
 
