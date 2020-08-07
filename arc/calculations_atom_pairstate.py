@@ -89,9 +89,14 @@ class PairStateInteractions:
         of the given pair state. For details of calculation see
         Ref. [1]_. For a quick start point example see
         `interactions example snippet`_.
+        For inter-species calculations see
+        `inter-species interaction calculation snippet`_.
 
         .. _`interactions example snippet`:
             ./Rydberg_atoms_a_primer.html#Short-range-interactions
+
+       .. _`inter-species interaction calculation snippet`:
+           ./ARC_3_0_introduction.html#Inter-species-pair-state-calculations
 
         Args:
             atom (:obj:`AlkaliAtom` or :obj:`DivalentAtom`): = {
@@ -926,10 +931,15 @@ class PairStateInteractions:
         perturbative calculation is correct, energy level shift can be
         obtained as :math:`V(R)=-C_6/R^6`
 
-        See `perturbative C6 calculations example snippet`_.
+        See `perturbative C6 calculations example snippet`_ and for
+        degenerate perturbation calculation see
+        `degenerate pertubation C6 calculation example snippet`_
 
         .. _`perturbative C6 calculations example snippet`:
             ./Rydberg_atoms_a_primer.html#Dispersion-Coefficients
+
+       .. _`degenerate pertubation C6 calculation example snippet`:
+           ./ARC_3_0_introduction.html#Pertubative-C6-calculation-in-the-manifold-of-degenerate-states
 
         Args:
             theta (float): orientation of inter-atomic axis with respect

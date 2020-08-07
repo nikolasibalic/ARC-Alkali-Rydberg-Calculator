@@ -55,6 +55,11 @@ class Wavefunction:
     r"""
         Calculates and plots electron wavefunctions.
 
+       For an example see `wavefunction plotting example snippet`_.
+
+       .. _`wavefunction plotting example snippet`:
+           ./ARC_3_0_introduction.html#Wavefunction-calculations-for-Alkali-atom-Rydberg-states
+
         Args:
             atom: atom type considered (for example :obj:`Rubidum87()`)
             basisStates (array): array of states in fine basis that contribute\
@@ -1816,6 +1821,11 @@ class AtomSurfaceVdW:
         This class calculates :math:`C_3` for individual states
         :math:`|i\rangle`.
 
+        See example `atom-surface calculation snippet`_.
+
+        .. _`atom-surface calculation snippet`:
+            ./ARC_3_0_introduction.html#Atom-surface-van-der-Waals-interactions-(C3-calculation)
+
         Args:
             atom (:obj:`AlkaliAtom` or :obj:`DivalentAtom`): specified
                 Alkali or Alkaline Earth atom whose interaction with surface
@@ -2028,7 +2038,12 @@ class AtomSurfaceVdW:
 
 class OpticalLattice1D:
     r"""
-        Atom properties in optical lattices in 1D
+        Atom properties in optical lattices in 1D.
+
+        See example `optical lattice calculations snippet`_.
+
+        .. _`optical lattice calculations snippet`:
+            ./ARC_3_0_introduction.html#Optical-lattice-calculations-(Bloch-bands,-Wannier-states...)
 
         Args:
             atom: one of AlkaliAtom or DivalentAtom
@@ -2417,7 +2432,18 @@ class DynamicPolarizability:
                           mj=None
                           ):
         r"""
-            Calculates of scalar, tensor and pondermotive polarizability
+            Calculates of scalar, vector, tensor, core and pondermotive
+            polarizability, and returns state corresponding to the closest
+            transition resonance.
+
+           Note that pondermotive polarisability is calculated as
+           :math:`\alpha_P = e^2 / (2 m_e \omega^2)`, i.e. assumes that the
+           definition of the energy shift in field :math:`E` is
+           :math:`\frac{1}{2}\alpha_P E^2`. For more datils check the
+           preprint  `arXiv:2007.12016`_ that introduced the update.
+
+           .. _`arXiv:2007.12016`:
+               https://arxiv.org/abs/2007.12016
 
             Args:
                 driveWavelength (float): wavelength of driving field
@@ -2430,8 +2456,10 @@ class DynamicPolarizability:
                     for finite transition linewidths caused by finite state
                     lifetimes. By default False.
             Returns:
-                scalar, tensor, pondermotive polarisability of state, and
-                atomic state whose resonance is closest in energy.
+                scalar, vector, tensor, pondermotive polarisability of state,
+                core polarisability and atomic state whose resonance is closest
+                in energy. Returned units depend on `units` parameter
+                (default SI).
         """
 
         if (accountForStateLifetime and self.lifetimes.length == 0):
@@ -2582,9 +2610,11 @@ class DynamicPolarizability:
         Can be combined for different states to allow finding magic wavelengths
         for pairs of states. Currently supports only driving with
         linearly polarised light. See example
+        `magic wavelength snippet`_.
 
-        Todo:
-            Add link to example calculation of magic wavelengths
+        .. _`magic wavelength snippet`:
+            ./ARC_3_0_introduction.html#Calculations-of-dynamic-polarisability-and-magic-wavelengths-for-optical-traps
+
 
         Args:
             wavelengthList (array): wavelengths for which we want to calculate
