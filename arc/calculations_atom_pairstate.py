@@ -89,9 +89,14 @@ class PairStateInteractions:
         of the given pair state. For details of calculation see
         Ref. [1]_. For a quick start point example see
         `interactions example snippet`_.
+        For inter-species calculations see
+        `inter-species interaction calculation snippet`_.
 
         .. _`interactions example snippet`:
             ./Rydberg_atoms_a_primer.html#Short-range-interactions
+
+       .. _`inter-species interaction calculation snippet`:
+           ./ARC_3_0_introduction.html#Inter-species-pair-state-calculations
 
         Args:
             atom (:obj:`AlkaliAtom` or :obj:`DivalentAtom`): = {
@@ -926,10 +931,15 @@ class PairStateInteractions:
         perturbative calculation is correct, energy level shift can be
         obtained as :math:`V(R)=-C_6/R^6`
 
-        See `perturbative C6 calculations example snippet`_.
+        See `perturbative C6 calculations example snippet`_ and for
+        degenerate perturbation calculation see
+        `degenerate pertubation C6 calculation example snippet`_
 
         .. _`perturbative C6 calculations example snippet`:
             ./Rydberg_atoms_a_primer.html#Dispersion-Coefficients
+
+       .. _`degenerate pertubation C6 calculation example snippet`:
+           ./ARC_3_0_introduction.html#Pertubative-C6-calculation-in-the-manifold-of-degenerate-states
 
         Args:
             theta (float): orientation of inter-atomic axis with respect
@@ -1109,8 +1119,8 @@ class PairStateInteractions:
         rotationMatrix = np.kron(wgd.get(self.j).toarray(),
                                  wgd.get(self.jj).toarray())
 
-        interactionMatrix = rotationMatrix.conj().T.dot(
-            interactionMatrix.dot(rotationMatrix)
+        interactionMatrix = rotationMatrix.dot(
+            interactionMatrix.dot(rotationMatrix.conj().T)
             )
         # ========= END OF THE MAIN CODE ===========
         self.__closeDatabaseForMemoization()
@@ -1313,8 +1323,8 @@ class PairStateInteractions:
                         self.basisStates[i][6], self.basisStates[i][7])
                     # rotate individual states
 
-                    statePart1 = dMatrix1.dot(statePart1)
-                    statePart2 = dMatrix2.dot(statePart2)
+                    statePart1 = dMatrix1.T.conjugate().dot(statePart1)
+                    statePart2 = dMatrix2.T.conjugate().dot(statePart2)
 
                     stateCom = compositeState(statePart1, statePart2)
 
@@ -1365,18 +1375,20 @@ class PairStateInteractions:
                                 self.basisStates[j][6], self.basisStates[j][7])
                             # rotate individual states
 
-                            statePart1 = dMatrix3.dot(statePart1)
-                            statePart2 = dMatrix4.dot(statePart2)
+                            statePart1 = dMatrix3.T.conjugate().dot(statePart1)
+                            statePart2 = dMatrix4.T.conjugate().dot(statePart2)
                             # composite state of two atoms
                             stateCom2 = compositeState(statePart1, statePart2)
 
-                            angularFactor = conjugate(
-                                stateCom2.T).dot(secondPart)
-                            angularFactor = real(angularFactor[0, 0])
+                            angularFactor = stateCom2.T.conjugate().dot(secondPart)
+                            if (abs(self.phi) < 1e-9):
+                                angularFactor = angularFactor[0, 0].real
+                            else:
+                                angularFactor = angularFactor[0, 0]
 
                             if (abs(angularFactor) > 1.e-5):
                                 matRConstructor[matRIndex][0].append(
-                                    radialPart * angularFactor)
+                                    (radialPart * angularFactor).conj())
                                 matRConstructor[matRIndex][1].append(i)
                                 matRConstructor[matRIndex][2].append(j)
 
@@ -1766,11 +1778,17 @@ class PairStateInteractions:
         value = "$"
         while (index > -5) and (totalContribution < 0.95):
             i = order[index]
-            if (index != -1 and stateVector[i] > 0):
+            if (index != -1 and
+                (stateVector[i].real > 0 or abs(stateVector[i].imag) > 1e-9)):
                 value += "+"
-            value = value + \
-                ("%.2f" % stateVector[i]) + \
-                self._addState(*self.basisStates[i])
+            if (abs(self.phi) < 1e-9):
+                value = value + \
+                    ("%.2f" % stateVector[i]) + \
+                    self._addState(*self.basisStates[i])
+            else:
+                value = value + \
+                    ("(%.2f+i%.2f)" % (stateVector[i].real, stateVector[i].imag)) + \
+                    self._addState(*self.basisStates[i])
             totalContribution += contribution[i]**2
             index -= 1
 

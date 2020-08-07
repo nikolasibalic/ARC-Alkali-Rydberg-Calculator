@@ -17,7 +17,21 @@ This is incomplete list of some of the modules that can be added to the library:
     * Photoionization
     * Collisional cross-sections
     * Dressing potentials
+    * New methods for precise calculation of DME
+    * Hyperfine structure calculations
     * ... (add your own ideas)
+
+Before you start
+----------------
+
+You can contribute code to core of the ARC library, or add specific calculation
+example to `arc.advanced`. It is highly recommended, especially if you aim
+expanding the core of the library, to open an Issue on GitHub ARC page
+and discuss idea with main developers to make sure that good structure is
+chosen, that no one else is working at the same idea at the same moment,
+and that existing ARC calculations are reused where possible. The quick
+discussion should enable smoother development and quicker integration of your
+contribution to the main package.
 
 Naming conventions
 ------------------

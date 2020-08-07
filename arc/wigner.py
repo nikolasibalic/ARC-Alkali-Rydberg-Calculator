@@ -380,8 +380,8 @@ class WignerDmatrix:
 
         This matrix converts components of angular momentum `j` givne in one
         basis into components of angular momentum calculated in the basis
-        which is rotated by `phi` around z-axis, and then by `theta` around
-        y-axis. Use::
+        which is rotated by `theta` around y-axis, and then by `phi` around
+        z-axis. Use::
 
             wgd = WignerDmatrix(theta,phi)
             # let's rotate state with angular momentum 1
@@ -391,8 +391,9 @@ class WignerDmatrix:
         Args:
             theta (float): rotation around y-axis
             phi (float): rotation around z-axis
-            gamma (flaot): optional, last rotation around z-axis (rotations are
-                in order z-y-z). By default 0.
+            gamma (flaot): optional, first rotation around z-axis (rotations are
+                in order z-y-z, by gamma, theta and phi respectively)
+                By default 0.
     """
 
     def __init__(self, theta, phi, gamma=0.):

@@ -2,7 +2,7 @@
 from scipy.integrate import odeint
 from lmfit import minimize, Parameters, report_fit
 from ..alkali_atom_data import *
-
+import matplotlib.pyplot as plt
 
 """
     **Contributors:**

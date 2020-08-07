@@ -60,7 +60,7 @@
         https://doi.org/10.1103/PhysRevA.93.013424
 
     .. [#Lorenzen1984] C. -J. Lorenzen, and K. Niemax, *Z. Phys. A* **315**,
-        127 (1984) dx.doi.org/ 10.1007/BF01419370
+        127 (1984) https://doi.org/10.1007/BF01419370
 
     .. [#c7] C. -J. Lorenzen, and K. Niemax, *Physica Scripta* **27**, 300 (1983)
 

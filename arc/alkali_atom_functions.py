@@ -16,7 +16,7 @@ from __future__ import division, print_function, absolute_import
 import sqlite3
 import csv
 import gzip
-from math import exp, sqrt
+from math import log, exp, sqrt
 from mpmath import angerj
 # for web-server execution, uncomment the following two lines
 # import matplotlib
@@ -55,7 +55,7 @@ sqlite3.register_adapter(np.int64, int)
 sqlite3.register_adapter(np.int32, int)
 
 DPATH = os.path.join(os.path.expanduser('~'), '.arc-data')
-__arc_data_version__ = 3
+__arc_data_version__ = 4
 
 
 def setup_data_folder():
@@ -846,7 +846,8 @@ class AlkaliAtom(object):
         )
 
         c.execute(''' INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?)''',
-                  [n1, l1, j1_x2, n2, l2, j2_x2, dipoleElement])
+                       [n1, l1, j1_x2, n2, l2, j2_x2, dipoleElement])
+
         self.conn.commit()
 
         return dipoleElement
@@ -935,7 +936,8 @@ class AlkaliAtom(object):
         )
 
         c.execute(''' INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?, ?)''',
-                  [n1, l1, j1_x2, n2, l2, j2_x2, quadrupoleElement])
+                       [n1, l1, j1_x2, n2, l2, j2_x2, quadrupoleElement])
+
         self.conn.commit()
 
         return quadrupoleElement
@@ -1612,7 +1614,8 @@ class AlkaliAtom(object):
                     s=s
                 )
 
-        return 1. / transitionRate
+        # add something small decay (1e-50) rate to prevent division by zero
+        return 1. / (transitionRate + 1e-50)
 
     def getRadialCoupling(self, n, l, j, n1, l1, j1, s=0.5):
         """
@@ -1922,7 +1925,8 @@ class AlkaliAtom(object):
                      n1= ? AND l1 = ? AND j1_x2 = ? AND
                      n2 = ? AND l2 = ? AND j2_x2 = ?
                      ORDER BY errorEstimate ASC''',
-                  (n1, l1, j1_x2, n2, l2, j2_x2))
+                       (n1, l1, j1_x2, n2, l2, j2_x2))
+
         answer = c.fetchone()
         if (answer):
             # we did found literature value
@@ -1967,8 +1971,10 @@ class AlkaliAtom(object):
                                       s=0.5):
 
         # get the effective principal number of both states
-        nu = n1 - self.getQuantumDefect(n1, l1, j1, s=s)
-        nu1 = n2 - self.getQuantumDefect(n2, l2, j2, s=s)
+        nu = np.sqrt( - self.scaledRydbergConstant
+                     / self.getEnergy(n1, l1, j1, s=s))
+        nu1 = np.sqrt( - self.scaledRydbergConstant
+                      / self.getEnergy(n2, l2, j2, s=s))
 
         # get the parameters required to calculate the sum
         l_c = (l1 + l2 + 1.) / 2.
@@ -2909,10 +2915,17 @@ def saveCalculation(calculation, fileName):
         calculation.fig = 0
 
         # close database connections
-        atomDatabaseConn = calculation.atom.conn
-        atomDatabaseC = calculation.atom.c
-        calculation.atom.conn = False
-        calculation.atom.c = False
+        atomNumber = 0
+        if hasattr(calculation, 'atom'):
+            atomNumber = 1
+            atomDatabaseConn1 = calculation.atom.conn
+            calculation.atom.conn = False
+        elif hasattr(calculation, 'atom1'):
+            atomNumber = 2
+            atomDatabaseConn1 = calculation.atom1.conn
+            calculation.atom1.conn = False
+            atomDatabaseConn2 = calculation.atom2.conn
+            calculation.atom2.conn = False
 
         output = gzip.GzipFile(fileName, 'wb')
         pickle.dump(calculation, output, pickle.HIGHEST_PROTOCOL)
@@ -2920,8 +2933,11 @@ def saveCalculation(calculation, fileName):
 
         calculation.ax = ax
         calculation.fig = fig
-        calculation.atom.conn = atomDatabaseConn
-        calculation.atom.c = atomDatabaseC
+        if atomNumber == 1:
+            calculation.atom.conn = atomDatabaseConn1
+        elif atomNumber == 2:
+            calculation.atom1.conn = atomDatabaseConn1
+            calculation.atom2.conn = atomDatabaseConn2
     except Exception as ex:
         print(ex)
         print("ERROR: saving of the calculation failed.")
@@ -2962,7 +2978,11 @@ def loadSavedCalculation(fileName):
           + fileName + "' successful.")
 
     # establish conneciton to the database
-    calculation.atom._databaseInit()
+    if hasattr(calculation, 'atom'):
+        calculation.atom._databaseInit()
+    elif hasattr(calculation, 'atom'):
+        calculation.atom1._databaseInit()
+        calculation.atom2._databaseInit()
 
     return calculation
 
