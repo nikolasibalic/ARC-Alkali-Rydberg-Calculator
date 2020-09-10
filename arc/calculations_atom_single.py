@@ -2462,7 +2462,7 @@ class DynamicPolarizability:
                 (default SI).
         """
 
-        if (accountForStateLifetime and self.lifetimes.length == 0):
+        if (accountForStateLifetime and len(self.lifetimes) == 0):
             for state in self.basis:
                 self.lifetimes.append(self.atom.getStateLifetime(state[0],
                                                                  state[1],
