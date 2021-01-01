@@ -23,7 +23,7 @@ If you want to contribute to the project, [check this page](https://arc-alkali-r
 Authors
 -------
 
-[Nikola Šibalić](https://github.com/nikolasibalic), Elizabeth J. Robertson, [Jonathan D. Pritchard](http://photonics.phys.strath.ac.uk/people/dr-jonathan-pritchard/), [Robert M. Potvliege](https://www.dur.ac.uk/physics/staff/profiles/?id=550), [Matthew P. A. Jones](https://www.dur.ac.uk/physics/staff/profiles/?id=4705), [Charles S. Adams](https://www.dur.ac.uk/physics/staff/profiles/?id=523), [Kevin J. Weatherill](https://www.dur.ac.uk/physics/staff/profiles/?id=1882)
+[Nikola Šibalić](https://github.com/nikolasibalic), [Elizabeth J. Robertson](https://www.heibrids.berlin/people/doctoral-researchers/elizabeth-robertson/), [Jonathan D. Pritchard](http://photonics.phys.strath.ac.uk/people/dr-jonathan-pritchard/), [Robert M. Potvliege](https://www.dur.ac.uk/physics/staff/profiles/?id=550), [Matthew P. A. Jones](https://www.dur.ac.uk/physics/staff/profiles/?id=4705), [Charles S. Adams](https://www.dur.ac.uk/physics/staff/profiles/?id=523), [Kevin J. Weatherill](https://www.dur.ac.uk/physics/staff/profiles/?id=1882)
 
 **Please cite as:** 
 
@@ -34,7 +34,7 @@ ARC: An open-source library for calculating properties of alkali Rydberg atoms,
 
 If you use divalent atoms (Sr, Ca, Yb ...) or new featutures from ARC 3.0:
 E. J. Robertson, N. Šibalić, R. M. Potvliege, M. P. A. Jones,
-ARC 3.0: An expanded Python toolbox for atomic physics calculations, [arXiv:2007.12016](https://arxiv.org/abs/2007.12016)
+ARC 3.0: An expanded Python toolbox for atomic physics calculations, *Computer Physics Communications* (2021) [https://doi.org/10.1016/j.cpc.2020.107814](https://doi.org/10.1016/j.cpc.2020.107814)
 
 If you are using modules from `arc.advanced` please **also cite** [paper](arc/advanced/README.md) that introduced relevant ARC extension.
 
