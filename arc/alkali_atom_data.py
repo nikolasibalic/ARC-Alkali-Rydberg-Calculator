@@ -51,6 +51,10 @@
             J. D. D. Martin, *Phys. Rev. A* **74**, 062712 (2006)
             https://doi.org/10.1103/PhysRevA.74.062712
 
+    .. [#Raithel2020] K. Moore, A. Duspayev, R. Cardman, and G. Raithel,
+             *Phys. Rev. A* **102**, 062817 (2020),
+             https://doi.org/10.1103/PhysRevA.102.062817
+
     .. [#c6] P. Goy, J. Liang, M. Gross, and S. Haroche,\
             *Phys. Rev. A* **34**, 2889 (1986)
             https://doi.org/10.1103/PhysRevA.34.2889
@@ -336,16 +340,16 @@ class Rubidium85(AlkaliAtom):
                       [2.6548849, 0.2900, 0.0, 0.0, 0.0, 0.0],
                       [1.34809171, -0.60286, 0.0, 0.0, 0.0, 0.0],
                       [0.0165192, -0.085, 0.0, 0.0, 0.0, 0.0],
-                      [0.00405, 0.0, 0.0, 0.0, 0.0, 0.0]],
+                      [0.0039990, −0.0202, 0.0, 0.0, 0.0, 0.0]],
                      [[3.1311804, 0.1784, 0.0, 0.0, 0.0, 0.0],
                       [2.6416737, 0.2950, 0.0, 0.0, 0.0, 0.0],
                       [1.34646572, -0.59600, 0.0, 0.0, 0.0, 0.0],
                       [0.0165437, -0.086, 0.0, 0.0, 0.0, 0.0],
-                      [0.00405, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+                      [0.0039990, −0.0202, 0.0, 0.0, 0.0, 0.0]]]
     """
         quantum defects for :math:`nF` states are
         from [#c5]_. Quantum defects for :math:`nG` states are
-        from [#Afrousheh2006a]_. All other quantum defects are from from [#c4]_
+        from [#Raithel2020]_. All other quantum defects are from from [#c4]_
 
     """
 
