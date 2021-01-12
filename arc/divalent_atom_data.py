@@ -92,6 +92,9 @@ Data sources
         B. V. Zelener and V. E. Fortov, *JETP Letters* **110**, 761 (2019)
         https://doi.org/10.1134/S0021364019240093
 
+.. [#ca5] J. Sugar and C. Corliss, *J. Phys. Chem. Ref. Data* **14**,
+        Suppl. 2 (1985)
+
 .. [#pr] C.B.Alcock, V.P.Itkin, M.K.Horrigan,\
         *Canadian Metallurgical Quarterly*, **23**, 309 (1984)
         http://dx.doi.org/10.1179/cmq.1984.23.3.309
