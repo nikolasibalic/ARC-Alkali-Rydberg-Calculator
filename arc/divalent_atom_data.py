@@ -71,6 +71,9 @@ Data sources
         neutral ytterbium and multichannel-quantum-defect-theory analysis,
         *Physical Review A* **98**, 062506 (2018)
 
+.. [#MT78] W. F. Meggers and J. L. Tech, *J. Res. Natl. Bur. Stand.* (U.S.)
+        **83**, 13 (1978).
+
 .. [#ca1] Thomas R. Gentile, Barbara J. Hughey, Daniel Kleppner
         and Theodore W. Ducas,
         Microwave spectroscopy of calcium Rydberg states,
@@ -262,7 +265,7 @@ class Calcium40(DivalentAtom):
     groundStateN = 4
     extraLevels = []  #: TODO unkown if such exist at time of writing
 
-    #: Sources Refs. [#c1]_, [#c5]_, [#c9]_, [#ca1]_
+    #: Sources Refs. [#c1]_, [#c5]_, [#c9]_, [#ca1]_, [#ca5]_
     levelDataFromNIST = "ca_level_data.csv"
 
     precalculatedDB = "ca_precalculated.db"
@@ -349,7 +352,7 @@ class Ytterbium174(DivalentAtom):
     groundStateN = 6
     extraLevels = []  #: TODO unkown if such exist at time of writing
 
-    #: Sources Refs. [#yb1]_, [#yb2]_, [#yb3]_
+    #: Sources Refs. [#yb1]_, [#yb2]_, [#yb3]_, [#MT78]_
     levelDataFromNIST = "yb_level_data.csv"
 
     precalculatedDB = "yb_precalculated.db"
