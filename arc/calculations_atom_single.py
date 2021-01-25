@@ -1522,7 +1522,6 @@ class LevelPlot:
                 l = lFrom
                 if (l==0 and s==1 and n == self.atom.groundStateN):
                     # for ground state S state, there is only singlet
-                    # Todo: check with Strontium people!
                     l += 1
                 while l <= min(lTo, n - 1):
                     for j in np.linspace(l - s, l + s, round(2 * s + 1)):
@@ -1667,8 +1666,9 @@ class LevelPlot:
 
         i = 0
         while i < len(self.listX):
-            self.ax.plot([self.listX[i] - self.width, self.listX[i] + self.width],
-                         [self.listY[i], self.listY[i]], "b-", picker=4)
+            self.ax.plot([self.listX[i] - self.width,
+                                 self.listX[i] + self.width],
+                         [self.listY[i], self.listY[i]], "b-", picker=True)
             if (i < len(self.populations) and (self.populations[i] > 1e-3)):
                 self.ax.plot([self.listX[i]], [self.listY[i]],
                              "ro", alpha=self.populations[i])
@@ -1692,7 +1692,7 @@ class LevelPlot:
             sNumber  = round(2 * s + 1)
             for l in xrange(self.lFrom, self.lTo + 1):
                 tickNames.append("$^%d %s$" % (sNumber, printStateLetter(l) ) )
-        tickNum = len(self.ax.get_xticklabels())
+        tickNum = len(tickNames)
 
         self.fig.canvas.draw()
         self.ax.set_xticks(np.arange(tickNum))
@@ -2462,7 +2462,7 @@ class DynamicPolarizability:
                 (default SI).
         """
 
-        if (accountForStateLifetime and self.lifetimes.length == 0):
+        if (accountForStateLifetime and len(self.lifetimes) == 0):
             for state in self.basis:
                 self.lifetimes.append(self.atom.getStateLifetime(state[0],
                                                                  state[1],

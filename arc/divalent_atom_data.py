@@ -71,6 +71,9 @@ Data sources
         neutral ytterbium and multichannel-quantum-defect-theory analysis,
         *Physical Review A* **98**, 062506 (2018)
 
+.. [#MT78] W. F. Meggers and J. L. Tech, *J. Res. Natl. Bur. Stand.* (U.S.)
+        **83**, 13 (1978).
+
 .. [#ca1] Thomas R. Gentile, Barbara J. Hughey, Daniel Kleppner
         and Theodore W. Ducas,
         Microwave spectroscopy of calcium Rydberg states,
@@ -88,6 +91,12 @@ Data sources
         *Pure and Applied Chemistry* **88**,265 (2016)
         https://doi.org/10.1515/pac-2015-0305.
 
+.. [#ca4] B.B. Zelener, S. A. Saakyan,V. A. Sautenkov, E. V. Vilshanskaya,
+        B. V. Zelener and V. E. Fortov, *JETP Letters* **110**, 761 (2019)
+        https://doi.org/10.1134/S0021364019240093
+
+.. [#ca5] J. Sugar and C. Corliss, *J. Phys. Chem. Ref. Data* **14**,
+        Suppl. 2 (1985)
 
 .. [#pr] C.B.Alcock, V.P.Itkin, M.K.Horrigan,\
         *Canadian Metallurgical Quarterly*, **23**, 309 (1984)
@@ -215,8 +224,8 @@ class Calcium40(DivalentAtom):
     Properties of Calcium 40 atoms
     """
 
-    #: eV Ref. [#ca2]_
-    ionisationEnergy = 49305.9240 * 1e2 * \
+    #: eV Ref. [#ca4]_
+    ionisationEnergy = 49305.91966 * 1e2 * \
         physical_constants["inverse meter-electron volt relationship"][0]
 
     Z = 20
@@ -256,7 +265,7 @@ class Calcium40(DivalentAtom):
     groundStateN = 4
     extraLevels = []  #: TODO unkown if such exist at time of writing
 
-    #: Sources Refs. [#c1]_, [#c5]_, [#c9]_, [#ca1]_
+    #: Sources Refs. [#c1]_, [#c5]_, [#c9]_, [#ca1]_, [#ca5]_
     levelDataFromNIST = "ca_level_data.csv"
 
     precalculatedDB = "ca_precalculated.db"
@@ -343,7 +352,7 @@ class Ytterbium174(DivalentAtom):
     groundStateN = 6
     extraLevels = []  #: TODO unkown if such exist at time of writing
 
-    #: Sources Refs. [#yb1]_, [#yb2]_, [#yb3]_
+    #: Sources Refs. [#yb1]_, [#yb2]_, [#yb3]_, [#MT78]_
     levelDataFromNIST = "yb_level_data.csv"
 
     precalculatedDB = "yb_precalculated.db"
