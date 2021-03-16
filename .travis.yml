@@ -15,6 +15,9 @@ matrix:
           env: TOXENV=py3
         - os: osx
           language: generic
+          env: TOXENV=py37
+        - os: osx
+          language: generic
           env: TOXENV=py36
 before_script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
