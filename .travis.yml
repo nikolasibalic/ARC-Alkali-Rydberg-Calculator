@@ -43,6 +43,10 @@ script:
     conda create --yes -n py36 python=3.6;
     source activate py36;
   fi;
+- if [[ "$TOXENV" == "py37" ]]; then
+    conda create --yes -n py37 python=3.7;
+    source activate py37;
+  fi;
 - conda update -n base --yes conda
 - pip install --user -r requirements.txt
 - pip install --user wheel
