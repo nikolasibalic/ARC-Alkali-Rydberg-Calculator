@@ -972,7 +972,7 @@ class StarkMap:
         else:
             raise ValueError("Unsupported export format (.%s)." % format)
 
-    def plotLevelDiagram(self, units=1, highlighState=True, progressOutput=False,
+    def plotLevelDiagram(self, units=1, highlightState=True, progressOutput=False,
                          debugOutput=False, highlightColour='red',
                          addToExistingPlot=False):
         """
@@ -1044,7 +1044,7 @@ class StarkMap:
         if (units == 1):
             # in cm^-1
 
-            if not highlighState:
+            if not highlightState:
                 self.ax.scatter(eFieldList / 100., y * 0.03336,
                                 s=1, color="k", picker=5)
             else:
@@ -1065,7 +1065,7 @@ class StarkMap:
         else:
             # in GHz
 
-            if not highlighState:
+            if not highlightState:
                 self.ax.scatter(eFieldList / 100., y,
                                 s=1, color="k", picker=5)  # in GHz
             else:
