@@ -1658,19 +1658,38 @@ class LevelPlot:
             self.fig.savefig(saveInFile)
         plt.show()
 
-    def drawLevels(self):
+    def drawLevels(self, units='eV'):
         """
             Draws a level diagram plot
+
+            Arg:
+                units (:obj:`char`,optional): possible values {'eV','*cm*','GHz'};
+                    [case insensitive] if the value is 'eV' (default), Stark
+                    diagram will be plotted as energy in units eV; if the string
+                    contains 'cm' Stark diagram will be plotted in energy units cm
+                    :math:`{}^{-1}`; if value is 'GHz', Stark diagram will be
+                    plotted as energy :math:`/h` in units of GHz;
+
         """
         self.fig, self.ax = plt.subplots(1, 1, figsize=(9.0, 11.5))
+
+        if   units.lower() == 'ev':
+            self.scaleFactor = 1
+            self.units = 'eV'
+        elif units.lower() == 'ghz':
+            self.scaleFactor = C_e/C_h*1e-9
+            self.units = 'GHz'
+        elif 'cm' in units.lower():
+            self.scaleFactor = C_e/(C_h*C_c*100)
+            self.units = 'cm$^{-1}$'
 
         i = 0
         while i < len(self.listX):
             self.ax.plot([self.listX[i] - self.width,
                                  self.listX[i] + self.width],
-                         [self.listY[i], self.listY[i]], "b-", picker=True)
+                         [self.listY[i]*self.scaleFactor, self.listY[i]*self.scaleFactor], "b-", picker=True)
             if (i < len(self.populations) and (self.populations[i] > 1e-3)):
-                self.ax.plot([self.listX[i]], [self.listY[i]],
+                self.ax.plot([self.listX[i]], [self.listY[i]*self.scaleFactor],
                              "ro", alpha=self.populations[i])
 
             i = i + 1
@@ -1680,7 +1699,7 @@ class LevelPlot:
             Shows a level diagram plot
         """
         self.listX = np.array(self.listX)
-        self.ax.set_ylabel("Energy (eV)")
+        self.ax.set_ylabel("Energy (%s)"%self.units)
         self.ax.set_xlim(-0.5 + np.min(self.listX), np.max(self.listX) + 0.5)
 
         # X AXIS
