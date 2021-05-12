@@ -1640,7 +1640,7 @@ class LevelPlot:
         plt.show()
 
     def drawLevels(self, units='eV'):
-        """
+        r"""
             Draws a level diagram plot
 
             Arg:
@@ -1703,6 +1703,7 @@ class LevelPlot:
         plt.show()
 
     def findState(self, x, y):
+        y /= self.scaleFactor
         distance = 100000000.0
         state = [0, 0, 0]
         i = 0
@@ -1767,7 +1768,15 @@ class LevelPlot:
 
                                 printStateStringLatex(state[0], state[1], state[2],
                                                       s=state[3])))
-                    title = title + (" %.2f nm (%.3f GHz)" %
+                    transitionEnergy = self.atom.getTransitionFrequency(self.state1[0],
+                                                     self.state1[1],
+                                                     self.state1[2],
+                                                     state[0],
+                                                     state[1],
+                                                     state[2],
+                                                     s=self.state1[3],
+                                                     s2=state[3]) * C_h / C_e  # in eV
+                    title = title + (" %.2f nm (%.3f %s)" %
                                      (self.atom.getTransitionWavelength(self.state1[0],
                                                                         self.state1[1],
                                                                         self.state1[2],
@@ -1775,14 +1784,8 @@ class LevelPlot:
                                                                         state[2],
                                                                         s=self.state1[3],
                                                                         s2=state[3]) * 1e9,
-                                      self.atom.getTransitionFrequency(self.state1[0],
-                                                                       self.state1[1],
-                                                                       self.state1[2],
-                                                                       state[0],
-                                                                       state[1],
-                                                                       state[2],
-                                                                       s=self.state1[3],
-                                                                       s2=state[3]) * 1e-9))
+                                       transitionEnergy * self.scaleFactor,
+                                       self.units))
                     self.ax.set_title(title)
                     self.state1 = [0, 0, 0]
 
