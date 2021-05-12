@@ -972,10 +972,11 @@ class StarkMap:
         else:
             raise ValueError("Unsupported export format (.%s)." % format)
 
-    def plotLevelDiagram(self, units=1, highlightState=True, progressOutput=False,
+            
+    def plotLevelDiagram(self, units='cm', highlightState=True, progressOutput=False,
                          debugOutput=False, highlightColour='red',
                          addToExistingPlot=False):
-        """
+        r"""
             Makes a plot of a stark map of energy levels
 
             To save this plot, see :obj:`savePlot`. To print this plot see
@@ -984,10 +985,13 @@ class StarkMap:
             respectively.
 
             Args:
-                units (:obj:`int`,optional): possible values {1,2} ; if the
-                    value is 1 (default) Stark diagram will be plotted in
-                    energy units cm :math:`{}^{-1}`; if value is 2, Stark
-                    diagram will be plotted as energy :math:`/h` in units of GHz
+                units (:obj:`char`,optional): possible values {'*cm*','GHz','eV'};
+                    [case insensitive] if the string contains 'cm' (default) Stark
+                    diagram will be plotted in energy units cm :math:`{}^{-1}`; if
+                    value is 'GHz', Stark diagram will be plotted as energy
+                    :math:`/h` in units of GHz; if the value is 'eV', Stark diagram
+                    will be plotted as energy in units eV.
+
                 highlightState (:obj:`bool`, optional): False by default. If
                     True, scatter plot colour map will map in red amount of
                     original state for the given eigenState
@@ -1001,8 +1005,23 @@ class StarkMap:
         """
         rvb = LinearSegmentedColormap.from_list('mymap',
                                                 ['0.9', highlightColour, 'black'])
+        # for back-compatibilirt with versions <= 3.0.11
+        # where units were chosen as integer 1 or 2
+        if not isinstance(units, str):
+            units = ["ev", "ghz", "cm"][units-1]
+        if units.lower() == 'ev':
+            self.units = 'eV'
+            self.scaleFactor = 1e9 * C_h / C_e
+            Elabel = '';
+        elif units.lower() == 'ghz':
+            self.units = 'GHz'
+            self.scaleFactor = 1
+            Elabel = '/h'
+        elif 'cm' in units.lower():
+            self.units = 'cm$^{-1}$'
+            self.scaleFactor = 1e9 / (C_c * 100)
+            Elabel = '/(h c)'
 
-        self.units = units
         self.addToExistingPlot = addToExistingPlot
 
         if progressOutput:
@@ -1041,64 +1060,34 @@ class StarkMap:
         y = y[sortOrder]
         yState = yState[sortOrder]
 
-        if (units == 1):
-            # in cm^-1
-
-            if not highlightState:
-                self.ax.scatter(eFieldList / 100., y * 0.03336,
-                                s=1, color="k", picker=5)
-            else:
-                cm = rvb
-                cNorm = matplotlib.colors.Normalize(vmin=0., vmax=1.)
-                self.ax.scatter(eFieldList / 100, y * 0.03336,
-                                c=yState, s=5, norm=cNorm, cmap=cm, lw=0, picker=5)
-                if not existingPlot:
-                    cax = self.fig.add_axes([0.91, 0.1, 0.02, 0.8])
-                    cb = matplotlib.colorbar.ColorbarBase(
-                        cax, cmap=cm, norm=cNorm)
-                    if (self.drivingFromState[0] < 0.1):
-                        cb.set_label(r"$|\langle %s | \mu \rangle |^2$" %
-                                     printStateStringLatex(n, l, j,s=self.s))
-                    else:
-                        cb.set_label(r"$( \Omega_\mu | \Omega )^2$")
-
+        if not highlightState:
+            self.ax.scatter(eFieldList / 100., y * self.scaleFactor,
+                            s=1, color="k", picker=5)
         else:
-            # in GHz
+            cm = rvb
+            cNorm = matplotlib.colors.Normalize(vmin=0., vmax=1.)
+            self.ax.scatter(eFieldList / 100, y * self.scaleFactor,
+                            c=yState, s=5, norm=cNorm, cmap=cm, lw=0, picker=5)
+            if not existingPlot:
+                cax = self.fig.add_axes([0.91, 0.1, 0.02, 0.8])
+                cb = matplotlib.colorbar.ColorbarBase(
+                    cax, cmap=cm, norm=cNorm)
+                if (self.drivingFromState[0] < 0.1):
+                    cb.set_label(r"$|\langle %s | \mu \rangle |^2$" %
+                                 printStateStringLatex(n, l, j,s=self.s))
+                else:
+                    cb.set_label(r"$( \Omega_\mu | \Omega )^2$")
 
-            if not highlightState:
-                self.ax.scatter(eFieldList / 100., y,
-                                s=1, color="k", picker=5)  # in GHz
-            else:
-                cm = rvb
-                cNorm = matplotlib.colors.Normalize(vmin=0., vmax=1.)
-                self.ax.scatter(eFieldList / 100., y, c=yState,
-                                s=5, norm=cNorm, cmap=cm, lw=0, picker=5)
-                if not existingPlot:
-                    cax = self.fig.add_axes([0.91, 0.1, 0.02, 0.8])
-                    cb = matplotlib.colorbar.ColorbarBase(cax,
-                                                          cmap=cm, norm=cNorm)
-                    if (self.drivingFromState[0] < 0.1):
-                        cb.set_label(r"$|\langle %s | \mu \rangle |^2$" %
-                                     printStateStringLatex(n, l, j, s=self.s))
-                    else:
-                        cb.set_label(r"$(\Omega_\mu / \Omega )^2$")
 
         self.ax.set_xlabel("Electric field (V/cm)")
 
-        if (units == 1):
-            # in cm^{-1}
-            uppery = self.atom.getEnergy(
-                n, l, j, s=self.s) * C_e / C_h * 1e-9 * 0.03336 + 10
-            lowery = self.atom.getEnergy(
-                n, l, j, s=self.s) * C_e / C_h * 1e-9 * 0.03336 - 10
-            self.ax.set_ylabel("State energy, $E/(h c)$ (cm$^{-1}$)")
-        else:
-            # in GHz
-            uppery = self.atom.getEnergy(n, l, j, s=self.s) * C_e / C_h * 1e-9 + 5
-            lowery = self.atom.getEnergy(n, l, j, s=self.s) * C_e / C_h * 1e-9 - 5
-            self.ax.set_ylabel(r"State energy, $E/h$ (GHz)")
+        eV2GHz = C_e / C_h * 1e-9;
+        halfY  = 300; #GHz, half Y range
+        upperY = (self.atom.getEnergy(n, l, j, s=self.s) * eV2GHz + halfY) * self.scaleFactor
+        lowerY = (self.atom.getEnergy(n, l, j, s=self.s) * eV2GHz - halfY) * self.scaleFactor
+        self.ax.set_ylabel(r"State energy, $E%s$ (%s)"%(Elabel, self.units))
 
-        self.ax.set_ylim(lowery, uppery)
+        self.ax.set_ylim(lowerY, upperY)
         ##
         self.ax.set_xlim(min(eFieldList) / 100., max(eFieldList) / 100.)
         return 0
@@ -1140,10 +1129,7 @@ class StarkMap:
 
     def _onPick(self, event):
         if isinstance(event.artist, matplotlib.collections.PathCollection):
-            if (self.units == 1):
-                scaleFactor = 0.03336
-            else:
-                scaleFactor = 1.0
+            scaleFactor = self.scaleFactor
 
             x = event.mouseevent.xdata * 100.
             y = event.mouseevent.ydata / scaleFactor
@@ -1658,19 +1644,38 @@ class LevelPlot:
             self.fig.savefig(saveInFile)
         plt.show()
 
-    def drawLevels(self):
-        """
+    def drawLevels(self, units='eV'):
+        r"""
             Draws a level diagram plot
+
+            Arg:
+                units (:obj:`char`,optional): possible values {'eV','*cm*','GHz'};
+                    [case insensitive] if the value is 'eV' (default), Stark
+                    diagram will be plotted as energy in units eV; if the string
+                    contains 'cm' Stark diagram will be plotted in energy units cm
+                    :math:`{}^{-1}`; if value is 'GHz', Stark diagram will be
+                    plotted as energy :math:`/h` in units of GHz;
+
         """
         self.fig, self.ax = plt.subplots(1, 1, figsize=(9.0, 11.5))
+
+        if   units.lower() == 'ev':
+            self.scaleFactor = 1
+            self.units = 'eV'
+        elif units.lower() == 'ghz':
+            self.scaleFactor = C_e/C_h*1e-9
+            self.units = 'GHz'
+        elif 'cm' in units.lower():
+            self.scaleFactor = C_e/(C_h*C_c*100)
+            self.units = 'cm$^{-1}$'
 
         i = 0
         while i < len(self.listX):
             self.ax.plot([self.listX[i] - self.width,
                                  self.listX[i] + self.width],
-                         [self.listY[i], self.listY[i]], "b-", picker=True)
+                         [self.listY[i]*self.scaleFactor, self.listY[i]*self.scaleFactor], "b-", picker=True)
             if (i < len(self.populations) and (self.populations[i] > 1e-3)):
-                self.ax.plot([self.listX[i]], [self.listY[i]],
+                self.ax.plot([self.listX[i]], [self.listY[i]*self.scaleFactor],
                              "ro", alpha=self.populations[i])
 
             i = i + 1
@@ -1680,7 +1685,7 @@ class LevelPlot:
             Shows a level diagram plot
         """
         self.listX = np.array(self.listX)
-        self.ax.set_ylabel("Energy (eV)")
+        self.ax.set_ylabel("Energy (%s)"%self.units)
         self.ax.set_xlim(-0.5 + np.min(self.listX), np.max(self.listX) + 0.5)
 
         # X AXIS
@@ -1703,6 +1708,7 @@ class LevelPlot:
         plt.show()
 
     def findState(self, x, y):
+        y /= self.scaleFactor
         distance = 100000000.0
         state = [0, 0, 0]
         i = 0
@@ -1767,7 +1773,15 @@ class LevelPlot:
 
                                 printStateStringLatex(state[0], state[1], state[2],
                                                       s=state[3])))
-                    title = title + (" %.2f nm (%.3f GHz)" %
+                    transitionEnergy = self.atom.getTransitionFrequency(self.state1[0],
+                                                     self.state1[1],
+                                                     self.state1[2],
+                                                     state[0],
+                                                     state[1],
+                                                     state[2],
+                                                     s=self.state1[3],
+                                                     s2=state[3]) * C_h / C_e  # in eV
+                    title = title + (" %.2f nm (%.3f %s)" %
                                      (self.atom.getTransitionWavelength(self.state1[0],
                                                                         self.state1[1],
                                                                         self.state1[2],
@@ -1775,14 +1789,8 @@ class LevelPlot:
                                                                         state[2],
                                                                         s=self.state1[3],
                                                                         s2=state[3]) * 1e9,
-                                      self.atom.getTransitionFrequency(self.state1[0],
-                                                                       self.state1[1],
-                                                                       self.state1[2],
-                                                                       state[0],
-                                                                       state[1],
-                                                                       state[2],
-                                                                       s=self.state1[3],
-                                                                       s2=state[3]) * 1e-9))
+                                       transitionEnergy * self.scaleFactor,
+                                       self.units))
                     self.ax.set_title(title)
                     self.state1 = [0, 0, 0]
 
