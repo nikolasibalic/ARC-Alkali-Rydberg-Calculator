@@ -975,7 +975,7 @@ class StarkMap:
     def plotLevelDiagram(self, units='cm', highlighState=True, progressOutput=False,
                          debugOutput=False, highlightColour='red',
                          addToExistingPlot=False):
-        """
+        r"""
             Makes a plot of a stark map of energy levels
 
             To save this plot, see :obj:`savePlot`. To print this plot see
@@ -1004,8 +1004,11 @@ class StarkMap:
         """
         rvb = LinearSegmentedColormap.from_list('mymap',
                                                 ['0.9', highlightColour, 'black'])
-
-        if   units.lower() == 'ev':
+        # for back-compatibilirt with versions <= 3.0.11
+        # where units were chosen as integer 1 or 2
+        if not isinstance(units, str):
+            units = ["ev", "ghz", "cm"][units-1]
+        if units.lower() == 'ev':
             self.units = 'eV'
             self.scaleFactor = 1e9 * C_h / C_e
             Elabel = '';
@@ -1078,11 +1081,11 @@ class StarkMap:
 
         eV2GHz = C_e / C_h * 1e-9;
         halfY  = 300; #GHz, half Y range
-        uppery = (self.atom.getEnergy(n, l, j, s=self.s) * eV2GHz + halfY) * self.scaleFactor
-        lowery = (self.atom.getEnergy(n, l, j, s=self.s) * eV2GHz - halfY) * self.scaleFactor
+        upperY = (self.atom.getEnergy(n, l, j, s=self.s) * eV2GHz + halfY) * self.scaleFactor
+        lowerY = (self.atom.getEnergy(n, l, j, s=self.s) * eV2GHz - halfY) * self.scaleFactor
         self.ax.set_ylabel(r"State energy, $E%s$ (%s)"%(Elabel, self.units))
 
-        self.ax.set_ylim(lowery, uppery)
+        self.ax.set_ylim(lowerY, upperY)
         ##
         self.ax.set_xlim(min(eFieldList) / 100., max(eFieldList) / 100.)
         return 0
