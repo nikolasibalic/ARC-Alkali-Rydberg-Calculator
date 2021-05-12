@@ -674,9 +674,13 @@ class AlkaliAtom(object):
             program will try use NIST energy value, if such exists,
             falling back to energy calculation with quantum defects if
             the measured value doesn't exist. For `preferQuantumDefects` =True,
-            program will always calculate energies from quantum defects
+            program will calculate energies from quantum defects
             (useful for comparing quantum defect calculations with measured
-            energy level values).
+            energy level values) if the principal quantum number of the
+            requested state is larger than the minimal quantum principal quantum
+            number `self.minQuantumDefectN` which sets minimal quantum number
+            for which quantum defects still give good estimate of state energy
+            (below this value saved energies will be used if existing).
 
             Args:
                 n (int): principal quantum number

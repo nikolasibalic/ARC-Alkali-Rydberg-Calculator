@@ -34,7 +34,7 @@ ARC: An open-source library for calculating properties of alkali Rydberg atoms,
 
 If you use divalent atoms (Sr, Ca, Yb ...) or new featutures from ARC 3.0:
 E. J. Robertson, N. Šibalić, R. M. Potvliege, M. P. A. Jones,
-ARC 3.0: An expanded Python toolbox for atomic physics calculations, *Computer Physics Communications* (2021) [https://doi.org/10.1016/j.cpc.2020.107814](https://doi.org/10.1016/j.cpc.2020.107814)
+ARC 3.0: An expanded Python toolbox for atomic physics calculations, *Computer Physics Communications* **261**, 107814 (2021) [https://doi.org/10.1016/j.cpc.2020.107814](https://doi.org/10.1016/j.cpc.2020.107814)
 
 If you are using modules from `arc.advanced` please **also cite** [paper](arc/advanced/README.md) that introduced relevant ARC extension.
 

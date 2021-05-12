@@ -1818,7 +1818,8 @@ class PairStateInteractions:
         return stateString
 
     def plotLevelDiagram(self,  highlightColor='red',
-                         highlightScale='linear'):
+                         highlightScale='linear',
+                         units='GHz'):
         """
             Plots pair state level diagram
 
@@ -1832,10 +1833,29 @@ class PairStateInteractions:
                     'log-3' for logarithmic scale going down to 1e-2 and 1e-3
                     respectively. Logarithmic scale is useful for spotting
                     weakly admixed states.
+                units (:obj:`char`,optional): possible values {'*GHz*','cm','eV'};
+                    [case insensitive] if value is 'GHz' (default), diagram will
+                    be plotted as energy :math:`/h` in units of GHz; if the
+                    string contains 'cm' diagram will be plotted in energy units
+                    cm :math:`{}^{-1}`; if the value is 'eV', diagram
+                    will be plotted as energy in units eV.
         """
 
         rvb = LinearSegmentedColormap.from_list('mymap',
                                                 ['0.9', highlightColor])
+
+        if units.lower() == 'ev':
+            self.units = 'eV'
+            self.scaleFactor = 1e9 * C_h / C_e
+            eLabel = '';
+        elif units.lower() == 'ghz':
+            self.units = 'GHz'
+            self.scaleFactor = 1
+            eLabel = '/h'
+        elif 'cm' in units.lower():
+            self.units = 'cm$^{-1}$'
+            self.scaleFactor = 1e9 / (C_c * 100)
+            eLabel = '/(h c)'
 
         if highlightScale == 'linear':
             cNorm = matplotlib.colors.Normalize(vmin=0., vmax=1.)
@@ -1873,7 +1893,8 @@ class PairStateInteractions:
         colorfulY = colorfulY[sortOrder]
         colorfulState = colorfulState[sortOrder]
 
-        self.ax.scatter(colorfulX, colorfulY, s=10, c=colorfulState, linewidth=0,
+        self.ax.scatter(colorfulX, colorfulY * self.scaleFactor,
+                        s=10, c=colorfulState, linewidth=0,
                         norm=cNorm, cmap=rvb, zorder=2, picker=5)
         cax = self.fig.add_axes([0.91, 0.1, 0.02, 0.8])
         cb = matplotlib.colorbar.ColorbarBase(cax, cmap=rvb, norm=cNorm)
@@ -1911,7 +1932,8 @@ class PairStateInteractions:
             cb.set_label(r"$(\Omega_\mu/\Omega)^2$")
 
         self.ax.set_xlabel(r"Interatomic distance, $R$ ($\mu$m)")
-        self.ax.set_ylabel(r"Pair-state relative energy, $\Delta E/h$ (GHz)")
+        self.ax.set_ylabel(r"Pair-state relative energy, $\Delta E %s$ (%s)"
+                           % (eLabel, self.units))
 
     def savePlot(self, filename="PairStateInteractions.pdf"):
         """
@@ -1960,7 +1982,7 @@ class PairStateInteractions:
     def _onPick(self, event):
         if isinstance(event.artist, matplotlib.collections.PathCollection):
             x = event.mouseevent.xdata
-            y = event.mouseevent.ydata
+            y = event.mouseevent.ydata / self.scaleFactor
 
             i = np.searchsorted(self.r, x)
             if i == len(self.r):
@@ -1983,7 +2005,8 @@ class PairStateInteractions:
             if (self.clickedPoint != 0):
                 self.clickedPoint.remove()
 
-            self.clickedPoint, = self.ax.plot([self.r[i]], [self.y[i][j]], "bs",
+            self.clickedPoint, = self.ax.plot([self.r[i]],
+                                              [self.y[i][j] * self.scaleFactor], "bs",
                                               linewidth=0, zorder=3)
 
             self.ax.set_title("State = " + self.composition[i][j] +

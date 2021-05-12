@@ -15,6 +15,9 @@ matrix:
           env: TOXENV=py3
         - os: osx
           language: generic
+          env: TOXENV=py37
+        - os: osx
+          language: generic
           env: TOXENV=py36
 before_script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -39,6 +42,10 @@ script:
 - if [[ "$TOXENV" == "py36" ]]; then
     conda create --yes -n py36 python=3.6;
     source activate py36;
+  fi;
+- if [[ "$TOXENV" == "py37" ]]; then
+    conda create --yes -n py37 python=3.7;
+    source activate py37;
   fi;
 - conda update -n base --yes conda
 - pip install --user -r requirements.txt

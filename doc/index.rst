@@ -36,8 +36,9 @@ Contents
     (`Wavefunction`, `AtomSurfaceVdW`,
     `OpticalLattice1D`, `DynamicPolarizability`, and optical materials
     properties).
-    See more at `E. J. Robertson, N. Šibalić, R. M. Potvliege and
-    M. P. A. Jones, arXiv:2007.12016 <https://arxiv.org/abs/2007.12016>`_ .
+    See more at E. J. Robertson, N. Šibalić, R. M. Potvliege, M. P. A. Jones,
+    ARC 3.0: An expanded Python toolbox for atomic physics calculations,
+    *Computer Physics Communications* **261**, 107814 (2021) `https://doi.org/10.1016/j.cpc.2020.107814 <https://doi.org/10.1016/j.cpc.2020.107814>`_
 
 Package structure
 =================
@@ -87,7 +88,7 @@ Credits
 
   E. J. Robertson, N. Šibalić, R. M. Potvliege, M. P. A. Jones,
   ARC 3.0: An expanded Python toolbox for atomic physics calculations,
-  *Computer Physics Communications* (2021) `https://doi.org/10.1016/j.cpc.2020.107814 <https://doi.org/10.1016/j.cpc.2020.107814>`_
+  *Computer Physics Communications* **261**, 107814 (2021) `https://doi.org/10.1016/j.cpc.2020.107814 <https://doi.org/10.1016/j.cpc.2020.107814>`_
 
   In addition, if you use *arc_advanced* extensions check
   `arc.advanced <./advanced.html>`_ .
