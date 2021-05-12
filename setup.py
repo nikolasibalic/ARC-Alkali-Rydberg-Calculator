@@ -29,6 +29,15 @@ setup(
               "quantum optics", "van der Waals", "scientific","atomic sensors",
               "quantum simulator","alkali atoms","alkaline atoms","divalent atoms",
               "quantum computing"],
+    classifiers=[
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Intended Audience :: Science/Research"
+        "License :: OSI Approved :: BSD License",
+        "Topic :: Scientific/Engineering",
+        "Topic :: Scientific/Engineering :: Physics",
+        "Development Status :: 5 - Production/Stable"
+    ],
     url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator",
     download_url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/archive/3.0.11.tar.gz",
     author = 'Nikola Sibalic,  Elizabeth J. Robertson, Jonathan D. Pritchard, Robert M. Potvliege, Matthew P. A. Jones, Charles S. Adams, Kevin J. Weatherill',

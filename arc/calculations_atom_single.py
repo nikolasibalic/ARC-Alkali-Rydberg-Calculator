@@ -972,6 +972,7 @@ class StarkMap:
         else:
             raise ValueError("Unsupported export format (.%s)." % format)
 
+            
     def plotLevelDiagram(self, units='cm', highlightState=True, progressOutput=False,
                          debugOutput=False, highlightColour='red',
                          addToExistingPlot=False):
@@ -1076,6 +1077,7 @@ class StarkMap:
                                  printStateStringLatex(n, l, j,s=self.s))
                 else:
                     cb.set_label(r"$( \Omega_\mu | \Omega )^2$")
+
 
         self.ax.set_xlabel("Electric field (V/cm)")
 
