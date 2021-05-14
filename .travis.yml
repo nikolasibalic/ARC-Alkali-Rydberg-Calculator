@@ -9,10 +9,13 @@ matrix:
           env: TOXENV=py27
         - os: linux
           sudo: required
-          env: TOXENV=py3
+          env: TOXENV=py38
         - os: osx
           language: generic
-          env: TOXENV=py3
+          env: TOXENV=py39
+        - os: osx
+          language: generic
+          env: TOXENV=py38
         - os: osx
           language: generic
           env: TOXENV=py37
@@ -47,7 +50,16 @@ script:
     conda create --yes -n py37 python=3.7;
     source activate py37;
   fi;
+- if [[ "$TOXENV" == "py38" ]]; then
+    conda create --yes -n py38 python=3.8;
+    source activate py38;
+  fi;
+- if [[ "$TOXENV" == "py39" ]]; then
+    conda create --yes -n py39 python=3.9;
+    source activate py39;
+  fi;
 - conda update -n base --yes conda
+- which pip
 - pip install --user -r requirements.txt
 - pip install --user wheel
 - python  -m compileall -f arc/*.py
@@ -60,7 +72,7 @@ script:
         python setup.py sdist bdist_wheel;
         python -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*.whl;
       else
-        if [[ "$TOXENV" == "py3" ]]; then
+        if [[ "$TOXENV" == "py38" ]]; then
           python setup.py sdist
           python -m twine upload --repository-url https://upload.pypi.org/legacy/ dist/*.tar.gz;
         fi;
