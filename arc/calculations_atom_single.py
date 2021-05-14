@@ -11,6 +11,7 @@
 from __future__ import print_function
 
 from .alkali_atom_functions import printStateString, _EFieldCoupling, printStateLetter, printStateStringLatex
+from .divalent_atom_functions import DivalentAtom
 import datetime
 import sqlite3
 import matplotlib
@@ -972,7 +973,7 @@ class StarkMap:
         else:
             raise ValueError("Unsupported export format (.%s)." % format)
 
-            
+
     def plotLevelDiagram(self, units='cm', highlightState=True, progressOutput=False,
                          debugOutput=False, highlightColour='red',
                          addToExistingPlot=False):
@@ -1493,6 +1494,10 @@ class LevelPlot:
                     one spin state by setting for example `sList=[0]``,
                     or both spin states `sList=[0,1]``
         """
+        if (issubclass(type(self.atom), DivalentAtom) and abs(sList[0]-0.5)<0.1):
+            raise ValueError("For divalent atoms requested spin state(s) have "
+                             "to be explicitly specified e.g. sList=[0] or "
+                             "sList=[0,1]")
         # save local copy of the space restrictions
         self.nFrom = nFrom
         self.nTo = nTo
@@ -1512,7 +1517,7 @@ class LevelPlot:
                 while l <= min(lTo, n - 1):
                     for j in np.linspace(l - s, l + s, round(2 * s + 1)):
                         if j > -0.1:
-                            self.listX.append(l + xPositionOffset)
+                            self.listX.append(l - lFrom + xPositionOffset)
                             self.listY.append(self.atom.getEnergy(n, l, j,
                                                                   s=s))
                             self.levelLabel.append([n, l, j, s])
@@ -1528,12 +1533,12 @@ class LevelPlot:
                     # last line means: either is Alkali, when we don't need to
                     # check the spin, or it's divalent, when we do need to check
                     # the spin
-                    self.listX.append(state[1] + xPositionOffset)
+                    self.listX.append(state[1] - lFrom + xPositionOffset)
                     self.listY.append(self.atom.getEnergy(
                         state[0], state[1], state[2], s=s))
                     self.levelLabel.append([state[0], state[1], state[2], s])
 
-            xPositionOffset += lTo + 1
+            xPositionOffset += lTo + 1 - lFrom
 
 
     def makeTransitionMatrix(self, environmentTemperature=0.0, printDecays=True):
