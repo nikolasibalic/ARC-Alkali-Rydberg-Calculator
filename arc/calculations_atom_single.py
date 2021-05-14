@@ -1743,7 +1743,7 @@ class LevelPlot:
         return -1
 
     def findLine(self, x, y):
-        distance = 1.e19
+        distance = 1.e40
         line = ""
         i = 0
         while i < len(self.spectraLine):
@@ -1763,14 +1763,17 @@ class LevelPlot:
             ydata = thisline.get_ydata()
 
             state = self.findState((xdata[0] + xdata[0]) / 2., ydata[0])
-            if (self.state1[0] == -1 or (state[1] == self.state1[1])):
-                self.state1 = state
-                self.ax.set_title(r"$%s \rightarrow$ " % (printStateStringLatex(
-                    state[0], state[1], state[2], s=state[3])) )
-                self.state2 = [-1, -1, -1]
+
+            if (self.state1[0] == -1 ):
+                if (state[1] != self.state2[1] or state[0]!= self.state2[0]):
+                    self.state1 = state
+                    self.ax.set_title(r"$%s \rightarrow$ " % (printStateStringLatex(
+                        state[0], state[1], state[2], s=state[3])) )
+                    self.state2 = [-1, -1, -1]
             else:
                 title = ""
-                if (state[1] != self.state1[1]) and (state[1] != self.state2[1]):
+
+                if (state[0] != self.state1[0]) or (state[1] != self.state1[1]):
                     title = (r"$ %s \rightarrow %s $ " %
                              (printStateStringLatex(self.state1[0],
                                              self.state1[1],
@@ -1797,9 +1800,9 @@ class LevelPlot:
                                        transitionEnergy * self.scaleFactor,
                                        self.units))
                     self.ax.set_title(title)
-                    self.state1 = [0, 0, 0]
+                    self.state1 = [-1, 0, 0]
+                    self.state2 = state
 
-                self.state2[1] = state[1]
             event.canvas.draw()
 
     def onpick3(self, event):
