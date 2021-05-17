@@ -38,6 +38,8 @@ from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import eigsh
 from scipy.special import sph_harm
 
+import format_number as fmt
+
 import sys
 if sys.version_info > (2,):
     xrange = range
@@ -1789,16 +1791,16 @@ class LevelPlot:
                                                      state[2],
                                                      s=self.state1[3],
                                                      s2=state[3]) * C_h / C_e  # in eV
-                    title = title + (" %.2f nm (%.3f %s)" %
-                                     (self.atom.getTransitionWavelength(self.state1[0],
-                                                                        self.state1[1],
-                                                                        self.state1[2],
-                                                                        state[0], state[1],
-                                                                        state[2],
-                                                                        s=self.state1[3],
-                                                                        s2=state[3]) * 1e9,
-                                       transitionEnergy * self.scaleFactor,
-                                       self.units))
+                    title = title + (" %sm (%s%s)" %
+                                     (fmt.si(self.atom.getTransitionWavelength(self.state1[0],
+                                                                               self.state1[1],
+                                                                               self.state1[2],
+                                                                               state[0], state[1],
+                                                                               state[2],
+                                                                               s=self.state1[3],
+                                                                               s2=state[3])),
+                                      fmt.si(transitionEnergy * self.scaleFactor),
+                                      self.units))
                     self.ax.set_title(title)
                     self.state1 = [-1, 0, 0]
                     self.state2 = state
