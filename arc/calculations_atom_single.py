@@ -1574,7 +1574,7 @@ class LevelPlot:
             transitionVector[i] = decay
             if printDecays:
                 print("Decay time of ")
-                printState(state1[0], state1[1], state1[2])
+                printStateString(state1[0], state1[1], state1[2])
                 if decay < -1e-20:
                     print("\t is\t", -1.e9 / decay, " ns")
             self.transitionMatrix.append(transitionVector)
