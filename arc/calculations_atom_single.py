@@ -1806,7 +1806,7 @@ class LevelPlot:
             event.canvas.draw()
 
     def onpick3(self, event):
-        if isinstance(event.artist, Line2D):
+        if isinstance(event.artist, matplotlib.lines.Line2D):
             thisline = event.artist
             xdata = thisline.get_xdata()
             ydata = thisline.get_ydata()
