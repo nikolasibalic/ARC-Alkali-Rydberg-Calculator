@@ -2388,7 +2388,8 @@ class DynamicPolarizability:
         self.basis = []
         self.lifetimes = []
 
-        for n1 in np.arange(self.nMin, self.nMax + 1):
+        for n1 in np.arange(max(self.nMin, self.atom.groundStateN),
+                            self.nMax + 1):
             lmin = self.l - 1
             if (lmin < - 0.1):
                 lmin = self.l + 1
