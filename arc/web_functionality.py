@@ -1,5 +1,9 @@
 from __future__ import print_function,  absolute_import
 
+import sys
+if sys.version_info > (2,):
+    xrange = range
+
 import numpy as np
 from .alkali_atom_functions import printStateString, C_e, C_h, pi
 
