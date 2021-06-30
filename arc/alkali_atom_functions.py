@@ -757,6 +757,14 @@ class AlkaliAtom(object):
                 j2 (float): total angular momentum of state 2
                 s (float): optional, total spin angular momentum of state 1.
                     By default 0.5 for Alkali atoms.
+                useLiterature (bool): optional, should literature values for
+                    dipole matrix element be used if existing? If true,
+                    compiled values stored in `literatureDMEfilename` variable
+                    for a given atom (file is stored locally at ~/.arc-data/),
+                    will be checked, and if the value is found, selects the
+                    value with smallest error estimate (if there are multiple
+                    entries). If no value is found, it will default to numerical
+                    integration of wavefunctions. By default True.
 
             Returns:
                 float: dipole matrix element (:math:`a_0 e`).
