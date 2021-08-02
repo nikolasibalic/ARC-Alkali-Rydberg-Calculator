@@ -770,7 +770,7 @@ class AlkaliAtom(object):
                 float: dipole matrix element (:math:`a_0 e`).
         """
         dl = abs(l1 - l2)
-        dj = abs(j2 - j2)
+        dj = abs(j1 - j2)
         if not(dl == 1 and (dj < 1.1)):
             return 0
 
