@@ -118,48 +118,45 @@ class Strontium88(DivalentAtom):
     ionisationEnergy = 1377012721e6 * C_h / C_e  #: (eV)  Ref. [#c10]_
 
     Z = 38
-    I = 0.
+    I = 0.0
 
     #: Ref. [#c10]_
-    scaledRydbergConstant = 109736.631 * 1.e2\
+    scaledRydbergConstant = (
+        109736.631
+        * 1.0e2
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
-    quantumDefect = [[[3.269123, -0.177769, 3.4619,
-                       0.0, 0.0, 0.0],
-                      [2.72415, -3.390,
-                       - 220.0, 0.0, 0.0, 0.0],
-                      [2.384667, -42.03053,
-                          -619.0, 0.0, 0.0, 0.0],
-                      [0.090886, -2.4425,
-                          61.896, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[3.3707725, 0.41979, -0.421377,
-                       0.0, 0.0, 0.0],
-                      [2.88673, 0.433745,
-                       - 1.800, 0.0, 0.0, 0.0],
-                      [2.675236, -13.23217,
-                       - 4418.0, 0.0, 0.0, 0.0],
-                      [0.120588, -2.1847,
-                          102.98, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[3.3707725, 0.41979, -0.421377,
-                       0.0, 0.0, 0.0],
-                      [2.88265, 0.39398,
-                       - 1.1199, 0.0, 0.0, 0.0],
-                      [2.661488, -16.8524,
-                       - 6629.26, 0.0, 0.0, 0.0],
-                      [0.11899, -2.0446, 103.26,
-                       0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[3.3707725, 0.41979, -0.421377,
-                       0.0, 0.0, 0.0],
-                      [2.88163, -2.462,
-                       145.18, 0.0, 0.0, 0.0],
-                      [2.655, -65.317,
-                       - 13576.7, 0.0, 0.0, 0.0],
-                      [0.12000, -2.37716,
-                          118.97, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [3.269123, -0.177769, 3.4619, 0.0, 0.0, 0.0],
+            [2.72415, -3.390, -220.0, 0.0, 0.0, 0.0],
+            [2.384667, -42.03053, -619.0, 0.0, 0.0, 0.0],
+            [0.090886, -2.4425, 61.896, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [3.3707725, 0.41979, -0.421377, 0.0, 0.0, 0.0],
+            [2.88673, 0.433745, -1.800, 0.0, 0.0, 0.0],
+            [2.675236, -13.23217, -4418.0, 0.0, 0.0, 0.0],
+            [0.120588, -2.1847, 102.98, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [3.3707725, 0.41979, -0.421377, 0.0, 0.0, 0.0],
+            [2.88265, 0.39398, -1.1199, 0.0, 0.0, 0.0],
+            [2.661488, -16.8524, -6629.26, 0.0, 0.0, 0.0],
+            [0.11899, -2.0446, 103.26, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [3.3707725, 0.41979, -0.421377, 0.0, 0.0, 0.0],
+            [2.88163, -2.462, 145.18, 0.0, 0.0, 0.0],
+            [2.655, -65.317, -13576.7, 0.0, 0.0, 0.0],
+            [0.12000, -2.37716, 118.97, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
     """ Contains list of modified Rydberg-Ritz coefficients for calculating
         quantum defects for
         [[ :math:`^1S_{0},^1P_{1},^1D_{2},^1F_{3}`],
@@ -171,12 +168,15 @@ class Strontium88(DivalentAtom):
 
     # levels that are for smaller n than ground level, but are above in energy
     # due to angular part
-    extraLevels = [[4, 2, 3, 1], [4, 2, 1, 1],
-                   [4, 3, 3, 0],
-                   [4, 3, 4, 1], [4, 3, 3, 1], [4, 3, 2, 1],
-                   [4, 2, 2, 0]
-                   ]
-
+    extraLevels = [
+        [4, 2, 3, 1],
+        [4, 2, 1, 1],
+        [4, 3, 3, 0],
+        [4, 3, 4, 1],
+        [4, 3, 3, 1],
+        [4, 3, 2, 1],
+        [4, 2, 2, 0],
+    ]
 
     #: Sources Refs. [#c1]_, [#c2]_, [#c3]_, [#c4]_, [#c5]_, [#c6]_, [#c7]_,
     #: [#c8]_ , [#c10]_
@@ -186,9 +186,9 @@ class Strontium88(DivalentAtom):
     dipoleMatrixElementFile = "sr_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "sr_quadrupole_matrix_elements.npy"
 
-    literatureDMEfilename = 'strontium_literature_dme.csv'
+    literatureDMEfilename = "strontium_literature_dme.csv"
 
-    elementName = 'Sr88'
+    elementName = "Sr88"
     meltingPoint = 777 + 273.15  #: in K
 
     #: Ref. [#nist]_
@@ -196,11 +196,22 @@ class Strontium88(DivalentAtom):
 
     #: Quantum defect principal quantum number fitting ranges for different
     #: series
-    defectFittingRange = {"1S0": [14, 34], "3S1": [15, 50], "1P1": [10, 29],
-                          "3P2": [19, 41], "3P1": [8, 21], "3P0": [8, 15],
-                          "1D2": [20, 50], "3D3": [20, 37], "3D2": [28, 50],
-                          "3D1": [28, 50], "1F3": [10, 28], "3F4": [10, 28],
-                          "3F3": [10, 24], "3F2": [10, 24]}
+    defectFittingRange = {
+        "1S0": [14, 34],
+        "3S1": [15, 50],
+        "1P1": [10, 29],
+        "3P2": [19, 41],
+        "3P1": [8, 21],
+        "3P0": [8, 15],
+        "1D2": [20, 50],
+        "3D3": [20, 37],
+        "3D2": [28, 50],
+        "3D1": [28, 50],
+        "1F3": [10, 28],
+        "3F4": [10, 28],
+        "3F3": [10, 24],
+        "3F2": [10, 24],
+    }
 
     def getPressure(self, temperature):
         """
@@ -212,11 +223,16 @@ class Strontium88(DivalentAtom):
             print("WARNING: Sr vapour pressure below 298 K is unknown (small)")
             return 0
         if temperature < self.meltingPoint:
-            return 10**(5.006 + 9.226 - 8572 / temperature
-                        - 1.1926 * log(temperature) / log(10.))
+            return 10 ** (
+                5.006
+                + 9.226
+                - 8572 / temperature
+                - 1.1926 * log(temperature) / log(10.0)
+            )
         else:
-            raise ValueError("ERROR: Sr vapour pressure above %.0f C is unknown"
-                             % self.meltingPoint)
+            raise ValueError(
+                "ERROR: Sr vapour pressure above %.0f C is unknown" % self.meltingPoint
+            )
 
 
 class Calcium40(DivalentAtom):
@@ -225,36 +241,52 @@ class Calcium40(DivalentAtom):
     """
 
     #: eV Ref. [#ca4]_
-    ionisationEnergy = 49305.91966 * 1e2 * \
-        physical_constants["inverse meter-electron volt relationship"][0]
+    ionisationEnergy = (
+        49305.91966
+        * 1e2
+        * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     Z = 20
     I = 0
 
     #: eV Ref. [#ca2]_
-    scaledRydbergConstant = 109735.81037 * 1e2 * \
-        physical_constants["inverse meter-electron volt relationship"][0]
+    scaledRydbergConstant = (
+        109735.81037
+        * 1e2
+        * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
-    quantumDefect = [[[2.33793, -0.1142, 0.0, 0.0, 0.0, 0.0],
-                      [1.885584, -0.3240, -23.8, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.09864, -1.29, 36, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[2.440956, 0.35, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.8833, -0.02, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[2.440956, 0.35, 0.0, 0.0, 0.0, 0.0],
-                      [1.964709, 0.228, 0.0, 0.0, 0.0, 0.0],
-                      [0.8859, 0.13, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[2.440956, 0.35, 0.0, 0.0, 0.0, 0.0],
-                      [1.9549, 2.5, -1.60e2, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [2.33793, -0.1142, 0.0, 0.0, 0.0, 0.0],
+            [1.885584, -0.3240, -23.8, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.09864, -1.29, 36, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [2.440956, 0.35, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.8833, -0.02, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [2.440956, 0.35, 0.0, 0.0, 0.0, 0.0],
+            [1.964709, 0.228, 0.0, 0.0, 0.0, 0.0],
+            [0.8859, 0.13, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [2.440956, 0.35, 0.0, 0.0, 0.0, 0.0],
+            [1.9549, 2.5, -1.60e2, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
     """ Contains list of modified Rydberg-Ritz coefficients for calculating
         quantum defects for
         [[ :math:`^1S_{0},^1P_{1},^1D_{2},^1F_{3}`],
@@ -273,9 +305,9 @@ class Calcium40(DivalentAtom):
     dipoleMatrixElementFile = "ca_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "ca_quadrupole_matrix_elements.npy"
 
-    literatureDMEfilename = 'calcium_literature_dme.csv'
+    literatureDMEfilename = "calcium_literature_dme.csv"
 
-    elementName = 'Ca40'
+    elementName = "Ca40"
     meltingPoint = 842 + 273.15  #: in K
 
     #: Ref. [#nist]_
@@ -283,11 +315,16 @@ class Calcium40(DivalentAtom):
 
     #: Quantum defect principal quantum number fitting ranges for different
     #: series
-    defectFittingRange = {"1S0": [14, 34], "3S1": [13, 45], "1P1": [14, 28],
-                          "3P2": [8, 18], "3P1": [8, 22], "3P0": [8, 15],
-                          "1D2": [36, 66], "3D3": [20, 45], "3D2": [22, 37],
-                          "3D1": [20, 32], "1F3": [10, 25], "3F4": [10, 24],
-                          "3F3": [10, 24], "3F2": [10, 24]}
+    defectFittingRange = {
+        "1S0": [22, 55],
+        "3S1": [22, 55],
+        "1P1": [22, 55],
+        "3P2": [8, 18],
+        "3P1": [22, 55],
+        "3D2": [22, 55],
+        "3D1": [22, 55],
+        "1F3": [20, 150],
+    }
 
     def getPressure(self, temperature):
         """
@@ -299,11 +336,16 @@ class Calcium40(DivalentAtom):
             print("WARNING: Ca vapour pressure below 298 K is unknown (small)")
             return 0
         if temperature < self.meltingPoint:
-            return 10**(5.006 + 10.127 - 9517 / temperature
-                        - 1.4030 * log(temperature) / log(10.))
+            return 10 ** (
+                5.006
+                + 10.127
+                - 9517 / temperature
+                - 1.4030 * log(temperature) / log(10.0)
+            )
         else:
-            raise ValueError("ERROR: Ca vapour pressure above %.0f C is unknown"
-                             % self.meltingPoint)
+            raise ValueError(
+                "ERROR: Ca vapour pressure above %.0f C is unknown" % self.meltingPoint
+            )
 
 
 class Ytterbium174(DivalentAtom):
@@ -311,37 +353,53 @@ class Ytterbium174(DivalentAtom):
     Properties of Ytterbium 174 atoms
     """
 
-    ionisationEnergy = 50443.07041 * 1e2 * \
-        physical_constants["inverse meter-electron volt relationship"][0]
+    ionisationEnergy = (
+        50443.07041
+        * 1e2
+        * physical_constants["inverse meter-electron volt relationship"][0]
+    )
     #: eV Ref. [#yb3]_
 
     Z = 70
     I = 0
 
     #: eV Ref. [#yb3]_
-    scaledRydbergConstant = 109736.96959 * 1e2 * \
-        physical_constants["inverse meter-electron volt relationship"][0]
+    scaledRydbergConstant = (
+        109736.96959
+        * 1e2
+        * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
-    quantumDefect = [[[4.278367, -5.60943, -258.5, 0.0, 0.0, 0.0],
-                      [3.953434, -10.58286, 728.100, 0.0, 0.0, 0.0],
-                      [2.7130117, -0.929878, -636.4, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [2.7485996, 0.0137, -106.55, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [4.278367, -5.60943, -258.5, 0.0, 0.0, 0.0],
+            [3.953434, -10.58286, 728.100, 0.0, 0.0, 0.0],
+            [2.7130117, -0.929878, -636.4, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [2.7485996, 0.0137, -106.55, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
     """ Contains list of modified Rydberg-Ritz coefficients for calculating
         quantum defects for
         [[ :math:`^1S_{0},^1P_{1},^1D_{2},^1F_{3}`],
@@ -359,19 +417,22 @@ class Ytterbium174(DivalentAtom):
     dipoleMatrixElementFile = "yb_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "yb_quadrupole_matrix_elements.npy"
 
-    literatureDMEfilename = 'ytterbium_literature_dme.csv'
+    literatureDMEfilename = "ytterbium_literature_dme.csv"
 
-    elementName = 'Yb174'
+    elementName = "Yb174"
     meltingPoint = 819 + 273.15  #: in K
 
     #: Ref. [#nist]_
-    mass = 173.9388664 * \
-        physical_constants["atomic mass constant"][0]
+    mass = 173.9388664 * physical_constants["atomic mass constant"][0]
 
     #: Quantum defect principal quantum number fitting ranges for different
     #: series
-    defectFittingRange = {"1S0": [34, 80], "1P1": [
-        35, 54], "1D2": [40, 80], "3D2": [35, 80]}
+    defectFittingRange = {
+        "1S0": [34, 80],
+        "1P1": [35, 54],
+        "1D2": [40, 80],
+        "3D2": [35, 80],
+    }
 
     def getPressure(self, temperature):
         """
@@ -383,8 +444,11 @@ class Ytterbium174(DivalentAtom):
             print("WARNING: Yb vapour pressure below 298 K is unknown (small)")
             return 0
         if temperature < 900:
-            return 10**(5.006 + 9.111 - 8111 / temperature
-                        - 1.0849 * log(temperature) / log(10.))
+            return 10 ** (
+                5.006
+                + 9.111
+                - 8111 / temperature
+                - 1.0849 * log(temperature) / log(10.0)
+            )
         else:
-            raise ValueError(
-                "ERROR: Yb vapour pressure above 900 K is unknown")
+            raise ValueError("ERROR: Yb vapour pressure above 900 K is unknown")
