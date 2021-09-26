@@ -23,7 +23,7 @@ If you want to contribute to the project, [check this page](https://arc-alkali-r
 Authors
 -------
 
-[Nikola Šibalić](https://github.com/nikolasibalic), [Elizabeth J. Robertson](https://www.heibrids.berlin/people/doctoral-researchers/elizabeth-robertson/), [Jonathan D. Pritchard](http://photonics.phys.strath.ac.uk/people/dr-jonathan-pritchard/), [Robert M. Potvliege](https://www.dur.ac.uk/physics/staff/profiles/?id=550), [Matthew P. A. Jones](https://www.dur.ac.uk/physics/staff/profiles/?id=4705), [Charles S. Adams](https://www.dur.ac.uk/physics/staff/profiles/?id=523), [Kevin J. Weatherill](https://www.dur.ac.uk/physics/staff/profiles/?id=1882)
+[Nikola Šibalić](https://github.com/nikolasibalic), [Elizabeth J. Robertson](https://www.heibrids.berlin/people/doctoral-researchers/elizabeth-robertson/), [Jonathan D. Pritchard](http://photonics.phys.strath.ac.uk/people/dr-jonathan-pritchard/), [Robert M. Potvliege](https://www.durham.ac.uk/staff/r-m-potvliege/), [Matthew P. A. Jones](https://www.durham.ac.uk/staff/m-p-a-jones/), [Charles S. Adams](https://www.durham.ac.uk/staff/c-s-adams/), [Kevin J. Weatherill](https://www.durham.ac.uk/staff/k-j-weatherill/)
 
 **Please cite as:** 
 
