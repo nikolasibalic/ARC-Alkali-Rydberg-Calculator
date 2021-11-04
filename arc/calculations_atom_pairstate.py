@@ -650,13 +650,8 @@ class PairStateInteractions:
         # this numbers are conserved if we use only dipole-dipole interactions
         Lmod2 = ((l + ll) % 2)
 
-        l1start = l - 1
-        if l == 0:
-            l1start = 0
-
-        l2start = ll - 1
-        if ll == 0:
-            l2start = 0
+        l1start = max(l - self.interactionsUpTo, 0)
+        l2start = max(ll - self.interactionsUpTo, 0)
 
         if debugOutput:
             print("\n ======= Relevant states =======\n")
