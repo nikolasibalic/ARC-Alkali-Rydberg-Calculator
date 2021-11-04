@@ -1391,7 +1391,7 @@ class StarkMap:
                 maxOverlap = abs( egvector[self.indexOfCoupledState, i] )**2
                 eigenvectorIndex = i
 
-        energy = ev[eigenvectorIndex] * 0.03336
+        energy = ev[eigenvectorIndex] * 1e9 * C_h / C_e
         if debugOutput:
             print("Max overlap = %.3f" % maxOverlap)
             print("Eigen energy (state index %d) = %.2f eV" % (eigenvectorIndex,
