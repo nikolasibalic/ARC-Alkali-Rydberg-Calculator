@@ -10,7 +10,7 @@
 
 from __future__ import print_function
 
-from .alkali_atom_functions import printStateString, _EFieldCoupling, printStateLetter, printStateStringLatex
+from .alkali_atom_functions import printStateString, _EFieldCoupling, printStateLetter, printStateStringLatex, formatNumberSI
 from .divalent_atom_functions import DivalentAtom
 import datetime
 import sqlite3
@@ -37,8 +37,6 @@ from numpy.linalg import eigh
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import eigsh
 from scipy.special import sph_harm
-
-import format_number as fmt
 
 import sys
 if sys.version_info > (2,):
@@ -1792,14 +1790,14 @@ class LevelPlot:
                                                      s=self.state1[3],
                                                      s2=state[3]) * C_h / C_e  # in eV
                     title = title + (" %sm (%s%s)" %
-                                     (fmt.si(self.atom.getTransitionWavelength(self.state1[0],
+                                     (formatNumberSI(self.atom.getTransitionWavelength(self.state1[0],
                                                                                self.state1[1],
                                                                                self.state1[2],
                                                                                state[0], state[1],
                                                                                state[2],
                                                                                s=self.state1[3],
                                                                                s2=state[3])),
-                                      fmt.si(transitionEnergy * self.scaleFactor),
+                                      formatNumberSI(transitionEnergy * self.scaleFactor),
                                       self.units))
                     self.ax.set_title(title)
                     self.state1 = [-1, 0, 0]
