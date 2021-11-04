@@ -55,7 +55,7 @@ sqlite3.register_adapter(np.int64, int)
 sqlite3.register_adapter(np.int32, int)
 
 DPATH = os.path.join(os.path.expanduser('~'), '.arc-data')
-__arc_data_version__ = 6
+__arc_data_version__ = 7
 
 
 def setup_data_folder():
@@ -755,6 +755,10 @@ class AlkaliAtom(object):
                 modifiedRRcoef[3] / ((n - modifiedRRcoef[0])**6) + \
                 modifiedRRcoef[4] / ((n - modifiedRRcoef[0])**8) + \
                 modifiedRRcoef[5] / ((n - modifiedRRcoef[0])**10)
+        else:
+            # use \delta_\ell = \delta_g * (4/\ell)**5
+            # from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.74.062712
+            defect = self.quantumDefect[0][4][0] * (4 / l) ** 5
         return defect
 
     def getRadialMatrixElement(self,
@@ -777,12 +781,20 @@ class AlkaliAtom(object):
                 j2 (float): total angular momentum of state 2
                 s (float): optional, total spin angular momentum of state 1.
                     By default 0.5 for Alkali atoms.
+                useLiterature (bool): optional, should literature values for
+                    dipole matrix element be used if existing? If true,
+                    compiled values stored in `literatureDMEfilename` variable
+                    for a given atom (file is stored locally at ~/.arc-data/),
+                    will be checked, and if the value is found, selects the
+                    value with smallest error estimate (if there are multiple
+                    entries). If no value is found, it will default to numerical
+                    integration of wavefunctions. By default True.
 
             Returns:
                 float: dipole matrix element (:math:`a_0 e`).
         """
         dl = abs(l1 - l2)
-        dj = abs(j2 - j2)
+        dj = abs(j1 - j2)
         if not(dl == 1 and (dj < 1.1)):
             return 0
 

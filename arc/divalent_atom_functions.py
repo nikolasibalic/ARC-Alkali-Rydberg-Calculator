@@ -319,6 +319,14 @@ class DivalentAtom(AlkaliAtom):
                 s (float): is required argument, total spin angular momentum of
                     state. Specify `s=0` for singlet state or `s=1` for
                     triplet state.
+                useLiterature (bool): optional, should literature values for
+                    dipole matrix element be used if existing? If true,
+                    compiled values stored in `literatureDMEfilename` variable
+                    for a given atom (file is stored locally at ~/.arc-data/),
+                    will be checked, and if the value is found, selects the
+                    value with smallest error estimate (if there are multiple
+                    entries). If no value is found, it will default to numerical
+                    integration of wavefunctions. By default True.
             Returns:
                 float: dipole matrix element (:math:`a_0 e`).
         """

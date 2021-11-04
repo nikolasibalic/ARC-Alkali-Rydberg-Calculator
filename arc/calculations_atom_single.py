@@ -11,6 +11,7 @@
 from __future__ import print_function
 
 from .alkali_atom_functions import printStateString, _EFieldCoupling, printStateLetter, printStateStringLatex
+from .divalent_atom_functions import DivalentAtom
 import datetime
 import sqlite3
 import matplotlib
@@ -972,7 +973,7 @@ class StarkMap:
         else:
             raise ValueError("Unsupported export format (.%s)." % format)
 
-            
+
     def plotLevelDiagram(self, units='cm', highlightState=True, progressOutput=False,
                          debugOutput=False, highlightColour='red',
                          addToExistingPlot=False):
@@ -1390,7 +1391,7 @@ class StarkMap:
                 maxOverlap = abs( egvector[self.indexOfCoupledState, i] )**2
                 eigenvectorIndex = i
 
-        energy = ev[eigenvectorIndex] * 0.03336
+        energy = ev[eigenvectorIndex] * 1e9 * C_h / C_e
         if debugOutput:
             print("Max overlap = %.3f" % maxOverlap)
             print("Eigen energy (state index %d) = %.2f eV" % (eigenvectorIndex,
@@ -1493,6 +1494,10 @@ class LevelPlot:
                     one spin state by setting for example `sList=[0]``,
                     or both spin states `sList=[0,1]``
         """
+        if (issubclass(type(self.atom), DivalentAtom) and abs(sList[0]-0.5)<0.1):
+            raise ValueError("For divalent atoms requested spin state(s) have "
+                             "to be explicitly specified e.g. sList=[0] or "
+                             "sList=[0,1]")
         # save local copy of the space restrictions
         self.nFrom = nFrom
         self.nTo = nTo
@@ -1512,7 +1517,7 @@ class LevelPlot:
                 while l <= min(lTo, n - 1):
                     for j in np.linspace(l - s, l + s, round(2 * s + 1)):
                         if j > -0.1:
-                            self.listX.append(l + xPositionOffset)
+                            self.listX.append(l - lFrom + xPositionOffset)
                             self.listY.append(self.atom.getEnergy(n, l, j,
                                                                   s=s))
                             self.levelLabel.append([n, l, j, s])
@@ -1528,12 +1533,12 @@ class LevelPlot:
                     # last line means: either is Alkali, when we don't need to
                     # check the spin, or it's divalent, when we do need to check
                     # the spin
-                    self.listX.append(state[1] + xPositionOffset)
+                    self.listX.append(state[1] - lFrom + xPositionOffset)
                     self.listY.append(self.atom.getEnergy(
                         state[0], state[1], state[2], s=s))
                     self.levelLabel.append([state[0], state[1], state[2], s])
 
-            xPositionOffset += lTo + 1
+            xPositionOffset += lTo + 1 - lFrom
 
 
     def makeTransitionMatrix(self, environmentTemperature=0.0, printDecays=True):
@@ -1569,7 +1574,7 @@ class LevelPlot:
             transitionVector[i] = decay
             if printDecays:
                 print("Decay time of ")
-                printState(state1[0], state1[1], state1[2])
+                printStateString(state1[0], state1[1], state1[2])
                 if decay < -1e-20:
                     print("\t is\t", -1.e9 / decay, " ns")
             self.transitionMatrix.append(transitionVector)
@@ -1738,7 +1743,7 @@ class LevelPlot:
         return -1
 
     def findLine(self, x, y):
-        distance = 1.e19
+        distance = 1.e40
         line = ""
         i = 0
         while i < len(self.spectraLine):
@@ -1758,14 +1763,17 @@ class LevelPlot:
             ydata = thisline.get_ydata()
 
             state = self.findState((xdata[0] + xdata[0]) / 2., ydata[0])
-            if (self.state1[0] == -1 or (state[1] == self.state1[1])):
-                self.state1 = state
-                self.ax.set_title(r"$%s \rightarrow$ " % (printStateStringLatex(
-                    state[0], state[1], state[2], s=state[3])) )
-                self.state2 = [-1, -1, -1]
+
+            if (self.state1[0] == -1 ):
+                if (state[1] != self.state2[1] or state[0]!= self.state2[0]):
+                    self.state1 = state
+                    self.ax.set_title(r"$%s \rightarrow$ " % (printStateStringLatex(
+                        state[0], state[1], state[2], s=state[3])) )
+                    self.state2 = [-1, -1, -1]
             else:
                 title = ""
-                if (state[1] != self.state1[1]) and (state[1] != self.state2[1]):
+
+                if (state[0] != self.state1[0]) or (state[1] != self.state1[1]):
                     title = (r"$ %s \rightarrow %s $ " %
                              (printStateStringLatex(self.state1[0],
                                              self.state1[1],
@@ -1792,13 +1800,13 @@ class LevelPlot:
                                        transitionEnergy * self.scaleFactor,
                                        self.units))
                     self.ax.set_title(title)
-                    self.state1 = [0, 0, 0]
+                    self.state1 = [-1, 0, 0]
+                    self.state2 = state
 
-                self.state2[1] = state[1]
             event.canvas.draw()
 
     def onpick3(self, event):
-        if isinstance(event.artist, Line2D):
+        if isinstance(event.artist, matplotlib.lines.Line2D):
             thisline = event.artist
             xdata = thisline.get_xdata()
             ydata = thisline.get_ydata()
@@ -2380,7 +2388,8 @@ class DynamicPolarizability:
         self.basis = []
         self.lifetimes = []
 
-        for n1 in np.arange(self.nMin, self.nMax + 1):
+        for n1 in np.arange(max(self.nMin, self.atom.groundStateN),
+                            self.nMax + 1):
             lmin = self.l - 1
             if (lmin < - 0.1):
                 lmin = self.l + 1
