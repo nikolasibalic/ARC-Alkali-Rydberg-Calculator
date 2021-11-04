@@ -2377,7 +2377,7 @@ class AlkaliAtom(object):
             Gamma = 1. / self.getStateLifetime(ne, le, je)
             Is = C_c * epsilon_0 * Gamma**2 * hbar**2 / (4.0 * d**2)
         else:
-            Is = NaN
+            raise ValueError("States not coupled")
 
         return Is
 
