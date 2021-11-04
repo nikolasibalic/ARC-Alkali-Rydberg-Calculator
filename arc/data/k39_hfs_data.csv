@@ -1,0 +1,12 @@
+n,l,j,"Hyperfine Magnetic Dipole Constant, A(Hz)","Hyperfine Magnetic Quadrupole Constant, B(Hz)","error A (Hz)","error B (Hz)","theory = 1, experiment = 0",comment,source,DOI
+4,0,0.5,230.86,0.00,0.30,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+4,1,0.5,28850000.00,0.00,300000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+4,1,1.5,6060000.00,2830000.00,80000.00,130000.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+5,0,0.5,55500000.00,0.00,600000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+5,1,0.5,9020000.00,0.00,170000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+5,1,1.5,1969000.00,870000.00,13000.00,22000.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+6,0,0.5,21810000.00,0.00,180000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+6,1,1.5,886000.00,370000.00,8000.00,15000.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+7,0,0.5,10790000.00,0.00,50000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+8,0,0.5,5990000.00,0.00,80000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31
+10,0,0.5,2410000.00,0.00,50000.00,0.00,0,table IX,"E. Arimondo et. al, Rev. Mod. Phys. 49, 31 (1977)",10.1103/RevModPhys.49.31

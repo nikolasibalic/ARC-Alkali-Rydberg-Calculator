@@ -54,6 +54,22 @@ Overview
     AlkaliAtom.getAverageSpeed
     AlkaliAtom.getLiteratureDME
 
+    AlkaliAtom.getSphericalMatrixElementHFStoFS
+    AlkaliAtom.getDipoleMatrixElementHFStoFS
+    AlkaliAtom.getMagneticDipoleMatrixElementHFS
+    AlkaliAtom.getHFSCoefficients
+    AlkaliAtom.getHFSEnergyShift
+    AlkaliAtom.getBranchingRatio
+    AlkaliAtom.getSaturationIntensity
+    AlkaliAtom.getSaturationIntensityIsotropic
+    AlkaliAtom.groundstateRamanTransition
+    AlkaliAtom.twoPhotonRydbergExcitation
+    AlkaliAtom.getLandegj
+    AlkaliAtom.getLandegjExact
+    AlkaliAtom.getLandegf
+    AlkaliAtom.getLandegfExact
+    AlkaliAtom.breitRabi
+
 .. rubric:: Angular algebra in `arc.wigner`
 
 .. currentmodule:: arc.wigner

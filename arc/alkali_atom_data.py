@@ -84,6 +84,19 @@
         B. T. H. Varcoe, *J. Phys. B* **42**, 165004 (2009)
         http://iopscience.iop.org/article/10.1088/0953-4075/42/16/165004/meta
 
+    .. [#SteckCs] D. Steck, Cesium D Line Data v2.2.1
+        https://steck.us/alkalidata/cesiumnumbers.1.6.pdf
+
+    .. [#Steck85Rb] D. Steck, Rubidium 85 D Line Data v2.2.1
+        https://steck.us/alkalidata/rubidium85numbers.pdf
+
+    .. [#Steck87Rb] D. Steck, Rubidium 87 D Line Data v2.2.1
+        https://steck.us/alkalidata/rubidium87numbers.pdf
+
+    .. [#Feiertag72] D. Feiertag, A. Sahm, and G. zu Putlitz, Z. Phys. 255, 93 (1972)
+
+    .. [#Arrimondo77] E. Arrimondo, M. Inguscio and P. Violino, Rev. Mod. Phys. 49, 31 (1977)
+
     Module
     ------
 """
@@ -233,6 +246,13 @@ class Caesium(AlkaliAtom):
     elementName = "Cs133"
     meltingPoint = 28.44 + 273.15  #: in K
 
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "cs_hfs_data.csv"
+
+    gL = 0.99999587      #: Electron orbital g-factor [#SteckCs]_
+    gI = -0.00039885395  #: Nuclear g-factor  [#SteckCs]_
+
+
     def getPressure(self, temperature):
         """
             Pressure of atomic vapour at given temperature.
@@ -381,6 +401,12 @@ class Rubidium85(AlkaliAtom):
     elementName = "Rb85"
     meltingPoint = 39.31 + 273.15  #: in K
 
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "rb85_hfs_data.csv"
+
+    gL = 0.99999354      #: Electron orbital g-factor [#Steck85Rb]_
+    gI = -0.00029364000  #: Nuclear g-factor  [#Steck85Rb]_
+
     def getPressure(self, temperature):
         """
             Pressure of atomic vapour at given temperature.
@@ -508,6 +534,12 @@ class Rubidium87(AlkaliAtom):
     elementName = "Rb87"
     meltingPoint = 39.31 + 273.15  #: in K
 
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "rb87_hfs_data.csv"
+
+    gL = 0.99999369      #: Electron orbital g-factor [#Steck87Rb]_
+    gI = -0.0009951414   #: Nuclear g-factor  [#Steck87Rb]_
+
     def getPressure(self, temperature):
         """
             Pressure of atomic vapour at given temperature.
@@ -624,6 +656,9 @@ class Lithium6(AlkaliAtom):  # Li
     elementName = "Li6"
     meltingPoint = 180.54 + 273.15  #: in K
 
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "li6_hfs_data.csv"
+
     def getPressure(self, temperature):
         """
             Pressure of atomic vapour at given temperature.
@@ -735,6 +770,9 @@ class Lithium7(AlkaliAtom):  # Li
 
     elementName = "Li7"
     meltingPoint = 180.54 + 273.15  #: in K
+
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "li7_hfs_data.csv"
 
     def getPressure(self, temperature):
         """
@@ -852,6 +890,9 @@ class Sodium(AlkaliAtom):  # Na23
     elementName = "Na23"
     meltingPoint = 97.794 + 273.15  #: in K
 
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "na23_hfs_data.csv"
+
     def getPressure(self, temperature):
         """
             Pressure of atomic vapour at given temperature.
@@ -962,6 +1003,9 @@ class Potassium39(AlkaliAtom):
 
     elementName = "K39"
     meltingPoint = 63.5 + 273.15  #: in K
+
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "k39_hfs_data.csv"
 
     def getPressure(self, temperature):
         """
@@ -1083,6 +1127,9 @@ class Potassium40(AlkaliAtom):
     elementName = "K40"
     meltingPoint = 63.5 + 273.15  #: in K
 
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "k40_hfs_data.csv"
+
     def getPressure(self, temperature):
         """
             Pressure of atomic vapour at given temperature.
@@ -1193,6 +1240,9 @@ class Potassium41(AlkaliAtom):
 
     elementName = "K41"
     meltingPoint = 63.5 + 273.15  #: in K
+
+    #: source of HFS magnetic dipole and quadrupole constants
+    hyperfineStructureData = "k41_hfs_data.csv"
 
     def getPressure(self, temperature):
         """
