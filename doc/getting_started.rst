@@ -11,9 +11,13 @@ IPython notebook with examples
 `An introduction to ARC 3.0: Alkali.ne Rydberg Calculator`_ introduces features added in ARC 3.0 version: support for **divalent atoms**, inter-species calculations, atom-surface interactions, dynamic polarizability calculations (AC Stark Shift), wave function plotting, and methods for work with optical lattices.
 Notebook can also be downloaded in .ipython format :download:`here <./ARC_3_0_introduction.ipynb>` and used interactively in `Jupyter`_ .
 
+`ARC 3.1 update: support for hyperfine structure for alkali atoms`_ is the latest update.
+
 .. _`Rydberg atoms - a primer`: ./_static/Rydberg_atoms_a_primer.html
 
 .. _`An introduction to ARC 3.0: Alkali.ne Rydberg Calculator`: ./_static/ARC_3_0_introduction.html
+
+.. _`ARC 3.1 update: support for hyperfine structure for alkali atoms`: ./_static/ARC_3_1_additions.html
 
 .. _`Jupyter`: https://jupyter.org/
 
