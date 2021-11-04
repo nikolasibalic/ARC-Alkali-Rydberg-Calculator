@@ -10,7 +10,7 @@
 
 from __future__ import print_function
 
-from .alkali_atom_functions import printStateString, _EFieldCoupling, printStateLetter, printStateStringLatex
+from .alkali_atom_functions import printStateString, _EFieldCoupling, printStateLetter, printStateStringLatex, formatNumberSI
 from .divalent_atom_functions import DivalentAtom
 import datetime
 import sqlite3
@@ -1789,16 +1789,16 @@ class LevelPlot:
                                                      state[2],
                                                      s=self.state1[3],
                                                      s2=state[3]) * C_h / C_e  # in eV
-                    title = title + (" %.2f nm (%.3f %s)" %
-                                     (self.atom.getTransitionWavelength(self.state1[0],
-                                                                        self.state1[1],
-                                                                        self.state1[2],
-                                                                        state[0], state[1],
-                                                                        state[2],
-                                                                        s=self.state1[3],
-                                                                        s2=state[3]) * 1e9,
-                                       transitionEnergy * self.scaleFactor,
-                                       self.units))
+                    title = title + (" %sm (%s%s)" %
+                                     (formatNumberSI(self.atom.getTransitionWavelength(self.state1[0],
+                                                                               self.state1[1],
+                                                                               self.state1[2],
+                                                                               state[0], state[1],
+                                                                               state[2],
+                                                                               s=self.state1[3],
+                                                                               s2=state[3])),
+                                      formatNumberSI(transitionEnergy * self.scaleFactor),
+                                      self.units))
                     self.ax.set_title(title)
                     self.state1 = [-1, 0, 0]
                     self.state2 = state
