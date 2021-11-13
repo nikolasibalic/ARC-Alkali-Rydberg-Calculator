@@ -1,5 +1,5 @@
-How to contribute to the project
-================================
+How to contribute
+=================
 
 Both new data and calculations for the core library are welcome. We will also
 include codes that solve specific research questions in the `arc.advanced <./advanced.html>`_ .

@@ -151,11 +151,36 @@ todo_include_todos = True
 
 html_theme = "pydata_sphinx_theme"
 
+html_theme_options = {
+    "github_url": "https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator",
+    "icon_links": [
+        {
+            "name": "Contributing",
+            "url": "https://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/contribute.html",
+            "icon": "fa fa-gavel fa-fw",
+        },
+        {
+            "name": "PyPI",
+            "url": "https://pypi.org/project/ARC-Alkali-Rydberg-Calculator/",
+            "icon": "fas fa-box",
+        }
+    ],
+    "use_edit_page_button": True,
+    "show_toc_level": 1,
+    # "show_nav_level": 2,
+    # "search_bar_position": "navbar",  # TODO: Deprecated - remove in future version
+    # "navbar_align": "left",  # [left, content, right] For testing that the navbar items align properly
+    # "navbar_start": ["navbar-logo", "navbar-version"],
+    # "navbar_center": ["navbar-nav", "navbar-version"],  # Just for testing
+    # "navbar_end": ["navbar-icon-links", "navbar-version"]  # Just for testing
+    # "footer_items": ["copyright", "sphinx-version", ""]
+}
+
 # html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_context = {
     "github_user": "nikolasibalic",
     "github_repo": "ARC-Alkali-Rydberg-Calculator",
-    "github_version": "main",
+    "github_version": "master",
     "doc_path": "doc",
 }
 

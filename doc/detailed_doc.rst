@@ -1,5 +1,5 @@
-Detailed documentation of functions
-===================================
+Detailed API documentation 
+==========================
 
 
 .. toctree::

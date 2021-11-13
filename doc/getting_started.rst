@@ -1,5 +1,5 @@
-Getting started with ARC
-=========================
+Getting started
+===============
 
  .. _get-started-page:
 
