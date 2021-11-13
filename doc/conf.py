@@ -61,7 +61,9 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
-    'sphinx.ext.autosummary'
+    'sphinx.ext.autosummary',
+    'nbsphinx',
+    'sphinx_copybutton'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -145,11 +147,17 @@ todo_include_todos = True
 # a list of builtin themes.
 ##html_theme = 'alabaster'
 
-import sphinx_rtd_theme
+# import sphinx_rtd_theme
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
 
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_context = {
+    "github_user": "nikolasibalic",
+    "github_repo": "ARC-Alkali-Rydberg-Calculator",
+    "github_version": "main",
+    "doc_path": "doc",
+}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

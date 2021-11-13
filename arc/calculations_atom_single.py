@@ -447,7 +447,7 @@ class StarkMap:
         see `Stark map example snippet`_.
 
         Args:
-            atom (:obj:`AlkaliAtom` or :obj:`DivalentAtom`): ={
+            atom (:obj:`arc.alkali_atom_functions.AlkaliAtom` or :obj:`arc.divalent_atom_functions.DivalentAtom`): ={
                 :obj:`arc.alkali_atom_data.Lithium6`,
                 :obj:`arc.alkali_atom_data.Lithium7`,
                 :obj:`arc.alkali_atom_data.Sodium`,
@@ -1218,15 +1218,18 @@ class StarkMap:
             :math:`E` is the applied static electric field,
             and returns fitted value :math:`\alpha_0`
 
-            Args:
-                maxField (:obj:`float`, optional): maximum field (in V/m) to be
+            Parameters:
+                maxField (:obj:`float`, optional):
+                    maximum field (in V/m) to be
                     used for fitting the polarizability. By default, max field
                     is very large, so it will use eigenvalues calculated in the
                     whole range.
-                showPlot (:obj:`bool`, optional): shows plot of calculated
+                showPlot (:obj:`bool`, optional):
+                    shows plot of calculated
                     eigenValues of the given state (dots), and the fit (solid
                     line) for extracting polarizability
-                debugOutput (:obj:`bool`, optional): if True prints additional
+                debugOutput (:obj:`bool`, optional):
+                    if True prints additional
                     information usefull for debuging. Set to false by default.
 
 
@@ -1432,7 +1435,7 @@ class LevelPlot:
             ./Rydberg_atoms_a_primer.html#Rydberg-Atom-Energy-Levels
 
         Args:
-            atom (:obj:`AlkaliAtom` or :obj:`DivalentAtom`): ={
+            atom (:obj:`arc.alkali_atom_functions.AlkaliAtom` or :obj:`arc.divalent_atom_functions.DivalentAtom`): ={
                 :obj:`arc.alkali_atom_data.Lithium6`,
                 :obj:`arc.alkali_atom_data.Lithium7`,
                 :obj:`arc.alkali_atom_data.Sodium`,
@@ -2162,6 +2165,20 @@ class OpticalLattice1D:
         r"""
             Bloch wavefunction as a **function** of 1D coordinate.
 
+            Paraeters:
+                trapPotentialDepth (float):
+                    (in units of recoil energy
+                    :obj:`OpticalLattice1D.getRecoilEnergy`)
+                quasimomentum (float):
+                    (in units of 2 \pi /
+                    :obj:`OpticalLattice1D.trapWavenegth`; note that
+                    reciprocal lattice momentum in this units is 2, and that
+                    full range of quasimomentum is from -1 to +1)
+
+            Returns:
+                Bloch wavefunction as a **function** of coordinate (see call
+                example below)
+
             Example:
                 Returns Bloch wavefunction. Use as following::
 
@@ -2175,18 +2192,6 @@ class OpticalLattice1D:
                            # wavefunction at point x (cooridnate given in units of
                            # 1/k where k = 2 \pi / trapWavenegth )
                            # by default k=1, so one full wavelength is 2\pi
-
-            Args:
-                trapPotentialDepth (float): (in units of recoil energy
-                    :obj:`OpticalLattice1D.getRecoilEnergy`)
-                quasimomentum (float): (in units of 2 \pi /
-                    :obj:`OpticalLattice1D.trapWavenegth`; note that
-                    reciprocal lattice momentum in this units is 2, and that
-                    full range of quasimomentum is from -1 to +1)
-
-            Returns:
-                Bloch wavefunction as a **function** of coordinate (see call
-                example above)
         """
         temp1 = self.energy
         temp2 = self.quasimomentum
@@ -2453,14 +2458,15 @@ class DynamicPolarizability:
             polarizability, and returns state corresponding to the closest
             transition resonance.
 
-           Note that pondermotive polarisability is calculated as
-           :math:`\alpha_P = e^2 / (2 m_e \omega^2)`, i.e. assumes that the
-           definition of the energy shift in field :math:`E` is
-           :math:`\frac{1}{2}\alpha_P E^2`. For more datils check the
-           preprint  `arXiv:2007.12016`_ that introduced the update.
+            Note that pondermotive polarisability is calculated as
+            :math:`\alpha_P = e^2 / (2 m_e \omega^2)`, i.e. assumes that the
+            definition of the energy shift in field :math:`E` is
+            :math:`\frac{1}{2}\alpha_P E^2`. For more datils check the
+            preprint  `arXiv:2007.12016`_ that introduced the update.
 
-           .. _`arXiv:2007.12016`:
+            .. _`arXiv:2007.12016`:
                https://arxiv.org/abs/2007.12016
+
 
             Args:
                 driveWavelength (float): wavelength of driving field
@@ -2472,6 +2478,7 @@ class DynamicPolarizability:
                 accountForStateLifetime (bool): optional, should we account
                     for finite transition linewidths caused by finite state
                     lifetimes. By default False.
+
             Returns:
                 scalar, vector, tensor, pondermotive polarisability of state,
                 core polarisability and atomic state whose resonance is closest
@@ -2633,7 +2640,7 @@ class DynamicPolarizability:
             ./ARC_3_0_introduction.html#Calculations-of-dynamic-polarisability-and-magic-wavelengths-for-optical-traps
 
 
-        Args:
+        Parameters:
             wavelengthList (array): wavelengths for which we want to calculate
                 polarisability (in units of m).
             mj (float): optional, `mj` projection of the total angular

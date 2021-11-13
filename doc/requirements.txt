@@ -1,0 +1,6 @@
+pydata-sphinx-theme
+matplotlib>=1.5.3
+docutils>=0.14,<0.18
+sphinx==4.2.0
+nbsphinx
+sphinx-copybutton

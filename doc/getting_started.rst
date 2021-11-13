@@ -6,20 +6,38 @@ Getting started with ARC
 IPython notebook with examples
 ------------------------------
 
-`Rydberg atoms - a primer`_ introduces Rydberg atoms and ARC package, and is a good **starting point** to learn how to use ARC to get relevant information about **alkali atoms** and **Rydberg states** in general. Notebook can also be downloaded in .ipython format :download:`here <./Rydberg_atoms_a_primer_notebook.ipynb>`, and can be interactively then modified and used in `Jupyter`_ .
+`Rydberg atoms - a primer`_ introduces Rydberg atoms and ARC package, and is a
+good **starting point** to learn how to use ARC to get relevant information about
+**alkali atoms** and **Rydberg states** in general.
 
-`An introduction to ARC 3.0: Alkali.ne Rydberg Calculator`_ introduces features added in ARC 3.0 version: support for **divalent atoms**, inter-species calculations, atom-surface interactions, dynamic polarizability calculations (AC Stark Shift), wave function plotting, and methods for work with optical lattices.
-Notebook can also be downloaded in .ipython format :download:`here <./ARC_3_0_introduction.ipynb>` and used interactively in `Jupyter`_ .
+`An introduction to ARC 3.0: Alkali.ne Rydberg Calculator`_ introduces features
+added in ARC 3.0 version: support for **divalent atoms**, inter-species
+calculations, atom-surface interactions, dynamic polarizability calculations
+(AC Stark Shift), wave function plotting, and methods for work with optical
+lattices.
+   
+`ARC 3.1 update: support for hyperfine structure for alkali atoms`_ expands
+support for **alkali metalk**: hyperfine structure is added,
+and functions for dealing with Raman transitions and level structures in strong
+magnetic fields (Breit-Rabi diagrams).
 
-`ARC 3.1 update: support for hyperfine structure for alkali atoms`_ is the latest update.
+.. _`Rydberg atoms - a primer`: ./Rydberg_atoms_a_primer_notebook.ipynb
 
-.. _`Rydberg atoms - a primer`: ./_static/Rydberg_atoms_a_primer.html
+.. _`An introduction to ARC 3.0: Alkali.ne Rydberg Calculator`: ./ARC_3_0_introduction.ipynb
 
-.. _`An introduction to ARC 3.0: Alkali.ne Rydberg Calculator`: ./_static/ARC_3_0_introduction.html
-
-.. _`ARC 3.1 update: support for hyperfine structure for alkali atoms`: ./_static/ARC_3_1_additions.html
+.. _`ARC 3.1 update: support for hyperfine structure for alkali atoms`: ./ARC_3_1_additions.ipynb
 
 .. _`Jupyter`: https://jupyter.org/
+
+Click on the corresponding topic below to open static (HTML) version of the
+notebooks. If you want directly .ipynb format, open directly files form ARC
+repository.
+
+.. toctree::
+   
+    Rydberg_atoms_a_primer_notebook
+    ARC_3_0_introduction
+    ARC_3_1_additions
 
 On demand examples from online Atom calculator
 ----------------------------------------------

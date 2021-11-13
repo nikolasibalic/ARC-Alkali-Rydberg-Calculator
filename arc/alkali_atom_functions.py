@@ -2283,7 +2283,7 @@ class AlkaliAtom(object):
 
     def getLandegfExact(self, l, j, f, s=0.5):
         r"""
-            Lande g-factor :math: `g_F`
+            Lande g-factor :math:`g_F`
             :math:`g_F=g_J\frac{f(f+1)-I(I+1)+j(j+1)}{2f(f+1)}+g_I\frac{f(f+1)+I(I+1)-j(j+1)}{2f(f+1)}`
 
             Args:
@@ -2411,7 +2411,7 @@ class AlkaliAtom(object):
 
         return Is
 
-    def groundstateRamanTransition(self, Pa, wa, qa, Pb, wb, qb, Delta, f0, mf0, f1, mf1, ne, le, je):
+    def groundStateRamanTransition(self, Pa, wa, qa, Pb, wb, qb, Delta, f0, mf0, f1, mf1, ne, le, je):
         r"""
             Returns two-photon Rabi frequency :math:`\Omega_R`, differential AC Stark shift :math:`\Delta_\mathrm{AC}` and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}` for two-photon ground-state Raman transitions from :math:`\vert f_g,m_{f_g}\rangle\rightarrow\vert nL_{j_r} j_r,m_{j_r}\rangle` via an intermediate excited state :math:`n_e,\ell_e,j_e`.
 
@@ -2423,10 +2423,23 @@ class AlkaliAtom(object):
 
                 where :math:`\tau_\pi=\pi/\Omega_R`.
 
+            .. figure:: ./GroundStateRaman.png
+                :width: 250 px
+                :alt: Schema of |0>-> -> |e> -> |1> transition
+                :align: right
+
             Args:
-                Pa,wa,qa: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of laser a :math:`\vert 0 \rangle\rightarrow\vert e\rangle`
-                Pb,wb,qb: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of laser b :math:`\vert 1 \rangle\rightarrow\vert e\rangle`
-                Delta : Detuning from excited state centre of mass (rad s:math:`^{-1}`)
+                Pa:
+                    power (W), of laser a :math:`\vert 0 \rangle\rightarrow\vert e\rangle`
+                wa:
+                    beam waist (m) of laser a :math:`\vert 0 \rangle\rightarrow\vert e\rangle`
+                qa:
+                    polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`, :math:`\pi` and :math:`\sigma^-`)
+                    of laser a :math:`\vert 0 \rangle\rightarrow\vert e\rangle`
+                Pb: power (W)  of laser b :math:`\vert 1 \rangle\rightarrow\vert e\rangle`
+                wb: beam waist (m)  of laser b :math:`\vert 1 \rangle\rightarrow\vert e\rangle`
+                qb: polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`, :math:`\pi` and :math:`\sigma^-`) of laser b :math:`\vert 1 \rangle\rightarrow\vert e\rangle`
+                Delta : Detuning from excited state centre of mass (rad :math:`\mathrm{s}^{-1}`)
                 f0,mf0: Lower hyperfine level
                 f1,mf1: Upper hyperfine level
                 ne, le, je: principal, orbital, total orbital quantum numbers of excited state
@@ -2435,9 +2448,9 @@ class AlkaliAtom(object):
                 float: Two-Photon Rabi frequency :math:`\Omega_R` (units :math:`\mathrm{rads}^{-1}`), differential AC Stark shift :math:`\Delta_\mathrm{AC}` (units :math:`\mathrm{rads}^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
         """
 
-        #Intensity/beam (W/m^2)
+        # Intensity/beam (W/m^2)
         Ia = 2.0 * Pa / (pi * wa**2)
-        Ib = 2.0 * Pb / (pi * wa**2)
+        Ib = 2.0 * Pb / (pi * wb**2)
         # Electric field (V/m)
         Ea = np.sqrt(2.0 * Ia / (epsilon_0 * C_c))
         Eb = np.sqrt(2.0 * Ib / (epsilon_0 * C_c))
@@ -2523,17 +2536,33 @@ class AlkaliAtom(object):
 
                 where :math:`\tau_\pi=\pi/\Omega_R`.
 
+                .. figure:: ./twophotonexcitation.png
+                    :width: 150 px
+                    :alt: Schema of |g-> -> |e> -> |r> transition
+                    :align: right
+
                 Args:
-                    Pp,wp,qp: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
-                    Pb,wb,qb: Power (W), beam waist (m) and polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
+                    Pp: power (W) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
+                    wp: beam waist (m) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
+                    qp: polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
+                    Pb: power (W) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
+                    wb: beam waist (m) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
+                    qb: polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
                     Delta : Detuning from excited state centre of mass (rad s:math:`^{-1}`)
-                    fg,mfg: Ground state hyperfine level
-                    f1,mf1: Upper hyperfine level
-                    ne, le, je: principal, orbital, total orbital quantum numbers of excited state
-                    nr,lr,jr,mjr : principal quantum number, orbital, total orbital and projection quantum number of target Rydberg state
+                    fg: ground state hyperfine state
+                    mfg: projection of ground state hyperfine state
+                    f1,mf1: upper hyperfine state
+                    ne: principal quantum numbers of excited state 
+                    le: orbital angular momentum of excited state 
+                    je: total angular momentum of excited state
+                    nr: principal quantum number of target Rydberg state
+                    lr: orbital angular momentum of target Rydberg state
+                    jr: total angular momentum of target Rydberg state
+                    mjr: projection of total angular momenutm of target Rydberg state
 
                 Returns:
-                    float: Two-Photon Rabi frequency :math:`\Omega_R` (units :math:`\mathrm{rads}^{-1}`), ground-state AC Stark shift :math:`\Delta_{\mathrm{AC}_g}` (units :math:`\mathrm{rads}^{-1}`) Rydberg-state AC Stark shift :math:`\Delta_{\mathrm{AC}_r}` (units :math:`\mathrm{rads}^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
+                    float: Two-Photon Rabi frequency :math:`\Omega_R` (units :math:`\mathrm{rads}^{-1}`),
+                    ground-state AC Stark shift :math:`\Delta_{\mathrm{AC}_g}` (units :math:`\mathrm{rads}^{-1}`) Rydberg-state AC Stark shift :math:`\Delta_{\mathrm{AC}_r}` (units :math:`\mathrm{rads}^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
         """
 
         # Intensity/beam (W/m^2)

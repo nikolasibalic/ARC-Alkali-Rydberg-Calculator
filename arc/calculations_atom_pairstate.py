@@ -98,8 +98,10 @@ class PairStateInteractions:
        .. _`inter-species interaction calculation snippet`:
            ./ARC_3_0_introduction.html#Inter-species-pair-state-calculations
 
-        Args:
-            atom (:obj:`AlkaliAtom` or :obj:`DivalentAtom`): = {
+        Parameers:
+            atom (:obj:`arc.alkali_atom_functions.AlkaliAtom`
+                or :obj:`arc.divalent_atom_functions.DivalentAtom`):
+                = {
                 :obj:`arc.alkali_atom_data.Lithium6`,
                 :obj:`arc.alkali_atom_data.Lithium7`,
                 :obj:`arc.alkali_atom_data.Sodium`,
@@ -114,29 +116,42 @@ class PairStateInteractions:
                 :obj:`arc.divalent_atom_data.Ytterbium174` }
                 Select the alkali metal for energy level
                 diagram calculation
-            n (int): principal quantum number for the *first* atom
-            l (int): orbital angular momentum for the *first* atom
-            j (float): total angular momentum for the *first* atom
-            nn (int): principal quantum number for the *second* atom
-            ll (int): orbital angular momentum for the *second* atom
-            jj (float): total angular momentum for the *second* atom
-            m1 (float): projection of the total angular momentum on z-axis
+            n (int):
+                principal quantum number for the *first* atom
+            l (int):
+                orbital angular momentum for the *first* atom
+            j (float):
+                total angular momentum for the *first* atom
+            nn (int):
+                principal quantum number for the *second* atom
+            ll (int):
+                orbital angular momentum for the *second* atom
+            jj (float):
+                total angular momentum for the *second* atom
+            m1 (float):
+                projection of the total angular momentum on z-axis
                 for the *first* atom
-            m2 (float): projection of the total angular momentum on z-axis
+            m2 (float):
+                projection of the total angular momentum on z-axis
                 for the *second* atom
-            interactionsUpTo (int): Optional. If set to 1, includes only
+            interactionsUpTo (int):
+                Optional. If set to 1, includes only
                 dipole-dipole interactions. If set to 2 includes interactions
                 up to quadrupole-quadrupole. Default value is 1.
-            s (float): optional, spin state of the first atom. Default value
+            s (float):
+                optional, spin state of the first atom. Default value
                 of 0.5 is correct for :obj:`AlkaliAtom` but for
                 :obj:`DivalentAtom` it has to be explicitly set to 0 or 1 for
                 singlet and triplet states respectively.
                 **If `s2` is not specified, it is assumed that the second
                 atom is in the same spin state.**
-            s2 (float): optinal, spin state of the second atom. If not
+            s2 (float):
+                optinal, spin state of the second atom. If not
                 specified (left to default value None) it will assume spin
                 state of the first atom.
-            atom2 (:obj:`AlkaliAtom` or :obj:`DivalentAtom`): optional,
+            atom2 (:obj:`arc.alkali_atom_functions.AlkaliAtom`
+                or :obj:`arc.divalent_atom_functions.DivalentAtom`):
+                optional,
                 specifies atomic species for the second atom, enabeling
                 calculation of **inter-species pair-state interactions**.
                 If not specified (left to default value None) it will assume
@@ -610,7 +625,7 @@ class PairStateInteractions:
 
         Takes spin vales s1 and s2 as the one defined when defining calculation.
 
-        Args:
+        Parameters:
             n (int): principal quantum number
             l (int): orbital angular momenutum
             j (float): total angular momentum
@@ -936,19 +951,24 @@ class PairStateInteractions:
        .. _`degenerate pertubation C6 calculation example snippet`:
            ./ARC_3_0_introduction.html#Pertubative-C6-calculation-in-the-manifold-of-degenerate-states
 
-        Args:
-            theta (float): orientation of inter-atomic axis with respect
+        Parameters:
+            theta (float):
+                orientation of inter-atomic axis with respect
                 to quantization axis (:math:`z`) in Euler coordinates
                 (measured in units of radian)
-            phi (float): orientation of inter-atomic axis with respect
+            phi (float):
+                orientation of inter-atomic axis with respect
                 to quantization axis (:math:`z`) in Euler coordinates
                 (measured in units of radian)
-            nRange (int): how much below and above the given principal quantum number
+            nRange (int):
+                how much below and above the given principal quantum number
                 of the pair state we should be looking
-            energyDelta (float): what is maximum energy difference ( :math:`\Delta E/h` in Hz)
+            energyDelta (float):
+                what is maximum energy difference ( :math:`\Delta E/h` in Hz)
                 between the original pair state and the other pair states that we are including in
                 calculation
-            degeneratePerturbation (bool): optional, default False. Should one
+            degeneratePerturbation (bool):
+                optional, default False. Should one
                 use degenerate perturbation theory. This should be used whenever
                 angle between quantisation and interatomic axis is non-zero,
                 as well as when one considers non-stretched states.
@@ -1170,7 +1190,7 @@ class PairStateInteractions:
             (:math:`\propto R^{-3}`), :obj:`matR[0]` stores dipole-quadrupole
             couplings etc.
 
-            Args:
+            Parameters:
                 theta (float):  relative orientation of the two atoms
                     (see figure on top of the page), range 0 to :math:`\pi`
                 phi (float): relative orientation of the two atoms (see figure
@@ -1432,7 +1452,7 @@ class PairStateInteractions:
             transitions respectively) is calculated and marked by the
             colourmaping these values on the obtained eigenvectors.
 
-            Args:
+            Parameters:
                 rangeR ( :obj:`array`): Array of values for distance between
                     the atoms (in :math:`\mu` m) for which we want to calculate
                     eigenstates.
@@ -1660,7 +1680,7 @@ class PairStateInteractions:
 
             For more details on the format, see header of the saved files.
 
-            Args:
+            Parameters:
                 filebase (string): filebase for the names of the saved files
                     without format extension. Add as a prefix a directory path
                     if necessary (e.g. saving outside the current working directory)
@@ -1820,7 +1840,7 @@ class PairStateInteractions:
 
             Call :obj:`showPlot` if you want to display a plot afterwards.
 
-            Args:
+            Parameters:
                 highlightColor (string): optional, specifies the colour used
                     for state highlighting
                 highlightScale (string): optional, specifies scaling of
@@ -2327,9 +2347,8 @@ class PairStateInteractions:
                     the adiabatic continuation of the original unperturbed
                     pair state.
             Returns:
-                float:
-                    :math:`r_{\\rm vdW}`  measured in :math:`\\mu\\text{m}`
-                    on success; If unsuccessful returns False.
+                float: :math:`r_{\\rm vdW}`  measured in :math:`\\mu\\text{m}`
+                on success; If unsuccessful returns False.
 
             Note:
                 In order to use this functions, highlighting in
@@ -2466,36 +2485,44 @@ class StarkMapResonances:
         .. _`Stark resonances example snippet`:
                 ././Rydberg_atoms_a_primer.html#Tuning-the-interaction-strength-with-electric-fields
 
-        Args:
-            atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-                :obj:`alkali_atom_data.Lithium7`,
-                :obj:`alkali_atom_data.Sodium`,
-                :obj:`alkali_atom_data.Potassium39`,
-                :obj:`alkali_atom_data.Potassium40`,
-                :obj:`alkali_atom_data.Potassium41`,
-                :obj:`alkali_atom_data.Rubidium85`,
-                :obj:`alkali_atom_data.Rubidium87`,
-                :obj:`alkali_atom_data.Caesium` }
+        Parameters:
+            atom1 (:obj:`arc.alkali_atom_functions.AlkaliAtom` or :obj:`arc.divalent_atom_functions.DivalentAtom`):
+                ={ :obj:`arc.alkali_atom_data.Lithium6`,
+                :obj:`arc.alkali_atom_data.Lithium7`,
+                :obj:`arc.alkali_atom_data.Sodium`,
+                :obj:`arc.alkali_atom_data.Potassium39`,
+                :obj:`arc.alkali_atom_data.Potassium40`,
+                :obj:`arc.alkali_atom_data.Potassium41`,
+                :obj:`arc.alkali_atom_data.Rubidium85`,
+                :obj:`arc.alkali_atom_data.Rubidium87`,
+                :obj:`arc.alkali_atom_data.Caesium`,
+                :obj:`arc.divalent_atom_data.Strontium88`,
+                :obj:`arc.divalent_atom_data.Calcium40`
+                :obj:`arc.divalent_atom_data.Ytterbium174` }
                  the first atom in the pair-state
             state1 ([int,int,float,float,(float)]): specification of the state
                 of the first state as an array of values :math:`[n,l,j,m_j]`.
-                For obj:`DivalentAtom` and other divalent atoms, 5th value
+                For :obj:`arc.divalent_atom_functions.DivalentAtom` and other divalent atoms, 5th value
                 should be added specifying total spin angular momentum `s`.
                 Full definition of state then has format
                 :math:`[n,l,j,m_j,s]`.
-            atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-                :obj:`alkali_atom_data.Lithium7`,
-                :obj:`alkali_atom_data.Sodium`,
-                :obj:`alkali_atom_data.Potassium39`,
-                :obj:`alkali_atom_data.Potassium40`,
-                :obj:`alkali_atom_data.Potassium41`,
-                :obj:`alkali_atom_data.Rubidium85`,
-                :obj:`alkali_atom_data.Rubidium87`,
-                :obj:`alkali_atom_data.Caesium` }
+            atom2 (:obj:`arc.alkali_atom_functions.AlkaliAtom` or :obj:`arc.divalent_atom_functions.DivalentAtom`):
+                ={ :obj:`arc.alkali_atom_data.Lithium6`,
+                :obj:`arc.alkali_atom_data.Lithium7`,
+                :obj:`arc.alkali_atom_data.Sodium`,
+                :obj:`arc.alkali_atom_data.Potassium39`,
+                :obj:`arc.alkali_atom_data.Potassium40`,
+                :obj:`arc.alkali_atom_data.Potassium41`,
+                :obj:`arc.alkali_atom_data.Rubidium85`,
+                :obj:`arc.alkali_atom_data.Rubidium87`,
+                :obj:`arc.alkali_atom_data.Caesium`,
+                :obj:`arc.divalent_atom_data.Strontium88`,
+                :obj:`arc.divalent_atom_data.Calcium40`
+                :obj:`arc.divalent_atom_data.Ytterbium174` }
                  the second atom in the pair-state
             state2 ([int,int,float,float,(float)]): specification of the state
                 of the first state as an array of values :math:`[n,l,j,m_j]`,
-                For obj:`DivalentAtom` and other divalent atoms, 5th value
+                For :obj:`arc.divalent_atom_functions.DivalentAtom` and other divalent atoms, 5th value
                 should be added specifying total spin angular momentum `s`.
                 Full definition of state then has format
                 :math:`[n,l,j,m_j,s]`.
