@@ -15,6 +15,7 @@ Overview
 .. rubric:: DivalentAtom Methods
 
 .. autosummary::
+    :toctree: divalent_atom_functions/
 
     DivalentAtom.getDipoleMatrixElement
     DivalentAtom.getTransitionWavelength

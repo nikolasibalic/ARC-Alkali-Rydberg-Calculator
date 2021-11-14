@@ -4,7 +4,9 @@ Alkali atom data
 
 .. currentmodule:: arc.alkali_atom_data
 
-.. autosummary::
+.. autosummary::  arc.alkali_atom_data
+    :toctree: generated/
+    :recursive:
 
     Hydrogen
     Lithium6

@@ -29,31 +29,12 @@ Overview
 
 .. currentmodule:: arc.calculations_atom_pairstate
 
-.. rubric:: PairStateInteractions Methods
 
-.. autosummary::
+.. toctree::
+    :maxdepth: 2
 
-    PairStateInteractions.defineBasis
-    PairStateInteractions.getC6perturbatively
-    PairStateInteractions.getLeRoyRadius
-    PairStateInteractions.diagonalise
-    PairStateInteractions.plotLevelDiagram
-    PairStateInteractions.showPlot
-    PairStateInteractions.exportData
-    PairStateInteractions.getC6fromLevelDiagram
-    PairStateInteractions.getC3fromLevelDiagram
-    PairStateInteractions.getVdwFromLevelDiagram
-
-.. rubric:: StarkMapResonances Methods
-
-.. autosummary::
-
-    StarkMapResonances.findResonances
-    StarkMapResonances.showPlot
+    calculations_atom_pairstate.PairStateInteractions
+    calculations_atom_pairstate.StarkMapResonances
 
 
-Detailed documentation
-----------------------
 
-.. automodule:: arc.calculations_atom_pairstate
-   :members:

@@ -8,3 +8,8 @@ dist/
 **/__pycache__
 *_precalculated.db
 *.so
+/doc/alkali_atom_data
+/doc/divalent_atom_functions
+/doc/divalent_atom_data
+/doc/generated
+/doc/_static

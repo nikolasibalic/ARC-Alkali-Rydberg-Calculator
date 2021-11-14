@@ -66,6 +66,16 @@ extensions = [
     'sphinx_copybutton'
 ]
 
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/dev', (None, 'intersphinx/python-objects.inv')),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', (None, 'intersphinx/scipy-objects.inv')),
+    'numpy': ('https://numpy.org/doc/stable', (None, 'intersphinx/numpy-objects.inv')),
+    'matplotlib': ('https://matplotlib.org/stable', (None, 'intersphinx/matplotlib-objects.inv')),
+}
+
+autodoc_default_flags = ['members', 'inherited-members']
+autosummary_imported_members= True
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -122,7 +132,7 @@ exclude_patterns = []
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).
-#add_module_names = True
+add_module_names = False
 
 # If true, sectionauthor and moduleauthor directives will be shown in the
 # output. They are ignored by default.
@@ -158,6 +168,11 @@ html_theme_options = {
             "name": "Contributing",
             "url": "https://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/contribute.html",
             "icon": "fa fa-gavel fa-fw",
+        },
+        {
+            "name": "Support",
+            "url": "https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/discussions",
+            "icon": "fa fa-comment fa-fw",
         },
         {
             "name": "PyPI",

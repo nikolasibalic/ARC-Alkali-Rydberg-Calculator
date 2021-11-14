@@ -11,7 +11,7 @@ ARC documentation
     :width: 94px
     :align: right
     :height: 106px
-    :alt: alternate text
+    :alt: ARC logo
     :figclass: align-right
 
 ARC (Alkali.ne Rydberg Calculator)  is package of routines written in Python,

@@ -44,11 +44,7 @@ import os
 if sys.version_info > (2,):
     xrange = range
 
-try:
-    import cPickle as pickle   # fast, C implementation of the pickle
-except Exception:
-    # Python 3 already has efficient pickle (instead of cPickle)
-    import pickle
+import pickle
 sqlite3.register_adapter(np.float64, float)
 sqlite3.register_adapter(np.float32, float)
 sqlite3.register_adapter(np.int64, int)
@@ -116,15 +112,6 @@ class AlkaliAtom(object):
                 implementation that is much slower. Default is True.
 
     """
-
-    #: Hyperfine Splitting Coefficients (SI Units)
-    Ahfs = 0.0        #: Ground-state Hyperfine Magnetic Dipole Constant (Hz)
-    AhfsD1 = 0.0      #: ngP1/2 Hyperfine Magnetic Dipole Constant (Hz)
-    AhfsD2 = 0.0      #: ngP3/2 Hyperfine Magnetic Dipole Constant (Hz)
-    BhfsD2 = 0.0      #: ngP3/2 Hyperfine Magnetic Quadrupole Constant (Hz)
-    AhfsiP12 = 0.0    #: (ng+1)P1/2 Hyperfine Magnetic Dipole Constant (Hz)
-    AhfsiP32 = 0.0    #: (ng+1)P3/2 Hyperfine Magnetic Dipole Constant (Hz)
-    BhfsiP32 = 0.0    #: (ng+1)P3/2 Hyperfine Magnetic Quadrupole Constant (Hz)
 
     gS = 2.0023193043737  # : Electron Spin g-factor [Steck]
     gL = 0.0          #: Electron Orbital g-factor
@@ -2664,7 +2651,7 @@ class AlkaliAtom(object):
                 float: State energy :math:`E_z` in SI units (Hz), state f, state mf
         """
 
-        [Ahfs, Bhfs] = self.getHFSCoefficients(n, l, j)
+        Ahfs, Bhfs = self.getHFSCoefficients(n, l, j)
 
         # Bohr Magneton
         uB = physical_constants["Bohr magneton in Hz/T"][0]

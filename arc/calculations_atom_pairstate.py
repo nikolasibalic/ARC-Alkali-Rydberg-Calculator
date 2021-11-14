@@ -95,12 +95,11 @@ class PairStateInteractions:
         .. _`interactions example snippet`:
             ./Rydberg_atoms_a_primer.html#Short-range-interactions
 
-       .. _`inter-species interaction calculation snippet`:
+        .. _`inter-species interaction calculation snippet`:
            ./ARC_3_0_introduction.html#Inter-species-pair-state-calculations
 
-        Parameers:
-            atom (:obj:`arc.alkali_atom_functions.AlkaliAtom`
-                or :obj:`arc.divalent_atom_functions.DivalentAtom`):
+        Parameters:
+            atom (:obj:`arc.alkali_atom_functions.AlkaliAtom` or :obj:`arc.divalent_atom_functions.DivalentAtom`):
                 = {
                 :obj:`arc.alkali_atom_data.Lithium6`,
                 :obj:`arc.alkali_atom_data.Lithium7`,
@@ -116,7 +115,7 @@ class PairStateInteractions:
                 :obj:`arc.divalent_atom_data.Ytterbium174` }
                 Select the alkali metal for energy level
                 diagram calculation
-            n (int):
+            n (int): 
                 principal quantum number for the *first* atom
             l (int):
                 orbital angular momentum for the *first* atom
@@ -140,8 +139,9 @@ class PairStateInteractions:
                 up to quadrupole-quadrupole. Default value is 1.
             s (float):
                 optional, spin state of the first atom. Default value
-                of 0.5 is correct for :obj:`AlkaliAtom` but for
-                :obj:`DivalentAtom` it has to be explicitly set to 0 or 1 for
+                of 0.5 is correct for :obj:`arc.alkali_atom_functions.AlkaliAtom`
+                but for :obj:`arc.divalent_atom_functions.DivalentAtom`
+                it has to be explicitly set to 0 or 1 for
                 singlet and triplet states respectively.
                 **If `s2` is not specified, it is assumed that the second
                 atom is in the same spin state.**
@@ -149,8 +149,7 @@ class PairStateInteractions:
                 optinal, spin state of the second atom. If not
                 specified (left to default value None) it will assume spin
                 state of the first atom.
-            atom2 (:obj:`arc.alkali_atom_functions.AlkaliAtom`
-                or :obj:`arc.divalent_atom_functions.DivalentAtom`):
+            atom2 (:obj:`arc.alkali_atom_functions.AlkaliAtom` or :obj:`arc.divalent_atom_functions.DivalentAtom`):
                 optional,
                 specifies atomic species for the second atom, enabeling
                 calculation of **inter-species pair-state interactions**.
@@ -203,11 +202,11 @@ class PairStateInteractions:
                  s2=None, atom2=None):
         # alkali atom type, principal quantum number, orbital angular momentum,
         #  total angular momentum projections of the angular momentum on z axis
-        self.atom1 = atom  #: atom type
+        self.atom1 = atom  #: the first atom type (isotope)
         if atom2 is None:
-            self.atom2 = atom
+            self.atom2 = atom  #: the second atom type (isotope)
         else:
-            self.atom2 = atom2
+            self.atom2 = atom2  #: thge second atom type (isotope)
         self.n = n  # : pair-state definition: principal quantum number of the first atom
         self.l = l  # : pair-state definition: orbital angular momentum of the first atom
         self.j = j  # : pair-state definition: total angular momentum of the first atom
@@ -217,8 +216,7 @@ class PairStateInteractions:
         self.m1 = m1  # : pair-state definition: projection of the total ang. momentum for the *first* atom
         self.m2 = m2  # : pair-state definition: projection of the total angular momentum for the *second* atom
         self.interactionsUpTo = interactionsUpTo
-        """"
-            Specifies up to which approximation we include in pair-state interactions.
+        """ Specifies up to which approximation we include in pair-state interactions.
             By default value is 1, corresponding to pair-state interactions up to
             dipole-dipole coupling. Value of 2 is also supported, corresponding
             to pair-state interactions up to quadrupole-quadrupole coupling.
@@ -266,15 +264,16 @@ class PairStateInteractions:
         self.coupling = []
         """
             List of matrices defineing coupling strengths between the states in
-             J basis (not resolving :math:`m_j` ). Basis is given by
-             :obj:`channel`. Used as intermediary for full interaction matrix
-             calculation by :obj:`defineBasis`.
+            J basis (not resolving :math:`m_j` ). Basis is given by
+            :obj:`PairStateInteractions.channel`. Used as intermediary for full
+            interaction matrix calculation by
+            :obj:`PairStateInteractions.defineBasis`.
         """
         self.channel = []
         """
             states relevant for calculation, defined in J basis (not resolving
             :math:`m_j`. Used as intermediary for full interaction matrix
-            calculation by :obj:`defineBasis`.
+            calculation by :obj:`PairStateInteractions.defineBasis`.
         """
 
         # ======================= Full basis (resolving mj) ===================
@@ -285,13 +284,15 @@ class PairStateInteractions:
             [[n1,l1,j1,mj1,n2,l2,j2,mj2], ...].
             Each state is an array [n1,l1,j1,mj1,n2,l2,j2,mj2] corresponding to
             :math:`|n_1,l_1,j_1,m_{j1},n_2,l_2,j_2,m_{j2}\\rangle` state.
-            Calculated by :obj:`defineBasis`.
+            Calculated by :obj:`PairStateInteractions.defineBasis`.
         """
         self.matrixElement = []
         """
-            `matrixElement[i]` gives index of state in :obj:`channel` basis
-            (that doesn't resolve :obj:`m_j` states), for the given index `i`
-            of the state in :obj:`basisStates`  ( :math:`m_j` resolving) basis.
+            `matrixElement[i]` gives index of state in
+            :obj:`PairStateInteractions.channel` basis
+            (that doesn't resolve :math:`m_j` states), for the given index `i`
+            of the state in :obj:`PairStateInteractions.basisStates` 
+            ( :math:`m_j` resolving) basis.
         """
 
         # variuos parts of interaction matrix in pair-state basis
@@ -301,7 +302,8 @@ class PairStateInteractions:
             on inter-atomic distance. E.g. diagonal elements of the interaction
             matrix, that describe energies of the pair states in unperturbed
             basis, will be stored here. Basis states are stored in
-            :obj:`basisStates`. Calculated by :obj:`defineBasis`.
+            :obj:`PairStateInteractions.basisStates`. Calculated by
+            :obj:`PairStateInteractions.defineBasis`.
         """
         self.matR = []
         """
@@ -311,13 +313,14 @@ class PairStateInteractions:
             respectively. These matrices correspond to dipole-dipole
             ( :math:`C_3`), dipole-quadrupole ( :math:`C_4`) and
             quadrupole-quadrupole ( :math:`C_5`) interactions
-            coefficients. Basis states are stored in :obj:`basisStates`.
-            Calculated by :obj:`defineBasis`.
+            coefficients. Basis states are stored in
+            :obj:`PairStateInteractions.basisStates`.
+            Calculated by :obj:`PairStateInteractions.defineBasis`.
         """
         self.originalPairStateIndex = 0
         """
             index of the original n,l,j,m1,nn,ll,jj,m2 pair-state in the
-            :obj:`basisStates` basis.
+            :obj:`PairStateInteractions.basisStates` basis.
         """
 
         self.matE = []
@@ -1185,9 +1188,12 @@ class PairStateInteractions:
             on distance as :math:`R^{-3}, R^{-4}` or :math:`R^{-5}`,
             corresponding to dipole-dipole (:math:`C_3` ), dipole-qudrupole
             (:math:`C_4` ) and quadrupole-quadrupole coupling (:math:`C_5` )
-            respectively. These parts of the matrix are stored in :obj:`matR`
-            in that order. I.e. :obj:`matR[0]` stores dipole-dipole coupling
-            (:math:`\propto R^{-3}`), :obj:`matR[0]` stores dipole-quadrupole
+            respectively. These parts of the matrix are stored in
+            :obj:`PairStateInteractions.matR`
+            in that order. I.e. :obj:`matR[0]`
+            stores dipole-dipole coupling
+            (:math:`\propto R^{-3}`),
+            :obj:`matR[1]` stores dipole-quadrupole
             couplings etc.
 
             Parameters:
@@ -1215,8 +1221,8 @@ class PairStateInteractions:
                     more verbose output.
 
             See also:
-                :obj:`alkali_atom_functions.saveCalculation` and
-                :obj:`alkali_atom_functions.loadSavedCalculation` for
+                :obj:`arc.alkali_atom_functions.saveCalculation` and
+                :obj:`arc.alkali_atom_functions.loadSavedCalculation` for
                 information on saving intermediate results of calculation for
                 later use.
         """
@@ -1952,7 +1958,7 @@ class PairStateInteractions:
 
     def savePlot(self, filename="PairStateInteractions.pdf"):
         """
-            Saves plot made by :obj:`plotLevelDiagram`
+            Saves plot made by :obj:`PairStateInteractions.plotLevelDiagram`
 
             Args:
                 filename (:obj:`str`, optional): file location where the plot

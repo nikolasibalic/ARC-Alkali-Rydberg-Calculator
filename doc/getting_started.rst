@@ -3,23 +3,42 @@ Getting started
 
  .. _get-started-page:
 
-IPython notebook with examples
-------------------------------
+Example notebooks (.ipynb)
+--------------------------
 
 `Rydberg atoms - a primer`_ introduces Rydberg atoms and ARC package, and is a
 good **starting point** to learn how to use ARC to get relevant information about
 **alkali atoms** and **Rydberg states** in general.
+
+.. toctree::
+    :maxdepth:4
+
+    Rydberg_atoms_a_primer_notebook
 
 `An introduction to ARC 3.0: Alkali.ne Rydberg Calculator`_ introduces features
 added in ARC 3.0 version: support for **divalent atoms**, inter-species
 calculations, atom-surface interactions, dynamic polarizability calculations
 (AC Stark Shift), wave function plotting, and methods for work with optical
 lattices.
-   
+
+.. toctree::
+    :maxdepth:4
+
+    ARC_3_0_introduction
+
 `ARC 3.1 update: support for hyperfine structure for alkali atoms`_ expands
-support for **alkali metalk**: hyperfine structure is added,
+support for **alkali metals**: hyperfine structure is added,
 and functions for dealing with Raman transitions and level structures in strong
 magnetic fields (Breit-Rabi diagrams).
+
+.. toctree::
+    :maxdepth:4
+
+    ARC_3_1_additions
+
+Click on the corresponding topic above to open static (HTML) version of the
+notebooks. If you want directly .ipynb format, open directly files form ARC
+repository and run them in `Jupter`_ .
 
 .. _`Rydberg atoms - a primer`: ./Rydberg_atoms_a_primer_notebook.ipynb
 
@@ -28,16 +47,6 @@ magnetic fields (Breit-Rabi diagrams).
 .. _`ARC 3.1 update: support for hyperfine structure for alkali atoms`: ./ARC_3_1_additions.ipynb
 
 .. _`Jupyter`: https://jupyter.org/
-
-Click on the corresponding topic below to open static (HTML) version of the
-notebooks. If you want directly .ipynb format, open directly files form ARC
-repository.
-
-.. toctree::
-   
-    Rydberg_atoms_a_primer_notebook
-    ARC_3_0_introduction
-    ARC_3_1_additions
 
 On demand examples from online Atom calculator
 ----------------------------------------------

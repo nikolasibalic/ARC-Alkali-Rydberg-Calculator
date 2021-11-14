@@ -10,6 +10,7 @@ Divalent atom data
 .. currentmodule:: arc.divalent_atom_data
 
 .. autosummary::
+  :toctree: generated/
 
   Strontium88
   Calcium40

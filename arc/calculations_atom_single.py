@@ -394,7 +394,7 @@ class Wavefunction:
                 of the plot should be shown. Default value is `True`.
 
         Returns:
-            :obj:`matplotlib.figure` object with a requested plot. Use `show()`
+            :obj:`matplotlib.pyplot.figure` object with a requested plot. Use `show()`
             method to see figure.
 
         """
