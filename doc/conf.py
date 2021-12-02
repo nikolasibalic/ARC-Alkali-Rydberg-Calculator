@@ -66,6 +66,8 @@ extensions = [
     'sphinx_copybutton'
 ]
 
+nbsphinx_codecell_lexer = 'ipython3'
+
 intersphinx_mapping = {
     'python': ('https://docs.python.org/dev', (None, 'intersphinx/python-objects.inv')),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', (None, 'intersphinx/scipy-objects.inv')),
