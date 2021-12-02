@@ -38,7 +38,7 @@ magnetic fields (Breit-Rabi diagrams).
 
 Click on the corresponding topic above to open static (HTML) version of the
 notebooks. If you want directly .ipynb format, open directly files form ARC
-repository and run them in `Jupter`_ .
+repository and run them in `Jupyter`_ .
 
 .. _`Rydberg atoms - a primer`: ./Rydberg_atoms_a_primer_notebook.ipynb
 
