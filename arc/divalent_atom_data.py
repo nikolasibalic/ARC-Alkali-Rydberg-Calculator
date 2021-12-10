@@ -182,7 +182,7 @@ class Strontium88(DivalentAtom):
     #: [#c8]_ , [#c10]_
     levelDataFromNIST = "sr_level_data.csv"
 
-    precalculatedDB = "sr_precalculated.db"
+    precalculatedDB = "sr88_precalculated.db"
     dipoleMatrixElementFile = "sr_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "sr_quadrupole_matrix_elements.npy"
 
@@ -300,7 +300,7 @@ class Calcium40(DivalentAtom):
     #: Sources Refs. [#c1]_, [#c5]_, [#c9]_, [#ca1]_, [#ca5]_
     levelDataFromNIST = "ca_level_data.csv"
 
-    precalculatedDB = "ca_precalculated.db"
+    precalculatedDB = "ca40_precalculated.db"
 
     dipoleMatrixElementFile = "ca_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "ca_quadrupole_matrix_elements.npy"
@@ -413,7 +413,7 @@ class Ytterbium174(DivalentAtom):
     #: Sources Refs. [#yb1]_, [#yb2]_, [#yb3]_, [#MT78]_
     levelDataFromNIST = "yb_level_data.csv"
 
-    precalculatedDB = "yb_precalculated.db"
+    precalculatedDB = "yb174_precalculated.db"
     dipoleMatrixElementFile = "yb_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "yb_quadrupole_matrix_elements.npy"
 
