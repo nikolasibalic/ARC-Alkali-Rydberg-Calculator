@@ -379,7 +379,7 @@ class Rubidium85(AlkaliAtom):
 
     minQuantumDefectN = 8
 
-    precalculatedDB = "rb_precalculated.db"
+    precalculatedDB = "rb85_precalculated.db"
 
     literatureDMEfilename = 'rubidium_literature_dme.csv'
 
@@ -510,7 +510,7 @@ class Rubidium87(AlkaliAtom):
 
     minQuantumDefectN = 8
 
-    precalculatedDB = "rb_precalculated.db"
+    precalculatedDB = "rb87_precalculated.db"
 
     literatureDMEfilename = 'rubidium_literature_dme.csv'
 
@@ -983,7 +983,7 @@ class Potassium39(AlkaliAtom):
     dipoleMatrixElementFile = "k_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "k_quadrupole_matrix_elements.npy"
 
-    precalculatedDB = "k_precalculated.db"
+    precalculatedDB = "k39_precalculated.db"
 
     literatureDMEfilename = 'potassium_literature_dme.csv'
 
@@ -1106,7 +1106,7 @@ class Potassium40(AlkaliAtom):
     dipoleMatrixElementFile = "k_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "k_quadrupole_matrix_elements.npy"
 
-    precalculatedDB = "k_precalculated.db"
+    precalculatedDB = "k40_precalculated.db"
 
     literatureDMEfilename = 'potassium_literature_dme.csv'
 
@@ -1220,7 +1220,7 @@ class Potassium41(AlkaliAtom):
     dipoleMatrixElementFile = "k_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "k_quadrupole_matrix_elements.npy"
 
-    precalculatedDB = "k_precalculated.db"
+    precalculatedDB = "k41_precalculated.db"
 
     literatureDMEfilename = 'potassium_literature_dme.csv'
 
