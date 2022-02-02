@@ -42,7 +42,7 @@ from .calculations_atom_single import StarkMap
 from .alkali_atom_functions import *
 from .divalent_atom_functions import DivalentAtom
 from scipy.special import factorial
-from scipy import floor
+from numpy import floor
 from scipy.sparse.linalg import eigsh
 from scipy.sparse import csr_matrix
 from numpy.lib.polynomial import real
