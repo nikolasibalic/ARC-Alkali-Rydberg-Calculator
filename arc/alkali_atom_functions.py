@@ -37,7 +37,7 @@ from scipy.constants import m_e as C_m_e
 
 # for matrices
 from scipy.sparse import csr_matrix
-from scipy import floor
+from numpy import floor
 
 import sys
 import os

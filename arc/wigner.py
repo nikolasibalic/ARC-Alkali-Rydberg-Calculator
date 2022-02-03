@@ -6,7 +6,6 @@ from math import pi
 from numpy import conj as conjugate
 from numpy import floor, sqrt, sin, cos, exp, power
 from scipy.special import comb
-from scipy import floor, sqrt
 from scipy.special import factorial
 from sympy.physics.wigner import wigner_3j as Wigner3j_sympy
 from sympy.physics.wigner import wigner_6j as Wigner6j_sympy
