@@ -60,7 +60,7 @@ setup(
     },
     install_requires=[
         "scipy>=0.18.1",
-        "numpy>=1.16.0,<=1.21.2",
+        "numpy>=1.16.0",
         "matplotlib>=1.5.3",
         "sympy>=1.1.1",
         "lmfit>=0.9.0",
