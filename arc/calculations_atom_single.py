@@ -761,7 +761,8 @@ class StarkMap:
         return 0
 
     def diagonalise(self, eFieldList, drivingFromState=[0, 0, 0, 0, 0],
-                    progressOutput=False, debugOutput=False):
+                    progressOutput=False, debugOutput=False,
+                    upTo=4, totalContributionMax=0.95):
         """
             Finds atom eigenstates in a given electric field
 
@@ -778,11 +779,22 @@ class StarkMap:
                     progress of calculation; Set to false by default.
                 debugOutput (:obj:`bool`, optional): if True prints additional
                     information usefull for debuging. Set to false by default.
+                upTo ('int', optional): Number of top contributing bases states
+                    to be saved into composition attribute; Set to 4 by default.
+                    To keep all contributing states, set upTo = -1.
+                totalContributionMax ('float', optional): Ceiling for 
+                    contribution to the wavefunction from basis states included
+                    in composition attribute. Composition will contain a list 
+                    of [coefficient, state index] pairs for top contributing 
+                    unperturbed basis states until the number of states reaches
+                    upTo or their total contribution reaches totalContributionMax,
+                    whichever comes first. totalContributionMax is ignored if
+                    upTo = -1. 
         """
 
         # if we are driving from some state
         # ========= FIND LASER COUPLINGS (START) =======
-
+        
         coupling = []
         dimension = len(self.basisStates)
         self.maxCoupling = 0.
@@ -867,7 +879,9 @@ class StarkMap:
                 comp = []
                 for i in xrange(len(ev)):
                     sh.append(abs(egvector[indexOfCoupledState, i])**2)
-                    comp.append(self._stateComposition2(egvector[:, i]))
+                    comp.append(self._stateComposition2(egvector[:, i], 
+                                                        upTo=upTo,
+                                totalContributionMax=totalContributionMax))
                 self.highlight.append(sh)
                 self.composition.append(comp)
             else:
@@ -878,7 +892,9 @@ class StarkMap:
                     for j in xrange(dimension):
                         sumCoupledStates += abs(coupling[j] / self.maxCoupling) *\
                             abs(egvector[j, i]**2)
-                    comp.append(self._stateComposition2(egvector[:, i]))
+                    comp.append(self._stateComposition2(egvector[:, i],
+                                                        upTo=upTo,
+                                totalContributionMax=totalContributionMax))
                     sh.append(sumCoupledStates)
                 self.highlight.append(sh)
                 self.composition.append(comp)
@@ -1184,17 +1200,23 @@ class StarkMap:
             value += "+\\ldots"
         return value + "$"
 
-    def _stateComposition2(self, stateVector, upTo=4):
+    def _stateComposition2(self, stateVector, upTo=300,totalContributionMax = 0.999):
         contribution = np.absolute(stateVector)
         order = np.argsort(contribution, kind='heapsort')
         index = -1
         totalContribution = 0
         mainStates = []  # [state Value, state index]
-        while (index > -upTo) and (totalContribution < 0.95):
-            i = order[index]
-            mainStates.append([stateVector[i], i])
-            totalContribution += contribution[i]**2
-            index -= 1
+        
+        if upTo == -1:
+            for index in range(len(order)):
+                i = order[-index-1]
+                mainStates.append([stateVector[i], i])
+        else:
+            while (index > -upTo) and (totalContribution < totalContributionMax):
+                i = order[index]
+                mainStates.append([stateVector[i], i])
+                totalContribution += contribution[i]**2
+                index -= 1
         return mainStates
 
     def _addState(self, n1, l1, j1, mj1):
