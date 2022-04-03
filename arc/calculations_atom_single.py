@@ -1212,7 +1212,7 @@ class StarkMap:
                 i = order[-index-1]
                 mainStates.append([stateVector[i], i])
         else:
-            while (index > -upTo) and (totalContribution < 0.999):
+            while (index > -upTo) and (totalContribution < totalContributionMax):
                 i = order[index]
                 mainStates.append([stateVector[i], i])
                 totalContribution += contribution[i]**2
