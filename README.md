@@ -13,7 +13,7 @@ For documentation see [online documentation on Read The Docs](http://arc-alkali-
 
 For examples of use check [IPython example notebooks](https://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/getting_started.html#ipython-notebook-with-examples).
 
-For online access to a selection of package functions see [online Atom Calculator](https://atomcalc.jqc.org.uk).
+For online access to a selection of package functions see [online Atom Calculator](https://atomcalc.org).
 
 If you want to contribute to the project, [check this page](https://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/contribute.html).
 
