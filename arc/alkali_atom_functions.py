@@ -2134,10 +2134,12 @@ class AlkaliAtom(object):
         sph = 0.0
         if(abs(mI) <= self.I):
             for f2 in np.arange(max(self.I - j2, abs(mf2), f1 - 1), 1 + min(self.I + j2, f1 + 1)):
-                # CG multiplied by <j1 f1 mf1|er_q|j2 f2 mf2> in units of <j1 || er || j2 >
-                sph += CG(j2, mj2, self.I, mI, f2, mf2) \
-                    * self.getSphericalDipoleMatrixElement(f1, mf1, f2, mf2, q) \
-                    * self._reducedMatrixElementFJ(j1, f1, j2, f2)
+            	#Enforce Triangle Rule
+            	if abs(j2-self.I)<= f2: 
+	                # CG multiplied by <j1 f1 mf1|er_q|j2 f2 mf2> in units of <j1 || er || j2 >
+	                sph += CG(j2, mj2, self.I, mI, f2, mf2) \
+    	                * self.getSphericalDipoleMatrixElement(f1, mf1, f2, mf2, q) \
+        	            * self._reducedMatrixElementFJ(j1, f1, j2, f2)
 
         return sph
 
