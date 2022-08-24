@@ -7,14 +7,22 @@ try:
 except ImportError:
     from distutils.core import setup
     from distutils.extension import Extension
-from numpy.distutils.misc_util import get_numpy_include_dirs
+
+
+class get_numpy_include_dirs(object):
+    """Returns a list of include directories for Numpy after lazy loading;
+    Ensure that Numpy is installed before referencing it."""
+    
+    def __str__(self):
+        import numpy as np
+        return np.get_include()
 
 
 arc_ext = Extension(
     "arc.arc_c_extensions",
     sources=["arc/arc_c_extensions.c"],
     extra_compile_args=["-Wall", "-O3"],
-    include_dirs=get_numpy_include_dirs(),
+    include_dirs=[get_numpy_include_dirs()],
 )
 
 
@@ -50,6 +58,7 @@ setup(
         "Topic :: Scientific/Engineering :: Physics",
         "Development Status :: 5 - Production/Stable",
     ],
+    setup_requires=["oldest-supported-numpy"],
     url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator",
     download_url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/archive/refs/tags/v3.2.0.tar.gz",
     author="Nikola Sibalic,  Elizabeth J. Robertson, Jonathan D. Pritchard, Robert M. Potvliege, Matthew P. A. Jones, Charles S. Adams, Kevin J. Weatherill",
