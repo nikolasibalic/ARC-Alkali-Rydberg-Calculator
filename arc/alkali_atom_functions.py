@@ -2321,7 +2321,7 @@ class AlkaliAtom(object):
         r"""
              Branching ratio for decay from :math:`\vert j_e,f_e,m_{f_e} \rangle \rightarrow \vert j_g,f_g,m_{f_g}\rangle`
 
-                :math:`b = \displaystyle\sum_q (2j_e+1)\left(\begin{matrix}f_1 & 1 & f_2 \\-m_{f1} & q & m_{f2}\end{matrix}\right)^2\vert \langle j_e,f_e\vert \vert er \vert\vert j_g,f_g\rangle\vert^2`
+                :math:`b = \displaystyle\sum_q (2j_e+1)\left(\begin{matrix}f_1 & 1 & f_2 \\-m_{f1} & q & m_{f2}\end{matrix}\right)^2\vert \langle j_e,f_e\vert \vert er \vert\vert j_g,f_g\rangle\vert^2/|\langle j_e || er || j_g \rangle |^2`
 
             Args:
                 jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
