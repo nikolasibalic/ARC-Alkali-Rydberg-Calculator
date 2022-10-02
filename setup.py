@@ -28,7 +28,7 @@ arc_ext = Extension(
 
 setup(
     name="ARC-Alkali-Rydberg-Calculator",
-    version="3.2.1",
+    version="3.2.2",
     description="Alkali Rydberg Calculator",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
@@ -60,8 +60,8 @@ setup(
     ],
     setup_requires=["oldest-supported-numpy"],
     url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator",
-    download_url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/archive/refs/tags/v3.2.1.tar.gz",
-    author="Nikola Sibalic,  Elizabeth J. Robertson, Jonathan D. Pritchard, Robert M. Potvliege, Matthew P. A. Jones, Charles S. Adams, Kevin J. Weatherill",
+    download_url="https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/archive/refs/tags/v3.2.2.tar.gz",
+    author="Nikola Sibalic,  Elizabeth J. Robertson, Jonathan D. Pritchard, Robert M. Potvliege, Matthew P. A. Jones, Charles S. Adams, Kevin J. Weatherill, and contributors",
     author_email="nikolasibalic@physics.org",
     packages=["arc", "arc.advanced"],
     package_data={
