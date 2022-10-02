@@ -2750,7 +2750,7 @@ class DynamicPolarizability:
                     zorder=1)
             ax.set_xlabel(r"Driving field wavelength (nm)")
             if units == "SI":
-                ax.set_ylabel(r"Polarizability (Hz/V$^2$ cm$^2$)")
+                ax.set_ylabel(r"Polarizability (Hz/V$^2$ m$^2$)")
             else:
                 ax.set_ylabel(r"Polarizability (a.u.)")
             for resonance in resonances:
