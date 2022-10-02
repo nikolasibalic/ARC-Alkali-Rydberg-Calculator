@@ -2495,7 +2495,7 @@ class DynamicPolarizability:
                     (in units of m)
                 units (string): optional, 'SI' or 'a.u.' (equivalently 'au'),
                     switches between SI units for returned result
-                    (:math:`Hz V^-2 m^2` )
+                    (:math:`Hz V^{-2} m^2` )
                     and atomic units (":math:`a_0^3` "). Defaul 'SI'
                 accountForStateLifetime (bool): optional, should we account
                     for finite transition linewidths caused by finite state
