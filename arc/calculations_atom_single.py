@@ -2502,10 +2502,11 @@ class DynamicPolarizability:
                     lifetimes. By default False.
 
             Returns:
-                scalar, vector, tensor, pondermotive polarisability of state,
-                core polarisability and atomic state whose resonance is closest
-                in energy. Returned units depend on `units` parameter
-                (default SI).
+                scalar, vector, and tensor, polarizabilities of the state
+                specified, as well as the core, and ponderomotive
+                polarizabilities of the atom, followed by the atomic state
+                whose resonance is closest in energy. Returned units depend
+                on `units` parameter (default SI).
         """
 
         if (accountForStateLifetime and len(self.lifetimes) == 0):
