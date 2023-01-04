@@ -2718,7 +2718,9 @@ class DynamicPolarizability:
                 if addCorePolarisability:
                     totalP += coreP
                 if addPondermotivePolarisability:
-                    totalP += pondermotiveP
+                    # Subtract pondermotive contribution since the sign convention
+                    # is opposite to that of the dynamical polarizability.
+                    totalP -= pondermotiveP
                 if ((len(p) > 0) and p[-1] * totalP < 0
                     and (len(p) > 2 and (p[-2] - p[-1]) * totalP > 0)
                         ):
