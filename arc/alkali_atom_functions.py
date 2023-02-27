@@ -114,7 +114,7 @@ class AlkaliAtom(object):
     """
 
     gS = 2.0023193043737  # : Electron Spin g-factor [Steck]
-    gL = 0.0          #: Electron Orbital g-factor
+    gL = 1.0          #: Electron Orbital g-factor
     gI = 0.0          #: Nuclear g-factor
 
     # ALL PARAMETERS ARE IN ATOMIC UNITS (Hatree)

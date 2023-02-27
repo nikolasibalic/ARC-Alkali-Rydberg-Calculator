@@ -650,6 +650,8 @@ class Lithium6(AlkaliAtom):  # Li
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 0.0759
 
+    gL = 1 - physical_constants["electron mass"][0]/mass
+
     scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
         * physical_constants["inverse meter-electron volt relationship"][0]
 
@@ -764,6 +766,8 @@ class Lithium7(AlkaliAtom):  # Li
     mass = 7.0160034366 * physical_constants["atomic mass constant"][0]
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 0.9241
+
+    gL = 1 - physical_constants["electron mass"][0]/mass
 
     scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
         * physical_constants["inverse meter-electron volt relationship"][0]
@@ -883,6 +887,8 @@ class Sodium(AlkaliAtom):  # Na23
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 1.00
 
+    gL = 1 - physical_constants["electron mass"][0]/mass
+
     #: (eV)
     scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
         * physical_constants["inverse meter-electron volt relationship"][0]
@@ -996,6 +1002,8 @@ class Potassium39(AlkaliAtom):
     mass = 38.9637064864 * physical_constants["atomic mass constant"][0]
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 0.932581
+
+    gL = 1 - physical_constants["electron mass"][0]/mass
 
     # in eV
     scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
@@ -1120,6 +1128,8 @@ class Potassium40(AlkaliAtom):
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 0.000117
 
+    gL = 1 - physical_constants["electron mass"][0]/mass
+
     #: in eV
     scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
         * physical_constants["inverse meter-electron volt relationship"][0]
@@ -1233,6 +1243,8 @@ class Potassium41(AlkaliAtom):
     mass = 40.9618252579 * physical_constants["atomic mass constant"][0]
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 0.067302
+
+    gL = 1 - physical_constants["electron mass"][0]/mass
 
     #: in eV
     scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
