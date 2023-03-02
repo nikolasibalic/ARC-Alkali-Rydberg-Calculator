@@ -2643,7 +2643,7 @@ class AlkaliAtom(object):
 
                 and
 
-                    :math:`\mathcal{H}_\mathrm{hfs}=A_\mathrm{hfs}I\cdot J + B_\mathrm{hfs}\frac{3(I\cdot J)^2+3/2 I\cdot J -I^2J^2}{2I(2I+1)2J(2J+1)}`.
+                    :math:`\mathcal{H}_\mathrm{hfs}=A_\mathrm{hfs}I\cdot J + B_\mathrm{hfs}\frac{3(I\cdot J)^2+3/2 I\cdot J -I^2J^2}{2I(2I-1)2J(2J-1)}`.
 
             Args:
                 n,l,j: principal,orbital, total orbital quantum numbers
@@ -2685,7 +2685,7 @@ class AlkaliAtom(object):
         Hhfs = Ahfs * IJ
         if(Bhfs != 0):
             Hhfs += Bhfs * (3 * IJ * IJ + 3 / 2 * IJ - I2 * J2) / \
-                (2 * self.I * (2 * self.I - 1) * j * (2 * j - 1))
+                (2 * self.I * (2 * self.I - 1) * 2 * j * (2 * j - 1))
 
         # Zeeman Interaction
         Hz = uB * (self.getLandegjExact(l, j) * Jz + self.gI * Iz)
