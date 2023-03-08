@@ -1710,10 +1710,7 @@ class LevelPlot:
 
             i = i + 1
 
-    def showPlot(self):
-        """
-            Shows a level diagram plot
-        """
+        # Y AXIS
         self.listX = np.array(self.listX)
         self.ax.set_ylabel("Energy (%s)"%self.units)
         self.ax.set_xlim(-0.5 + np.min(self.listX), np.max(self.listX) + 0.5)
@@ -1733,6 +1730,14 @@ class LevelPlot:
         self.ax.set_xticks(np.arange(tickNum))
         self.ax.set_xticklabels(tickNames)
         self.ax.set_xlim(-0.5 + np.min(self.listX), np.max(self.listX) + 0.5)
+
+        # TITLE
+        self.ax.set_title('%s: $n \in [%d,%d]$'%(self.atom.elementName, self.nFrom, self.nTo))
+
+    def showPlot(self):
+        """
+            Shows a level diagram plot
+        """
         self.fig.canvas.mpl_connect('pick_event', self.onpick2)
         self.state1[0] = -1  # initialise for picking
         plt.show()
