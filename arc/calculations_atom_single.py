@@ -782,19 +782,19 @@ class StarkMap:
                 upTo ('int', optional): Number of top contributing bases states
                     to be saved into composition attribute; Set to 4 by default.
                     To keep all contributing states, set upTo = -1.
-                totalContributionMax ('float', optional): Ceiling for 
+                totalContributionMax ('float', optional): Ceiling for
                     contribution to the wavefunction from basis states included
-                    in composition attribute. Composition will contain a list 
-                    of [coefficient, state index] pairs for top contributing 
+                    in composition attribute. Composition will contain a list
+                    of [coefficient, state index] pairs for top contributing
                     unperturbed basis states until the number of states reaches
                     upTo or their total contribution reaches totalContributionMax,
                     whichever comes first. totalContributionMax is ignored if
-                    upTo = -1. 
+                    upTo = -1.
         """
 
         # if we are driving from some state
         # ========= FIND LASER COUPLINGS (START) =======
-        
+
         coupling = []
         dimension = len(self.basisStates)
         self.maxCoupling = 0.
@@ -879,7 +879,7 @@ class StarkMap:
                 comp = []
                 for i in xrange(len(ev)):
                     sh.append(abs(egvector[indexOfCoupledState, i])**2)
-                    comp.append(self._stateComposition2(egvector[:, i], 
+                    comp.append(self._stateComposition2(egvector[:, i],
                                                         upTo=upTo,
                                 totalContributionMax=totalContributionMax))
                 self.highlight.append(sh)
@@ -1206,7 +1206,7 @@ class StarkMap:
         index = -1
         totalContribution = 0
         mainStates = []  # [state Value, state index]
-        
+
         if upTo == -1:
             for index in range(len(order)):
                 i = order[-index-1]
