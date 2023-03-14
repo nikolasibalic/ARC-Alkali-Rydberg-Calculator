@@ -782,19 +782,19 @@ class StarkMap:
                 upTo ('int', optional): Number of top contributing bases states
                     to be saved into composition attribute; Set to 4 by default.
                     To keep all contributing states, set upTo = -1.
-                totalContributionMax ('float', optional): Ceiling for 
+                totalContributionMax ('float', optional): Ceiling for
                     contribution to the wavefunction from basis states included
-                    in composition attribute. Composition will contain a list 
-                    of [coefficient, state index] pairs for top contributing 
+                    in composition attribute. Composition will contain a list
+                    of [coefficient, state index] pairs for top contributing
                     unperturbed basis states until the number of states reaches
                     upTo or their total contribution reaches totalContributionMax,
                     whichever comes first. totalContributionMax is ignored if
-                    upTo = -1. 
+                    upTo = -1.
         """
 
         # if we are driving from some state
         # ========= FIND LASER COUPLINGS (START) =======
-        
+
         coupling = []
         dimension = len(self.basisStates)
         self.maxCoupling = 0.
@@ -879,7 +879,7 @@ class StarkMap:
                 comp = []
                 for i in xrange(len(ev)):
                     sh.append(abs(egvector[indexOfCoupledState, i])**2)
-                    comp.append(self._stateComposition2(egvector[:, i], 
+                    comp.append(self._stateComposition2(egvector[:, i],
                                                         upTo=upTo,
                                 totalContributionMax=totalContributionMax))
                 self.highlight.append(sh)
@@ -1206,7 +1206,7 @@ class StarkMap:
         index = -1
         totalContribution = 0
         mainStates = []  # [state Value, state index]
-        
+
         if upTo == -1:
             for index in range(len(order)):
                 i = order[-index-1]
@@ -1710,10 +1710,7 @@ class LevelPlot:
 
             i = i + 1
 
-    def showPlot(self):
-        """
-            Shows a level diagram plot
-        """
+        # Y AXIS
         self.listX = np.array(self.listX)
         self.ax.set_ylabel("Energy (%s)"%self.units)
         self.ax.set_xlim(-0.5 + np.min(self.listX), np.max(self.listX) + 0.5)
@@ -1733,6 +1730,14 @@ class LevelPlot:
         self.ax.set_xticks(np.arange(tickNum))
         self.ax.set_xticklabels(tickNames)
         self.ax.set_xlim(-0.5 + np.min(self.listX), np.max(self.listX) + 0.5)
+
+        # TITLE
+        self.ax.set_title('%s: $n \in [%d,%d]$'%(self.atom.elementName, self.nFrom, self.nTo))
+
+    def showPlot(self):
+        """
+            Shows a level diagram plot
+        """
         self.fig.canvas.mpl_connect('pick_event', self.onpick2)
         self.state1[0] = -1  # initialise for picking
         plt.show()
