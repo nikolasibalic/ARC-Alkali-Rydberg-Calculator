@@ -3,7 +3,7 @@
 # this is automatically parsed by Aphinx module in Python, using napoleon addon
 from __future__ import division, print_function, absolute_import
 
-__version__ = "3.2.8"
+__version__ = "3.2.9"
 
 from .alkali_atom_data import *
 from .divalent_atom_data import *
