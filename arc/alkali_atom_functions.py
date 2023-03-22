@@ -356,7 +356,7 @@ class AlkaliAtom(object):
                 ./Rydberg_atoms_a_primer.html#General-atomic-properties
 
             Args:
-                temperature (float): temperature of the atomic vapour
+                temperature (float): temperature (K) of the atomic vapour
 
             Returns:
                 float: average interatomic spacing in m
