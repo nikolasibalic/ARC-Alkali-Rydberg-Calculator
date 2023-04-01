@@ -748,16 +748,12 @@ class AlkaliAtom(object):
             defect = self.quantumDefect[0][4][0] * (4 / l) ** 5
         return defect
 
-    def getRadialMatrixElement(self,
-                               n1, l1, j1,
-                               n2, l2, j2,
-                               s=0.5,
-                               useLiterature=True):
+def getRadialMatrixElement(self,n1,l1,j1,n2,l2,j2,useLiterature=True,corePolRc=0.0,rmin=0.05,verbose=False):
         """
             Radial part of the dipole matrix element
 
-            Calculates :math:`\\int \\mathbf{d}r~R_{n_1,l_1,j_1}(r)\\cdot \
-                R_{n_1,l_1,j_1}(r) \\cdot r^3`.
+            Calculates :math:`\\int \\mathbf{d}r~R_{n_1,l_1,j_1}(r)\cdot \
+                R_{n_1,l_1,j_1}(r) \cdot r^3`.
 
             Args:
                 n1 (int): principal quantum number of state 1
@@ -766,27 +762,18 @@ class AlkaliAtom(object):
                 n2 (int): principal quantum number of state 2
                 l2 (int): orbital angular momentum of state 2
                 j2 (float): total angular momentum of state 2
-                s (float): optional, total spin angular momentum of state 1.
-                    By default 0.5 for Alkali atoms.
-                useLiterature (bool): optional, should literature values for
-                    dipole matrix element be used if existing? If true,
-                    compiled values stored in `literatureDMEfilename` variable
-                    for a given atom (file is stored locally at ~/.arc-data/),
-                    will be checked, and if the value is found, selects the
-                    value with smallest error estimate (if there are multiple
-                    entries). If no value is found, it will default to numerical
-                    integration of wavefunctions. By default True.
 
             Returns:
                 float: dipole matrix element (:math:`a_0 e`).
+
+            Verbose option and corePolRc added by MSS
         """
-        dl = abs(l1 - l2)
-        dj = abs(j1 - j2)
-        if not(dl == 1 and (dj < 1.1)):
+        dl = abs(l1-l2)
+        dj = abs(j2-j2)
+        if not(dl==1 and (dj<1.1)):
             return 0
 
-        if (self.getEnergy(n1, l1, j1, s=s)
-                > self.getEnergy(n2, l2, j2, s=s)):
+        if (self.getEnergy(n1, l1, j1)>self.getEnergy(n2, l2, j2)):
             temp = n1
             n1 = n2
             n2 = temp
@@ -801,56 +788,82 @@ class AlkaliAtom(object):
         n2 = int(n2)
         l1 = int(l1)
         l2 = int(l2)
-        j1_x2 = int(round(2 * j1))
-        j2_x2 = int(round(2 * j2))
-
-        c = self.conn.cursor()
+        j1_x2 = int(round(2*j1))
+        j2_x2 = int(round(2*j2))
 
         if useLiterature:
-            # is there literature value for this DME? If there is,
-            # use the best one (smalles error)
-            c.execute('''SELECT dme FROM literatureDME WHERE
+            # is there literature value for this DME? If there is, use the best one (smalles error)
+            self.c.execute('''SELECT dme FROM literatureDME WHERE
              n1= ? AND l1 = ? AND j1_x2 = ? AND
              n2 = ? AND l2 = ? AND j2_x2 = ?
-             ORDER BY errorEstimate ASC''', (n1, l1, j1_x2, n2, l2, j2_x2))
-            answer = c.fetchone()
+             ORDER BY errorEstimate ASC''',(n1,l1,j1_x2,n2,l2,j2_x2))
+            answer = self.c.fetchone()
             if (answer):
                 # we did found literature value
+                if verbose: ##verbose option added by MSS
+                    print("Using Literature Value:", answer[0])
                 return answer[0]
 
+
         # was this calculated before? If it was, retrieve from memory
-        c.execute('''SELECT dme FROM dipoleME WHERE
+        self.c.execute('''SELECT dme FROM dipoleME WHERE
          n1= ? AND l1 = ? AND j1_x2 = ? AND
-         n2 = ? AND l2 = ? AND j2_x2 = ?''', (n1, l1, j1_x2, n2, l2, j2_x2))
-        dme = c.fetchone()
-        if (dme):
+         n2 = ? AND l2 = ? AND j2_x2 = ?''',(n1,l1,j1_x2,n2,l2,j2_x2))
+        dme = self.c.fetchone()
+        if (dme and corePolRc==0.0):
+            if verbose:
+                print("Using previously calculated value:", dme[0])
             return dme[0]
 
         step = 0.001
-        r1, psi1_r1 = self.radialWavefunction(l1, 0.5, j1,
-                                              self.getEnergy(
-                                                  n1, l1, j1) / 27.211,
-                                              self.alphaC**(1 / 3.0),
-                                              2.0 * n1 * (n1 + 15.0), step)
-        r2, psi2_r2 = self.radialWavefunction(l2, 0.5, j2,
-                                              self.getEnergy(
-                                                  n2, l2, j2) / 27.211,
-                                              self.alphaC**(1 / 3.0),
-                                              2.0 * n2 * (n2 + 15.0), step)
+        r1,psi1_r1 = self.radialWavefunction(l1,0.5,j1,\
+                                               self.getEnergy(n1, l1, j1)/27.211,\
+                                               self.alphaC**(1/3.0),\
+                                                2.0*n1*(n1+15.0), step)
+        r2,psi2_r2 = self.radialWavefunction(l2,0.5,j2,\
+                                               self.getEnergy(n2, l2, j2)/27.211,\
+                                               self.alphaC**(1/3.0),\
+                                                2.0*n2*(n2+15.0), step)
 
-        upTo = min(len(r1), len(r2))
+        upTo = min(len(r1),len(r2))
 
-        # note that r1 and r2 change in same staps,
-        # starting from the same value
-        dipoleElement = np.trapz(
-            np.multiply(np.multiply(psi1_r1[0:upTo], psi2_r2[0:upTo]),
-                        r1[0:upTo]),
-            x=r1[0:upTo]
-        )
+        #############################
+        #############################
+        ## Code block added by MSS ##
 
-        c.execute(''' INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?)''',
-                       [n1, l1, j1_x2, n2, l2, j2_x2, dipoleElement])
+        if corePolRc != 0.0:
+            if verbose:
+                print("alphaC:", self.alphaC)
 
+            #### Added because Ogi found that the default lower limit of integration is too high
+            rmin = min(rmin,self.alphaC**(1/3.0)) ### default (presumably from Marinescu?)
+            r1,psi1_r1 = self.radialWavefunction(l1,0.5,j1,\
+                                               self.getEnergy(n1, l1, j1)/27.211,\
+                                               rmin,\
+                                                2.0*n1*(n1+15.0), step)
+            r2,psi2_r2 = self.radialWavefunction(l2,0.5,j2,\
+                                               self.getEnergy(n2, l2, j2)/27.211,\
+                                               rmin,\
+                                                2.0*n2*(n2+15.0), step)
+
+            upTo = min(len(r1),len(r2))
+            #####################################################################################
+
+            rmod = [r*(1-(1-np.exp(-(r/corePolRc)**3))*self.alphaC/r**3) for r in r1]
+            dipoleElement = np.trapz(np.multiply(np.multiply(psi1_r1[0:upTo],psi2_r2[0:upTo]),\
+                                           rmod[0:upTo]), x = r1[0:upTo])
+            return dipoleElement
+
+
+        #############################
+        #############################
+
+        # note that r1 and r2 change in same staps, starting from the same value
+        dipoleElement = np.trapz(np.multiply(np.multiply(psi1_r1[0:upTo],psi2_r2[0:upTo]),\
+                                           r1[0:upTo]), x = r1[0:upTo])
+
+        self.c.execute(''' INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?)''',\
+                       [n1,l1,j1_x2,n2,l2,j2_x2, dipoleElement] )
         self.conn.commit()
 
         return dipoleElement
