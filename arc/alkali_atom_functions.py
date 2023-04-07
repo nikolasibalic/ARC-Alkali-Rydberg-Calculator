@@ -1578,7 +1578,7 @@ class AlkaliAtom(object):
             # sum over all l-1
             if l > 0:
                 lto = l - 1
-                if lto > j - 0.5 - 0.1:
+                if lto > j - s - 0.1:
                     jto = j
                     transitionRate += self.getTransitionRate(n, l, j,
                                                              nto, lto, jto,
@@ -1595,7 +1595,7 @@ class AlkaliAtom(object):
                           includeLevelsUpTo + 1):
             # sum over all l+1
             lto = l + 1
-            if lto - 0.5 - 0.1 < j:
+            if lto - s - 0.1 < j:
                 jto = j
                 transitionRate += self.getTransitionRate(n, l, j,
                                                          nto, lto, jto,
