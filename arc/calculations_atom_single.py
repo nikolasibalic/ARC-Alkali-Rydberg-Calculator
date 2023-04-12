@@ -3228,6 +3228,9 @@ class ShirleyMethod(BasisGenerator):
     More detail can be found in the review of Semiclassical Floquet Theories
     by Chu [2]_ and its application in Meyer et al [3]_.
 
+    For examples demonstrating basic usage
+    see `Shirley Method Examples`_.
+
     Args:
         atom (:obj:`arc.alkali_atom_functions.AlkaliAtom` or :obj:`arc.divalent_atom_functions.DivalentAtom`): ={
             :obj:`arc.alkali_atom_data.Lithium6`,
@@ -3265,6 +3268,9 @@ class ShirleyMethod(BasisGenerator):
             http://www.sciencedirect.com/science/article/pii/S0065219908601438
         .. [3] D. H. Meyer, Z. A. Castillo, K. C. Cox, P. D. Kunz, J. Phys. B: At. Mol. Opt. Phys., **53**, 034001 (2020)
             https://doi.org/10.1088/1361-6455/ab6051
+
+    .. _`Shirley Method Examples`:
+        ./AC_Stark_primer.html#Shirley's-Time-Independent-Floquet-Hamiltonian
     """
 
     def __init__(self, atom):
@@ -3534,6 +3540,9 @@ class RWAModel(BasisGenerator):
     When field is far-detuned from all transitions,
     error tends to a factor of 2.
 
+    For an example of usage and comparison to other methods
+    see `RWAModel Example`_.
+
     Args:
         atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
             :obj:`alkali_atom_data.Lithium7`,
@@ -3558,6 +3567,9 @@ class RWAModel(BasisGenerator):
         >>> calc.RWAmodel(0.01, np.linspace(1.0e9, 40e9, 402))
         >>> print(calc.starkShifts.shape)
         (402,)
+
+    .. _`RWAModel Example`:
+        ./AC_Stark_primer.html#RWAModel:-Approximating-AC-Stark-Map-Calculations
     """
 
     def __init__(self, atom):
