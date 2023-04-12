@@ -512,7 +512,7 @@ class StarkMap:
                 https://doi.org/10.1103/PhysRevA.20.2251
 
         .. _`Stark map example snippet`:
-            ./Rydberg_atoms_a_primer.html#Rydberg-Atom-Stark-Shifts
+            ./Rydberg_atoms_a_primer_notebook.html#Rydberg-Atom-Stark-Shifts
     """
 
     def __init__(self, atom):
@@ -1456,7 +1456,7 @@ class LevelPlot:
         For an example see `Rydberg energy levels example snippet`_.
 
         .. _`Rydberg energy levels example snippet`:
-            ./Rydberg_atoms_a_primer.html#Rydberg-Atom-Energy-Levels
+            ./Rydberg_atoms_a_primer_notebook.html#Rydberg-Atom-Energy-Levels
 
         Args:
             atom (:obj:`arc.alkali_atom_functions.AlkaliAtom` or :obj:`arc.divalent_atom_functions.DivalentAtom`): ={
