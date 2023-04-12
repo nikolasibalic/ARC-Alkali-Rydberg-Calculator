@@ -22,4 +22,5 @@ Overview
     calculations_atom_single.OpticalLattice1D
     calculations_atom_single.DynamicPolarizability
     calculations_atom_single.materials
+    calculations_atom_single.ACStarkMap
 
