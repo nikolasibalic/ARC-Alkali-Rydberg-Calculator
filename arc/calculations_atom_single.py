@@ -21,6 +21,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 import numpy as np
 import re
+import warnings
 from .wigner import Wigner6j, CG
 from scipy.constants import physical_constants, pi, epsilon_0, hbar
 from scipy.constants import k as C_k
@@ -34,6 +35,7 @@ from scipy import interpolate
 # for matrices
 from numpy.linalg import eigh
 
+import scipy.sparse as sp
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import eigsh
 from scipy.special import sph_harm
@@ -510,7 +512,7 @@ class StarkMap:
                 https://doi.org/10.1103/PhysRevA.20.2251
 
         .. _`Stark map example snippet`:
-            ./Rydberg_atoms_a_primer.html#Rydberg-Atom-Stark-Shifts
+            ./Rydberg_atoms_a_primer_notebook.html#Rydberg-Atom-Stark-Shifts
     """
 
     def __init__(self, atom):
@@ -1454,7 +1456,7 @@ class LevelPlot:
         For an example see `Rydberg energy levels example snippet`_.
 
         .. _`Rydberg energy levels example snippet`:
-            ./Rydberg_atoms_a_primer.html#Rydberg-Atom-Energy-Levels
+            ./Rydberg_atoms_a_primer_notebook.html#Rydberg-Atom-Energy-Levels
 
         Args:
             atom (:obj:`arc.alkali_atom_functions.AlkaliAtom` or :obj:`arc.divalent_atom_functions.DivalentAtom`): ={
@@ -2765,3 +2767,958 @@ class DynamicPolarizability:
                 ax.axvline(x=resonance * 1e9, linestyle=":", color="0.5",
                            zorder=0)
         return ax
+
+
+class BasisGenerator:
+    """
+    Base class for determining the basis of the Rydberg manifold and
+    associated properties.
+
+    Defines logic for determining the basis of states to include
+    in a calculation and obtains the energy levels and dipole moments
+    to build the Hamiltonian from the provided ARC atom.
+
+    This class should be inherited from to create a specific calculation.
+
+    Args:
+        atom (:obj:`arc.alkali_atom_functions.AlkaliAtom` or :obj:`arc.divalent_atom_functions.DivalentAtom`): ={
+            :obj:`arc.alkali_atom_data.Lithium6`,
+            :obj:`arc.alkali_atom_data.Lithium7`,
+            :obj:`arc.alkali_atom_data.Sodium`,
+            :obj:`arc.alkali_atom_data.Potassium39`,
+            :obj:`arc.alkali_atom_data.Potassium40`,
+            :obj:`arc.alkali_atom_data.Potassium41`,
+            :obj:`arc.alkali_atom_data.Rubidium85`,
+            :obj:`arc.alkali_atom_data.Rubidium87`,
+            :obj:`arc.alkali_atom_data.Caesium`,
+            :obj:`arc.divalent_atom_data.Strontium88`,
+            :obj:`arc.divalent_atom_data.Calcium40`
+            :obj:`arc.divalent_atom_data.Ytterbium174` }
+            Select the alkali metal for energy level
+            diagram calculation
+    """
+
+    def __init__(self, atom):
+
+        self.atom = atom
+        """
+        Instance of an ARC atom to perform calculations of the energy levels and coupling strengths.
+        """
+
+        # basis definitions
+        self.basisStates = []
+        """
+        List of basis states for calculation in the form [ [n,l,j,mj], ...].
+        Calculated by :obj:`defineBasis` .
+        """
+        self.indexOfCoupledState = None
+        """
+        Index of coupled state (initial state passed to :obj:`defineBasis`)
+        in :obj:`basisStates` list of basis states
+        """
+        self.targetState = []
+        """
+        Target state. Found by :obj:`basisStates`[:obj:`indexOfCoupledState`].
+        """
+        self.bareEnergies = []
+        """
+        `bareEnergies` is list of energies corresponding to :obj:`basisStates`.
+        It is calculated in :obj:`defineBasis` in the basis of :obj:`basisStates` in
+        units of GHz.
+        """
+        self.targetEnergy = None
+        """
+        `targetEnergy` stores the energy of the target state (initial state passed
+        to :obj:`defineBasis`)
+        """
+        self.n = None
+        """
+        Stores the principle quantum number of the target state
+        """
+        self.l = None
+        """
+        Stores the orbital quantum number of the target state
+        """
+        self.j = None
+        """
+        Stores the total angular momentum number of the target state
+        """
+        self.mj = None
+        """
+        Stores the projection of the total angular moment of the target state
+        """
+        self.s = None
+        """
+        Stores the total spin angular momentum of the target state
+        """
+        self.nMin = None
+        """
+        Stores the minimum n to consider for the basis
+        """
+        self.nMax = None
+        """
+        Stores the maximum n to consider for the basis
+        """
+        self.maxL = None
+        """
+        Stores the max L to consider for the basis
+        """
+        self.Bz = None
+        """
+        Stores the applied magnetic field used to Zeeman shift states in the basis
+        """
+        self.q = None
+        """
+        Stores polarization of electric field for determining dipole coupled states.
+        """
+
+        # hamiltonian components
+        self.H = []
+        """
+        Diagonal elements of Stark-matrix. Not to be confused with :obj:`H0` for the 
+        Time-Independant Formulation of the Floquet Hamiltonian. Given in units of
+        GHz.
+        """
+        self.V = []
+        """
+        off-diagonal elements of Stark-matrix divided by electric
+        field value. To get off diagonal elemements multiply this matrix
+        with electric field value. Full DC Stark matrix is obtained as
+        `fullStarkMatrix` = :obj:np.diag(`bareEnergies`) + :obj:`V` *`eField`. Calculated by
+        :obj:`defineBasis` in the basis :obj:`basisStates` in units of GHz/(V/m).
+        """
+
+        # STARK memoization
+        self.eFieldCouplingSaved = False
+
+    def _eFieldCouplingDivE(self, n1, l1, j1, mj1, n2, l2, j2, mj2, s=0.5):
+        # eFied coupling devided with E (witout actuall multiplication to getE)
+        # delta(mj1,mj2') delta(l1,l2+-1)
+        if (abs(mj1 - mj2) > 0.1) or (abs(l1 - l2) != 1):
+            return 0
+
+        # matrix element
+        result = (
+            self.atom.getRadialMatrixElement(n1, l1, j1, n2, l2, j2, s=s)
+            * physical_constants["Bohr radius"][0]
+            * C_e
+        )
+
+        sumPart = self.eFieldCouplingSaved.getAngular(l1, j1, mj1, l2, j2, mj2, s=s)
+        return result * sumPart
+
+    def _eFieldCoupling(self, n1, l1, j1, mj1, n2, l2, j2, mj2, eField, s=0.5):
+        return self._eFieldCouplingDivE(n1, l1, j1, mj1, n2, l2, j2, mj2, s=s) * eField
+
+    def _onePhotonCoupling(self, ns, ls, js, mjs, nt, lt, jt, mjt, q, s=0.5):
+        """
+        Tests if state s can be dipole coupled with a single photon
+        to target state t.
+
+        Given ss==st, true only for
+        Delta-l==+-1 and (Delta-l==Delta-j or
+        Delta-j=0 and j=l+s for either state) transitions.
+
+        Args:
+            ns (int): principle quantum number of potentially coupled state
+            ls (int): orbital quantum number of potentially coupled state
+            js (float): total angular quantum number of potentially coupled state
+            mjs (float): projection of total angular momentum of potentially coupled state
+            nt (int): principle quantum number of target state
+            lt (int): orbital quantum number of target state
+            jt (float): total angular quantum number of target state
+            mjt (float): projection of total angular momentum of target state
+            q (int): polarization of coupling field, must be -1,0,1
+            s (float, optional): total spin angular momentum quantum number.
+                Defaults to 1/2, appropriate for alkali atoms.
+
+        Returns:
+            bool: True if transition is electric dipole allowed via a single photon
+        """
+        # ignore the target state
+        if (ns == nt) and (ls == lt) and (js == jt) and (mjs == mjt):
+            return False
+        # transitions that change l by 1
+        elif (abs(ls - lt) == 1) and (mjs - mjt == q):
+            if ls - lt == js - jt:
+                return True
+            elif (js == jt) and ((js == ls + s) or (jt == lt + s)):
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def _twoPhotonCoupling(self, ns, ls, js, mjs, nt, lt, jt, mjt, q, s=0.5):
+        """
+        Tests if states can be dipole coupled with two photons.
+
+        Args:
+            ns (int): principle quantum number of potentially coupled state
+            ls (int): angular quantum number of potentially coupled state
+            js (float): total angular quantum number of potentially coupled state
+            mjs (float): projection of total angular momentum of potentially coupled state
+            nt (int): principle quantum number of target state
+            lt (int): angular quantum number of target state
+            jt (float): total angular quantum number of target state
+            mjt (float): projection of total angular momentum of target state
+            q (int): polarization of coupling light, must be -1,0,1
+            s (float, optional): total spin angular momentum quantum number.
+                Defaults to 1/2, appropriate for alkali atoms.
+
+        Returns:
+            bool: True if two photon coupling between states
+        """
+        # ignore target state
+        if (ns == nt) and (ls == lt) and (js == jt) and (mjs == mjt):
+            return False
+        # transitions that change l by 2
+        elif (abs(ls - lt) == 2) and (ls - lt == js - jt) and ((mjs - mjt) / 2 == q):
+            return True
+        # transitions that don't change l
+        elif ((ls - lt) == 0) and (js == jt) and ((mjs - mjt) / 2 == q):
+            return True
+        else:
+            return False
+
+    def defineBasis(
+        self,
+        n,
+        l,
+        j,
+        mj,
+        q,
+        nMin,
+        nMax,
+        maxL,
+        Bz=0,
+        edN=0,
+        progressOutput=False,
+        debugOutput=False,
+        s=0.5,
+    ):
+        """
+        Initializes basis of states around state of interest
+
+        Defines basis of states for further calculation. :math:`n,l,j,m_j`
+        specify target state whose neighbourhood and shifts we want to explore.
+        Other parameters specify breadth of basis.
+        This method stores basis in :obj:`basisStates`, 
+        then calculates the interaction Hamiltonian of the system.
+
+        Args:
+            n (int): principal quantum number of the state
+            l (int): angular orbital momentum of the state
+            j (flaot): total angular momentum of the state
+            mj (float): projection of total angular momentum of the state
+            q (int): polarization of coupling field is spherical basis.
+                Must be -1, 0, or 1: corresponding to sigma-, pi, sigma+
+            nMin (int): *minimal* principal quantum number of the states to
+                be included in the basis for calculation
+            nMax (int): *maximal* principal quantum number of the states to
+                be included in the basis for calculation
+            maxL (int): *maximal* value of orbital angular momentum for the
+                states to be included in the basis for calculation
+            Bz (float, optional): magnetic field directed along z-axis in
+                units of Tesla. Calculation will be correct only for weak
+                magnetic fields, where paramagnetic term is much stronger
+                then diamagnetic term. Diamagnetic term is neglected.
+            edN (int, optional): Limits the basis
+                to electric dipole transitions of the provided photon number.
+                Default of 0 means include all states. Setting to 1 means
+                only include single-photon dipole-allowed transitions.
+                Setting to 2 means include up to 2 photon transitions.
+                Higher numbers not supported.
+            progressOutput (:obj:`bool`, optional): if True prints the
+                progress of calculation; Set to false by default.
+            debugOutput (:obj:`bool`, optional): if True prints additional
+                information usefull for debuging. Set to false by default.
+            s (float, optional): Total spin angular momentum for the state.
+                Default value of 0.5 is correct for Alkaline Atoms, but
+                value **has to** be specified explicitly for divalent atoms
+                (e.g. `s=0` or `s=1` for singlet and triplet states,
+                that have total spin angular momenutum equal to 0 or 1
+                respectively).
+        """
+
+        # save calculation details START
+        self.n = n
+        self.l = l
+        self.j = j
+        self.mj = mj
+        self.q = q
+        if edN in [0, 1, 2]:
+            self.edN = edN
+        else:
+            raise ValueError("EN must be 0, 1, or 2")
+        self.nMin = nMin
+        self.nMax = nMax
+        self.maxL = maxL
+        self.Bz = Bz
+        self.s = s
+        # save calculation details END
+
+        self._findBasisStates(progressOutput, debugOutput)
+        self._buildHamiltonian(progressOutput, debugOutput)
+
+    def _findBasisStates(self, progressOutput=False, debugOutput=False):
+        """
+        Creates the list of basis states we want to include.
+
+        Details about calculation are taken from class attributes.
+        Results saved to class attributes are: :obj:`basisStates`,
+        :obj:`indexOfCoupledState`, and :obj:`targetState`.
+
+        Args:
+            progressOutput (bool, optional): Whether to print calculation progress.
+            debugOutput (bool, optional): Whether to print debug information.
+        """
+
+        states = []
+        n = self.n
+        l = self.l
+        j = self.j
+        mj = self.mj
+        q = self.q
+        s = self.s
+        edN = self.edN
+
+        nMin = self.nMin
+        nMax = self.nMax
+        maxL = self.maxL
+
+        # track where target state is inserted in this list
+        indexOfCoupledState = 0
+        index = 0
+        for tn in range(nMin, nMax):
+            for tl in range(min(maxL + 1, tn)):
+                for tj in np.linspace(tl - s, tl + s, round(2 * s + 1)):
+                    # ensure we add the target state
+                    if (n == tn) and (l == tl) and (j == tj):
+                        states.append([tn, tl, tj, mj])
+                        indexOfCoupledState = index
+                    # adding all manifold states
+                    elif (
+                        (edN == 0)
+                        and (abs(mj) + q - 0.1 <= tj)
+                        and (
+                            tn >= self.atom.groundStateN
+                            or [tn, tl, tj] in self.atom.extraLevels
+                        )
+                    ):
+                        states.append([tn, tl, tj, mj + q])
+                        index += 1
+                    # add states that are electric dipole allowed
+                    elif (edN == 1 or edN == 2) and self._onePhotonCoupling(
+                        n, l, j, mj, tn, tl, tj, mj + q, q, s
+                    ):
+                        states.append([tn, tl, tj, mj + q])
+                        index += 1
+                    # add states that are electric dipole allowed via 2-photon transition
+                    elif edN == 2 and self._twoPhotonCoupling(
+                        n, l, j, mj, tn, tl, tj, mj + 2 * q, q, s
+                    ):
+                        states.append([tn, tl, tj, mj + 2 * q])
+                        index += 1
+
+        dimension = len(states)
+        if progressOutput:
+            print("Found ", dimension, " states.")
+        if debugOutput:
+            print(states)
+            print("Index of initial state")
+            print(indexOfCoupledState)
+            print("Initial state = ")
+            print(states[indexOfCoupledState])
+
+        # save info about states
+        self.basisStates = states
+        self.indexOfCoupledState = indexOfCoupledState
+        self.targetState = states[indexOfCoupledState]
+
+    def _buildHamiltonian(self, progressOutput=False, debugOutput=False):
+        """
+        Creates the base matrices needed to produce the Floquet Hamiltonians.
+
+        Details about calculation are taken from class attributes.
+        Matrices correspond to two parts: field dependent and independent.
+        Results saved to class attributes are: :obj:`bareEnergies`,
+        :obj:`H`, and :obj:`V`.
+
+        Args:
+            progressOutput (bool, optional): Whether to print calculation progress.
+            debugOutput (bool, optional): Whether to print debug information.
+        """
+
+        global wignerPrecal
+        wignerPrecal = True
+        self.eFieldCouplingSaved = _EFieldCoupling()
+
+        dimension = len(self.basisStates)
+        states = self.basisStates
+        indexOfCoupledState = self.indexOfCoupledState
+
+        self.bareEnergies = np.zeros((dimension), dtype=np.double)
+        self.V = np.zeros((dimension, dimension), dtype=np.double)
+
+        if progressOutput:
+            print("Generating matrix...")
+        progress = 0.0
+
+        for ii in range(dimension):
+            if progressOutput:
+                progress += (dimension - ii) * 2 - 1
+                print(f"{progress/dimension**2:.0%}", end="\r")
+
+            # add diagonal element
+            self.bareEnergies[ii] = (
+                self.atom.getEnergy(
+                    states[ii][0], states[ii][1], states[ii][2], s=self.s
+                )
+                * C_e
+                / C_h
+                + self.atom.getZeemanEnergyShift(
+                    states[ii][1], states[ii][2], states[ii][3], self.Bz, s=self.s
+                )
+                / C_h
+            )
+            # add off-diagonal element
+            for jj in range(ii + 1, dimension):
+                coupling = (
+                    0.5
+                    * self._eFieldCouplingDivE(
+                        states[ii][0],
+                        states[ii][1],
+                        states[ii][2],
+                        self.mj,
+                        states[jj][0],
+                        states[jj][1],
+                        states[jj][2],
+                        self.mj,
+                        s=self.s,
+                    )
+                    / C_h
+                )
+                self.V[jj][ii] = coupling
+                self.V[ii][jj] = coupling
+
+        self.H = np.diag(self.bareEnergies)
+
+        if progressOutput:
+            print("\nEnergies and Couplings Generated")
+        if debugOutput:
+            print(np.diag(self.bareEnergies) + self.V)
+
+        # save info about target state
+        self.targetEnergy = self.bareEnergies[indexOfCoupledState]
+
+        if debugOutput:
+            print("Target State:", self.targetState, self.targetEnergy)
+
+        self.atom.updateDipoleMatrixElementsFile()
+        self.eFieldCouplingSaved._closeDatabase()
+        self.eFieldCouplingSaved = False
+
+
+class ShirleyMethod(BasisGenerator):
+    """
+    Calculates Stark Maps for a single atom in a single oscillating field
+
+    Uses Shirley's Time Independent Floquet Hamiltonian Method [1]_.
+    More detail can be found in the review of Semiclassical Floquet Theories
+    by Chu [2]_ and its application in Meyer et al [3]_.
+
+    For examples demonstrating basic usage
+    see `Shirley Method Examples`_.
+
+    Args:
+        atom (:obj:`arc.alkali_atom_functions.AlkaliAtom` or :obj:`arc.divalent_atom_functions.DivalentAtom`): ={
+            :obj:`arc.alkali_atom_data.Lithium6`,
+            :obj:`arc.alkali_atom_data.Lithium7`,
+            :obj:`arc.alkali_atom_data.Sodium`,
+            :obj:`arc.alkali_atom_data.Potassium39`,
+            :obj:`arc.alkali_atom_data.Potassium40`,
+            :obj:`arc.alkali_atom_data.Potassium41`,
+            :obj:`arc.alkali_atom_data.Rubidium85`,
+            :obj:`arc.alkali_atom_data.Rubidium87`,
+            :obj:`arc.alkali_atom_data.Caesium`,
+            :obj:`arc.divalent_atom_data.Strontium88`,
+            :obj:`arc.divalent_atom_data.Calcium40`
+            :obj:`arc.divalent_atom_data.Ytterbium174` }
+            Select the alkali metal for energy level
+            diagram calculation
+
+    Examples:
+        AC Stark Map calculation
+
+        >>> from arc import Rubidium85
+        >>> from ACStarkMap import ACStarkMap
+        >>> calc = ACStarkMap(Rubidium85())
+        >>> calc.defineBasis(56, 2, 2.5, 0.5, 45, 70, 10)
+        >>> calc.defineShirleyHamiltonian(fn=1)
+        >>> calc.diagonalise(0.01, np.linspace(1.0e9, 40e9, 402))
+        >>> print(calc.targetShifts.shape)
+        (402,)
+
+    References:
+        .. [1] J. H. Shirley, Physical Review **138**, B979 (1965)
+            https://link.aps.org/doi/10.1103/PhysRev.138.B979
+        .. [2] Shih-I Chu, "Recent Developments in Semiclassical Floquet Theories for Intense-Field Multiphoton Processes",
+        in Adv. At. Mol. Phys., vol. 21 (1985)
+            http://www.sciencedirect.com/science/article/pii/S0065219908601438
+        .. [3] D. H. Meyer, Z. A. Castillo, K. C. Cox, P. D. Kunz, J. Phys. B: At. Mol. Opt. Phys., **53**, 034001 (2020)
+            https://doi.org/10.1088/1361-6455/ab6051
+
+    .. _`Shirley Method Examples`:
+        ./AC_Stark_primer.html#Shirley's-Time-Independent-Floquet-Hamiltonian
+    """
+
+    def __init__(self, atom):
+
+        super().__init__(atom)
+
+        # Shirley Floquet Hamiltonian components
+        self.fn = None
+        """
+        Saves rank of Floquet Hamiltonian expansion. 
+    
+        Only fn+1 photon processes are accurately accounted for in the diagonalisation.
+        """
+        self.H0 = []
+        """
+        diagonal elements of Floquet-matrix (detuning of states) calculated by
+        :obj:`defineShirleyHamiltonian`
+        with units GHz relative to ionization energy. It is a 'csr' sparse matrix.
+        """
+        self.B = []
+        """
+        off-diagonal elements of Floquet Hamiltonian.
+        Get final matrix by multiplying by the electric field amplitude in V/m.
+        Calculated by :obj:`defineShirleyHamiltonian`.
+        """
+        self.dT = []
+        """
+        diagonal prefactors of frequency elements of Floquet Hamiltonian.
+        To get diagonal elements multiply this matrix diagonal by electric field
+        frequency. Calculated by :obj:`defineShirleyHamiltonian`
+        and is unitless. Multiplying frequency should be in GHz.
+        """
+
+        # calculation inputs
+        self.eFields = None
+        """
+        Saves electric field (in units of V/m) for which energy levels vs frequency are calculated
+
+        See also:
+            :obj:`diagonalise`
+        """
+        self.freqs = None
+        """
+        Saves frequency (in units of Hz) for which energy levels vs electric field are calculated
+
+        See also:
+            :obj:`diagonalise`
+        """
+
+        # calculation outputs
+        self.eigs = []
+        """
+        Array of eigenValues corresponding to the energies of the atom states for the
+        electric field `eField` at the frequency `freq`. In units of Hz.
+        """
+        self.eigVectors = []
+        """
+        Array of eigenvectors corresponding to the eigenValues of the solve.
+        """
+        self.transProbs = []
+        """
+        Probability to transition from the target state to another state in the basis.
+        """
+        self.targetShifts = []
+        """
+        This is the shift of the target state relative to the zero field energy for an applied
+        field of :obj:`eField` and :obj:`freq`. Given in units of Hz.
+        """
+
+    def defineShirleyHamiltonian(self, fn, debugOutput=False):
+        """
+        Create the Shirley time-independent Floquet Hamiltonian.
+
+        Uses :obj:`bareEnergies` and :obj:`V` from :obj:`BasisGenerator` to build.
+        Matrix is stored in three parts.
+        First part is diagonal electric-field independent part stored in :obj:`H0`,
+        while the second part :obj:`B` corresponds to off-diagonal elements
+        that are propotional to electric field amplitude.
+        The third part is the diagonal Floquet expansion proportional
+        to electric field frequency.
+        Overall interaction matrix for electric field `eField` and `freq`
+        can be then obtained from A B blocks
+        `A` = :obj:`H0` + :obj:`dT`*`freq` and
+        `B` = :obj:`B`*`eField`.
+
+        These matrices are saved as sparse CSR to facilitate calculations
+        and minimize memory footprint.
+
+        Args:
+            fn (int): rank of Floquet Hamiltonian expansion. Only fn+1
+                multi-photon processes are accurately accounted for.
+        """
+        self.fn = fn
+        if not fn >= 1:
+            raise ValueError(
+                "Floquet expansion must be greater than 1."
+                + " Rank of 0 is equivalent to rotating wave approximation"
+                + " solution and is not covered by this method."
+            )
+
+        dimension = len(self.bareEnergies)
+
+        # create the sparse building blocks for the Floquet Hamiltonian
+        # ensure everything is converted to csr format for efficient math
+        self.H0 = sp.diags(np.tile(self.bareEnergies, 2 * fn + 1)).tocsr()
+        self.dT = sp.block_diag(
+            [
+                sp.diags([i], 0, shape=(dimension, dimension))
+                for i in range(-fn, fn + 1, 1)
+            ],
+            dtype=np.double,
+        ).tocsr()
+        self.B = sp.bmat(
+            [
+                [self.V if abs(i - j) == 1 else None for i in range(-fn, fn + 1, 1)]
+                for j in range(-fn, fn + 1, 1)
+            ],
+            dtype=np.double,
+        ).tocsr()
+
+        if debugOutput:
+            print(self.H0.shape, self.dT.shape, self.B.shape)
+            print(self.H0[(0, 0)], self.dT[(0, 0)], self.B[(0, 0)])
+
+    def diagonalise(self, eFields, freqs, progressOutput=False, debugOutput=False):
+        """
+        Finds atom eigenstates versus electric field and driving frequency
+
+        Eigenstates are calculated for the outer product `eFields` and `freqs`.
+        Inputs are saved in class attributes
+        :obj:`eFields`, :obj:`freqs`.
+
+        Resulting sorted eigenvalues, eigenvectors, transition probabilities, and target state shifts
+        are saved in the class attributes
+        :obj:`eigs`, :obj:`eigVectors`, :obj:`transProbs` and :obj:`targetShifts`.
+
+        Function automatically produces the outer product space of the inputs.
+        For example, if `eFields` has two elements and `freqs` and 10,
+        the output shifts will have a shape of `(2,10)`.
+        If one of the inputs is a single value,
+        that dimension is squeezed out.
+
+        Args:
+            eFields (float or sequence of floats): electric field strengths (in V/m)
+                for which we want to know energy eigenstates
+            freqs (float or sequence of floats): driving frequency (in Hz)
+                for which we want to know energy eigenstates
+
+            progressOutput (bool, optional): if True prints the
+                progress of calculation; Set to false by default.
+            debugOutput (bool, optional): if True prints additional
+                information usefull for debuging. Set to false by default.
+        """
+
+        # get basic info about solve structure from class
+        dim0 = len(self.basisStates)
+        targetEnergy = self.targetEnergy
+
+        # ensure inputs are numpy arrays, if scalars, 0d-arrays
+        self.eFields = np.array(eFields, ndmin=1)
+        self.freqs = np.array(freqs, ndmin=1)
+
+        # pre-allocation of results array
+        eig = np.zeros(
+            (*self.eFields.shape, *self.freqs.shape, dim0 * (2 * self.fn + 1)),
+            dtype=np.double,
+        )
+        eigVec = np.zeros(
+            (
+                *self.eFields.shape,
+                *self.freqs.shape,
+                dim0 * (2 * self.fn + 1),
+                dim0 * (2 * self.fn + 1),
+            ),
+            dtype=np.complex128,
+        )
+        transProbs = np.zeros(
+            (*self.eFields.shape, *self.freqs.shape, dim0), dtype=np.double
+        )
+        targetShifts = np.zeros(
+            (*self.eFields.shape, *self.freqs.shape), dtype=np.double
+        )
+
+        if progressOutput:
+            print("Finding eigenvectors...")
+
+        # create numpy iterator object
+        it = np.nditer(
+            [self.eFields, self.freqs],
+            flags=["multi_index"],
+            op_flags=[["readonly"], ["readonly"]],
+            op_axes=[
+                list(range(self.eFields.ndim)) + [-1] * self.freqs.ndim,
+                [-1] * self.eFields.ndim + list(range(self.freqs.ndim)),
+            ],
+        )
+
+        with it:
+            for field, freq in it:
+                if progressOutput:
+                    print(f"{(it.iterindex+1)/it.itersize:.0%}", end="\r")
+
+                # define the Shirley Hamiltonian for this combo of field and frequency
+                Hf = self.H0 + self.dT * freq + self.B * field
+
+                # convert Hf to dense array to get all eigenvectors
+                ev, egvector = eigh(Hf.toarray())
+
+                # save the eigenvalues and eigenvectors
+                eig[it.multi_index] = ev
+                eigVec[it.multi_index] = egvector
+
+                # get transition probabilities from target state to other basis states
+                # index of first basis state in k=0 block diagonal
+                refInd = self.fn * dim0
+                # index of target state in basis
+                tarInd = self.indexOfCoupledState + refInd
+                transProbs[it.multi_index] = np.array(
+                    [
+                        np.sum(
+                            [
+                                np.abs(
+                                    np.conj(egvector[refInd + k * dim0 + i])
+                                    * egvector[tarInd]
+                                )
+                                ** 2
+                                for k in range(-self.fn, self.fn + 1, 1)
+                            ]
+                        )
+                        for i in range(0, dim0, 1)
+                    ]
+                )
+                # get the target shift by finding the max overlap with the target state
+                evInd = np.argmax(
+                    np.abs(egvector[tarInd].conj() * egvector[tarInd]) ** 2
+                )
+                if np.count_nonzero(ev == ev[evInd]) > 1:
+                    warnings.warn(
+                        "Multiple states have same overlap with target. Only saving first one."
+                    )
+                targetShifts[it.multi_index] = targetEnergy - ev[evInd]
+
+                if debugOutput:
+                    print(f"E field {field:.5f} V/m, Freq {freq*1e-9:.3f} GHz")
+                    print(
+                        f"Eigenvalue with largest overlap of target state {evInd}: {ev[evInd]*1e-9:.3f} GHz"
+                    )
+                    print(f"Shift: {(targetEnergy-ev[evInd])*1e-9:.3e} GHz")
+                    print(f"Eigenstate: {egvector[evInd]}")
+
+        # squeeze out unused dimensions corresponding to single element inputs
+        self.eigs = eig.squeeze()
+        self.eigVectors = eigVec.squeeze()
+        self.transProbs = transProbs.squeeze()
+        self.targetShifts = targetShifts.squeeze()
+
+
+class RWAModel(BasisGenerator):
+    """
+    Approximately calculates Stark Maps for a single atom in a single oscillating field
+
+    Assumes the rotating wave approximation applies independently for the
+    field interaction with all possible dipole transitions.
+    Approximation is generally reasonable for weak driving fields such
+    that no more than a single resonance contributes significantly
+    to the overall Stark shift.
+    When field is far-detuned from all transitions,
+    error tends to a factor of 2.
+
+    For an example of usage and comparison to other methods
+    see `RWAModel Example`_.
+
+    Args:
+        atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
+            :obj:`alkali_atom_data.Lithium7`,
+            :obj:`alkali_atom_data.Sodium`,
+            :obj:`alkali_atom_data.Potassium39`,
+            :obj:`alkali_atom_data.Potassium40`,
+            :obj:`alkali_atom_data.Potassium41`,
+            :obj:`alkali_atom_data.Rubidium85`,
+            :obj:`alkali_atom_data.Rubidium87`,
+            :obj:`alkali_atom_data.Caesium` }
+            Select the alkali metal for energy level
+            diagram calculation
+
+    Examples:
+        Approximate AC Stark Map calculation
+
+        >>> from arc import Rubidium85
+        >>> from ACStarkMap import RWAmodel
+        >>> calc = RWAmodel(Rubidium85())
+        >>> calc.defineBasis(56, 2, 2.5, 0.5, 45, 70, 10)
+        >>> calc.findDipoleCoupledStates()
+        >>> calc.RWAmodel(0.01, np.linspace(1.0e9, 40e9, 402))
+        >>> print(calc.starkShifts.shape)
+        (402,)
+
+    .. _`RWAModel Example`:
+        ./AC_Stark_primer.html#RWAModel:-Approximating-AC-Stark-Map-Calculations
+    """
+
+    def __init__(self, atom):
+
+        super().__init__(atom)
+
+        self.dipoleCoupledStates = []
+        """
+        List of basis states that are dipole coupled to the target state.
+        This is a subset of :obj:`basisStates`.
+        """
+        self.dipoleCoupledFreqs = []
+        """
+        Transition frequencies in Hz between :obj:`targetState` and :obj:`dipoleCoupledStates`.
+        """
+        self.starkShifts = []
+        """
+        Saves results of :obj:`RWAmodel` caclulations.
+        """
+
+    def findDipoleCoupledStates(self, debugOutput=False):
+        """
+        Finds the states in :obj:`basisStates` that directly couple to
+        :obj:`targetState` via single photon electric dipole transitions.
+
+        Saves the states and their detunings relative to :obj:`targetState`
+        to :obj:`dipoleCoupledStates` and :obj:`dipoleCoupledFreqs`.
+
+        Args:
+            q (int): laser polarization (-1,0,1 corresponds to :math:`\sigma^-`
+            :math:`\pi` and :math:`\sigma^+` respectively)
+        """
+
+        coupledStates = []
+        coupledFreqs = []
+
+        for i, st in enumerate(self.basisStates):
+            if self._onePhotonCoupling(
+                self.n,
+                self.l,
+                self.j,
+                self.mj,
+                st[0],
+                st[1],
+                st[2],
+                self.mj + self.q,
+                self.q,
+                self.s,
+            ):
+                coupledStates.append(st)
+                coupledFreqs.append(self.targetEnergy - self.bareEnergies[i])
+
+        self.dipoleCoupledStates = coupledStates
+        self.dipoleCoupledFreqs = np.array(coupledFreqs)
+
+        if debugOutput:
+            print(f"Found {len(coupledStates):d} dipole coupled states")
+            print(
+                f"Nearest dipole coupled state is detuned by: {np.abs(self.dipoleCoupledFreqs).min()*1e-9:.3f} GHz"
+            )
+
+    def _getRabiFrequency2_broadcast(
+        self, n1, l1, j1, mj1, n2, l2, j2, q, electricFieldAmplitude, s=0.5
+    ):
+
+        eFields = np.array(electricFieldAmplitude, ndmin=1)
+        rabis = np.array(
+            [
+                self.atom.getRabiFrequency2(n1, l1, j1, mj1, n2, l2, j2, q, eField, s)
+                for eField in eFields
+            ]
+        )
+
+        return rabis
+
+    def rwaModel(self, efields, freqs, maxRes=0.0, zip_inputs=False):
+        """
+        Calculates the total Rotating-Wave Approximation AC stark shift
+
+        Interaction is between :obj:`targetState` with each :obj:`dipoleCoupledStates`[i].
+        Resulting shifts are saved in Hz to :obj:`starkShifts`.
+
+        Function automatically produces the outer product space of the inputs.
+        For example, if `eFields` has two elements and `freqs` and 10,
+        the output shifts will have a shape of `(2,10)`.
+        If one of the inputs is a single value,
+        that dimension is squeezed out.
+
+        :obj:`findDipoleCoupledStates` must be run fist.
+
+        Args:
+            eFields (float or sequence of floats): electric field amplitude in V/m
+            freqs (float or sequence of floats): electric field frequency in Hz
+            maxRes (float, optional): only include dipole transitions with frequences
+                less than this. Specified in Hz.
+            zip_inputs (bool, optional): Causes the calculation to zip the inputs
+                instead of an outer product. Inputs must be of equal shape when `True`.
+                Default is `False`.
+        """
+
+        # ensure inputs are numpy arrays, even if single values
+        eFields = np.array(efields, ndmin=1)
+        Freqs = np.array(freqs, ndmin=1)
+
+        if zip_inputs:
+            if freqs.shape != eFields.shape:
+                raise ValueError("Zipped inputs must have same shape")
+            delta_slice = np.s_[:]
+            Omega_slice = np.s_[:]
+            starkShift = np.zeros(Freqs.shape, dtype=np.double)
+        else:
+            delta_slice = np.s_[np.newaxis, :]
+            Omega_slice = np.s_[:, np.newaxis]
+            starkShift = np.zeros((*eFields.shape, *Freqs.shape), dtype=np.double)
+
+        if maxRes != 0.0:
+            inds = np.where(
+                (self.dipoleCoupledFreqs > -maxRes) & (self.dipoleCoupledFreqs < maxRes)
+            )
+            states = [self.dipoleCoupledStates[i] for i in inds[0]]
+        else:
+            states = self.dipoleCoupledStates
+
+        print(f"Calculating RWA Stark Shift approximation with {len(states):d} levels")
+
+        for st in states:
+            Omega = (
+                self._getRabiFrequency2_broadcast(
+                    *self.targetState, *st[:-1], self.q, eFields
+                )
+                / 2
+                / np.pi
+            )
+            trans = self.atom.getTransitionFrequency(*self.targetState[:-1], *st[:-1])
+
+            if trans > 0.0:
+                delta = -(trans - freqs)
+            else:
+                delta = -(trans + freqs)
+
+            starkShiftplus = 0.5 * (
+                delta[delta_slice]
+                + np.sqrt(delta[delta_slice] ** 2 + Omega[Omega_slice] ** 2)
+            )
+            starkShiftminus = 0.5 * (
+                delta[delta_slice]
+                - np.sqrt(delta[delta_slice] ** 2 + Omega[Omega_slice] ** 2)
+            )
+
+            starkShift += np.where(delta < 0.0, starkShiftplus, starkShiftminus)
+
+        self.starkShifts = starkShift.squeeze()
