@@ -28,6 +28,17 @@ Input, output, formating
     printStateLetter
     formatNumberSI
 
+Citations
+---------
+
+.. currentmodule:: arc._database
+
+.. autosummary::
+    :toctree: generated/
+
+    getCitationForARC
+
+
 HTML output
 -----------
 

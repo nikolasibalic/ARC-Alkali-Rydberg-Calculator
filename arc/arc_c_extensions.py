@@ -1,2 +1,2 @@
 def NumerovWavefunction(*args):
-    pass
+    pass  # noqa: W292
