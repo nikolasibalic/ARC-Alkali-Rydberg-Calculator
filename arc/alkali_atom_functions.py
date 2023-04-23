@@ -13,7 +13,7 @@ labels etc.
 
 from __future__ import division, print_function, absolute_import
 
-from arc._database import sqlite3
+from arc._database import sqlite3, UsedModulesARC
 import csv
 import gzip
 from math import exp, sqrt
@@ -209,6 +209,7 @@ class AlkaliAtom(object):
         # should the wavefunction be calculated with Numerov algorithm
         # implemented in C; if false, it uses Python implementation
         # that is much slower
+        UsedModulesARC.alkali_atoms = True
 
         self.cpp_numerov = cpp_numerov
         self.preferQuantumDefects = preferQuantumDefects
@@ -2306,6 +2307,7 @@ class AlkaliAtom(object):
         Returns:
             float: A,B hyperfine splitting constants (in Hz)
         """
+        UsedModulesARC.hyperfine = True
         c = self.conn.cursor()
 
         c.execute(
@@ -2363,6 +2365,7 @@ class AlkaliAtom(object):
         Returns:
             float: spherical dipole matrix element( :math:`\langle j\vert\vert\mu\vert\vert j'\rangle`)
         """
+        UsedModulesARC.hyperfine = True
         mf2 = mf1 + q
         mI = mf2 - mj2
         sph = 0.0
@@ -2481,6 +2484,7 @@ class AlkaliAtom(object):
         Returns:
             float: Lande g-factor ( :math:`g_J`)
         """
+        UsedModulesARC.hyperfine = True
         return 1.0 + (j * (j + 1.0) + s * (s + 1.0) - l * (l + 1.0)) / (
             2.0 * j * (j + 1.0)
         )
@@ -2498,6 +2502,7 @@ class AlkaliAtom(object):
         Returns:
             float: Lande g-factor ( :math:`g_J`)
         """
+        UsedModulesARC.hyperfine = True
         return self.gL * (j * (j + 1.0) - s * (s + 1.0) + l * (l + 1.0)) / (
             2.0 * j * (j + 1.0)
         ) + self.gS * (j * (j + 1.0) + s * (s + 1.0) - l * (l + 1.0)) / (
@@ -2518,6 +2523,7 @@ class AlkaliAtom(object):
         Returns:
             float: Lande g-factor ( :math:`g_F`)
         """
+        UsedModulesARC.hyperfine = True
         gf = (
             self.getLandegj(l, j, s)
             * (f * (f + 1.0) - self.I * (self.I + 1.0) + j * (j + 1.0))
@@ -2540,6 +2546,7 @@ class AlkaliAtom(object):
         Returns:
             float: Lande g-factor ( :math:`g_F`)
         """
+        UsedModulesARC.hyperfine = True
         gf = self.getLandegjExact(l, j, s) * (
             f * (f + 1) - self.I * (self.I + 1) + j * (j + 1.0)
         ) / (2 * f * (f + 1.0)) + self.gI * (
@@ -2568,6 +2575,7 @@ class AlkaliAtom(object):
         Returns:
             float: Energy shift ( :math:`\Delta E_\mathrm{hfs}`)
         """
+        UsedModulesARC.hyperfine = True
         K = f * (f + 1.0) - self.I * (self.I + 1.0) - j * (j + 1.0)
         Ehfs = A / 2.0 * K
         if abs(B) > 0:
@@ -2606,6 +2614,7 @@ class AlkaliAtom(object):
         Returns:
             float: branching ratio
         """
+        UsedModulesARC.hyperfine = True
         b = 0.0
         for q in np.arange(-1, 2):
             b += (
@@ -2635,6 +2644,7 @@ class AlkaliAtom(object):
         Returns:
             float: Saturation Intensity in units of :math:`\mathrm{W}/\mathrm{m}^2`
         """
+        UsedModulesARC.hyperfine = True
         q = mfe - mfg
         if abs(q) <= 1:
             d = (
@@ -2666,6 +2676,7 @@ class AlkaliAtom(object):
         Returns:
             float: Saturation Intensity in units of :math:`\mathrm{W}/\mathrm{m}^2`
         """
+        UsedModulesARC.hyperfine = True
         d_iso_sq = 0.0
         for q in range(-1, 2):
             for mfg in range(-fg, fg + 1):
@@ -2727,7 +2738,7 @@ class AlkaliAtom(object):
         Returns:
             float: Two-Photon Rabi frequency :math:`\Omega_R` (units :math:`\mathrm{rads}^{-1}`), differential AC Stark shift :math:`\Delta_\mathrm{AC}` (units :math:`\mathrm{rads}^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
         """
-
+        UsedModulesARC.hyperfine = True
         # Intensity/beam (W/m^2)
         Ia = 2.0 * Pa / (pi * wa**2)
         Ib = 2.0 * Pb / (pi * wb**2)
@@ -2888,7 +2899,7 @@ class AlkaliAtom(object):
             float: Two-Photon Rabi frequency :math:`\Omega_R` (units :math:`\mathrm{rads}^{-1}`),
             ground-state AC Stark shift :math:`\Delta_{\mathrm{AC}_g}` (units :math:`\mathrm{rads}^{-1}`) Rydberg-state AC Stark shift :math:`\Delta_{\mathrm{AC}_r}` (units :math:`\mathrm{rads}^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
         """
-
+        UsedModulesARC.hyperfine = True
         # Intensity/beam (W/m^2)
         Ip = 2.0 * Pp / (pi * wp**2)
         Ic = 2.0 * Pc / (pi * wc**2)
@@ -2996,7 +3007,7 @@ class AlkaliAtom(object):
         Returns:
             float: State energy :math:`E_z` in SI units (Hz), state f, state mf
         """
-
+        UsedModulesARC.hyperfine = True
         Ahfs, Bhfs = self.getHFSCoefficients(n, l, j)
 
         # Bohr Magneton

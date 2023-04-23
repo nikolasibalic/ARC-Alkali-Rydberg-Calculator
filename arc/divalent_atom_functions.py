@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, absolute_import
-from .alkali_atom_functions import AlkaliAtom, printStateLetter
+from arc.alkali_atom_functions import AlkaliAtom, printStateLetter
 from arc.wigner import Wigner3j, Wigner6j
 from scipy.constants import physical_constants
 import csv
@@ -9,7 +9,7 @@ import os
 import numpy as np
 from math import sqrt
 
-import sqlite3
+from arc._database import sqlite3, UsedModulesARC
 
 sqlite3.register_adapter(np.float64, float)
 sqlite3.register_adapter(np.float32, float)
@@ -110,6 +110,8 @@ class DivalentAtom(AlkaliAtom):
     energyLevelsExtrapolated = False
 
     def __init__(self, preferQuantumDefects=True, cpp_numerov=True):
+        UsedModulesARC.divalent_atoms = True
+
         self.cpp_numerov = cpp_numerov
         self.preferQuantumDefects = preferQuantumDefects
 

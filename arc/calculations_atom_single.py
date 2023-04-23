@@ -17,9 +17,7 @@ from .alkali_atom_functions import (
     printStateStringLatex,
     formatNumberSI,
 )
-from .divalent_atom_functions import DivalentAtom
 import datetime
-import sqlite3
 import matplotlib
 from matplotlib.colors import LinearSegmentedColormap
 from math import sqrt
@@ -27,7 +25,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 import numpy as np
 import warnings
-from .wigner import Wigner6j, CG
+
 from scipy.constants import physical_constants, pi, epsilon_0, hbar
 from scipy.constants import c as C_c
 from scipy.constants import h as C_h
@@ -45,14 +43,13 @@ from scipy.special import sph_harm
 
 import sys
 
+from arc._database import sqlite3, UsedModulesARC
+from arc.divalent_atom_functions import DivalentAtom
+from arc.wigner import Wigner6j, CG
+
+
 if sys.version_info > (2,):
     xrange = range
-
-
-sqlite3.register_adapter(np.float64, float)
-sqlite3.register_adapter(np.float32, float)
-sqlite3.register_adapter(np.int64, int)
-sqlite3.register_adapter(np.int32, int)
 
 
 def Ylm(l, m, theta, phi):
@@ -98,6 +95,7 @@ class Wavefunction:
 
     def __init__(self, atom, basisStates, coefficients):
         # n, l, j, mj
+        UsedModulesARC.arc3_0_methods = True
         self.atom = atom
         if (
             len(basisStates) == 0
@@ -2192,6 +2190,7 @@ class AtomSurfaceVdW:
     """
 
     def __init__(self, atom, surfaceMaterial=None):
+        UsedModulesARC.arc3_0_methods = True
         self.atom = atom
         if surfaceMaterial is None:
             print(
@@ -2457,6 +2456,7 @@ class OpticalLattice1D:
     """
 
     def __init__(self, atom, trapWavenegth):
+        UsedModulesARC.arc3_0_methods = True
         self.atom = atom
         self.trapWavenegth = trapWavenegth
 
@@ -2734,6 +2734,7 @@ class DynamicPolarizability:
     """
 
     def __init__(self, atom, n, l, j, s=0.5):
+        UsedModulesARC.arc3_0_methods = True
         self.atom = atom
         self.n = n
         self.l = l
@@ -3196,6 +3197,7 @@ class StarkBasisGenerator:
     """
 
     def __init__(self, atom):
+        UsedModulesARC.ac_stark = True
         self.atom = atom
         """
         Instance of an ARC atom to perform calculations of the energy levels and coupling strengths.
@@ -3683,6 +3685,7 @@ class ShirleyMethod(StarkBasisGenerator):
     """
 
     def __init__(self, atom):
+        UsedModulesARC.ac_stark = True
         super().__init__(atom)
 
         # Shirley Floquet Hamiltonian components
@@ -3986,6 +3989,7 @@ class RWAStarkShift(StarkBasisGenerator):
     """
 
     def __init__(self, atom):
+        UsedModulesARC.ac_stark = True
         super().__init__(atom)
 
         self.dipoleCoupledStates = []

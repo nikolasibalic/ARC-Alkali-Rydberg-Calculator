@@ -50,6 +50,7 @@ __all__ = [
     "C_h",
     "C_e",
     "C_m_e",
+    "getCitationForARC",
 ]
 
 from arc.alkali_atom_functions import (
@@ -93,6 +94,7 @@ from arc.calculations_atom_pairstate import (
     StarkMapResonances,
 )
 from arc.wigner import Wigner3j, Wigner6j, TriaCoeff, CG, WignerDmatrix
+from arc._database import getCitationForARC
 from scipy.constants import k as C_k
 from scipy.constants import c as C_c
 from scipy.constants import h as C_h

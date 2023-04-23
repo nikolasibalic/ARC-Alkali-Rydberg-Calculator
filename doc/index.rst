@@ -73,9 +73,20 @@ Credits
     Matthew P. A. Jones,
     Charles S. Adams,
     Kevin J. Weatherill,
-    and contributors.
+    and `contributors <https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/graphs/contributors>`_.
 
 :Cite as:
+  The simplest way to obtain correct reference(s), given the number of contributions,
+  is to **call - at the end of your Python script that uses ARC - following function**::
+    
+    from arc import *
+    # use ARC
+    print(getCitationForARC())
+
+  The ``getCitationForARC()`` will print references that introduced methods
+  you used into ARC library. Otherwise, you can do manual decision making
+  based on the logic below:
+
   If you use **alkali** atoms:
 
   N. Šibalić, J. D. Pritchard, K. J. Weatherill, C. S. Adams,
@@ -90,9 +101,12 @@ Credits
   ARC 3.0: An expanded Python toolbox for atomic physics calculations,
   *Computer Physics Communications* **261**, 107814 (2021) `https://doi.org/10.1016/j.cpc.2020.107814 <https://doi.org/10.1016/j.cpc.2020.107814>`_
 
-  In addition, if you use *arc_advanced* extensions check
+  In addition, if you use ``arc_advanced`` extensions check
   `arc.advanced <./advanced.html>`_ .
+
+  In addition, if you use AC Stark calculations ``ShirleyMethod`` or ``RWAStarkShift``
+  please also cite D. H. Meyer, Z. A. Castillo, K. C. Cox, P. D. Kunz, J. Phys. B: At. Mol. Opt. Phys., 53, 034001 (2020) `https://doi.org/10.1088/1361-6455/ab6051 <https://doi.org/10.1088/1361-6455/ab6051>`_. 
 
 :Licence: BSD 3-Clause
 
-:Version: 3.0.0 of 2020/07/27
+:Version: 3.3.0 of 2023/04/23

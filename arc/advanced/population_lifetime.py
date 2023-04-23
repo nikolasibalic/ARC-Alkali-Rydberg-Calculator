@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
+from arc._database import UsedModulesARC
+
 """
     **Contributors:**
     getPopulationLifetime - written by Alessandro Greco,
@@ -155,6 +157,7 @@ def getPopulationLifetime(
                 includeLevelsUpTo=15, detailedOutput=True, plotting=1)
 
     """
+    UsedModulesARC.advanced_getPopulationTime = True
 
     if l > 3:
         print("Error: this function takes into account only S, P, D, F states.")
