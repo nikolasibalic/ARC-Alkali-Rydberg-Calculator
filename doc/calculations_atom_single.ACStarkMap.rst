@@ -10,17 +10,17 @@ using Floquet or other approximate methods.
 Basis Generation
 ----------------
 
-.. autoclass:: BasisGenerator
+.. autoclass:: StarkBasisGenerator
     :members: __init__
     :exclude-members: __init__
 
 .. autosummary::
-    :toctree: calculations_atom_single.BasisGenerator/
+    :toctree: calculations_atom_single.StarkBasisGenerator/
 
 .. autosummary::
     :toctree: generated/
 
-    ~BasisGenerator.defineBasis
+    ~StarkBasisGenerator.defineBasis
 
 Attributes
 ++++++++++
@@ -28,9 +28,10 @@ Attributes
 .. autosummary::
     :toctree: generated/
 
-    ~BasisGenerator.basisStates
-    ~BasisGenerator.H
-    ~BasisGenerator.V
+    ~StarkBasisGenerator.basisStates
+    ~StarkBasisGenerator.H
+    ~StarkBasisGenerator.V
+    ~StarkBasisGenerator.bareEnergies
 
 Shirley's Method
 ----------------
@@ -48,6 +49,7 @@ Calculate
 .. autosummary::
     :toctree: generated/
 
+    ~ShirleyMethod.defineBasis
     ~ShirleyMethod.defineShirleyHamiltonian
     ~ShirleyMethod.diagonalise
 
@@ -57,6 +59,7 @@ Attributes
 .. autosummary::
     :toctree: generated/
 
+    ~StarkBasisGenerator.basisStates
     ~ShirleyMethod.H0
     ~ShirleyMethod.B
     ~ShirleyMethod.dT
@@ -68,14 +71,14 @@ Attributes
     ~ShirleyMethod.transProbs
 
 RWA Approximation
-+++++++++++++++++
+-----------------
 
-.. autoclass:: RWAModel
+.. autoclass:: RWAStarkShift
     :members: __init__
     :exclude-members: __init__
 
 .. autosummary::
-    :toctree: calculations_atom_single.RWAModel/
+    :toctree: calculations_atom_single.RWAStarkShift/
 
 Calculate
 +++++++++
@@ -83,15 +86,17 @@ Calculate
 .. autosummary::
     :toctree: generated/
 
-    ~RWAModel.findDipoleCoupledStates
-    ~RWAModel.RWAModel
+    ~RWAStarkShift.defineBasis
+    ~RWAStarkShift.findDipoleCoupledStates
+    ~RWAStarkShift.makeRWA
 
 Attributes
 ++++++++++
 
 .. autosummary::
     :toctree: generated/
-
-    ~RWAModel.dipoleCoupledStates
-    ~RWAModel.dipoleCoupledFreqs
-    ~RWAModel.starkShifts
+    
+    ~StarkBasisGenerator.basisStates
+    ~RWAStarkShift.dipoleCoupledStates
+    ~RWAStarkShift.dipoleCoupledFreqs
+    ~RWAStarkShift.starkShifts

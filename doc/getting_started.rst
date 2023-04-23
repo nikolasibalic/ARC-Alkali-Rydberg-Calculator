@@ -11,7 +11,7 @@ good **starting point** to learn how to use ARC to get relevant information abou
 **alkali atoms** and **Rydberg states** in general.
 
 .. toctree::
-    :maxdepth:4
+    :maxdepth: 4
 
     Rydberg_atoms_a_primer_notebook
 
@@ -22,7 +22,7 @@ calculations, atom-surface interactions, dynamic polarizability calculations
 lattices.
 
 .. toctree::
-    :maxdepth:4
+    :maxdepth: 4
 
     ARC_3_0_introduction
 
@@ -32,9 +32,18 @@ and functions for dealing with Raman transitions and level structures in strong
 magnetic fields (Breit-Rabi diagrams).
 
 .. toctree::
-    :maxdepth:4
+    :maxdepth: 4
 
     ARC_3_1_additions
+
+`ARC 3.3 update: support for AC Stark shifts`_ adds support for single atom
+calculations that determine Stark maps of the Rydberg manifold due to an AC
+electric field.
+
+.. toctree::
+    :maxdepth: 4
+
+    AC_Stark_primer
 
 Click on the corresponding topic above to open static (HTML) version of the
 notebooks. If you want directly .ipynb format, open directly files form ARC
@@ -45,6 +54,8 @@ repository and run them in `Jupyter`_ .
 .. _`An introduction to ARC 3.0: Alkali.ne Rydberg Calculator`: ./ARC_3_0_introduction.ipynb
 
 .. _`ARC 3.1 update: support for hyperfine structure for alkali atoms`: ./ARC_3_1_additions.ipynb
+
+.. _`ARC 3.3 update: support for AC Stark shifts`: ./AC_Stark_primer.ipynb
 
 .. _`Jupyter`: https://jupyter.org/
 

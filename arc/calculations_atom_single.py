@@ -2769,7 +2769,7 @@ class DynamicPolarizability:
         return ax
 
 
-class BasisGenerator:
+class StarkBasisGenerator:
     """
     Base class for determining the basis of the Rydberg manifold and
     associated properties.
@@ -3220,7 +3220,7 @@ class BasisGenerator:
         self.eFieldCouplingSaved = False
 
 
-class ShirleyMethod(BasisGenerator):
+class ShirleyMethod(StarkBasisGenerator):
     """
     Calculates Stark Maps for a single atom in a single oscillating field
 
@@ -3264,7 +3264,7 @@ class ShirleyMethod(BasisGenerator):
         .. [1] J. H. Shirley, Physical Review **138**, B979 (1965)
             https://link.aps.org/doi/10.1103/PhysRev.138.B979
         .. [2] Shih-I Chu, "Recent Developments in Semiclassical Floquet Theories for Intense-Field Multiphoton Processes",
-        in Adv. At. Mol. Phys., vol. 21 (1985)
+            in Adv. At. Mol. Phys., vol. 21 (1985)
             http://www.sciencedirect.com/science/article/pii/S0065219908601438
         .. [3] D. H. Meyer, Z. A. Castillo, K. C. Cox, P. D. Kunz, J. Phys. B: At. Mol. Opt. Phys., **53**, 034001 (2020)
             https://doi.org/10.1088/1361-6455/ab6051
@@ -3344,7 +3344,8 @@ class ShirleyMethod(BasisGenerator):
         """
         Create the Shirley time-independent Floquet Hamiltonian.
 
-        Uses :obj:`bareEnergies` and :obj:`V` from :obj:`BasisGenerator` to build.
+        Uses :obj:`~StarkBasisGenerator.bareEnergies` and
+        :obj:`~StarkBasisGenerator.V` from :class:`StarkBasisGenerator` to build.
         Matrix is stored in three parts.
         First part is diagonal electric-field independent part stored in :obj:`H0`,
         while the second part :obj:`B` corresponds to off-diagonal elements
@@ -3353,8 +3354,8 @@ class ShirleyMethod(BasisGenerator):
         to electric field frequency.
         Overall interaction matrix for electric field `eField` and `freq`
         can be then obtained from A B blocks
-        `A` = :obj:`H0` + :obj:`dT`*`freq` and
-        `B` = :obj:`B`*`eField`.
+        ``A`` = :obj:`H0` + :obj:`dT` * ``freq`` and
+        ``B`` = :obj:`B` * ``eField``.
 
         These matrices are saved as sparse CSR to facilitate calculations
         and minimize memory footprint.
@@ -3528,7 +3529,7 @@ class ShirleyMethod(BasisGenerator):
         self.targetShifts = targetShifts.squeeze()
 
 
-class RWAModel(BasisGenerator):
+class RWAStarkShift(StarkBasisGenerator):
     """
     Approximately calculates Stark Maps for a single atom in a single oscillating field
 
@@ -3541,35 +3542,34 @@ class RWAModel(BasisGenerator):
     error tends to a factor of 2.
 
     For an example of usage and comparison to other methods
-    see `RWAModel Example`_.
+    see `RWAStarkShift Example`_.
 
     Args:
-        atom (:obj:`AlkaliAtom`): ={ :obj:`alkali_atom_data.Lithium6`,
-            :obj:`alkali_atom_data.Lithium7`,
-            :obj:`alkali_atom_data.Sodium`,
-            :obj:`alkali_atom_data.Potassium39`,
-            :obj:`alkali_atom_data.Potassium40`,
-            :obj:`alkali_atom_data.Potassium41`,
-            :obj:`alkali_atom_data.Rubidium85`,
-            :obj:`alkali_atom_data.Rubidium87`,
-            :obj:`alkali_atom_data.Caesium` }
+        atom (:obj:`AlkaliAtom`): ={ :obj:`arc.alkali_atom_data.Lithium6`,
+            :obj:`arc.alkali_atom_data.Lithium7`,
+            :obj:`arc.alkali_atom_data.Sodium`,
+            :obj:`arc.alkali_atom_data.Potassium39`,
+            :obj:`arc.alkali_atom_data.Potassium40`,
+            :obj:`arc.alkali_atom_data.Potassium41`,
+            :obj:`arc.alkali_atom_data.Rubidium85`,
+            :obj:`arc.alkali_atom_data.Rubidium87`,
+            :obj:`arc.alkali_atom_data.Caesium` }
             Select the alkali metal for energy level
             diagram calculation
 
     Examples:
         Approximate AC Stark Map calculation
 
-        >>> from arc import Rubidium85
-        >>> from ACStarkMap import RWAmodel
-        >>> calc = RWAmodel(Rubidium85())
+        >>> from arc import Rubidium85, RWAStarkShift
+        >>> calc = RWAStarkShift(Rubidium85())
         >>> calc.defineBasis(56, 2, 2.5, 0.5, 45, 70, 10)
         >>> calc.findDipoleCoupledStates()
-        >>> calc.RWAmodel(0.01, np.linspace(1.0e9, 40e9, 402))
+        >>> calc.makeRWA(0.01, np.linspace(1.0e9, 40e9, 402))
         >>> print(calc.starkShifts.shape)
         (402,)
 
-    .. _`RWAModel Example`:
-        ./AC_Stark_primer.html#RWAModel:-Approximating-AC-Stark-Map-Calculations
+    .. _`RWAStarkShift Example`:
+        ./AC_Stark_primer.html#RWAStarkShift:-Approximating-AC-Stark-Map-Calculations
     """
 
     def __init__(self, atom):
@@ -3579,7 +3579,7 @@ class RWAModel(BasisGenerator):
         self.dipoleCoupledStates = []
         """
         List of basis states that are dipole coupled to the target state.
-        This is a subset of :obj:`basisStates`.
+        This is a subset of :obj:`~StarkBasisGenerator.basisStates`.
         """
         self.dipoleCoupledFreqs = []
         """
@@ -3587,7 +3587,7 @@ class RWAModel(BasisGenerator):
         """
         self.starkShifts = []
         """
-        Saves results of :obj:`RWAmodel` caclulations.
+        Saves results of :obj:`makeRWA` caclulations.
         """
 
     def findDipoleCoupledStates(self, debugOutput=False):
@@ -3645,12 +3645,12 @@ class RWAModel(BasisGenerator):
 
         return rabis
 
-    def rwaModel(self, efields, freqs, maxRes=0.0, zip_inputs=False):
+    def makeRWA(self, efields, freqs, maxRes=0.0, zip_inputs=False):
         """
         Calculates the total Rotating-Wave Approximation AC stark shift
 
-        Interaction is between :obj:`targetState` with each :obj:`dipoleCoupledStates`[i].
-        Resulting shifts are saved in Hz to :obj:`starkShifts`.
+        Interaction is between :obj:`targetState` with each :obj:`dipoleCoupledStates` ``[i]``.
+        Resulting shifts are saved in Hz to :obj:`starkShifts` .
 
         Function automatically produces the outer product space of the inputs.
         For example, if `eFields` has two elements and `freqs` and 10,
