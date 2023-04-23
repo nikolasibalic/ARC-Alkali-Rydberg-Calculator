@@ -45,7 +45,11 @@ import datetime
 import matplotlib
 from matplotlib.colors import LinearSegmentedColormap
 from arc.calculations_atom_single import StarkMap
-from arc.alkali_atom_functions import printStateStringLatex, printStateString, printStateLetter
+from arc.alkali_atom_functions import (
+    printStateStringLatex,
+    printStateString,
+    printStateLetter,
+)
 from arc.divalent_atom_functions import DivalentAtom
 from scipy.special import factorial
 from scipy.sparse.linalg import eigsh
@@ -460,18 +464,16 @@ class PairStateInteractions:
             for m2 in j2range:
                 # we have chosen the first index
                 index1 = round(
-                        m1 * (2.0 * j2 + 1.0)
-                        + m2
-                        + (j1 * (2.0 * j2 + 1.0) + j2)
-                    )
+                    m1 * (2.0 * j2 + 1.0) + m2 + (j1 * (2.0 * j2 + 1.0) + j2)
+                )
                 for m in jrange:
                     for mm in jjrange:
                         # we have chosen the second index
                         index2 = round(
-                                m * (2.0 * jj + 1.0)
-                                + mm
-                                + (j * (2.0 * jj + 1.0) + jj)
-                            )
+                            m * (2.0 * jj + 1.0)
+                            + mm
+                            + (j * (2.0 * jj + 1.0) + jj)
+                        )
 
                         # angular matrix element from Sa??mannshausen, Heiner,
                         # Merkt, Fr??d??ric, Deiglmayr, Johannes

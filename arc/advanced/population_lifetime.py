@@ -164,9 +164,7 @@ def getPopulationLifetime(
         print("Error: plotting must be equal to 0, 1, 2, 3 or 4.")
         return
 
-    if ((not thresholdState) and (plotting > 1)) or (
-        thresholdState
-    ):
+    if ((not thresholdState) and (plotting > 1)) or (thresholdState):
         print(
             "Error: you need to specify the principal quantum number of the "
             "thresholdState if you use plotting=2, 3 or 4."

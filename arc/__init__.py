@@ -41,12 +41,15 @@ __all__ = [
     "PairStateInteractions",
     "StarkMapResonances",
     "Wigner3j",
-    "Wigner6j", "TriaCoeff", "CG", "WignerDmatrix",
+    "Wigner6j",
+    "TriaCoeff",
+    "CG",
+    "WignerDmatrix",
     "C_k",
     "C_c",
     "C_h",
     "C_e",
-    "C_m_e"
+    "C_m_e",
 ]
 
 from arc.alkali_atom_functions import (

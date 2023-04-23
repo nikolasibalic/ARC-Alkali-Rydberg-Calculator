@@ -846,7 +846,15 @@ class AlkaliAtom(object):
         return defect
 
     def getRadialMatrixElement(
-        self, n1:int, l1:int, j1:float, n2:int, l2:int, j2:float, s=0.5, useLiterature=True
+        self,
+        n1: int,
+        l1: int,
+        j1: float,
+        n2: int,
+        l2: int,
+        j2: float,
+        s=0.5,
+        useLiterature=True,
     ):
         """
             Radial part of the dipole matrix element
@@ -966,7 +974,9 @@ class AlkaliAtom(object):
 
         return dipoleElement
 
-    def getQuadrupoleMatrixElement(self, n1:int, l1:int, j1:float, n2:int, l2:int, j2:float, s=0.5):
+    def getQuadrupoleMatrixElement(
+        self, n1: int, l1: int, j1: float, n2: int, l2: int, j2: float, s=0.5
+    ):
         """
             Radial part of the quadrupole matrix element
 
@@ -3240,7 +3250,7 @@ def _atomLightAtomCoupling(
 # ================== Saving and loading calculations (START) ==================
 
 
-def saveCalculation(calculation, fileName:str):
+def saveCalculation(calculation, fileName: str):
     """
     Saves calculation for future use.
 
@@ -3339,7 +3349,7 @@ def saveCalculation(calculation, fileName:str):
     return 0
 
 
-def loadSavedCalculation(fileName:str):
+def loadSavedCalculation(fileName: str):
     """
     Loads previously saved calculation.
 
@@ -3400,7 +3410,7 @@ def compositeState(s1, s2):
     return np.kron(s1, s2).reshape((s1.shape[0] * s2.shape[0], 1))
 
 
-def printState(n:int, l:int, j:float, s=None):
+def printState(n: int, l: int, j: float, s=None):
     """
     Prints state spectroscopic label for numeric :math:`n`,
     :math:`l`, :math:`s` label of the state
@@ -3414,7 +3424,7 @@ def printState(n:int, l:int, j:float, s=None):
     print(printStateString(n, l, j, s=s))
 
 
-def printStateString(n:int, l:int, j:float, s=None):
+def printStateString(n: int, l: int, j: float, s=None):
     """
     Returns state spectroscopic label for numeric :math:`n`,
     :math:`l`, :math:`j` label of the state.
@@ -3447,7 +3457,7 @@ def printStateString(n:int, l:int, j:float, s=None):
         )
 
 
-def printStateStringLatex(n:int , l: int, j: float, s=None):
+def printStateStringLatex(n: int, l: int, j: float, s=None):
     """
     Returns latex code for spectroscopic label for numeric :math:`n`,
     :math:`l`, :math:`j` label of the state.
