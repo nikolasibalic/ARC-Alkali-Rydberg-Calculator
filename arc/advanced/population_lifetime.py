@@ -13,9 +13,18 @@ import matplotlib.pyplot as plt
 """
 
 
-def getPopulationLifetime(atom, n, l, j,
-                          temperature=0, includeLevelsUpTo=0, period=1,
-                          plotting=1, thresholdState=False, detailedOutput=False):
+def getPopulationLifetime(
+    atom,
+    n,
+    l,
+    j,
+    temperature=0,
+    includeLevelsUpTo=0,
+    period=1,
+    plotting=1,
+    thresholdState=False,
+    detailedOutput=False,
+):
     r"""
     Calculates lifetime of atomic **population** taking into account
     redistribution of population to other states under spontaneous and
@@ -154,15 +163,20 @@ def getPopulationLifetime(atom, n, l, j,
         print("Error: plotting must be equal to 0, 1, 2, 3 or 4.")
         return
 
-    if ((thresholdState == False) and  (plotting >1 )) or (thresholdState==True):
-        print("Error: you need to specify the principal quantum number of the "
-              "thresholdState if you use plotting=2, 3 or 4.")
+    if ((thresholdState == False) and (plotting > 1)) or (
+        thresholdState == True
+    ):
+        print(
+            "Error: you need to specify the principal quantum number of the "
+            "thresholdState if you use plotting=2, 3 or 4."
+        )
         return
 
-    if ((plotting == 0) or  (plotting ==1)):
+    if (plotting == 0) or (plotting == 1):
         thresholdState = False
 
     import time
+
     start = time.time()
 
     # What state do you want to excite?
@@ -176,27 +190,43 @@ def getPopulationLifetime(atom, n, l, j,
     WidthBBR = includeLevelsUpTo - STATE
     # What is the temperature?
     if temperature == 0:
-        raise valueError("Error: if you don't want BBR-induced transition, use getStateLifetime")
+        raise valueError(
+            "Error: if you don't want BBR-induced transition, use getStateLifetime"
+        )
     TEMP_BBR = temperature
     # What is the critical state for the ionization?
     if thresholdState - STATE >= 0:
         raise valueError("Error: thresholdState must be < n")
     CState = thresholdState
     # It creates the references for the ensemble population
-    cutoffs = int(atom.getQuantumDefect(STATE, 0, 0.5) -
-                  atom.getQuantumDefect(STATE,0,0.5))
-    cutoffp05 = int(atom.getQuantumDefect(STATE, 0, 0.5 ) -
-                    atom.getQuantumDefect(STATE,1,0.5))
-    cutoffp15 = int(atom.getQuantumDefect(STATE, 0, 0.5) -
-                    atom.getQuantumDefect(STATE,1,1.5))
-    cutoffd15 = int(atom.getQuantumDefect(STATE, 0, 0.5) -
-                    atom.getQuantumDefect(STATE,2,1.5))
-    cutoffd25 = int(atom.getQuantumDefect(STATE, 0, 0.5) -
-                    atom.getQuantumDefect(STATE,2,2.5))
-    cutofff25 = int(atom.getQuantumDefect(STATE, 0, 0.5) -
-                    atom.getQuantumDefect(STATE,3,2.5))
-    cutofff35 = int(atom.getQuantumDefect(STATE, 0, 0.5) -
-                    atom.getQuantumDefect(STATE,3,3.5))
+    cutoffs = int(
+        atom.getQuantumDefect(STATE, 0, 0.5)
+        - atom.getQuantumDefect(STATE, 0, 0.5)
+    )
+    cutoffp05 = int(
+        atom.getQuantumDefect(STATE, 0, 0.5)
+        - atom.getQuantumDefect(STATE, 1, 0.5)
+    )
+    cutoffp15 = int(
+        atom.getQuantumDefect(STATE, 0, 0.5)
+        - atom.getQuantumDefect(STATE, 1, 1.5)
+    )
+    cutoffd15 = int(
+        atom.getQuantumDefect(STATE, 0, 0.5)
+        - atom.getQuantumDefect(STATE, 2, 1.5)
+    )
+    cutoffd25 = int(
+        atom.getQuantumDefect(STATE, 0, 0.5)
+        - atom.getQuantumDefect(STATE, 2, 2.5)
+    )
+    cutofff25 = int(
+        atom.getQuantumDefect(STATE, 0, 0.5)
+        - atom.getQuantumDefect(STATE, 3, 2.5)
+    )
+    cutofff35 = int(
+        atom.getQuantumDefect(STATE, 0, 0.5)
+        - atom.getQuantumDefect(STATE, 3, 3.5)
+    )
     # Total time of the dynamics
     totaltime = period * 1e-6
     # Parts of gammamax that you take for time step
@@ -222,74 +252,90 @@ def getPopulationLifetime(atom, n, l, j,
 
     print("Creating the rates matrix:")
 
-    for pqn in xrange(extraL[0], STATE + WidthBBR+1):
-        for fpqn in xrange(extraL[0], STATE + WidthBBR+1):
+    for pqn in xrange(extraL[0], STATE + WidthBBR + 1):
+        for fpqn in xrange(extraL[0], STATE + WidthBBR + 1):
             # rate from s
             c[pqn + rifs, fpqn + rifp05] = atom.getTransitionRate(
-                pqn, 0, 0.5, fpqn, 1, 0.5, TEMP_BBR)  # rate s -> p0.5
+                pqn, 0, 0.5, fpqn, 1, 0.5, TEMP_BBR
+            )  # rate s -> p0.5
             c[pqn + rifs, fpqn + rifp15] = atom.getTransitionRate(
-                pqn, 0, 0.5, fpqn, 1, 1.5, TEMP_BBR)  # rate s -> p1.5
-        # rate from p0.5
+                pqn, 0, 0.5, fpqn, 1, 1.5, TEMP_BBR
+            )  # rate s -> p1.5
+            # rate from p0.5
             c[pqn + rifp05, fpqn + rifs] = atom.getTransitionRate(
-                pqn, 1, 0.5, fpqn, 0, 0.5, TEMP_BBR)  # rate p0.5 -> s
+                pqn, 1, 0.5, fpqn, 0, 0.5, TEMP_BBR
+            )  # rate p0.5 -> s
             c[pqn + rifp05, fpqn + rifd15] = atom.getTransitionRate(
-                pqn, 1, 0.5, fpqn, 2, 1.5, TEMP_BBR)  # rate p0.5 -> d1.5
-        # rate from p1.5
+                pqn, 1, 0.5, fpqn, 2, 1.5, TEMP_BBR
+            )  # rate p0.5 -> d1.5
+            # rate from p1.5
             c[pqn + rifp15, fpqn + rifs] = atom.getTransitionRate(
-                pqn, 1, 1.5, fpqn, 0, 0.5, TEMP_BBR)  # rate p1.5 -> s
+                pqn, 1, 1.5, fpqn, 0, 0.5, TEMP_BBR
+            )  # rate p1.5 -> s
             c[pqn + rifp15, fpqn + rifd15] = atom.getTransitionRate(
-                pqn, 1, 1.5, fpqn, 2, 1.5, TEMP_BBR)  # rate p1.5 -> d1.5
+                pqn, 1, 1.5, fpqn, 2, 1.5, TEMP_BBR
+            )  # rate p1.5 -> d1.5
             c[pqn + rifp15, fpqn + rifd25] = atom.getTransitionRate(
-                pqn, 1, 1.5, fpqn, 2, 2.5, TEMP_BBR)  # rate p1.5 -> d2.5
-        # rate from d1.5
+                pqn, 1, 1.5, fpqn, 2, 2.5, TEMP_BBR
+            )  # rate p1.5 -> d2.5
+            # rate from d1.5
             c[pqn + rifd15, fpqn + rifp05] = atom.getTransitionRate(
-                pqn, 2, 1.5, fpqn, 1, 0.5, TEMP_BBR)  # rate d1.5 -> p0.5
+                pqn, 2, 1.5, fpqn, 1, 0.5, TEMP_BBR
+            )  # rate d1.5 -> p0.5
             c[pqn + rifd15, fpqn + rifp15] = atom.getTransitionRate(
-                pqn, 2, 1.5, fpqn, 1, 1.5, TEMP_BBR)  # rate d1.5 -> p1.5
+                pqn, 2, 1.5, fpqn, 1, 1.5, TEMP_BBR
+            )  # rate d1.5 -> p1.5
             c[pqn + rifd15, fpqn + riff25] = atom.getTransitionRate(
-                pqn, 2, 1.5, fpqn, 3, 2.5, TEMP_BBR)  # rate d1.5 -> f2.5
-        # rate from d2.5
+                pqn, 2, 1.5, fpqn, 3, 2.5, TEMP_BBR
+            )  # rate d1.5 -> f2.5
+            # rate from d2.5
             c[pqn + rifd25, fpqn + rifp15] = atom.getTransitionRate(
-                pqn, 2, 2.5, fpqn, 1, 1.5, TEMP_BBR)  # rate d2.5 -> p1.5
+                pqn, 2, 2.5, fpqn, 1, 1.5, TEMP_BBR
+            )  # rate d2.5 -> p1.5
             c[pqn + rifd25, fpqn + riff25] = atom.getTransitionRate(
-                pqn, 2, 2.5, fpqn, 3, 2.5, TEMP_BBR)  # rate d2.5 -> f2.5
+                pqn, 2, 2.5, fpqn, 3, 2.5, TEMP_BBR
+            )  # rate d2.5 -> f2.5
             c[pqn + rifd25, fpqn + riff35] = atom.getTransitionRate(
-                pqn, 2, 2.5, fpqn, 3, 3.5, TEMP_BBR)  # rate d2.5 -> f3.5
-        # rate from f2.5
+                pqn, 2, 2.5, fpqn, 3, 3.5, TEMP_BBR
+            )  # rate d2.5 -> f3.5
+            # rate from f2.5
             c[pqn + riff25, fpqn + rifd15] = atom.getTransitionRate(
-                pqn, 3, 2.5, fpqn, 2, 1.5, TEMP_BBR)  # rate f2.5 -> d1.5
+                pqn, 3, 2.5, fpqn, 2, 1.5, TEMP_BBR
+            )  # rate f2.5 -> d1.5
             c[pqn + riff25, fpqn + rifd25] = atom.getTransitionRate(
-                pqn, 3, 2.5, fpqn, 2, 2.5, TEMP_BBR)  # rate f2.5 -> d2.5
-        # rate from f3.5
+                pqn, 3, 2.5, fpqn, 2, 2.5, TEMP_BBR
+            )  # rate f2.5 -> d2.5
+            # rate from f3.5
             c[pqn + riff35, fpqn + rifd25] = atom.getTransitionRate(
-                pqn, 3, 3.5, fpqn, 2, 2.5, TEMP_BBR)  # rate f3.5 -> d2.5
-        print(pqn, end=' ')
+                pqn, 3, 3.5, fpqn, 2, 2.5, TEMP_BBR
+            )  # rate f3.5 -> d2.5
+        print(pqn, end=" ")
 
     # It deletes all the gammas for states under the ground state which are not the extra levels
 
     if extraL[1] > 2:
-        c[extraL[0] +rifd15, :] = 0
-        c[:, extraL[0] +rifd15] = 0
-        c[extraL[0] +rifd25, :] = 0
-        c[:, extraL[0] +rifd25] = 0
+        c[extraL[0] + rifd15, :] = 0
+        c[:, extraL[0] + rifd15] = 0
+        c[extraL[0] + rifd25, :] = 0
+        c[:, extraL[0] + rifd25] = 0
         if extraL[1] > 3:
-            c[extraL[0] +riff25, :] = 0
-            c[:, extraL[0] +riff25] = 0
-            c[extraL[0] +riff35, :] = 0
-            c[:, extraL[0] +riff35] = 0
+            c[extraL[0] + riff25, :] = 0
+            c[:, extraL[0] + riff25] = 0
+            c[extraL[0] + riff35, :] = 0
+            c[:, extraL[0] + riff35] = 0
 
-    c[extraL[0] +rifs, :] = 0
-    c[:, extraL[0] +rifs] = 0
-    c[extraL[0] +rifp05, :] = 0
-    c[:, extraL[0] +rifp05] = 0
-    c[extraL[0] +rifp15, :] = 0
-    c[:, extraL[0] +rifp15] = 0
+    c[extraL[0] + rifs, :] = 0
+    c[:, extraL[0] + rifs] = 0
+    c[extraL[0] + rifp05, :] = 0
+    c[:, extraL[0] + rifp05] = 0
+    c[extraL[0] + rifp15, :] = 0
+    c[:, extraL[0] + rifp15] = 0
 
     # It finds the maximum rate in the matrix
     gammamax = c.max()  # is from the 5P1.5 towards the 5S0.5
     # It defines Dtmin
-    Dtmin = round(1 /(partg *gammamax), 9)
-    print('\n', Dtmin)
+    Dtmin = round(1 / (partg * gammamax), 9)
+    print("\n", Dtmin)
 
     #########################################################
 
@@ -316,7 +362,7 @@ def getPopulationLifetime(atom, n, l, j,
         if J == 3.5:
             rifinitial = riff35
 
-    pop[0, (rifinitial +STATE)] = 1
+    pop[0, (rifinitial + STATE)] = 1
 
     #########################################################
 
@@ -327,30 +373,32 @@ def getPopulationLifetime(atom, n, l, j,
     #########################################################
     # References for the name of the .txt file
     if L == 0:
-        StrL = 'S'
+        StrL = "S"
     elif L == 1:
-        StrL = 'P'
+        StrL = "P"
     elif L == 2:
-        StrL = 'D'
+        StrL = "D"
     elif L == 3:
-        StrL = 'F'
+        StrL = "F"
 
     if J == 0.5:
-        StrJ = '05'
+        StrJ = "05"
     elif J == 1.5:
-        StrJ = '15'
+        StrJ = "15"
     elif J == 2.5:
-        StrJ = '25'
+        StrJ = "25"
     elif J == 3.5:
-        StrJ = '35'
+        StrJ = "35"
 
     # It creates the file for the three curves
-    with open("Lifetime" + str(STATE) +StrL+StrJ+".txt", 'w') as fi:
+    with open("Lifetime" + str(STATE) + StrL + StrJ + ".txt", "w") as fi:
         fi.writelines("")
 
     if detailedOutput == True:
         # It creates the file for the all states
-        with open("Lifetime" + str(STATE) +StrL+StrJ+"All.txt", 'w') as fiall:
+        with open(
+            "Lifetime" + str(STATE) + StrL + StrJ + "All.txt", "w"
+        ) as fiall:
             fiall.writelines("")
     #########################################################
 
@@ -365,31 +413,38 @@ def getPopulationLifetime(atom, n, l, j,
     while t < (totaltime):
         if detailedOutput == True:
             ListStates = []
-            ListStates.append(t * 1e+6)
+            ListStates.append(t * 1e6)
         for a in range(0, riftot):
             popaus[0, a] = 0.0
             for b in range(0, riftot):
-                popaus[0, a] += -c[a, b]*pop[0, a] + c[b,a]*pop[0,b]
-            popaus[0, a] = popaus[0, a] *Dt
+                popaus[0, a] += -c[a, b] * pop[0, a] + c[b, a] * pop[0, b]
+            popaus[0, a] = popaus[0, a] * Dt
         pop += popaus
         if t == 0:
             Dt = Dtmin
         if detailedOutput == True:
             ListStates.extend(pop[0, :])
-            with open("Lifetime" + str(STATE) +StrL+StrJ+"All.txt", 'a') as fall:
-                fall.writelines("%.5f \t" % (ListStates[ind]) for ind in range(0, len(ListStates)))
+            with open(
+                "Lifetime" + str(STATE) + StrL + StrJ + "All.txt", "a"
+            ) as fall:
+                fall.writelines(
+                    "%.5f \t" % (ListStates[ind])
+                    for ind in range(0, len(ListStates))
+                )
                 fall.writelines("\n")
-        ListTime.append(t * 1e+6)
+        ListTime.append(t * 1e6)
         if thresholdState != False:
             popall = 0.0
             for k in range(0, riftot):
-                if ((CState + rifs-cutoffs <= k < rifp05+extraL[0])
-                    or (CState+rifp05-cutoffp05 <= k < rifp15+extraL[0])
-                    or (CState+rifp15-cutoffp15 <= k < rifd15+extraL[0])
-                    or (CState+rifd15-cutoffd15 <= k < rifd25+extraL[0])
-                    or (CState+rifd25-cutoffd25 <= k < riff25+extraL[0])
-                    or (CState+riff25-cutofff25 <= k < riff35+extraL[0])
-                    or (CState+riff35-cutofff35 <= k < riftot)):
+                if (
+                    (CState + rifs - cutoffs <= k < rifp05 + extraL[0])
+                    or (CState + rifp05 - cutoffp05 <= k < rifp15 + extraL[0])
+                    or (CState + rifp15 - cutoffp15 <= k < rifd15 + extraL[0])
+                    or (CState + rifd15 - cutoffd15 <= k < rifd25 + extraL[0])
+                    or (CState + rifd25 - cutoffd25 <= k < riff25 + extraL[0])
+                    or (CState + riff25 - cutofff25 <= k < riff35 + extraL[0])
+                    or (CState + riff35 - cutofff35 <= k < riftot)
+                ):
                     # above the threshold state
                     popall += pop[0, k]
             ListRed.append(popall)
@@ -400,14 +455,23 @@ def getPopulationLifetime(atom, n, l, j,
         t = t + Dt
 
     if thresholdState == False:
-        with open("Lifetime" + str(STATE) +StrL+StrJ+".txt", 'a') as f:
-            f.writelines("%.4f \t %.5f \n" %
-                (ListTime[index], ListGreen[index]) for index in range(0, len(ListTime)))
+        with open("Lifetime" + str(STATE) + StrL + StrJ + ".txt", "a") as f:
+            f.writelines(
+                "%.4f \t %.5f \n" % (ListTime[index], ListGreen[index])
+                for index in range(0, len(ListTime))
+            )
     else:
-        with open("Lifetime" + str(STATE) +StrL+StrJ+".txt", 'a') as f:
-            f.writelines("%.4f \t %.5f \t %.5f \t %.5f \n" %
-                (ListTime[index], ListRed[index], ListBlue[index],
-                 ListGreen[index]) for index in range(0,len(ListTime)))
+        with open("Lifetime" + str(STATE) + StrL + StrJ + ".txt", "a") as f:
+            f.writelines(
+                "%.4f \t %.5f \t %.5f \t %.5f \n"
+                % (
+                    ListTime[index],
+                    ListRed[index],
+                    ListBlue[index],
+                    ListGreen[index],
+                )
+                for index in range(0, len(ListTime))
+            )
 
     #########################################################
 
@@ -416,12 +480,12 @@ def getPopulationLifetime(atom, n, l, j,
         def f(xs, t, ps):
             """Lotka-Volterra predator-prey model."""
             try:
-                gammaTarget = ps['gammaTarget'].value
+                gammaTarget = ps["gammaTarget"].value
             except Exception:
                 gammaTarget = ps
 
             x, y = xs
-            return [- gammaTarget * x, - gammaTarget *y]
+            return [-gammaTarget * x, -gammaTarget * y]
 
         def g(t, x0, ps):
             """
@@ -431,7 +495,7 @@ def getPopulationLifetime(atom, n, l, j,
             return x
 
         def residual(ps, ts, data):
-            x0 = ps['x0'].value, ps['y0'].value
+            x0 = ps["x0"].value, ps["y0"].value
             model = g(ts, x0, ps)
             return (model - data).ravel()
 
@@ -445,22 +509,21 @@ def getPopulationLifetime(atom, n, l, j,
 
         # set parameters incluing bounds
         params = Parameters()
-        params.add('x0', value=1, vary=False)
-        params.add('y0', value=1, vary=False)
-        params.add('gammaTarget', value=0.01, min=0, max=1)
+        params.add("x0", value=1, vary=False)
+        params.add("y0", value=1, vary=False)
+        params.add("gammaTarget", value=0.01, min=0, max=1)
 
         # fit model and find predicted values
-        result = minimize(residual, params, args=(
-            t, data), method='leastsq')
+        result = minimize(residual, params, args=(t, data), method="leastsq")
         final = data + result.residual.reshape(data.shape)
 
-        LifetimeTarget = 1. / (result.params['gammaTarget'].value)
+        LifetimeTarget = 1.0 / (result.params["gammaTarget"].value)
 
         # Grafico
         fig, axes = plt.subplots(1, 1, figsize=(10, 6))
 
-        axes.plot(t, data[:, 0], 'g*',label=r"Target")
-        axes.plot(t, final[:, 0], 'k-', linewidth=2, label=r"Fit Target")
+        axes.plot(t, data[:, 0], "g*", label=r"Target")
+        axes.plot(t, final[:, 0], "k-", linewidth=2, label=r"Fit Target")
 
         axes.set_ylim(0, max(ListGreen))
         axes.set_xlim(0, max(ListTime))
@@ -478,13 +541,12 @@ def getPopulationLifetime(atom, n, l, j,
         print("Lifetime Target: %.6f us" % (LifetimeTarget))
 
     if plotting == 2:
-
         # Make the plot of the three curves
         fig, axes = plt.subplots(1, 1, figsize=(10, 6))
 
-        axes.plot(ListTime, ListRed, 'r.', label=r"Ensemble")
-        axes.plot(ListTime, ListBlue, 'b.', label=r"Other")
-        axes.plot(ListTime, ListGreen, 'g.', label=r"Target")
+        axes.plot(ListTime, ListRed, "r.", label=r"Ensemble")
+        axes.plot(ListTime, ListBlue, "b.", label=r"Other")
+        axes.plot(ListTime, ListGreen, "g.", label=r"Target")
 
         axes.set_ylim(0, 1)
         axes.set_xlim(0, ListTime[-1])
@@ -500,13 +562,13 @@ def getPopulationLifetime(atom, n, l, j,
         def f(xs, t, ps):
             """Lotka-Volterra predator-prey model."""
             try:
-                gammaEnsemble = ps['gammaEnsemble'].value
-                gammaTarget = ps['gammaTarget'].value
+                gammaEnsemble = ps["gammaEnsemble"].value
+                gammaTarget = ps["gammaTarget"].value
             except Exception:
                 gammaEnsemble, gammaTarget = ps
 
             x, y = xs
-            return [-gammaEnsemble * x, -gammaTarget *y]
+            return [-gammaEnsemble * x, -gammaTarget * y]
 
         def g(t, x0, ps):
             """
@@ -516,7 +578,7 @@ def getPopulationLifetime(atom, n, l, j,
             return x
 
         def residual(ps, ts, data):
-            x0 = ps['x0'].value, ps['y0'].value
+            x0 = ps["x0"].value, ps["y0"].value
             model = g(ts, x0, ps)
             return (model - data).ravel()
 
@@ -535,27 +597,26 @@ def getPopulationLifetime(atom, n, l, j,
 
         # set parameters incluing bounds
         params = Parameters()
-        params.add('x0', value=max(ListRed), vary=False)
-        params.add('y0', value=max(ListGreen), vary=False)
-        params.add('gammaEnsemble',  value=0.005, min=0., max=1.)
-        params.add('gammaTarget', value=0.01, min=0., max=1.)
+        params.add("x0", value=max(ListRed), vary=False)
+        params.add("y0", value=max(ListGreen), vary=False)
+        params.add("gammaEnsemble", value=0.005, min=0.0, max=1.0)
+        params.add("gammaTarget", value=0.01, min=0.0, max=1.0)
 
         # fit model and find predicted values
-        result = minimize(residual, params, args=(
-            t, data), method='leastsq')
+        result = minimize(residual, params, args=(t, data), method="leastsq")
         final = data + result.residual.reshape(data.shape)
 
-        LifetimeEnsemble = 1. / (result.params['gammaEnsemble'].value)
-        LifetimeTarget = 1. / (result.params['gammaTarget'].value)
+        LifetimeEnsemble = 1.0 / (result.params["gammaEnsemble"].value)
+        LifetimeTarget = 1.0 / (result.params["gammaTarget"].value)
 
         # Grafico
         fig, axes = plt.subplots(1, 1, figsize=(10, 6))
 
-        axes.plot(t, dataAll[:, 0], 'r*',label=r"Ensemble")
-        axes.plot(t, dataAll[:, 1], 'b*',label=r"Support")
-        axes.plot(t, dataAll[:, 2], 'g*',label=r"Target")
-        axes.plot(t, final[:, 0], 'k-', linewidth=2, label=r"Fit Ensemble")
-        axes.plot(t, final[:, 1], 'k-', linewidth=2, label=r"Fit Target")
+        axes.plot(t, dataAll[:, 0], "r*", label=r"Ensemble")
+        axes.plot(t, dataAll[:, 1], "b*", label=r"Support")
+        axes.plot(t, dataAll[:, 2], "g*", label=r"Target")
+        axes.plot(t, final[:, 0], "k-", linewidth=2, label=r"Fit Ensemble")
+        axes.plot(t, final[:, 1], "k-", linewidth=2, label=r"Fit Target")
 
         axes.set_ylim(0, max(ListRed))
         axes.set_xlim(0, max(ListTime))
@@ -570,24 +631,38 @@ def getPopulationLifetime(atom, n, l, j,
         print("\n")
         report_fit(result)
         print("\n")
-        print("Lifetime Ensemble: %.6f us \nLifetime Target: %.6f us"
-              % (LifetimeEnsemble, LifetimeTarget))
+        print(
+            "Lifetime Ensemble: %.6f us \nLifetime Target: %.6f us"
+            % (LifetimeEnsemble, LifetimeTarget)
+        )
 
     if plotting == 4:
+
         def f(xs, t, ps):
             """Lotka-Volterra predator-prey model."""
             try:
-                gammaTargetSpont = ps['gammaTargetSpont'].value
-                gammaTargetBBR = ps['gammaTargetBBR'].value
-                gammaSupportSpont = ps['gammaSupportSpont'].value
-                gammaSupportBBR = ps['gammaSupportBBR'].value
+                gammaTargetSpont = ps["gammaTargetSpont"].value
+                gammaTargetBBR = ps["gammaTargetBBR"].value
+                gammaSupportSpont = ps["gammaSupportSpont"].value
+                gammaSupportBBR = ps["gammaSupportBBR"].value
             except Exception:
-                gammaTargetSpont, gammaTargetBBR, gammaSupportSpont, gammaSupportBBR = ps
+                (
+                    gammaTargetSpont,
+                    gammaTargetBBR,
+                    gammaSupportSpont,
+                    gammaSupportBBR,
+                ) = ps
 
             x, y, z = xs
-            return [+gammaTargetSpont * z + gammaSupportSpont *y,
-                    -gammaSupportSpont*y - gammaSupportBBR*y + gammaTargetBBR*z,
-                    -gammaTargetSpont*z - gammaTargetBBR*z + gammaSupportBBR*y]
+            return [
+                +gammaTargetSpont * z + gammaSupportSpont * y,
+                -gammaSupportSpont * y
+                - gammaSupportBBR * y
+                + gammaTargetBBR * z,
+                -gammaTargetSpont * z
+                - gammaTargetBBR * z
+                + gammaSupportBBR * y,
+            ]
 
         def g(t, x0, ps):
             """
@@ -597,7 +672,7 @@ def getPopulationLifetime(atom, n, l, j,
             return x
 
         def residual(ps, ts, data):
-            x0 = ps['x0'].value, ps['y0'].value, ps['z0'].value
+            x0 = ps["x0"].value, ps["y0"].value, ps["z0"].value
             model = g(ts, x0, ps)
             return (model - data).ravel()
 
@@ -616,29 +691,28 @@ def getPopulationLifetime(atom, n, l, j,
 
         # set parameters incluing bounds
         params = Parameters()
-        params.add('x0', value=0, vary=False)
-        params.add('y0', value=0, vary=False)
-        params.add('z0', value=max(ListGreen), vary=False)
-        params.add('gammaTargetSpont', value=0.02, min=0., max=1.)
-        params.add('gammaTargetBBR', value=0.02, min=0., max=1.)
-        params.add('gammaSupportSpont', value=0.02, min=0., max=1.)
-        params.add('gammaSupportBBR', value=0.001, min=0., max=1.)
+        params.add("x0", value=0, vary=False)
+        params.add("y0", value=0, vary=False)
+        params.add("z0", value=max(ListGreen), vary=False)
+        params.add("gammaTargetSpont", value=0.02, min=0.0, max=1.0)
+        params.add("gammaTargetBBR", value=0.02, min=0.0, max=1.0)
+        params.add("gammaSupportSpont", value=0.02, min=0.0, max=1.0)
+        params.add("gammaSupportBBR", value=0.001, min=0.0, max=1.0)
 
         # fit model and find predicted values
-        result = minimize(residual, params, args=(
-            t, data), method='leastsq')
+        result = minimize(residual, params, args=(t, data), method="leastsq")
         final = data + result.residual.reshape(data.shape)
 
         # Grafico
         fig, axes = plt.subplots(1, 1, figsize=(10, 6))
 
-        axes.plot(t, data[:, 0], 'm*',label=r"Ground")
-        axes.plot(t, ListRed, 'r*', label=r"Ensemble")
-        axes.plot(t, data[:, 1], 'b*',label=r"Support")
-        axes.plot(t, data[:, 2], 'g*',label=r"Target")
-        axes.plot(t, final[:, 0], 'k-', linewidth=2, label=r"Fit Ground")
-        axes.plot(t, final[:, 1], 'k-', linewidth=2, label=r"Fit Support")
-        axes.plot(t, final[:, 2], 'k-', linewidth=2, label=r"Fit Target")
+        axes.plot(t, data[:, 0], "m*", label=r"Ground")
+        axes.plot(t, ListRed, "r*", label=r"Ensemble")
+        axes.plot(t, data[:, 1], "b*", label=r"Support")
+        axes.plot(t, data[:, 2], "g*", label=r"Target")
+        axes.plot(t, final[:, 0], "k-", linewidth=2, label=r"Fit Ground")
+        axes.plot(t, final[:, 1], "k-", linewidth=2, label=r"Fit Support")
+        axes.plot(t, final[:, 2], "k-", linewidth=2, label=r"Fit Target")
 
         axes.set_ylim(0, max(ListRed))
         axes.set_xlim(0, max(ListTime))
@@ -654,6 +728,6 @@ def getPopulationLifetime(atom, n, l, j,
         report_fit(result)
 
     # It returns the time elapsed
-    print('\nIt took', time.time() - start, 'seconds.')
+    print("\nIt took", time.time() - start, "seconds.")
 
     return

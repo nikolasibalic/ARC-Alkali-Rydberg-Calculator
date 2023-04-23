@@ -18,6 +18,7 @@ import csv
 import gzip
 from math import log, exp, sqrt
 from mpmath import angerj
+
 # for web-server execution, uncomment the following two lines
 # import matplotlib
 # matplotlib.use("Agg")
@@ -41,23 +42,23 @@ from numpy import floor
 
 import sys
 import os
+
 if sys.version_info > (2,):
     xrange = range
 
 import pickle
+
 sqlite3.register_adapter(np.float64, float)
 sqlite3.register_adapter(np.float32, float)
 sqlite3.register_adapter(np.int64, int)
 sqlite3.register_adapter(np.int32, int)
 
-DPATH = os.path.join(os.path.expanduser('~'), '.arc-data')
+DPATH = os.path.join(os.path.expanduser("~"), ".arc-data")
 __arc_data_version__ = 10
 
 
 def setup_data_folder():
-    """ Setup the data folder in the users home directory.
-
-    """
+    """Setup the data folder in the users home directory."""
     if not os.path.exists(DPATH):
         os.makedirs(DPATH)
 
@@ -67,12 +68,13 @@ def setup_data_folder():
     if os.path.exists(versionFile):
         with open(versionFile, "r") as f:
             version = int(f.readline())
-        if (version == __arc_data_version__):
+        if version == __arc_data_version__:
             copyDataLocally = False
 
     if copyDataLocally:
-        dataFolder = os.path.join(os.path.dirname(
-            os.path.realpath(__file__)), "data")
+        dataFolder = os.path.join(
+            os.path.dirname(os.path.realpath(__file__)), "data"
+        )
         for fn in os.listdir(dataFolder):
             if os.path.isfile(os.path.join(dataFolder, fn)):
                 shutil.copy(os.path.join(dataFolder, fn), DPATH)
@@ -93,29 +95,29 @@ def setup_data_folder():
 
 class AlkaliAtom(object):
     """
-        Implements general calculations for alkali atoms.
+    Implements general calculations for alkali atoms.
 
-        This abstract class implements general calculations methods.
+    This abstract class implements general calculations methods.
 
-        Args:
-            preferQuantumDefects (bool):
-                Use quantum defects for energy level calculations. If False,
-                uses NIST ASD values where available. If True, uses quantum
-                defects for energy calculations for principal quantum numbers
-                equal or above :obj:`minQuantumDefectN` which is specified for
-                each element separately. For principal quantum numbers below
-                this value, NIST ASD values are used, since quantum defects
-                don't reproduce well low-lying states. Default is True.
-            cpp_numerov (bool):
-                should the wavefunction be calculated with Numerov algorithm
-                implemented in C++; if False, it uses pure Python
-                implementation that is much slower. Default is True.
+    Args:
+        preferQuantumDefects (bool):
+            Use quantum defects for energy level calculations. If False,
+            uses NIST ASD values where available. If True, uses quantum
+            defects for energy calculations for principal quantum numbers
+            equal or above :obj:`minQuantumDefectN` which is specified for
+            each element separately. For principal quantum numbers below
+            this value, NIST ASD values are used, since quantum defects
+            don't reproduce well low-lying states. Default is True.
+        cpp_numerov (bool):
+            should the wavefunction be calculated with Numerov algorithm
+            implemented in C++; if False, it uses pure Python
+            implementation that is much slower. Default is True.
 
     """
 
     gS = 2.0023193043737  # : Electron Spin g-factor [Steck]
-    gL = 1.0          #: Electron Orbital g-factor
-    gI = 0.0          #: Nuclear g-factor
+    gL = 1.0  #: Electron Orbital g-factor
+    gI = 0.0  #: Nuclear g-factor
 
     # ALL PARAMETERS ARE IN ATOMIC UNITS (Hatree)
     alpha = physical_constants["fine-structure constant"][0]
@@ -124,9 +126,9 @@ class AlkaliAtom(object):
     #: different l (electron angular momentum)
     a1, a2, a3, a4, rc = [0], [0], [0], [0], [0]
 
-    alphaC = 0.0    #: Core polarizability
-    Z = 0.0       #: Atomic number
-    I = 0.0       #: Nuclear spin
+    alphaC = 0.0  #: Core polarizability
+    Z = 0.0  #: Atomic number
+    I = 0.0  #: Nuclear spin
 
     #: state energies from NIST values
     #: sEnergy [n,l] = state energy for n, l, j = l-1/2
@@ -138,16 +140,22 @@ class AlkaliAtom(object):
     #: Contains list of modified Rydberg-Ritz coefficients for calculating
     #: quantum defects for [[ :math:`S_{1/2},P_{1/2},D_{3/2},F_{5/2}`],
     #: [ :math:`S_{1/2},P_{3/2},D_{5/2},F_{7/2}`]]."""
-    quantumDefect = [[[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
 
     #: location of stored NIST values of measured energy levels in eV
     levelDataFromNIST = ""
@@ -177,7 +185,7 @@ class AlkaliAtom(object):
     #: implemented in C++
     cpp_numerov = True
 
-    mass = 0.  #: atomic mass in kg
+    mass = 0.0  #: atomic mass in kg
     abundance = 1.0  #: relative isotope abundance
 
     elementName = "elementName"  #: Human-readable element name
@@ -206,39 +214,52 @@ class AlkaliAtom(object):
 
         if self.cpp_numerov:
             from .arc_c_extensions import NumerovWavefunction
+
             self.NumerovWavefunction = NumerovWavefunction
 
         # load dipole matrix elements previously calculated
         data = []
-        if (self.dipoleMatrixElementFile != ""):
+        if self.dipoleMatrixElementFile != "":
             if preferQuantumDefects is False:
-                self.dipoleMatrixElementFile = \
+                self.dipoleMatrixElementFile = (
                     "NIST_" + self.dipoleMatrixElementFile
+                )
             try:
-                data = np.load(os.path.join(self.dataFolder,
-                                            self.dipoleMatrixElementFile),
-                               encoding='latin1', allow_pickle=True)
+                data = np.load(
+                    os.path.join(self.dataFolder, self.dipoleMatrixElementFile),
+                    encoding="latin1",
+                    allow_pickle=True,
+                )
             except IOError as e:
-                print("Error reading dipoleMatrixElement File "
-                      + os.path.join(self.dataFolder, self.dipoleMatrixElementFile))
+                print(
+                    "Error reading dipoleMatrixElement File "
+                    + os.path.join(
+                        self.dataFolder, self.dipoleMatrixElementFile
+                    )
+                )
                 print(e)
         # save to SQLite database
         try:
-            c.execute('''SELECT COUNT(*) FROM sqlite_master
-                            WHERE type='table' AND name='dipoleME';''')
-            if (c.fetchone()[0] == 0):
+            c.execute(
+                """SELECT COUNT(*) FROM sqlite_master
+                            WHERE type='table' AND name='dipoleME';"""
+            )
+            if c.fetchone()[0] == 0:
                 # create table
-                c.execute('''CREATE TABLE IF NOT EXISTS dipoleME
+                c.execute(
+                    """CREATE TABLE IF NOT EXISTS dipoleME
                  (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED,
                  j1_x2 TINYINT UNSIGNED,
                  n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED,
                  j2_x2 TINYINT UNSIGNED,
                  dme DOUBLE,
                  PRIMARY KEY (n1,l1,j1_x2,n2,l2,j2_x2)
-                ) ''')
-                if (len(data) > 0):
+                ) """
+                )
+                if len(data) > 0:
                     c.executemany(
-                        'INSERT INTO dipoleME VALUES (?,?,?,?,?,?,?)', data)
+                        "INSERT INTO dipoleME VALUES (?,?,?,?,?,?,?)", data
+                    )
                 self.conn.commit()
         except sqlite3.Error as e:
             print("Error while loading precalculated values into the database")
@@ -247,46 +268,59 @@ class AlkaliAtom(object):
 
         # load quadrupole matrix elements previously calculated
         data = []
-        if (self.quadrupoleMatrixElementFile != ""):
+        if self.quadrupoleMatrixElementFile != "":
             if preferQuantumDefects is False:
-                self.quadrupoleMatrixElementFile = \
+                self.quadrupoleMatrixElementFile = (
                     "NIST_" + self.quadrupoleMatrixElementFile
+                )
             try:
-                data = np.load(os.path.join(self.dataFolder,
-                                            self.quadrupoleMatrixElementFile),
-                               encoding='latin1', allow_pickle=True)
+                data = np.load(
+                    os.path.join(
+                        self.dataFolder, self.quadrupoleMatrixElementFile
+                    ),
+                    encoding="latin1",
+                    allow_pickle=True,
+                )
 
             except IOError as e:
-                print("Error reading quadrupoleMatrixElementFile File "
-                      + os.path.join(self.dataFolder,
-                                     self.quadrupoleMatrixElementFile))
+                print(
+                    "Error reading quadrupoleMatrixElementFile File "
+                    + os.path.join(
+                        self.dataFolder, self.quadrupoleMatrixElementFile
+                    )
+                )
                 print(e)
         # save to SQLite database
         try:
-            c.execute('''SELECT COUNT(*) FROM sqlite_master
-                            WHERE type='table' AND name='quadrupoleME';''')
-            if (c.fetchone()[0] == 0):
+            c.execute(
+                """SELECT COUNT(*) FROM sqlite_master
+                            WHERE type='table' AND name='quadrupoleME';"""
+            )
+            if c.fetchone()[0] == 0:
                 # create table
-                c.execute('''CREATE TABLE IF NOT EXISTS quadrupoleME
+                c.execute(
+                    """CREATE TABLE IF NOT EXISTS quadrupoleME
                  (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED,
                  j1_x2 TINYINT UNSIGNED,
                  n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED,
                  j2_x2 TINYINT UNSIGNED,
                  qme DOUBLE,
                  PRIMARY KEY (n1,l1,j1_x2,n2,l2,j2_x2)
-                ) ''')
-                if (len(data) > 0):
+                ) """
+                )
+                if len(data) > 0:
                     c.executemany(
-                        'INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?,?)',
-                        data)
+                        "INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?,?)", data
+                    )
                 self.conn.commit()
         except sqlite3.Error as e:
             print("Error while loading precalculated values into the database")
             print(e)
             exit()
 
-        self.sEnergy = np.array([[0.0] * (self.NISTdataLevels + 1)]
-                                * (self.NISTdataLevels + 1))
+        self.sEnergy = np.array(
+            [[0.0] * (self.NISTdataLevels + 1)] * (self.NISTdataLevels + 1)
+        )
 
         # Always load NIST data on measured energy levels;
         # Even when user wants to use quantum defects, qunatum defects for
@@ -294,18 +328,21 @@ class AlkaliAtom(object):
         # minQuantumDefectN cut-off (defined for each element separately)
         # getEnergy(...) will always return measured,
         # not calculated energy levels
-        if (self.levelDataFromNIST == ""):
+        if self.levelDataFromNIST == "":
             print(
                 "NIST level data file not specified."
-                + "Only quantum defects will be used.")
+                + "Only quantum defects will be used."
+            )
         else:
             levels = self._parseLevelsFromNIST(
-                os.path.join(self.dataFolder, self.levelDataFromNIST))
+                os.path.join(self.dataFolder, self.levelDataFromNIST)
+            )
             br = 0
 
             while br < len(levels):
-                self._addEnergy(levels[br][0], levels[br]
-                                [1], levels[br][2], levels[br][3])
+                self._addEnergy(
+                    levels[br][0], levels[br][1], levels[br][2], levels[br][3]
+                )
                 br = br + 1
 
         # read Literature values for dipole matrix elements
@@ -316,113 +353,131 @@ class AlkaliAtom(object):
 
     def _databaseInit(self):
         # SQL connection and cursor
-        self.conn = sqlite3.connect(os.path.join(self.dataFolder,
-                                                 self.precalculatedDB))
+        self.conn = sqlite3.connect(
+            os.path.join(self.dataFolder, self.precalculatedDB)
+        )
 
     def getPressure(self, temperature):
-        """ Vapour pressure (in Pa) at given temperature
+        """Vapour pressure (in Pa) at given temperature
 
-            Args:
-                temperature (float): temperature in K
-            Returns:
-                float: vapour pressure in Pa
+        Args:
+            temperature (float): temperature in K
+        Returns:
+            float: vapour pressure in Pa
         """
-        print("Error: getPressure to-be implement in child class (otherwise "
-              + "this call is invalid for the specified atom")
+        print(
+            "Error: getPressure to-be implement in child class (otherwise "
+            + "this call is invalid for the specified atom"
+        )
         exit()
 
     def getNumberDensity(self, temperature):
-        """ Atom number density at given temperature
+        """Atom number density at given temperature
 
-            See `calculation of basic properties example snippet`_.
+        See `calculation of basic properties example snippet`_.
 
-            .. _`calculation of basic properties example snippet`:
-                ./Rydberg_atoms_a_primer.html#General-atomic-properties
+        .. _`calculation of basic properties example snippet`:
+            ./Rydberg_atoms_a_primer.html#General-atomic-properties
 
-            Args:
-                temperature (float): temperature in K
-            Returns:
-                float: atom concentration in :math:`1/m^3`
+        Args:
+            temperature (float): temperature in K
+        Returns:
+            float: atom concentration in :math:`1/m^3`
         """
         return self.getPressure(temperature) / (C_k * temperature)
 
     def getAverageInteratomicSpacing(self, temperature):
         """
-            Returns average interatomic spacing in atomic vapour
+        Returns average interatomic spacing in atomic vapour
 
-            See `calculation of basic properties example snippet`_.
+        See `calculation of basic properties example snippet`_.
 
-            .. _`calculation of basic properties example snippet`:
-                ./Rydberg_atoms_a_primer.html#General-atomic-properties
+        .. _`calculation of basic properties example snippet`:
+            ./Rydberg_atoms_a_primer.html#General-atomic-properties
 
-            Args:
-                temperature (float): temperature (K) of the atomic vapour
+        Args:
+            temperature (float): temperature (K) of the atomic vapour
 
-            Returns:
-                float: average interatomic spacing in m
+        Returns:
+            float: average interatomic spacing in m
         """
-        return (5. / 9.) * self.getNumberDensity(temperature)**(-1. / 3.)
+        return (5.0 / 9.0) * self.getNumberDensity(temperature) ** (-1.0 / 3.0)
 
     def corePotential(self, l, r):
-        """ core potential felt by valence electron
+        """core potential felt by valence electron
 
-            For more details about derivation of model potential see
-            Ref. [#marinescu]_.
+        For more details about derivation of model potential see
+        Ref. [#marinescu]_.
 
-            Args:
-                l (int): orbital angular momentum
-                r (float): distance from the nucleus (in a.u.)
-            Returns:
-                float: core potential felt by valence electron (in a.u. ???)
+        Args:
+            l (int): orbital angular momentum
+            r (float): distance from the nucleus (in a.u.)
+        Returns:
+            float: core potential felt by valence electron (in a.u. ???)
 
-            References:
+        References:
 
-                .. [#marinescu] M. Marinescu, H. R. Sadeghpour, and A. Dalgarno
-                    PRA **49**, 982 (1994),
-                    https://doi.org/10.1103/PhysRevA.49.982
+            .. [#marinescu] M. Marinescu, H. R. Sadeghpour, and A. Dalgarno
+                PRA **49**, 982 (1994),
+                https://doi.org/10.1103/PhysRevA.49.982
         """
 
-        return -self.effectiveCharge(l, r) / r - self.alphaC / (2 * r**4) * \
-            (1 - exp(-(r / self.rc[l])**6))
+        return -self.effectiveCharge(l, r) / r - self.alphaC / (2 * r**4) * (
+            1 - exp(-((r / self.rc[l]) ** 6))
+        )
 
     def effectiveCharge(self, l, r):
-        """ effective charge of the core felt by valence electron
+        """effective charge of the core felt by valence electron
 
-            For more details about derivation of model potential see
-            Ref. [#marinescu]_.
+        For more details about derivation of model potential see
+        Ref. [#marinescu]_.
 
-            Args:
-                l (int): orbital angular momentum
-                r (float): distance from the nucleus (in a.u.)
-            Returns:
-                float: effective charge (in a.u.)
-         """
-        return 1.0 + (self.Z - 1) * exp(-self.a1[l] * r) - \
-            r * (self.a3[l] + self.a4[l] * r) * exp(-self.a2[l] * r)
+        Args:
+            l (int): orbital angular momentum
+            r (float): distance from the nucleus (in a.u.)
+        Returns:
+            float: effective charge (in a.u.)
+        """
+        return (
+            1.0
+            + (self.Z - 1) * exp(-self.a1[l] * r)
+            - r * (self.a3[l] + self.a4[l] * r) * exp(-self.a2[l] * r)
+        )
 
     def potential(self, l, s, j, r):
-        """ returns total potential that electron feels
+        """returns total potential that electron feels
 
-            Total potential = core potential + Spin-Orbit interaction
+        Total potential = core potential + Spin-Orbit interaction
 
-            Args:
-                l (int): orbital angular momentum
-                s (float): spin angular momentum
-                j (float): total angular momentum
-                r (float): distance from the nucleus (in a.u.)
-            Returns:
-                float: potential (in a.u.)
+        Args:
+            l (int): orbital angular momentum
+            s (float): spin angular momentum
+            j (float): total angular momentum
+            r (float): distance from the nucleus (in a.u.)
+        Returns:
+            float: potential (in a.u.)
         """
         if l < 4:
-            return self.corePotential(l, r) + self.alpha**2 / (2.0 * r**3) * \
-                (j * (j + 1.0) - l * (l + 1.0) - s * (s + 1)) / 2.0
+            return (
+                self.corePotential(l, r)
+                + self.alpha**2
+                / (2.0 * r**3)
+                * (j * (j + 1.0) - l * (l + 1.0) - s * (s + 1))
+                / 2.0
+            )
         else:
             # act as if it is a Hydrogen atom
-            return -1. / r + self.alpha**2 / (2.0 * r**3) * \
-                (j * (j + 1.0) - l * (l + 1.0) - s * (s + 1)) / 2.0
+            return (
+                -1.0 / r
+                + self.alpha**2
+                / (2.0 * r**3)
+                * (j * (j + 1.0) - l * (l + 1.0) - s * (s + 1))
+                / 2.0
+            )
 
-    def radialWavefunction(self, l, s, j, stateEnergy,
-                           innerLimit, outerLimit, step):
+    def radialWavefunction(
+        self, l, s, j, stateEnergy, innerLimit, outerLimit, step
+    ):
         """
         Radial part of electron wavefunction
 
@@ -466,25 +521,52 @@ class AlkaliAtom(object):
 
         """
         innerLimit = max(
-            4. * step, innerLimit)  # prevent divergence due to hitting 0
+            4.0 * step, innerLimit
+        )  # prevent divergence due to hitting 0
         if self.cpp_numerov:
             # efficiant implementation in C
-            if (l < 4):
+            if l < 4:
                 d = self.NumerovWavefunction(
-                    innerLimit, outerLimit,
-                    step, 0.01, 0.01,
-                    l, s, j, stateEnergy, self.alphaC, self.alpha,
+                    innerLimit,
+                    outerLimit,
+                    step,
+                    0.01,
+                    0.01,
+                    l,
+                    s,
+                    j,
+                    stateEnergy,
+                    self.alphaC,
+                    self.alpha,
                     self.Z,
-                    self.a1[l], self.a2[l], self.a3[l], self.a4[l],
+                    self.a1[l],
+                    self.a2[l],
+                    self.a3[l],
+                    self.a4[l],
                     self.rc[l],
-                    (self.mass - C_m_e) / self.mass)
+                    (self.mass - C_m_e) / self.mass,
+                )
             else:
                 d = self.NumerovWavefunction(
-                    innerLimit, outerLimit,
-                    step, 0.01, 0.01,
-                    l, s, j, stateEnergy, self.alphaC, self.alpha,
-                    self.Z, 0., 0., 0., 0., 0.,
-                    (self.mass - C_m_e) / self.mass)
+                    innerLimit,
+                    outerLimit,
+                    step,
+                    0.01,
+                    0.01,
+                    l,
+                    s,
+                    j,
+                    stateEnergy,
+                    self.alphaC,
+                    self.alpha,
+                    self.Z,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    (self.mass - C_m_e) / self.mass,
+                )
 
             psi_r = d[0]
             r = d[1]
@@ -496,13 +578,14 @@ class AlkaliAtom(object):
 
             def potential(x):
                 r = x * x
-                return -3. / (4. * r) + 4. * r * (
-                    2. * mu * (stateEnergy - self.potential(l, s, j, r))
+                return -3.0 / (4.0 * r) + 4.0 * r * (
+                    2.0 * mu * (stateEnergy - self.potential(l, s, j, r))
                     - l * (l + 1) / (r**2)
                 )
 
-            r, psi_r = NumerovBack(innerLimit, outerLimit, potential,
-                                   step, 0.01, 0.01)
+            r, psi_r = NumerovBack(
+                innerLimit, outerLimit, potential, step, 0.01, 0.01
+            )
 
             suma = np.trapz(psi_r**2, x=r)
             psi_r = psi_r / (sqrt(suma))
@@ -511,28 +594,27 @@ class AlkaliAtom(object):
 
     def _parseLevelsFromNIST(self, fileData):
         """
-            Parses the level energies from file listing the NIST ASD data
+        Parses the level energies from file listing the NIST ASD data
 
-            Args:
-                fileData (str): path to the file containing NIST ASD data for
-                    the element
+        Args:
+            fileData (str): path to the file containing NIST ASD data for
+                the element
         """
         f = open(fileData, "r")
         l = 0
         n = 0
         levels = []
         for line in f:
-
-            line = re.sub('[\[\]]', '', line)
+            line = re.sub("[\[\]]", "", line)
             pattern = "\.\d*[spdfgh]"
             pattern2 = "\|\s+\d*/"
             pattern3 = "/\d* \|"
             pattern4 = "\| *\d*\.\d* *\|"
             match = re.search(pattern, line)
             if match is not None:
-                n = int(line[match.start() + 1:match.end() - 1])
+                n = int(line[match.start() + 1 : match.end() - 1])
             if match is not None:
-                ch = line[match.end() - 1:match.end()]
+                ch = line[match.end() - 1 : match.end()]
                 if ch == "s":
                     l = 0
                 elif ch == "p":
@@ -551,25 +633,25 @@ class AlkaliAtom(object):
 
             match = re.search(pattern2, line)
             if match is not None:
-                br1 = float(line[match.start() + 2:match.end() - 1])
+                br1 = float(line[match.start() + 2 : match.end() - 1])
                 match = re.search(pattern3, line)
-                br2 = float(line[match.start() + 1:match.end() - 2])
+                br2 = float(line[match.start() + 1 : match.end() - 2])
                 match = re.search(pattern4, line)
-                energyValue = float(line[match.start() + 1:match.end() - 1])
+                energyValue = float(line[match.start() + 1 : match.end() - 1])
                 levels.append([n, l, br1 / br2, energyValue])
         f.close()
         return levels
 
     def _addEnergy(self, n, l, j, energyNIST):
         """
-            Adding energy levels
+        Adding energy levels
 
-            Accepts energy level relative to **ground state**, and
-            saves energy levels, relative to the **ionization treshold**.
+        Accepts energy level relative to **ground state**, and
+        saves energy levels, relative to the **ionization treshold**.
 
-            Args:
-                energyNIST (float): energy relative to
-                    the nonexcited level (= 0 eV)
+        Args:
+            energyNIST (float): energy relative to
+                the nonexcited level (= 0 eV)
         """
         #
         if abs(j - (l - 0.5)) < 0.001:
@@ -581,118 +663,126 @@ class AlkaliAtom(object):
 
     def getTransitionWavelength(self, n1, l1, j1, n2, l2, j2, s=0.5, s2=None):
         """
-            Calculated transition wavelength (in vacuum) in m.
+        Calculated transition wavelength (in vacuum) in m.
 
-            Returned values is given relative to the centre of gravity of the
-            hyperfine-split states.
+        Returned values is given relative to the centre of gravity of the
+        hyperfine-split states.
 
-            Args:
-                n1 (int): principal quantum number of the state
-                    **from** which we are going
-                l1 (int): orbital angular momentum of the state
-                    **from** which we are going
-                j1 (float): total angular momentum of the state
-                    **from** which we are going
-                n2 (int): principal quantum number of the state
-                    **to** which we are going
-                l2 (int): orbital angular momentum of the state
-                    **to** which we are going
-                j2 (float): total angular momentum of the state
-                    **to** which we are going
-                s (float): optional, spin of the intial state
-                    (for Alkali this is fixed to 0.5)
-                s2 (float): optional, spin of the final state.
-                    If not set, defaults to same value as :obj:`s`
+        Args:
+            n1 (int): principal quantum number of the state
+                **from** which we are going
+            l1 (int): orbital angular momentum of the state
+                **from** which we are going
+            j1 (float): total angular momentum of the state
+                **from** which we are going
+            n2 (int): principal quantum number of the state
+                **to** which we are going
+            l2 (int): orbital angular momentum of the state
+                **to** which we are going
+            j2 (float): total angular momentum of the state
+                **to** which we are going
+            s (float): optional, spin of the intial state
+                (for Alkali this is fixed to 0.5)
+            s2 (float): optional, spin of the final state.
+                If not set, defaults to same value as :obj:`s`
 
-            Returns:
-                float:
-                    transition wavelength (in m). If the returned value is
-                    negative, level from which we are going is **above**
-                    the level to which we are going.
+        Returns:
+            float:
+                transition wavelength (in m). If the returned value is
+                negative, level from which we are going is **above**
+                the level to which we are going.
         """
         if s2 is None:
             s2 = s
-        return (C_h * C_c) / ((self.getEnergy(n2, l2, j2, s=s2)
-                               - self.getEnergy(n1, l1, j1, s=s)) * C_e)
+        return (C_h * C_c) / (
+            (self.getEnergy(n2, l2, j2, s=s2) - self.getEnergy(n1, l1, j1, s=s))
+            * C_e
+        )
 
     def getTransitionFrequency(self, n1, l1, j1, n2, l2, j2, s=0.5, s2=None):
         """
-            Calculated transition frequency in Hz
+        Calculated transition frequency in Hz
 
-            Returned values is given relative to the centre of gravity of the
-            hyperfine-split states.
+        Returned values is given relative to the centre of gravity of the
+        hyperfine-split states.
 
-            Args:
-                n1 (int): principal quantum number of the state
-                    **from** which we are going
-                l1 (int): orbital angular momentum of the state
-                    **from** which we are going
-                j1 (float): total angular momentum of the state
-                    **from** which we are going
-                n2 (int): principal quantum number of the state
-                    **to** which we are going
-                l2 (int): orbital angular momentum of the state
-                    **to** which we are going
-                j2 (float): total angular momentum of the state
-                    **to** which we are going
-                s (float): optional, spin of the intial state
-                    (for Alkali this is fixed to 0.5)
-                s2 (float): optional, spin of the final state
-                    If not set, defaults to the same value as :obj:`s`
+        Args:
+            n1 (int): principal quantum number of the state
+                **from** which we are going
+            l1 (int): orbital angular momentum of the state
+                **from** which we are going
+            j1 (float): total angular momentum of the state
+                **from** which we are going
+            n2 (int): principal quantum number of the state
+                **to** which we are going
+            l2 (int): orbital angular momentum of the state
+                **to** which we are going
+            j2 (float): total angular momentum of the state
+                **to** which we are going
+            s (float): optional, spin of the intial state
+                (for Alkali this is fixed to 0.5)
+            s2 (float): optional, spin of the final state
+                If not set, defaults to the same value as :obj:`s`
 
-            Returns:
-                float:
-                    transition frequency (in Hz). If the returned value is
-                    negative, level from which we are going is **above**
-                    the level to which we are going.
+        Returns:
+            float:
+                transition frequency (in Hz). If the returned value is
+                negative, level from which we are going is **above**
+                the level to which we are going.
         """
         if s2 is None:
             s2 = s
-        return (self.getEnergy(n2, l2, j2, s=s2)
-                - self.getEnergy(n1, l1, j1, s=s)) * C_e / C_h
+        return (
+            (self.getEnergy(n2, l2, j2, s=s2) - self.getEnergy(n1, l1, j1, s=s))
+            * C_e
+            / C_h
+        )
 
     def getEnergy(self, n, l, j, s=0.5):
         """
-            Energy of the level relative to the ionisation level (in eV)
+        Energy of the level relative to the ionisation level (in eV)
 
-            Returned energies are with respect to the center of gravity of the
-            hyperfine-split states.
-            If `preferQuantumDefects` =False (set during initialization)
-            program will try use NIST energy value, if such exists,
-            falling back to energy calculation with quantum defects if
-            the measured value doesn't exist. For `preferQuantumDefects` =True,
-            program will calculate energies from quantum defects
-            (useful for comparing quantum defect calculations with measured
-            energy level values) if the principal quantum number of the
-            requested state is larger than the minimal quantum principal quantum
-            number `self.minQuantumDefectN` which sets minimal quantum number
-            for which quantum defects still give good estimate of state energy
-            (below this value saved energies will be used if existing).
+        Returned energies are with respect to the center of gravity of the
+        hyperfine-split states.
+        If `preferQuantumDefects` =False (set during initialization)
+        program will try use NIST energy value, if such exists,
+        falling back to energy calculation with quantum defects if
+        the measured value doesn't exist. For `preferQuantumDefects` =True,
+        program will calculate energies from quantum defects
+        (useful for comparing quantum defect calculations with measured
+        energy level values) if the principal quantum number of the
+        requested state is larger than the minimal quantum principal quantum
+        number `self.minQuantumDefectN` which sets minimal quantum number
+        for which quantum defects still give good estimate of state energy
+        (below this value saved energies will be used if existing).
 
-            Args:
-                n (int): principal quantum number
-                l (int): orbital angular momentum
-                j (float): total angular momentum
-                s (float): optional, total spin angular momentum. Default value
-                    of 0.5 is correct for Alkali atoms, and has to be specified
-                    explicitly for divalent atoms.
+        Args:
+            n (int): principal quantum number
+            l (int): orbital angular momentum
+            j (float): total angular momentum
+            s (float): optional, total spin angular momentum. Default value
+                of 0.5 is correct for Alkali atoms, and has to be specified
+                explicitly for divalent atoms.
 
-            Returns:
-                float: state energy (eV)
+        Returns:
+            float: state energy (eV)
         """
         if l >= n:
             raise ValueError(
-                "Requested energy for state l=%d >= n=%d !" % (l, n))
+                "Requested energy for state l=%d >= n=%d !" % (l, n)
+            )
 
         # use NIST data ?
-        if (not self.preferQuantumDefects
-            or n < self.minQuantumDefectN) and (n <= self.NISTdataLevels) and \
-                (abs(self._getSavedEnergy(n, l, j, s=s)) > 1e-8):
+        if (
+            (not self.preferQuantumDefects or n < self.minQuantumDefectN)
+            and (n <= self.NISTdataLevels)
+            and (abs(self._getSavedEnergy(n, l, j, s=s)) > 1e-8)
+        ):
             return self._getSavedEnergy(n, l, j, s=s)
 
         # else, use quantum defects
         defect = self.getQuantumDefect(n, l, j, s=s)
-        return -self.scaledRydbergConstant / ((n - defect)**2)
+        return -self.scaledRydbergConstant / ((n - defect) ** 2)
 
     def _getSavedEnergy(self, n, l, j, s=0.5):
         if abs(j - (l - 0.5)) < 0.001:
@@ -702,57 +792,58 @@ class AlkaliAtom(object):
             # j =l+1/2
             return self.sEnergy[l, n]
         else:
-            raise ValueError("j (=%.1f) is not equal to l+1/2 nor l-1/2 (l=%d)"
-                             % (j, l))
+            raise ValueError(
+                "j (=%.1f) is not equal to l+1/2 nor l-1/2 (l=%d)" % (j, l)
+            )
 
     def getQuantumDefect(self, n, l, j, s=0.5):
         """
-            Quantum defect of the level.
+        Quantum defect of the level.
 
-            For an example, see `Rydberg energy levels example snippet`_.
+        For an example, see `Rydberg energy levels example snippet`_.
 
-            .. _`Rydberg energy levels example snippet`:
-                ./Rydberg_atoms_a_primer.html#Rydberg-Atom-Energy-Levels
+        .. _`Rydberg energy levels example snippet`:
+            ./Rydberg_atoms_a_primer.html#Rydberg-Atom-Energy-Levels
 
-            Args:
-                n (int): principal quantum number
-                l (int): orbital angular momentum
-                j (float): total angular momentum
-                s (float): (optional). Total spin angular momentum.
-                    Default value of 0.5 correct for Alkali atoms. For divalent
-                    atoms it has to be explicitly defined.
+        Args:
+            n (int): principal quantum number
+            l (int): orbital angular momentum
+            j (float): total angular momentum
+            s (float): (optional). Total spin angular momentum.
+                Default value of 0.5 correct for Alkali atoms. For divalent
+                atoms it has to be explicitly defined.
 
-            Returns:
-                float: quantum defect
+        Returns:
+            float: quantum defect
         """
         defect = 0.0
-        if (l < 5):
+        if l < 5:
             # find correct part in table of quantum defects
             modifiedRRcoef = self.quantumDefect[int(floor(s) + s + j - l)][l]
-            if (l < 3 and abs(modifiedRRcoef[0]) < 1e-9
-                    and self.Z != 1):
+            if l < 3 and abs(modifiedRRcoef[0]) < 1e-9 and self.Z != 1:
                 # it's not Hydrogen but for l in {s,p,d} quantum defect is 0
-                raise ValueError("Quantum defects for requested state "
-                                 + ("(n = %d, l = %d, j = %.1f, s=%.1f) are"
-                                    % (n, l, j, s)) +
-                                 " uknown. Aborting calculation.")
-            defect = modifiedRRcoef[0] + \
-                modifiedRRcoef[1] / ((n - modifiedRRcoef[0])**2) + \
-                modifiedRRcoef[2] / ((n - modifiedRRcoef[0])**4) + \
-                modifiedRRcoef[3] / ((n - modifiedRRcoef[0])**6) + \
-                modifiedRRcoef[4] / ((n - modifiedRRcoef[0])**8) + \
-                modifiedRRcoef[5] / ((n - modifiedRRcoef[0])**10)
+                raise ValueError(
+                    "Quantum defects for requested state "
+                    + ("(n = %d, l = %d, j = %.1f, s=%.1f) are" % (n, l, j, s))
+                    + " uknown. Aborting calculation."
+                )
+            defect = (
+                modifiedRRcoef[0]
+                + modifiedRRcoef[1] / ((n - modifiedRRcoef[0]) ** 2)
+                + modifiedRRcoef[2] / ((n - modifiedRRcoef[0]) ** 4)
+                + modifiedRRcoef[3] / ((n - modifiedRRcoef[0]) ** 6)
+                + modifiedRRcoef[4] / ((n - modifiedRRcoef[0]) ** 8)
+                + modifiedRRcoef[5] / ((n - modifiedRRcoef[0]) ** 10)
+            )
         else:
             # use \delta_\ell = \delta_g * (4/\ell)**5
             # from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.74.062712
             defect = self.quantumDefect[0][4][0] * (4 / l) ** 5
         return defect
 
-    def getRadialMatrixElement(self,
-                               n1, l1, j1,
-                               n2, l2, j2,
-                               s=0.5,
-                               useLiterature=True):
+    def getRadialMatrixElement(
+        self, n1, l1, j1, n2, l2, j2, s=0.5, useLiterature=True
+    ):
         """
             Radial part of the dipole matrix element
 
@@ -782,11 +873,10 @@ class AlkaliAtom(object):
         """
         dl = abs(l1 - l2)
         dj = abs(j1 - j2)
-        if not(dl == 1 and (dj < 1.1)):
+        if not (dl == 1 and (dj < 1.1)):
             return 0
 
-        if (self.getEnergy(n1, l1, j1, s=s)
-                > self.getEnergy(n2, l2, j2, s=s)):
+        if self.getEnergy(n1, l1, j1, s=s) > self.getEnergy(n2, l2, j2, s=s):
             temp = n1
             n1 = n2
             n2 = temp
@@ -809,54 +899,70 @@ class AlkaliAtom(object):
         if useLiterature:
             # is there literature value for this DME? If there is,
             # use the best one (smalles error)
-            c.execute('''SELECT dme FROM literatureDME WHERE
+            c.execute(
+                """SELECT dme FROM literatureDME WHERE
              n1= ? AND l1 = ? AND j1_x2 = ? AND
              n2 = ? AND l2 = ? AND j2_x2 = ?
-             ORDER BY errorEstimate ASC''', (n1, l1, j1_x2, n2, l2, j2_x2))
+             ORDER BY errorEstimate ASC""",
+                (n1, l1, j1_x2, n2, l2, j2_x2),
+            )
             answer = c.fetchone()
-            if (answer):
+            if answer:
                 # we did found literature value
                 return answer[0]
 
         # was this calculated before? If it was, retrieve from memory
-        c.execute('''SELECT dme FROM dipoleME WHERE
+        c.execute(
+            """SELECT dme FROM dipoleME WHERE
          n1= ? AND l1 = ? AND j1_x2 = ? AND
-         n2 = ? AND l2 = ? AND j2_x2 = ?''', (n1, l1, j1_x2, n2, l2, j2_x2))
+         n2 = ? AND l2 = ? AND j2_x2 = ?""",
+            (n1, l1, j1_x2, n2, l2, j2_x2),
+        )
         dme = c.fetchone()
-        if (dme):
+        if dme:
             return dme[0]
 
         step = 0.001
-        r1, psi1_r1 = self.radialWavefunction(l1, 0.5, j1,
-                                              self.getEnergy(
-                                                  n1, l1, j1) / 27.211,
-                                              self.alphaC**(1 / 3.0),
-                                              2.0 * n1 * (n1 + 15.0), step)
-        r2, psi2_r2 = self.radialWavefunction(l2, 0.5, j2,
-                                              self.getEnergy(
-                                                  n2, l2, j2) / 27.211,
-                                              self.alphaC**(1 / 3.0),
-                                              2.0 * n2 * (n2 + 15.0), step)
+        r1, psi1_r1 = self.radialWavefunction(
+            l1,
+            0.5,
+            j1,
+            self.getEnergy(n1, l1, j1) / 27.211,
+            self.alphaC ** (1 / 3.0),
+            2.0 * n1 * (n1 + 15.0),
+            step,
+        )
+        r2, psi2_r2 = self.radialWavefunction(
+            l2,
+            0.5,
+            j2,
+            self.getEnergy(n2, l2, j2) / 27.211,
+            self.alphaC ** (1 / 3.0),
+            2.0 * n2 * (n2 + 15.0),
+            step,
+        )
 
         upTo = min(len(r1), len(r2))
 
         # note that r1 and r2 change in same staps,
         # starting from the same value
         dipoleElement = np.trapz(
-            np.multiply(np.multiply(psi1_r1[0:upTo], psi2_r2[0:upTo]),
-                        r1[0:upTo]),
-            x=r1[0:upTo]
+            np.multiply(
+                np.multiply(psi1_r1[0:upTo], psi2_r2[0:upTo]), r1[0:upTo]
+            ),
+            x=r1[0:upTo],
         )
 
-        c.execute(''' INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?)''',
-                       [n1, l1, j1_x2, n2, l2, j2_x2, dipoleElement])
+        c.execute(
+            """ INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?)""",
+            [n1, l1, j1_x2, n2, l2, j2_x2, dipoleElement],
+        )
 
         self.conn.commit()
 
         return dipoleElement
 
-    def getQuadrupoleMatrixElement(self, n1, l1, j1, n2, l2, j2,
-                                   s=0.5):
+    def getQuadrupoleMatrixElement(self, n1, l1, j1, n2, l2, j2, s=0.5):
         """
             Radial part of the quadrupole matrix element
 
@@ -883,10 +989,10 @@ class AlkaliAtom(object):
 
         dl = abs(l1 - l2)
         dj = abs(j1 - j2)
-        if not ((dl == 0 or dl == 2 or dl == 1)and (dj < 2.1)):
+        if not ((dl == 0 or dl == 2 or dl == 1) and (dj < 2.1)):
             return 0
 
-        if (self.getEnergy(n1, l1, j1, s=s) > self.getEnergy(n2, l2, j2, s=s)):
+        if self.getEnergy(n1, l1, j1, s=s) > self.getEnergy(n2, l2, j2, s=s):
             temp = n1
             n1 = n2
             n2 = temp
@@ -906,47 +1012,62 @@ class AlkaliAtom(object):
 
         c = self.conn.cursor()
         # was this calculated before? If yes, retrieve from memory.
-        c.execute('''SELECT qme FROM quadrupoleME WHERE
+        c.execute(
+            """SELECT qme FROM quadrupoleME WHERE
          n1= ? AND l1 = ? AND j1_x2 = ? AND
-         n2 = ? AND l2 = ? AND j2_x2 = ?''', (n1, l1, j1_x2, n2, l2, j2_x2))
+         n2 = ? AND l2 = ? AND j2_x2 = ?""",
+            (n1, l1, j1_x2, n2, l2, j2_x2),
+        )
         qme = c.fetchone()
-        if (qme):
+        if qme:
             return qme[0]
 
         # if it wasn't, calculate now
 
         step = 0.001
-        r1, psi1_r1 = self.radialWavefunction(l1, 0.5, j1,
-                                              self.getEnergy(
-                                                  n1, l1, j1) / 27.211,
-                                              self.alphaC**(1 / 3.0),
-                                              2.0 * n1 * (n1 + 15.0), step)
-        r2, psi2_r2 = self.radialWavefunction(l2, 0.5, j2,
-                                              self.getEnergy(
-                                                  n2, l2, j2) / 27.211,
-                                              self.alphaC**(1 / 3.0),
-                                              2.0 * n2 * (n2 + 15.0), step)
+        r1, psi1_r1 = self.radialWavefunction(
+            l1,
+            0.5,
+            j1,
+            self.getEnergy(n1, l1, j1) / 27.211,
+            self.alphaC ** (1 / 3.0),
+            2.0 * n1 * (n1 + 15.0),
+            step,
+        )
+        r2, psi2_r2 = self.radialWavefunction(
+            l2,
+            0.5,
+            j2,
+            self.getEnergy(n2, l2, j2) / 27.211,
+            self.alphaC ** (1 / 3.0),
+            2.0 * n2 * (n2 + 15.0),
+            step,
+        )
 
         upTo = min(len(r1), len(r2))
 
         # note that r1 and r2 change in same staps,
         # starting from the same value
         quadrupoleElement = np.trapz(
-            np.multiply(np.multiply(psi1_r1[0:upTo], psi2_r2[0:upTo]),
-                        np.multiply(r1[0:upTo], r1[0:upTo])
-                        ),
-            x=r1[0:upTo]
+            np.multiply(
+                np.multiply(psi1_r1[0:upTo], psi2_r2[0:upTo]),
+                np.multiply(r1[0:upTo], r1[0:upTo]),
+            ),
+            x=r1[0:upTo],
         )
 
-        c.execute(''' INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?, ?)''',
-                       [n1, l1, j1_x2, n2, l2, j2_x2, quadrupoleElement])
+        c.execute(
+            """ INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?, ?)""",
+            [n1, l1, j1_x2, n2, l2, j2_x2, quadrupoleElement],
+        )
 
         self.conn.commit()
 
         return quadrupoleElement
 
-    def getReducedMatrixElementJ_asymmetric(self, n1, l1, j1, n2, l2, j2,
-                                            s=0.5):
+    def getReducedMatrixElementJ_asymmetric(
+        self, n1, l1, j1, n2, l2, j2, s=0.5
+    ):
         """
             Reduced matrix element in :math:`J` basis, defined in asymmetric
             notation.
@@ -984,9 +1105,7 @@ class AlkaliAtom(object):
                 2 May 2008). http://steck.us/alkalidata
         """
         #
-        if (self.getTransitionFrequency(n1, l1, j1,
-                                        n2, l2, j2,
-                                        s=s, s2=s) < 0):
+        if self.getTransitionFrequency(n1, l1, j1, n2, l2, j2, s=s, s2=s) < 0:
             temp = n2
             n2 = n1
             n1 = temp
@@ -996,62 +1115,69 @@ class AlkaliAtom(object):
             temp = j1
             j1 = j2
             j2 = temp
-        return (-1)**(int((l2 + l1 + 3.) / 2. + s + j2)) *\
-            sqrt((2.0 * j2 + 1.0) * (2.0 * l1 + 1.0)) *\
-            Wigner6j(l1, l2, 1, j2, j1, s) *\
-            sqrt(float(max(l1, l2)) / (2.0 * l1 + 1.0)) *\
-            self.getRadialMatrixElement(n1, l1, j1, n2, l2, j2, s=s)
+        return (
+            (-1) ** (int((l2 + l1 + 3.0) / 2.0 + s + j2))
+            * sqrt((2.0 * j2 + 1.0) * (2.0 * l1 + 1.0))
+            * Wigner6j(l1, l2, 1, j2, j1, s)
+            * sqrt(float(max(l1, l2)) / (2.0 * l1 + 1.0))
+            * self.getRadialMatrixElement(n1, l1, j1, n2, l2, j2, s=s)
+        )
 
     def getReducedMatrixElementL(self, n1, l1, j1, n2, l2, j2, s=0.5):
         """
-            Reduced matrix element in :math:`L` basis (symmetric notation)
+        Reduced matrix element in :math:`L` basis (symmetric notation)
 
-            Args:
-                n1 (int): principal quantum number of state 1
-                l1 (int): orbital angular momentum of state 1
-                j1 (float): total angular momentum of state 1
-                n2 (int): principal quantum number of state 2
-                l2 (int): orbital angular momentum of state 2
-                j2 (float): total angular momentum of state 2
+        Args:
+            n1 (int): principal quantum number of state 1
+            l1 (int): orbital angular momentum of state 1
+            j1 (float): total angular momentum of state 1
+            n2 (int): principal quantum number of state 2
+            l2 (int): orbital angular momentum of state 2
+            j2 (float): total angular momentum of state 2
 
-            Returns:
-                float:
-                    reduced dipole matrix element in :math:`L` basis
-                    :math:`\\langle l || er || l' \\rangle` (:math:`a_0 e`).
+        Returns:
+            float:
+                reduced dipole matrix element in :math:`L` basis
+                :math:`\\langle l || er || l' \\rangle` (:math:`a_0 e`).
         """
 
-        return (-1)**l1 * sqrt((2.0 * l1 + 1.0) * (2.0 * l2 + 1.0)) *\
-            Wigner3j(l1, 1, l2, 0, 0, 0) *\
-            self.getRadialMatrixElement(n1, l1, j1, n2, l2, j2, s=s)
+        return (
+            (-1) ** l1
+            * sqrt((2.0 * l1 + 1.0) * (2.0 * l2 + 1.0))
+            * Wigner3j(l1, 1, l2, 0, 0, 0)
+            * self.getRadialMatrixElement(n1, l1, j1, n2, l2, j2, s=s)
+        )
 
-    def getReducedMatrixElementJ(self, n1, l1, j1, n2, l2, j2,
-                                 s=0.5):
+    def getReducedMatrixElementJ(self, n1, l1, j1, n2, l2, j2, s=0.5):
         """
-            Reduced matrix element in :math:`J` basis (symmetric notation)
+        Reduced matrix element in :math:`J` basis (symmetric notation)
 
-            Args:
-                n1 (int): principal quantum number of state 1
-                l1 (int): orbital angular momentum of state 1
-                j1 (float): total angular momentum of state 1
-                n2 (int): principal quantum number of state 2
-                l2 (int): orbital angular momentum of state 2
-                j2 (float): total angular momentum of state 2
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+        Args:
+            n1 (int): principal quantum number of state 1
+            l1 (int): orbital angular momentum of state 1
+            j1 (float): total angular momentum of state 1
+            n2 (int): principal quantum number of state 2
+            l2 (int): orbital angular momentum of state 2
+            j2 (float): total angular momentum of state 2
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
 
-            Returns:
-                float:
-                    reduced dipole matrix element in :math:`J` basis
-                    :math:`\\langle j || er || j' \\rangle` (:math:`a_0 e`).
+        Returns:
+            float:
+                reduced dipole matrix element in :math:`J` basis
+                :math:`\\langle j || er || j' \\rangle` (:math:`a_0 e`).
         """
 
-        return (-1)**(int(l1 + s + j2 + 1.)) * sqrt((2. * j1 + 1.)
-                                                    * (2. * j2 + 1.)) *\
-            Wigner6j(j1, 1., j2, l2, s, l1) *\
-            self.getReducedMatrixElementL(n1, l1, j1, n2, l2, j2, s=s)
+        return (
+            (-1) ** (int(l1 + s + j2 + 1.0))
+            * sqrt((2.0 * j1 + 1.0) * (2.0 * j2 + 1.0))
+            * Wigner6j(j1, 1.0, j2, l2, s, l1)
+            * self.getReducedMatrixElementL(n1, l1, j1, n2, l2, j2, s=s)
+        )
 
-    def getDipoleMatrixElement(self, n1, l1, j1, mj1, n2, l2, j2, mj2, q,
-                               s=0.5):
+    def getDipoleMatrixElement(
+        self, n1, l1, j1, mj1, n2, l2, j2, mj2, q, s=0.5
+    ):
         r"""
             Dipole matrix element
             :math:`\langle n_1 l_1 j_1 m_{j_1} |e\mathbf{r}|\
@@ -1089,17 +1215,16 @@ class AlkaliAtom(object):
         """
         if abs(q) > 1.1:
             return 0
-#        return (-1)**(int(j1 - mj1)) *\
-#            Wigner3j(j1, 1, j2, -mj1, -q, mj2) *\
-#            self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
-        return self.getSphericalDipoleMatrixElement(j1, mj1, j2, mj2, q) * \
-            self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
+        #        return (-1)**(int(j1 - mj1)) *\
+        #            Wigner3j(j1, 1, j2, -mj1, -q, mj2) *\
+        #            self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
+        return self.getSphericalDipoleMatrixElement(
+            j1, mj1, j2, mj2, q
+        ) * self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
 
-    def getDipoleMatrixElementHFS(self,
-                                  n1, l1, j1, f1, mf1,
-                                  n2, l2, j2, f2, mf2,
-                                  q,
-                                  s=0.5):
+    def getDipoleMatrixElementHFS(
+        self, n1, l1, j1, f1, mf1, n2, l2, j2, f2, mf2, q, s=0.5
+    ):
         r"""
         Dipole matrix element for hyperfine structure resolved transitions
         :math:`\langle n_1 l_1 j_1 f_1 m_{f_1} |e\mathbf{r}|\
@@ -1143,78 +1268,76 @@ class AlkaliAtom(object):
 
 
         """
-#        dme = (- 1)**(f1 - mf1) * Wigner3j(f1, 1, f2, - mf1, -q, mf2)
-#        dme *= (- 1)**(j1 + self.I + f2 + 1) * ((2. * f1 + 1)
-#                                                * (2 * f2 + 1))**0.5
-#        dme *= Wigner6j(f1, 1, f2, j2, self.I, j1)
+        #        dme = (- 1)**(f1 - mf1) * Wigner3j(f1, 1, f2, - mf1, -q, mf2)
+        #        dme *= (- 1)**(j1 + self.I + f2 + 1) * ((2. * f1 + 1)
+        #                                                * (2 * f2 + 1))**0.5
+        #        dme *= Wigner6j(f1, 1, f2, j2, self.I, j1)
 
         dme = self.getSphericalDipoleMatrixElement(f1, mf1, f2, mf2, q)
         dme *= self._reducedMatrixElementFJ(j1, f1, j2, f2)
         dme *= self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
         return dme
 
-    def getRabiFrequency(self,
-                         n1, l1, j1, mj1,
-                         n2, l2, j2, q,
-                         laserPower, laserWaist,
-                         s=0.5):
+    def getRabiFrequency(
+        self, n1, l1, j1, mj1, n2, l2, j2, q, laserPower, laserWaist, s=0.5
+    ):
         """
-            Returns a Rabi frequency for resonantly driven atom in a
-            center of TEM00 mode of a driving field
+        Returns a Rabi frequency for resonantly driven atom in a
+        center of TEM00 mode of a driving field
 
-            Args:
-                n1,l1,j1,mj1 : state from which we are driving transition
-                n2,l2,j2 : state to which we are driving transition
-                q : laser polarization (-1,0,1 correspond to :math:`\\sigma^-`,
-                    :math:`\\pi` and :math:`\\sigma^+` respectively)
-                laserPower : laser power in units of W
-                laserWaist : laser :math:`1/e^2` waist (radius) in units of m
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+        Args:
+            n1,l1,j1,mj1 : state from which we are driving transition
+            n2,l2,j2 : state to which we are driving transition
+            q : laser polarization (-1,0,1 correspond to :math:`\\sigma^-`,
+                :math:`\\pi` and :math:`\\sigma^+` respectively)
+            laserPower : laser power in units of W
+            laserWaist : laser :math:`1/e^2` waist (radius) in units of m
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
 
-            Returns:
-                float:
-                    Frequency in rad :math:`^{-1}`. If you want frequency
-                    in Hz, divide by returned value by :math:`2\\pi`
+        Returns:
+            float:
+                Frequency in rad :math:`^{-1}`. If you want frequency
+                in Hz, divide by returned value by :math:`2\\pi`
         """
         maxIntensity = 2 * laserPower / (pi * laserWaist**2)
-        electricField = sqrt(2. * maxIntensity / (C_c * epsilon_0))
-        return self.getRabiFrequency2(n1, l1, j1, mj1,
-                                      n2, l2, j2, q,
-                                      electricField,
-                                      s=s)
+        electricField = sqrt(2.0 * maxIntensity / (C_c * epsilon_0))
+        return self.getRabiFrequency2(
+            n1, l1, j1, mj1, n2, l2, j2, q, electricField, s=s
+        )
 
-    def getRabiFrequency2(self,
-                          n1, l1, j1, mj1,
-                          n2, l2, j2, q,
-                          electricFieldAmplitude,
-                          s=0.5):
+    def getRabiFrequency2(
+        self, n1, l1, j1, mj1, n2, l2, j2, q, electricFieldAmplitude, s=0.5
+    ):
         """
-            Returns a Rabi frequency for resonant excitation with a given
-            electric field amplitude
+        Returns a Rabi frequency for resonant excitation with a given
+        electric field amplitude
 
-            Args:
-                n1,l1,j1,mj1 : state from which we are driving transition
-                n2,l2,j2 : state to which we are driving transition
-                q : laser polarization (-1,0,1 correspond to :math:`\\sigma^-`,
-                    :math:`\\pi` and :math:`\\sigma^+` respectively)
-                electricFieldAmplitude : amplitude of electric field
-                    driving (V/m)
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+        Args:
+            n1,l1,j1,mj1 : state from which we are driving transition
+            n2,l2,j2 : state to which we are driving transition
+            q : laser polarization (-1,0,1 correspond to :math:`\\sigma^-`,
+                :math:`\\pi` and :math:`\\sigma^+` respectively)
+            electricFieldAmplitude : amplitude of electric field
+                driving (V/m)
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
 
-            Returns:
-                float:
-                    Frequency in rad :math:`^{-1}`. If you want frequency
-                    in Hz, divide by returned value by :math:`2\\pi`
+        Returns:
+            float:
+                Frequency in rad :math:`^{-1}`. If you want frequency
+                in Hz, divide by returned value by :math:`2\\pi`
         """
         mj2 = mj1 + q
         if abs(mj2) - 0.1 > j2:
             return 0
-        dipole = self.getDipoleMatrixElement(n1, l1, j1, mj1,
-                                             n2, l2, j2, mj2, q,
-                                             s=s) *\
-            C_e * physical_constants["Bohr radius"][0]
+        dipole = (
+            self.getDipoleMatrixElement(
+                n1, l1, j1, mj1, n2, l2, j2, mj2, q, s=s
+            )
+            * C_e
+            * physical_constants["Bohr radius"][0]
+        )
         freq = electricFieldAmplitude * abs(dipole) / hbar
         return freq
 
@@ -1296,11 +1419,22 @@ class AlkaliAtom(object):
         """
         d1 = self.getRadialMatrixElement(n, l, j, n1, l1, j1, s=s)
         d2 = self.getRadialMatrixElement(n, l, j, n2, l2, j2, s=s)
-        d1d2 = 1 / (4.0 * pi * epsilon_0) * d1 * d2 * C_e**2 *\
-            (physical_constants["Bohr radius"][0])**2
-        return -d1d2**2 / (C_e * (self.getEnergy(n1, l1, j1, s=s)
-                                  + self.getEnergy(n2, l2, j2, s=s)
-                                  - 2 * self.getEnergy(n, l, j, s=s)))
+        d1d2 = (
+            1
+            / (4.0 * pi * epsilon_0)
+            * d1
+            * d2
+            * C_e**2
+            * (physical_constants["Bohr radius"][0]) ** 2
+        )
+        return -(d1d2**2) / (
+            C_e
+            * (
+                self.getEnergy(n1, l1, j1, s=s)
+                + self.getEnergy(n2, l2, j2, s=s)
+                - 2 * self.getEnergy(n, l, j, s=s)
+            )
+        )
 
     def getC3term(self, n, l, j, n1, l1, j1, n2, l2, j2, s=0.5):
         """
@@ -1331,121 +1465,136 @@ class AlkaliAtom(object):
         """
         d1 = self.getRadialMatrixElement(n, l, j, n1, l1, j1, s=s)
         d2 = self.getRadialMatrixElement(n, l, j, n2, l2, j2, s=s)
-        d1d2 = 1 / (4.0 * pi * epsilon_0) * d1 * d2 * C_e**2 *\
-            (physical_constants["Bohr radius"][0])**2
+        d1d2 = (
+            1
+            / (4.0 * pi * epsilon_0)
+            * d1
+            * d2
+            * C_e**2
+            * (physical_constants["Bohr radius"][0]) ** 2
+        )
         return d1d2
 
-    def getEnergyDefect(self, n, l, j, n1, l1, j1, n2, l2, j2,
-                        s=0.5):
+    def getEnergyDefect(self, n, l, j, n1, l1, j1, n2, l2, j2, s=0.5):
         """
-            Energy defect for the given two pair-states (one of the state has
-            two atoms in the same state)
+        Energy defect for the given two pair-states (one of the state has
+        two atoms in the same state)
 
-            Energy difference between the states
-            :math:`E(n_1,l_1,j_1,n_2,l_2,j_2) - E(n,l,j,n,l,j)`
+        Energy difference between the states
+        :math:`E(n_1,l_1,j_1,n_2,l_2,j_2) - E(n,l,j,n,l,j)`
 
-            Args:
-                n (int): principal quantum number
-                l (int): orbital angular momentum
-                j (float): total angular momentum
-                n1 (int): principal quantum number
-                l1 (int): orbital angular momentum
-                j1 (float): total angular momentum
-                n2 (int): principal quantum number
-                l2 (int): orbital angular momentum
-                j2 (float): total angular momentum
-                s (float): optional. Spin angular momentum
-                    (default 0.5 for Alkali)
+        Args:
+            n (int): principal quantum number
+            l (int): orbital angular momentum
+            j (float): total angular momentum
+            n1 (int): principal quantum number
+            l1 (int): orbital angular momentum
+            j1 (float): total angular momentum
+            n2 (int): principal quantum number
+            l2 (int): orbital angular momentum
+            j2 (float): total angular momentum
+            s (float): optional. Spin angular momentum
+                (default 0.5 for Alkali)
 
-            Returns:
-                float:  energy defect (SI units: J)
+        Returns:
+            float:  energy defect (SI units: J)
         """
-        return C_e * (self.getEnergy(n1, l1, j1, s=s)
-                      + self.getEnergy(n2, l2, j2, s=s)
-                      - 2 * self.getEnergy(n, l, j, s=s))
+        return C_e * (
+            self.getEnergy(n1, l1, j1, s=s)
+            + self.getEnergy(n2, l2, j2, s=s)
+            - 2 * self.getEnergy(n, l, j, s=s)
+        )
 
-    def getEnergyDefect2(self, n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2,
-                         s=0.5):
+    def getEnergyDefect2(
+        self, n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2, s=0.5
+    ):
         """
-            Energy defect for the given two pair-states
+        Energy defect for the given two pair-states
 
-            Energy difference between the states
-            :math:`E(n_1,l_1,j_1,n_2,l_2,j_2) - E(n,l,j,nn,ll,jj)`
+        Energy difference between the states
+        :math:`E(n_1,l_1,j_1,n_2,l_2,j_2) - E(n,l,j,nn,ll,jj)`
 
-            See `pair-state energy defects example snippet`_.
+        See `pair-state energy defects example snippet`_.
 
-            .. _`pair-state energy defects example snippet`:
-                ./Rydberg_atoms_a_primer.html#Rydberg-atom-interactions
+        .. _`pair-state energy defects example snippet`:
+            ./Rydberg_atoms_a_primer.html#Rydberg-atom-interactions
 
 
-            Args:
-                n (int): principal quantum number
-                l (int): orbital angular momentum
-                j (float): total angular momentum
-                nn (int): principal quantum number
-                ll (int): orbital angular momentum
-                jj (float): total angular momentum
-                n1 (int): principal quantum number
-                l1 (int): orbital angular momentum
-                j1 (float): total angular momentum
-                n2 (int): principal quantum number
-                l2 (int): orbital angular momentum
-                j2 (float): total angular momentum
-                s (float): optional. Spin angular momentum
-                    (default 0.5 for Alkali)
+        Args:
+            n (int): principal quantum number
+            l (int): orbital angular momentum
+            j (float): total angular momentum
+            nn (int): principal quantum number
+            ll (int): orbital angular momentum
+            jj (float): total angular momentum
+            n1 (int): principal quantum number
+            l1 (int): orbital angular momentum
+            j1 (float): total angular momentum
+            n2 (int): principal quantum number
+            l2 (int): orbital angular momentum
+            j2 (float): total angular momentum
+            s (float): optional. Spin angular momentum
+                (default 0.5 for Alkali)
 
-            Returns:
-                float:  energy defect (SI units: J)
+        Returns:
+            float:  energy defect (SI units: J)
         """
-        return C_e * (self.getEnergy(n1, l1, j1, s=s)
-                      + self.getEnergy(n2, l2, j2, s=s)
-                      - self.getEnergy(n, l, j, s=s)
-                      - self.getEnergy(nn, ll, jj, s=s))
+        return C_e * (
+            self.getEnergy(n1, l1, j1, s=s)
+            + self.getEnergy(n2, l2, j2, s=s)
+            - self.getEnergy(n, l, j, s=s)
+            - self.getEnergy(nn, ll, jj, s=s)
+        )
 
     def updateDipoleMatrixElementsFile(self):
         """
-            Updates the file with pre-calculated dipole matrix elements.
+        Updates the file with pre-calculated dipole matrix elements.
 
-            This function will add the the file all the elements that have been
-            calculated in the previous run, allowing quick access to them in
-            the future calculations.
+        This function will add the the file all the elements that have been
+        calculated in the previous run, allowing quick access to them in
+        the future calculations.
         """
         # obtain dipole matrix elements from the database
 
         dipoleMatrixElement = []
         c = self.conn.cursor()
-        c.execute('''SELECT * FROM dipoleME ''')
+        c.execute("""SELECT * FROM dipoleME """)
         for v in c.fetchall():
             dipoleMatrixElement.append(v)
 
         # obtain quadrupole matrix elements from the database
 
         quadrupoleMatrixElement = []
-        c.execute('''SELECT * FROM quadrupoleME ''')
+        c.execute("""SELECT * FROM quadrupoleME """)
         for v in c.fetchall():
             quadrupoleMatrixElement.append(v)
 
         # save dipole elements
         try:
-            np.save(os.path.join(self.dataFolder,
-                                 self.dipoleMatrixElementFile),
-                    dipoleMatrixElement)
+            np.save(
+                os.path.join(self.dataFolder, self.dipoleMatrixElementFile),
+                dipoleMatrixElement,
+            )
         except IOError as e:
-            print("Error while updating dipoleMatrixElements File "
-                  + self.dipoleMatrixElementFile)
+            print(
+                "Error while updating dipoleMatrixElements File "
+                + self.dipoleMatrixElementFile
+            )
             print(e)
         # save quadrupole elements
         try:
-            np.save(os.path.join(self.dataFolder,
-                                 self.quadrupoleMatrixElementFile),
-                    quadrupoleMatrixElement)
+            np.save(
+                os.path.join(self.dataFolder, self.quadrupoleMatrixElementFile),
+                quadrupoleMatrixElement,
+            )
         except IOError as e:
-            print("Error while updating quadrupoleMatrixElements File "
-                  + self.quadrupoleMatrixElementFile)
+            print(
+                "Error while updating quadrupoleMatrixElements File "
+                + self.quadrupoleMatrixElementFile
+            )
             print(e)
 
-    def getTransitionRate(self, n1, l1, j1, n2, l2, j2, temperature=0.,
-                          s=0.5):
+    def getTransitionRate(self, n1, l1, j1, n2, l2, j2, temperature=0.0, s=0.5):
         """
             Transition rate due to coupling to vacuum modes
             (black body included)
@@ -1484,195 +1633,201 @@ class AlkaliAtom(object):
                     https://doi.org/10.1103/PhysRevA.79.052504
         """
 
-        degeneracyTerm = 1.
+        degeneracyTerm = 1.0
 
         # find dipoleRadialPart
-        if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
-                                        s=s, s2=s) > 0):
-            dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(
-                n1, l1, j1,
-                n2, l2, j2,
-                s=s) *\
-                C_e * (physical_constants["Bohr radius"][0])
+        if self.getTransitionFrequency(n1, l1, j1, n2, l2, j2, s=s, s2=s) > 0:
+            dipoleRadialPart = (
+                self.getReducedMatrixElementJ_asymmetric(
+                    n1, l1, j1, n2, l2, j2, s=s
+                )
+                * C_e
+                * (physical_constants["Bohr radius"][0])
+            )
 
         else:
-            dipoleRadialPart = self.getReducedMatrixElementJ_asymmetric(
-                n2, l2, j2,
-                n1, l1, j1,
-                s=s) *\
-                C_e * (physical_constants["Bohr radius"][0])
-            degeneracyTerm = (2. * j2 + 1.0) / (2. * j1 + 1.)
+            dipoleRadialPart = (
+                self.getReducedMatrixElementJ_asymmetric(
+                    n2, l2, j2, n1, l1, j1, s=s
+                )
+                * C_e
+                * (physical_constants["Bohr radius"][0])
+            )
+            degeneracyTerm = (2.0 * j2 + 1.0) / (2.0 * j1 + 1.0)
 
         omega = abs(
-            2.0 * pi * self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
-                                                   s=s, s2=s))
+            2.0
+            * pi
+            * self.getTransitionFrequency(n1, l1, j1, n2, l2, j2, s=s, s2=s)
+        )
 
-        modeOccupationTerm = 0.
-        if (self.getTransitionFrequency(n1, l1, j1, n2, l2, j2,
-                                        s=s, s2=s) < 0):
-            modeOccupationTerm = 1.
+        modeOccupationTerm = 0.0
+        if self.getTransitionFrequency(n1, l1, j1, n2, l2, j2, s=s, s2=s) < 0:
+            modeOccupationTerm = 1.0
 
         # only possible by absorbing thermal photons ?
         if (hbar * omega < 100 * C_k * temperature) and (omega > 1e2):
-            modeOccupationTerm += 1. / \
-                (exp(hbar * omega / (C_k * temperature)) - 1.)
+            modeOccupationTerm += 1.0 / (
+                exp(hbar * omega / (C_k * temperature)) - 1.0
+            )
 
-        return omega**3 * dipoleRadialPart**2 /\
-            (3 * pi * epsilon_0 * hbar * C_c**3)\
-            * degeneracyTerm * modeOccupationTerm
+        return (
+            omega**3
+            * dipoleRadialPart**2
+            / (3 * pi * epsilon_0 * hbar * C_c**3)
+            * degeneracyTerm
+            * modeOccupationTerm
+        )
 
-    def getStateLifetime(self, n, l, j, temperature=0, includeLevelsUpTo=0,
-                         s=0.5):
+    def getStateLifetime(
+        self, n, l, j, temperature=0, includeLevelsUpTo=0, s=0.5
+    ):
         """
-            Returns the lifetime of the state (in s)
+        Returns the lifetime of the state (in s)
 
-            For non-zero temperatures, user must specify up to which principal
-            quantum number levels, that is **above** the initial state, should
-            be included in order to account for black-body induced transitions
-            to higher lying states. See `Rydberg lifetimes example snippet`_.
+        For non-zero temperatures, user must specify up to which principal
+        quantum number levels, that is **above** the initial state, should
+        be included in order to account for black-body induced transitions
+        to higher lying states. See `Rydberg lifetimes example snippet`_.
 
-            .. _`Rydberg lifetimes example snippet`:
-                ./Rydberg_atoms_a_primer.html#Rydberg-Atom-Lifetimes
+        .. _`Rydberg lifetimes example snippet`:
+            ./Rydberg_atoms_a_primer.html#Rydberg-Atom-Lifetimes
 
-            Args:
-                n, l, j (int,int,float): specifies state whose lifetime we are
-                    calculating
-                temperature : optional. Temperature at which the atom
-                    environment is, measured in K. If this parameter
-                    is non-zero, user has to specify transitions up to
-                    which state (due to black-body decay) should be included
-                    in calculation.
-                includeLevelsUpTo (int): optional and not needed for atom
-                    lifetimes calculated at zero temperature. At non zero
-                    temperatures, this specify maximum principal quantum number
-                    of the state to which black-body induced transitions will
-                    be included. Minimal value of the parameter in that case is
-                    :math:`n+1`
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+        Args:
+            n, l, j (int,int,float): specifies state whose lifetime we are
+                calculating
+            temperature : optional. Temperature at which the atom
+                environment is, measured in K. If this parameter
+                is non-zero, user has to specify transitions up to
+                which state (due to black-body decay) should be included
+                in calculation.
+            includeLevelsUpTo (int): optional and not needed for atom
+                lifetimes calculated at zero temperature. At non zero
+                temperatures, this specify maximum principal quantum number
+                of the state to which black-body induced transitions will
+                be included. Minimal value of the parameter in that case is
+                :math:`n+1`
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
 
 
-            Returns:
-                float:
-                    State lifetime in units of s (seconds)
+        Returns:
+            float:
+                State lifetime in units of s (seconds)
 
-            See also:
-                :obj:`getTransitionRate` for calculating rates of individual
-                transition rates between the two states
+        See also:
+            :obj:`getTransitionRate` for calculating rates of individual
+            transition rates between the two states
 
         """
-        if (temperature > 0.1 and includeLevelsUpTo <= n):
+        if temperature > 0.1 and includeLevelsUpTo <= n:
             raise ValueError(
                 "For non-zero temperatures, user has to specify "
                 + "principal quantum number of the maximum state *above* the "
                 + "state for which we are calculating the lifetime. This is "
                 + "in order to include black-body induced transitions to "
-                + " higher lying up in energy levels.")
-        elif (temperature < 0.1):
+                + " higher lying up in energy levels."
+            )
+        elif temperature < 0.1:
             includeLevelsUpTo = max(n, self.groundStateN)
 
-        transitionRate = 0.
+        transitionRate = 0.0
 
         for nto in xrange(max(self.groundStateN, l), includeLevelsUpTo + 1):
-
             # sum over all l-1
             if l > 0:
                 lto = l - 1
                 if lto > j - s - 0.1:
                     jto = j
-                    transitionRate += self.getTransitionRate(n, l, j,
-                                                             nto, lto, jto,
-                                                             temperature,
-                                                             s=s)
-                jto = j - 1.
+                    transitionRate += self.getTransitionRate(
+                        n, l, j, nto, lto, jto, temperature, s=s
+                    )
+                jto = j - 1.0
                 if jto > 0:
-                    transitionRate += self.getTransitionRate(n, l, j,
-                                                             nto, lto, jto,
-                                                             temperature,
-                                                             s=s)
+                    transitionRate += self.getTransitionRate(
+                        n, l, j, nto, lto, jto, temperature, s=s
+                    )
 
-        for nto in xrange(max(self.groundStateN, l + 2),
-                          includeLevelsUpTo + 1):
+        for nto in xrange(max(self.groundStateN, l + 2), includeLevelsUpTo + 1):
             # sum over all l+1
             lto = l + 1
             if lto - s - 0.1 < j:
                 jto = j
-                transitionRate += self.getTransitionRate(n, l, j,
-                                                         nto, lto, jto,
-                                                         temperature,
-                                                         s=s)
+                transitionRate += self.getTransitionRate(
+                    n, l, j, nto, lto, jto, temperature, s=s
+                )
             jto = j + 1
-            transitionRate += self.getTransitionRate(n, l, j,
-                                                     nto, lto, jto,
-                                                     temperature,
-                                                     s=s)
+            transitionRate += self.getTransitionRate(
+                n, l, j, nto, lto, jto, temperature, s=s
+            )
         # sum over additional states
         for state in self.extraLevels:
-            if (abs(j - state[2]) < 1.1) and \
-                    (abs(state[1] - l) < 1.1) and (abs(state[1] - l) > 0.9):
+            if (
+                (abs(j - state[2]) < 1.1)
+                and (abs(state[1] - l) < 1.1)
+                and (abs(state[1] - l) > 0.9)
+            ):
                 transitionRate += self.getTransitionRate(
-                    n, l, j,
-                    state[0], state[1], state[2],
-                    temperature,
-                    s=s
+                    n, l, j, state[0], state[1], state[2], temperature, s=s
                 )
 
         # add something small decay (1e-50) rate to prevent division by zero
-        return 1. / (transitionRate + 1e-50)
+        return 1.0 / (transitionRate + 1e-50)
 
     def getRadialCoupling(self, n, l, j, n1, l1, j1, s=0.5):
         """
-            Returns radial part of the coupling between two states (dipole and
-            quadrupole interactions only)
+        Returns radial part of the coupling between two states (dipole and
+        quadrupole interactions only)
 
-            Args:
-                n1 (int): principal quantum number
-                l1 (int): orbital angular momentum
-                j1 (float): total angular momentum
-                n2 (int): principal quantum number
-                l2 (int): orbital angular momentum
-                j2 (float): total angular momentum
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+        Args:
+            n1 (int): principal quantum number
+            l1 (int): orbital angular momentum
+            j1 (float): total angular momentum
+            n2 (int): principal quantum number
+            l2 (int): orbital angular momentum
+            j2 (float): total angular momentum
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
 
-            Returns:
-                float:  radial coupling strength (in a.u.), or zero for
-                forbidden transitions in dipole and quadrupole approximation.
+        Returns:
+            float:  radial coupling strength (in a.u.), or zero for
+            forbidden transitions in dipole and quadrupole approximation.
 
         """
         dl = abs(l - l1)
-        if (dl == 1 and abs(j - j1) < 1.1):
-            return self.getRadialMatrixElement(n, l, j, n1, l1, j1,
-                                               s=s)
-        elif (dl == 0 or dl == 1 or dl == 2) and(abs(j - j1) < 2.1):
+        if dl == 1 and abs(j - j1) < 1.1:
+            return self.getRadialMatrixElement(n, l, j, n1, l1, j1, s=s)
+        elif (dl == 0 or dl == 1 or dl == 2) and (abs(j - j1) < 2.1):
             # quadrupole coupling
             # return 0.
-            return self.getQuadrupoleMatrixElement(n, l, j, n1, l1, j1,
-                                                   s=s)
+            return self.getQuadrupoleMatrixElement(n, l, j, n1, l1, j1, s=s)
         else:
             # neglect octopole coupling and higher
             return 0
 
     def getAverageSpeed(self, temperature):
         """
-            Average (mean) speed at a given temperature
+        Average (mean) speed at a given temperature
 
-            Args:
-                temperature (float): temperature (K)
+        Args:
+            temperature (float): temperature (K)
 
-            Returns:
-                float: mean speed (m/s)
+        Returns:
+            float: mean speed (m/s)
         """
-        return sqrt(8. * C_k * temperature / (pi * self.mass))
+        return sqrt(8.0 * C_k * temperature / (pi * self.mass))
 
     def _readHFSdata(self):
         c = self.conn.cursor()
-        c.execute('''DROP TABLE IF EXISTS hfsDataAB''')
-        c.execute('''SELECT COUNT(*) FROM sqlite_master
-                 WHERE type='table' AND name='hfsDataAB';''')
-        if (c.fetchone()[0] == 0):
+        c.execute("""DROP TABLE IF EXISTS hfsDataAB""")
+        c.execute(
+            """SELECT COUNT(*) FROM sqlite_master
+                 WHERE type='table' AND name='hfsDataAB';"""
+        )
+        if c.fetchone()[0] == 0:
             # create table
-            c.execute('''CREATE TABLE IF NOT EXISTS hfsDataAB
+            c.execute(
+                """CREATE TABLE IF NOT EXISTS hfsDataAB
                 (n TINYINT UNSIGNED, l TINYINT UNSIGNED, j_x2 TINYINT UNSIGNED,
                 hfsA DOUBLE, hfsB DOUBLE,
                 errorA DOUBLE, errorB DOUBLE,
@@ -1680,17 +1835,21 @@ class AlkaliAtom(object):
                 comment TINYTEXT,
                 ref TINYTEXT,
                 refdoi TINYTEXT
-                );''')
-            c.execute('''CREATE INDEX compositeIndexHFS
-                ON hfsDataAB (n,l,j_x2);''')
+                );"""
+            )
+            c.execute(
+                """CREATE INDEX compositeIndexHFS
+                ON hfsDataAB (n,l,j_x2);"""
+            )
         self.conn.commit()
 
-        if (self.hyperfineStructureData == ""):
+        if self.hyperfineStructureData == "":
             return 0  # no file specified for literature values
 
         try:
-            fn = open(os.path.join(self.dataFolder,
-                                   self.hyperfineStructureData), 'r')
+            fn = open(
+                os.path.join(self.dataFolder, self.hyperfineStructureData), "r"
+            )
             dialect = csv.Sniffer().sniff(fn.read(2024), delimiters=";,\t")
             fn.seek(0)
             data = csv.reader(fn, dialect, quotechar='"')
@@ -1712,46 +1871,63 @@ class AlkaliAtom(object):
                     ref = row[9]
                     refdoi = row[10]
 
-                    literatureHFS.append([n, l, j * 2, A, B,
-                                          errorA, errorB,
-                                          typeOfSource,
-                                          comment,
-                                          ref, refdoi])
+                    literatureHFS.append(
+                        [
+                            n,
+                            l,
+                            j * 2,
+                            A,
+                            B,
+                            errorA,
+                            errorB,
+                            typeOfSource,
+                            comment,
+                            ref,
+                            refdoi,
+                        ]
+                    )
                 count += 1
 
             fn.close()
             try:
                 if count > 1:
-                    c.executemany('''INSERT INTO hfsDataAB
+                    c.executemany(
+                        """INSERT INTO hfsDataAB
                                         VALUES (?,?,?,?,?,
                                                 ?, ?,
-                                                ?,?,?,?)''',
-                                  literatureHFS)
+                                                ?,?,?,?)""",
+                        literatureHFS,
+                    )
                     self.conn.commit()
             except sqlite3.Error as e:
                 if count > 0:
-                    print("Error while loading precalculated values "
-                          "into the database")
+                    print(
+                        "Error while loading precalculated values "
+                        "into the database"
+                    )
                     print(e)
                     return
 
         except IOError as e:
-            print("Error reading literature values File "
-                      + self.hyperfineStructureData)
+            print(
+                "Error reading literature values File "
+                + self.hyperfineStructureData
+            )
             print(e)
-
-
 
     def _readLiteratureValues(self):
         # clear previously saved results, since literature file
         # might have been updated in the meantime
         c = self.conn.cursor()
-        c.execute('''DROP TABLE IF EXISTS literatureDME''')
-        c.execute('''SELECT COUNT(*) FROM sqlite_master
-                        WHERE type='table' AND name='literatureDME';''')
-        if (c.fetchone()[0] == 0):
+        c.execute("""DROP TABLE IF EXISTS literatureDME""")
+        c.execute(
+            """SELECT COUNT(*) FROM sqlite_master
+                        WHERE type='table' AND name='literatureDME';"""
+        )
+        if c.fetchone()[0] == 0:
             # create table
-            c.execute('''CREATE TABLE IF NOT EXISTS literatureDME
+            c.execute(
+                """CREATE TABLE IF NOT EXISTS literatureDME
              (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED, j1_x2 TINYINT UNSIGNED,
              n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED, j2_x2 TINYINT UNSIGNED,
              dme DOUBLE,
@@ -1760,17 +1936,21 @@ class AlkaliAtom(object):
              comment TINYTEXT,
              ref TINYTEXT,
              refdoi TINYTEXT
-            );''')
-            c.execute('''CREATE INDEX compositeIndex
-            ON literatureDME (n1,l1,j1_x2,n2,l2,j2_x2); ''')
+            );"""
+            )
+            c.execute(
+                """CREATE INDEX compositeIndex
+            ON literatureDME (n1,l1,j1_x2,n2,l2,j2_x2); """
+            )
         self.conn.commit()
 
-        if (self.literatureDMEfilename == ""):
+        if self.literatureDMEfilename == "":
             return 0  # no file specified for literature values
 
         try:
-            fn = open(os.path.join(self.dataFolder,
-                                   self.literatureDMEfilename), 'r')
+            fn = open(
+                os.path.join(self.dataFolder, self.literatureDMEfilename), "r"
+            )
             dialect = csv.Sniffer().sniff(fn.read(2024), delimiters=";,\t")
             fn.seek(0)
             data = csv.reader(fn, dialect, quotechar='"')
@@ -1787,9 +1967,7 @@ class AlkaliAtom(object):
                     n2 = int(row[3])
                     l2 = int(row[4])
                     j2 = float(row[5])
-                    if (
-                        self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2)
-                    ):
+                    if self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2):
                         temp = n1
                         n1 = n2
                         n2 = temp
@@ -1804,11 +1982,13 @@ class AlkaliAtom(object):
                     # to radial part of dme as it is saved for calculated
                     # values
                     dme = float(row[6]) / (
-                        (-1)**(int(l1 + 0.5 + j2 + 1.))
-                        * sqrt((2. * j1 + 1.) * (2. * j2 + 1.))
-                        * Wigner6j(j1, 1., j2, l2, 0.5, l1)
-                        * (-1)**l1 * sqrt((2.0 * l1 + 1.0) * (2.0 * l2 + 1.0))
-                        * Wigner3j(l1, 1, l2, 0, 0, 0))
+                        (-1) ** (int(l1 + 0.5 + j2 + 1.0))
+                        * sqrt((2.0 * j1 + 1.0) * (2.0 * j2 + 1.0))
+                        * Wigner6j(j1, 1.0, j2, l2, 0.5, l1)
+                        * (-1) ** l1
+                        * sqrt((2.0 * l1 + 1.0) * (2.0 * l2 + 1.0))
+                        * Wigner3j(l1, 1, l2, 0, 0, 0)
+                    )
 
                     comment = row[7]
                     typeOfSource = int(row[8])  # 0 = experiment; 1 = theory
@@ -1816,30 +1996,48 @@ class AlkaliAtom(object):
                     ref = row[10]
                     refdoi = row[11]
 
-                    literatureDME.append([n1, l1, j1 * 2, n2, l2, j2 * 2, dme,
-                                          typeOfSource, errorEstimate,
-                                          comment, ref,
-                                          refdoi])
+                    literatureDME.append(
+                        [
+                            n1,
+                            l1,
+                            j1 * 2,
+                            n2,
+                            l2,
+                            j2 * 2,
+                            dme,
+                            typeOfSource,
+                            errorEstimate,
+                            comment,
+                            ref,
+                            refdoi,
+                        ]
+                    )
                 i += 1
             fn.close()
 
             try:
                 if i > 1:
-                    c.executemany('''INSERT INTO literatureDME
+                    c.executemany(
+                        """INSERT INTO literatureDME
                                         VALUES (?,?,?,?,?,?,?,
-                                                ?,?,?,?,?)''',
-                                  literatureDME)
+                                                ?,?,?,?,?)""",
+                        literatureDME,
+                    )
                     self.conn.commit()
             except sqlite3.Error as e:
                 if i > 0:
-                    print("Error while loading precalculated values "
-                          "into the database")
+                    print(
+                        "Error while loading precalculated values "
+                        "into the database"
+                    )
                     print(e)
                     exit()
 
         except IOError as e:
-            print("Error reading literature values File "
-                  + self.literatureDMEfilename)
+            print(
+                "Error reading literature values File "
+                + self.literatureDMEfilename
+            )
             print(e)
 
     def getLiteratureDME(self, n1, l1, j1, n2, l2, j2, s=0.5):
@@ -1903,7 +2101,7 @@ class AlkaliAtom(object):
 
         """
 
-        if (self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2)):
+        if self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2):
             temp = n1
             n1 = n2
             n2 = temp
@@ -1920,21 +2118,26 @@ class AlkaliAtom(object):
         j1_x2 = 2 * j1
         j2_x2 = 2 * j2
         c = self.conn.cursor()
-        c.execute('''SELECT dme, typeOfSource,
+        c.execute(
+            """SELECT dme, typeOfSource,
                      errorEstimate ,
                      comment ,
                      ref,
                      refdoi FROM literatureDME WHERE
                      n1= ? AND l1 = ? AND j1_x2 = ? AND
                      n2 = ? AND l2 = ? AND j2_x2 = ?
-                     ORDER BY errorEstimate ASC''',
-                       (n1, l1, j1_x2, n2, l2, j2_x2))
+                     ORDER BY errorEstimate ASC""",
+            (n1, l1, j1_x2, n2, l2, j2_x2),
+        )
 
         answer = c.fetchone()
-        if (answer):
+        if answer:
             # we did found literature value
-            return True, answer[0], [answer[1], answer[2], answer[3],
-                                     answer[4], answer[5]]
+            return (
+                True,
+                answer[0],
+                [answer[1], answer[2], answer[3], answer[4], answer[5]],
+            )
 
         # if we are here, we were unsucessfull in literature search
         # for this value
@@ -1960,27 +2163,26 @@ class AlkaliAtom(object):
                 float: energy offset of the state (in J)
         """
         prefactor = physical_constants["Bohr magneton"][0] * magneticFieldBz
-        gs = - physical_constants["electron g factor"][0]
+        gs = -physical_constants["electron g factor"][0]
         sumOverMl = 0
 
         for ml in np.linspace(mj - s, mj + s, round(2 * s + 1)):
             if abs(ml) <= l + 0.1:
                 ms = mj - ml
-                sumOverMl += (ml + gs * ms) * \
-                    abs(CG(l, ml, s, ms, j, mj))**2
+                sumOverMl += (ml + gs * ms) * abs(CG(l, ml, s, ms, j, mj)) ** 2
         return prefactor * sumOverMl
 
-    def _getRadialDipoleSemiClassical(self, n1, l1, j1, n2, l2, j2,
-                                      s=0.5):
-
+    def _getRadialDipoleSemiClassical(self, n1, l1, j1, n2, l2, j2, s=0.5):
         # get the effective principal number of both states
-        nu = np.sqrt( - self.scaledRydbergConstant
-                     / self.getEnergy(n1, l1, j1, s=s))
-        nu1 = np.sqrt( - self.scaledRydbergConstant
-                      / self.getEnergy(n2, l2, j2, s=s))
+        nu = np.sqrt(
+            -self.scaledRydbergConstant / self.getEnergy(n1, l1, j1, s=s)
+        )
+        nu1 = np.sqrt(
+            -self.scaledRydbergConstant / self.getEnergy(n2, l2, j2, s=s)
+        )
 
         # get the parameters required to calculate the sum
-        l_c = (l1 + l2 + 1.) / 2.
+        l_c = (l1 + l2 + 1.0) / 2.0
         nu_c = sqrt(nu * nu1)
 
         delta_nu = nu - nu1
@@ -1996,30 +2198,33 @@ class AlkaliAtom(object):
             g2 = 0
             g3 = 0
         else:
-
-            g0 = (1. / (3. * delta_nu)) * (
-                angerj(delta_nu - 1., - delta_nu)
-                - angerj(delta_nu + 1, - delta_nu))
-            g1 = -(1. / (3. * delta_nu)) * (
-                angerj(delta_nu - 1., - delta_nu)
-                + angerj(delta_nu + 1, -delta_nu))
+            g0 = (1.0 / (3.0 * delta_nu)) * (
+                angerj(delta_nu - 1.0, -delta_nu)
+                - angerj(delta_nu + 1, -delta_nu)
+            )
+            g1 = -(1.0 / (3.0 * delta_nu)) * (
+                angerj(delta_nu - 1.0, -delta_nu)
+                + angerj(delta_nu + 1, -delta_nu)
+            )
             g2 = g0 - np.sin(np.pi * delta_nu) / (np.pi * delta_nu)
-            g3 = (delta_nu / 2.) * g0 + g1
+            g3 = (delta_nu / 2.0) * g0 + g1
 
-        radial_ME = (3 / 2) * nu_c**2 * (1 - (l_c / nu_c)**(2))**0.5 * \
-            (g0 + gamma * g1 + gamma**2 * g2 + gamma**3 * g3)
+        radial_ME = (
+            (3 / 2)
+            * nu_c**2
+            * (1 - (l_c / nu_c) ** (2)) ** 0.5
+            * (g0 + gamma * g1 + gamma**2 * g2 + gamma**3 * g3)
+        )
         return float(radial_ME)
 
-    def _getRadialQuadrupoleSemiClassical(self, n1, l1, j1, n2, l2, j2,
-                                          s=0.5):
-
+    def _getRadialQuadrupoleSemiClassical(self, n1, l1, j1, n2, l2, j2, s=0.5):
         dl = abs(l2 - l1)
 
         nu = n1 - self.getQuantumDefect(n1, l1, j1, s=s)
         nu1 = n2 - self.getQuantumDefect(n2, l2, j2, s=s)
 
         # get the parameters required to calculate the sum
-        l_c = (l1 + l2 + 1.) / 2.
+        l_c = (l1 + l2 + 1.0) / 2.0
         nu_c = np.sqrt(nu * nu1)
 
         delta_nu = nu - nu1
@@ -2030,36 +2235,44 @@ class AlkaliAtom(object):
         if delta_nu == 0:
             q = np.array([1, 0, 0, 0])
         else:
-
-            g0 = (1. / (3. * delta_nu)) * (
-                angerj(delta_nu - 1., - delta_nu)
-                - angerj(delta_nu + 1, -delta_nu))
-            g1 = -(1. / (3. * delta_nu)) * (
-                angerj(delta_nu - 1., - delta_nu)
-                + angerj(delta_nu + 1, -delta_nu))
+            g0 = (1.0 / (3.0 * delta_nu)) * (
+                angerj(delta_nu - 1.0, -delta_nu)
+                - angerj(delta_nu + 1, -delta_nu)
+            )
+            g1 = -(1.0 / (3.0 * delta_nu)) * (
+                angerj(delta_nu - 1.0, -delta_nu)
+                + angerj(delta_nu + 1, -delta_nu)
+            )
 
             q = np.zeros((4,))
-            q[0] = -(6. / (5. * delta_nu)) * g1
-            q[1] = -(6. / (5. * delta_nu)) * g0 + (6. / 5.) * \
-                np.sin(np.pi * delta_nu) / (np.pi * delta_nu**2)
-            q[2] = -(3. / 4.) * (6. / (5. * delta_nu) * g1 + g0)
+            q[0] = -(6.0 / (5.0 * delta_nu)) * g1
+            q[1] = -(6.0 / (5.0 * delta_nu)) * g0 + (6.0 / 5.0) * np.sin(
+                np.pi * delta_nu
+            ) / (np.pi * delta_nu**2)
+            q[2] = -(3.0 / 4.0) * (6.0 / (5.0 * delta_nu) * g1 + g0)
             q[3] = 0.5 * (delta_nu * 0.5 * q[0] + q[1])
 
         sm = 0
 
         if dl == 0:
-            quadrupoleElement = (5. / 2.) * nu_c**4 * \
-                (1. - (3. * l_c**2) / (5 * nu_c**2))
+            quadrupoleElement = (
+                (5.0 / 2.0)
+                * nu_c**4
+                * (1.0 - (3.0 * l_c**2) / (5 * nu_c**2))
+            )
             for p in range(0, 2, 1):
-                sm += gamma**(2 * p) * q[2 * p]
+                sm += gamma ** (2 * p) * q[2 * p]
             return quadrupoleElement * sm
 
         elif dl == 2:
-            quadrupoleElement = (5. / 2.) * nu_c**4 * (
-                1 - (l_c + 1) ** 2 / (nu_c**2))**0.5 * (1 - (l_c + 2)**2
-                                                        / (nu_c**2))**0.5
+            quadrupoleElement = (
+                (5.0 / 2.0)
+                * nu_c**4
+                * (1 - (l_c + 1) ** 2 / (nu_c**2)) ** 0.5
+                * (1 - (l_c + 2) ** 2 / (nu_c**2)) ** 0.5
+            )
             for p in range(0, 4):
-                sm += gamma**(p) * q[p]
+                sm += gamma ** (p) * q[p]
             return quadrupoleElement * sm
         else:
             return 0
@@ -2067,83 +2280,98 @@ class AlkaliAtom(object):
     # Additional AMO Functions
     def getHFSCoefficients(self, n, l, j, s=None):
         """
-            Returns hyperfine splitting coefficients for state :math:`n`,
-            :math:`l`, :math:`j`.
+        Returns hyperfine splitting coefficients for state :math:`n`,
+        :math:`l`, :math:`j`.
 
-            Args:
-                n (int): principal quantum number
-                l (int): orbital angular momentum
-                j (float): total angular momentum
-                s (float): (optional) total spin momentum
+        Args:
+            n (int): principal quantum number
+            l (int): orbital angular momentum
+            j (float): total angular momentum
+            s (float): (optional) total spin momentum
 
-            Returns:
-                float: A,B hyperfine splitting constants (in Hz)
+        Returns:
+            float: A,B hyperfine splitting constants (in Hz)
         """
         c = self.conn.cursor()
 
-        c.execute('''SELECT hfsA, hfsB FROM hfsDataAB WHERE
-            n= ? AND l = ? AND j_x2 = ?''', (n, l, j*2))
+        c.execute(
+            """SELECT hfsA, hfsB FROM hfsDataAB WHERE
+            n= ? AND l = ? AND j_x2 = ?""",
+            (n, l, j * 2),
+        )
         answer = c.fetchone()
-        if (answer):
+        if answer:
             # we did found literature value  (A and B respectively)
             return answer[0], answer[1]
         else:
-            raise ValueError("There is no data available on HFS structure"
-                             " of %s state" % printStateString(n,l,j,s=s))
+            raise ValueError(
+                "There is no data available on HFS structure"
+                " of %s state" % printStateString(n, l, j, s=s)
+            )
 
     def _reducedMatrixElementFJ(self, j1, f1, j2, f2):
-
         sph = 0.0
-        if((abs(f2 - f1) < 2) & (int(abs(j2 - j1)) < 2)):
+        if (abs(f2 - f1) < 2) & (int(abs(j2 - j1)) < 2):
             # Reduced Matrix Element <f||er||f'> in units of reduced matrix element <j||er||j'>
-            sph = (-1.0)**(j1 + self.I + f2 + 1.0) * ((2. * f1 + 1) * (2 * f2 + 1)) ** \
-                0.5 * Wigner6j(f1, 1, f2, j2, self.I, j1)
+            sph = (
+                (-1.0) ** (j1 + self.I + f2 + 1.0)
+                * ((2.0 * f1 + 1) * (2 * f2 + 1)) ** 0.5
+                * Wigner6j(f1, 1, f2, j2, self.I, j1)
+            )
 
         return sph
 
     def getSphericalDipoleMatrixElement(self, j1, mj1, j2, mj2, q):
         # Spherical Component of Angular Matrix Element in units of reduced matrix element <j||er||j'>
-        return (- 1)**(j1 - mj1) * Wigner3j(j1, 1, j2, -mj1, -q, mj2)
+        return (-1) ** (j1 - mj1) * Wigner3j(j1, 1, j2, -mj1, -q, mj2)
 
     def getSphericalMatrixElementHFStoFS(self, j1, f1, mf1, j2, mj2, q):
         r"""
-             Spherical matrix element for transition from hyperfine  resolved state
-             to unresolved fine-structure state
-             :math:`\langle f,m_f \vert\mu_q\vert j',m_j'\rangle`
-             in units of :math:`\langle j\vert\vert\mu\vert\vert j'\rangle`
+        Spherical matrix element for transition from hyperfine  resolved state
+        to unresolved fine-structure state
+        :math:`\langle f,m_f \vert\mu_q\vert j',m_j'\rangle`
+        in units of :math:`\langle j\vert\vert\mu\vert\vert j'\rangle`
 
 
-             Args:
-                 j1, f1, mf1: total orbital,
-                     fine basis (total atomic) angular momentum,
-                     and projection of total angular momentum for state 1
-                 j2, mj2: total orbital,
-                     fine basis (total atomic) angular momentum,
-                     and projection of total orbital angular momentum for state 2
-                 q (int): specifies transition that the driving field couples to,
-                     +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
-                     :math:`\pi` and :math:`\sigma^-` transitions respectively.
-                 s (float): optional, total spin angular momentum of state.
-                     By default 0.5 for Alkali atoms.
+        Args:
+            j1, f1, mf1: total orbital,
+                fine basis (total atomic) angular momentum,
+                and projection of total angular momentum for state 1
+            j2, mj2: total orbital,
+                fine basis (total atomic) angular momentum,
+                and projection of total orbital angular momentum for state 2
+            q (int): specifies transition that the driving field couples to,
+                +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
+                :math:`\pi` and :math:`\sigma^-` transitions respectively.
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
 
-             Returns:
-                 float: spherical dipole matrix element( :math:`\langle j\vert\vert\mu\vert\vert j'\rangle`)
-         """
+        Returns:
+            float: spherical dipole matrix element( :math:`\langle j\vert\vert\mu\vert\vert j'\rangle`)
+        """
         mf2 = mf1 + q
         mI = mf2 - mj2
         sph = 0.0
-        if(abs(mI) <= self.I):
-            for f2 in np.arange(max(self.I - j2, abs(mf2), f1 - 1), 1 + min(self.I + j2, f1 + 1)):
-            	#Enforce Triangle Rule
-            	if abs(j2-self.I)<= f2: 
-	                # CG multiplied by <j1 f1 mf1|er_q|j2 f2 mf2> in units of <j1 || er || j2 >
-	                sph += CG(j2, mj2, self.I, mI, f2, mf2) \
-    	                * self.getSphericalDipoleMatrixElement(f1, mf1, f2, mf2, q) \
-        	            * self._reducedMatrixElementFJ(j1, f1, j2, f2)
+        if abs(mI) <= self.I:
+            for f2 in np.arange(
+                max(self.I - j2, abs(mf2), f1 - 1), 1 + min(self.I + j2, f1 + 1)
+            ):
+                # Enforce Triangle Rule
+                if abs(j2 - self.I) <= f2:
+                    # CG multiplied by <j1 f1 mf1|er_q|j2 f2 mf2> in units of <j1 || er || j2 >
+                    sph += (
+                        CG(j2, mj2, self.I, mI, f2, mf2)
+                        * self.getSphericalDipoleMatrixElement(
+                            f1, mf1, f2, mf2, q
+                        )
+                        * self._reducedMatrixElementFJ(j1, f1, j2, f2)
+                    )
 
         return sph
 
-    def getDipoleMatrixElementHFStoFS(self, n1, l1, j1, f1, mf1, n2, l2, j2, mj2, q, s=0.5):
+    def getDipoleMatrixElementHFStoFS(
+        self, n1, l1, j1, f1, mf1, n2, l2, j2, mj2, q, s=0.5
+    ):
         r"""
             Dipole matrix element for transition from hyperfine  resolved state
             to unresolved fine-structure state
@@ -2186,184 +2414,223 @@ class AlkaliAtom(object):
             Returns:
                 float: dipole matrix element( :math:`a_0 e`)
         """
-        return self.getSphericalMatrixElementHFStoFS(j1, f1, mf1, j2, mj2, q) \
-            * self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
+        return self.getSphericalMatrixElementHFStoFS(
+            j1, f1, mf1, j2, mj2, q
+        ) * self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
 
-    def getMagneticDipoleMatrixElementHFS(self, l, j, f1, mf1, f2, mf2, q, s=0.5):
+    def getMagneticDipoleMatrixElementHFS(
+        self, l, j, f1, mf1, f2, mf2, q, s=0.5
+    ):
         r"""
 
-          Magnetic dipole matrix element :math:`\langle f_1,m_{f_1} \vert \mu_q \vert f_2,m_{f_2}\rangle` \for transitions from :math:`\vert f_1,m_{f_1}\rangle\rightarrow\vert f_2,m_{f_2}\rangle` within the same :math:`n,\ell,j` state in units of :math:`\mu_B B_q`.
+        Magnetic dipole matrix element :math:`\langle f_1,m_{f_1} \vert \mu_q \vert f_2,m_{f_2}\rangle` \for transitions from :math:`\vert f_1,m_{f_1}\rangle\rightarrow\vert f_2,m_{f_2}\rangle` within the same :math:`n,\ell,j` state in units of :math:`\mu_B B_q`.
 
-            The magnetic dipole matrix element is given by
-            :math:`\langle f_1,m_{f_1}\vert \mu_q \vert f_2,m_{f_2}\rangle = g_J \mu_B B_q (-1)^{f_2+j+I+1+f_1-m_{f_1}} \sqrt{(2f_1+1)(2f_2+1)j(j+1)(2j+1)} \begin{pmatrix}f_1&1&f_2\\-m_{f_1} & -q & m_{f_2}\end{pmatrix}                \begin{Bmatrix}f_1&1&f_2\\j & I & j\end{Bmatrix}`
+          The magnetic dipole matrix element is given by
+          :math:`\langle f_1,m_{f_1}\vert \mu_q \vert f_2,m_{f_2}\rangle = g_J \mu_B B_q (-1)^{f_2+j+I+1+f_1-m_{f_1}} \sqrt{(2f_1+1)(2f_2+1)j(j+1)(2j+1)} \begin{pmatrix}f_1&1&f_2\\-m_{f_1} & -q & m_{f_2}\end{pmatrix}                \begin{Bmatrix}f_1&1&f_2\\j & I & j\end{Bmatrix}`
 
 
 
-            Args:
-                l, j, f1, mf1: orbital, total orbital,
-                    fine basis (total atomic) angular momentum,total anuglar momentum
-                    and projection of total angular momentum for state 1
-                f2,mf2: principal, orbital, total orbital,
-                    fine basis (total atomic) angular momentum,
-                    and projection of total orbital angular momentum for state 2
-                q (int): specifies transition that the driving field couples to,
-                    +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
-                    :math:`\pi` and :math:`\sigma^-` transitions respectively.
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+          Args:
+              l, j, f1, mf1: orbital, total orbital,
+                  fine basis (total atomic) angular momentum,total anuglar momentum
+                  and projection of total angular momentum for state 1
+              f2,mf2: principal, orbital, total orbital,
+                  fine basis (total atomic) angular momentum,
+                  and projection of total orbital angular momentum for state 2
+              q (int): specifies transition that the driving field couples to,
+                  +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
+                  :math:`\pi` and :math:`\sigma^-` transitions respectively.
+              s (float): optional, total spin angular momentum of state.
+                  By default 0.5 for Alkali atoms.
 
-            Returns:
-                float: magnetic dipole matrix element (in units of :math:`\mu_BB_q`)
+          Returns:
+              float: magnetic dipole matrix element (in units of :math:`\mu_BB_q`)
         """
-        return self.getLandegj(l, j, s) * (-1)**(f2 + j + self.I + 1)\
-            * np.sqrt((2 * f1 + 1) * (2 * f2 + 1) * j * (j + 1) * (2 * j + 1)) \
-            * self.getSphericalDipoleMatrixElement(f1, mf1, f2, mf2, q) \
+        return (
+            self.getLandegj(l, j, s)
+            * (-1) ** (f2 + j + self.I + 1)
+            * np.sqrt((2 * f1 + 1) * (2 * f2 + 1) * j * (j + 1) * (2 * j + 1))
+            * self.getSphericalDipoleMatrixElement(f1, mf1, f2, mf2, q)
             * Wigner6j(f1, 1, f2, j, self.I, j)
+        )
 
     def getLandegj(self, l, j, s=0.5):
         r"""
-            Lande g-factor :math:`g_J\simeq 1+\frac{j(j+1)+s(s+1)-l(l+1)}{2j(j+1)}`
+        Lande g-factor :math:`g_J\simeq 1+\frac{j(j+1)+s(s+1)-l(l+1)}{2j(j+1)}`
 
-            Args:
-                l (float): orbital angular momentum
-                j (float): total orbital angular momentum
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+        Args:
+            l (float): orbital angular momentum
+            j (float): total orbital angular momentum
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
 
-            Returns:
-                float: Lande g-factor ( :math:`g_J`)
+        Returns:
+            float: Lande g-factor ( :math:`g_J`)
         """
-        return 1.0 + (j * (j + 1.0) + s * (s + 1.0) - l * (l + 1.0)) / (2.0 * j * (j + 1.0))
+        return 1.0 + (j * (j + 1.0) + s * (s + 1.0) - l * (l + 1.0)) / (
+            2.0 * j * (j + 1.0)
+        )
 
     def getLandegjExact(self, l, j, s=0.5):
         r"""
-            Lande g-factor :math:`g_J=g_L\frac{j(j+1)-s(s+1)+l(l+1)}{2j(j+1)}+g_S\frac{j(j+1)+s(s+1)-l(l+1)}{2j(j+1)}`
+        Lande g-factor :math:`g_J=g_L\frac{j(j+1)-s(s+1)+l(l+1)}{2j(j+1)}+g_S\frac{j(j+1)+s(s+1)-l(l+1)}{2j(j+1)}`
 
-            Args:
-                l (float): orbital angular momentum
-                j (float): total orbital angular momentum
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+        Args:
+            l (float): orbital angular momentum
+            j (float): total orbital angular momentum
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
 
-            Returns:
-                float: Lande g-factor ( :math:`g_J`)
+        Returns:
+            float: Lande g-factor ( :math:`g_J`)
         """
-        return self.gL * (j * (j + 1.0) - s * (s + 1.0) + l * (l + 1.0)) / (2.0 * j * (j + 1.0)) \
-            + self.gS * (j * (j + 1.0) + s * (s + 1.0) - l *
-                         (l + 1.0)) / (2.0 * j * (j + 1.0))
+        return self.gL * (j * (j + 1.0) - s * (s + 1.0) + l * (l + 1.0)) / (
+            2.0 * j * (j + 1.0)
+        ) + self.gS * (j * (j + 1.0) + s * (s + 1.0) - l * (l + 1.0)) / (
+            2.0 * j * (j + 1.0)
+        )
 
     def getLandegf(self, l, j, f, s=0.5):
         r"""
-            Lande g-factor :math:`g_F\simeq g_J\frac{f(f+1)-I(I+1)+j(j+1)}{2f(f+1)}`
+        Lande g-factor :math:`g_F\simeq g_J\frac{f(f+1)-I(I+1)+j(j+1)}{2f(f+1)}`
 
-            Args:
-                l (float): orbital angular momentum
-                j (float): total orbital angular momentum
-                f (float): total atomic angular momentum
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+        Args:
+            l (float): orbital angular momentum
+            j (float): total orbital angular momentum
+            f (float): total atomic angular momentum
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
 
-            Returns:
-                float: Lande g-factor ( :math:`g_F`)
+        Returns:
+            float: Lande g-factor ( :math:`g_F`)
         """
-        gf = self.getLandegj(l, j, s) * (f * (f + 1.0) - self.I *
-                                         (self.I + 1.0) + j * (j + 1.0)) / (2.0 * f * (f + 1.0))
+        gf = (
+            self.getLandegj(l, j, s)
+            * (f * (f + 1.0) - self.I * (self.I + 1.0) + j * (j + 1.0))
+            / (2.0 * f * (f + 1.0))
+        )
         return gf
 
     def getLandegfExact(self, l, j, f, s=0.5):
         r"""
-            Lande g-factor :math:`g_F`
-            :math:`g_F=g_J\frac{f(f+1)-I(I+1)+j(j+1)}{2f(f+1)}+g_I\frac{f(f+1)+I(I+1)-j(j+1)}{2f(f+1)}`
+        Lande g-factor :math:`g_F`
+        :math:`g_F=g_J\frac{f(f+1)-I(I+1)+j(j+1)}{2f(f+1)}+g_I\frac{f(f+1)+I(I+1)-j(j+1)}{2f(f+1)}`
 
-            Args:
-                l (float): orbital angular momentum
-                j (float): total orbital angular momentum
-                f (float): total atomic angular momentum
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+        Args:
+            l (float): orbital angular momentum
+            j (float): total orbital angular momentum
+            f (float): total atomic angular momentum
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
 
-            Returns:
-                float: Lande g-factor ( :math:`g_F`)
+        Returns:
+            float: Lande g-factor ( :math:`g_F`)
         """
-        gf = self.getLandegjExact(l, j, s) * (f * (f + 1) - self.I * (self.I + 1) + j * (j + 1.0)) / (2 * f * (f + 1.0)) \
-            + self.gI * (f * (f + 1.0) + self.I * (self.I + 1.0) -
-                         j * (j + 1.0)) / (2.0 * f * (f + 1.0))
+        gf = self.getLandegjExact(l, j, s) * (
+            f * (f + 1) - self.I * (self.I + 1) + j * (j + 1.0)
+        ) / (2 * f * (f + 1.0)) + self.gI * (
+            f * (f + 1.0) + self.I * (self.I + 1.0) - j * (j + 1.0)
+        ) / (
+            2.0 * f * (f + 1.0)
+        )
         return gf
 
     def getHFSEnergyShift(self, j, f, A, B=0, s=0.5):
         r"""
-             Energy shift of HFS from centre of mass :math:`\Delta E_\mathrm{hfs}`
+         Energy shift of HFS from centre of mass :math:`\Delta E_\mathrm{hfs}`
 
-            :math:`\Delta E_\mathrm{hfs} = \frac{A}{2}K+B\frac{\frac{3}{2}K(K+1)-2I(I+1)J(J+1)}{2I(2I-1)2J(2J-1)}`
+        :math:`\Delta E_\mathrm{hfs} = \frac{A}{2}K+B\frac{\frac{3}{2}K(K+1)-2I(I+1)J(J+1)}{2I(2I-1)2J(2J-1)}`
 
-            where :math:`K=F(F+1)-I(I+1)-J(J+1)`
+        where :math:`K=F(F+1)-I(I+1)-J(J+1)`
 
-            Args:
-                j (float): total orbital angular momentum
-                f (float): total atomic angular momentum
-                A (float): HFS magnetic dipole constant
-                B (float): HFS magnetic quadrupole constant
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+        Args:
+            j (float): total orbital angular momentum
+            f (float): total atomic angular momentum
+            A (float): HFS magnetic dipole constant
+            B (float): HFS magnetic quadrupole constant
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
 
-            Returns:
-                float: Energy shift ( :math:`\Delta E_\mathrm{hfs}`)
+        Returns:
+            float: Energy shift ( :math:`\Delta E_\mathrm{hfs}`)
         """
         K = f * (f + 1.0) - self.I * (self.I + 1.0) - j * (j + 1.0)
         Ehfs = A / 2.0 * K
         if abs(B) > 0:
-            Ehfs += B * (3.0 / 2.0 * K * (K + 1) - 2.0 * self.I * (self.I + 1.0) * j *
-                         (j + 1.0)) / (2.0 * self.I * (2.0 * self.I - 1.0) * 2.0 * j * (2.0 * j - 1))
+            Ehfs += (
+                B
+                * (
+                    3.0 / 2.0 * K * (K + 1)
+                    - 2.0 * self.I * (self.I + 1.0) * j * (j + 1.0)
+                )
+                / (
+                    2.0
+                    * self.I
+                    * (2.0 * self.I - 1.0)
+                    * 2.0
+                    * j
+                    * (2.0 * j - 1)
+                )
+            )
 
         return Ehfs
 
     def getBranchingRatio(self, jg, fg, mfg, je, fe, mfe, s=0.5):
         r"""
-             Branching ratio for decay from :math:`\vert j_e,f_e,m_{f_e} \rangle \rightarrow \vert j_g,f_g,m_{f_g}\rangle`
+         Branching ratio for decay from :math:`\vert j_e,f_e,m_{f_e} \rangle \rightarrow \vert j_g,f_g,m_{f_g}\rangle`
 
-                :math:`b = \displaystyle\sum_q (2j_e+1)\left(\begin{matrix}f_1 & 1 & f_2 \\-m_{f1} & q & m_{f2}\end{matrix}\right)^2\vert \langle j_e,f_e\vert \vert er \vert\vert j_g,f_g\rangle\vert^2/|\langle j_e || er || j_g \rangle |^2`
+            :math:`b = \displaystyle\sum_q (2j_e+1)\left(\begin{matrix}f_1 & 1 & f_2 \\-m_{f1} & q & m_{f2}\end{matrix}\right)^2\vert \langle j_e,f_e\vert \vert er \vert\vert j_g,f_g\rangle\vert^2/|\langle j_e || er || j_g \rangle |^2`
 
-            Args:
-                jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
-                    and projection of total angular momentum for ground state
-                je, fe, mfe: total orbital, fine basis (total atomic) angular momentum,
-                and projection of total angular momentum for excited state
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+        Args:
+            jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
+                and projection of total angular momentum for ground state
+            je, fe, mfe: total orbital, fine basis (total atomic) angular momentum,
+            and projection of total angular momentum for excited state
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
 
-            Returns:
-                float: branching ratio
+        Returns:
+            float: branching ratio
         """
         b = 0.0
         for q in np.arange(-1, 2):
-            b += self.getSphericalDipoleMatrixElement(
-                fg, mfg, fe, mfe, q)**2 * self._reducedMatrixElementFJ(jg, fg, je, fe)**2
+            b += (
+                self.getSphericalDipoleMatrixElement(fg, mfg, fe, mfe, q) ** 2
+                * self._reducedMatrixElementFJ(jg, fg, je, fe) ** 2
+            )
 
         # Rescale
         return b * (2.0 * je + 1.0)
 
-    def getSaturationIntensity(self, ng, lg, jg, fg, mfg, ne, le, je, fe, mfe, s=0.5):
+    def getSaturationIntensity(
+        self, ng, lg, jg, fg, mfg, ne, le, je, fe, mfe, s=0.5
+    ):
         r"""
-             Saturation Intensity :math:`I_\mathrm{sat}` for transition :math:`\vert j_g,f_g,m_{f_g}\rangle\rightarrow\vert j_e,f_e,m_{f_e}\rangle` in units of :math:`\mathrm{W}/\mathrm{m}^2`.
+         Saturation Intensity :math:`I_\mathrm{sat}` for transition :math:`\vert j_g,f_g,m_{f_g}\rangle\rightarrow\vert j_e,f_e,m_{f_e}\rangle` in units of :math:`\mathrm{W}/\mathrm{m}^2`.
 
-                :math:`I_\mathrm{sat} = \frac{c\epsilon_0\Gamma^2\hbar^2}{4\vert \epsilon_q\cdot\mathrm{d}\vert^2}`
+            :math:`I_\mathrm{sat} = \frac{c\epsilon_0\Gamma^2\hbar^2}{4\vert \epsilon_q\cdot\mathrm{d}\vert^2}`
 
-            Args:
-                ng, lg, jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
-                    and projection of total angular momentum for ground state
-                ne, le, je, fe, mfe: total orbital, fine basis (total atomic) angular momentum,
-                and projection of total angular momentum for excited state
-                s (float): optional, total spin angular momentum of state.
-                    By default 0.5 for Alkali atoms.
+        Args:
+            ng, lg, jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
+                and projection of total angular momentum for ground state
+            ne, le, je, fe, mfe: total orbital, fine basis (total atomic) angular momentum,
+            and projection of total angular momentum for excited state
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
 
-            Returns:
-                float: Saturation Intensity in units of :math:`\mathrm{W}/\mathrm{m}^2`
+        Returns:
+            float: Saturation Intensity in units of :math:`\mathrm{W}/\mathrm{m}^2`
         """
         q = mfe - mfg
         if abs(q) <= 1:
-            d = self.getDipoleMatrixElementHFS(
-                ng, lg, jg, fg, mfg, ne, le, je, fe, mfe, q) * C_e * physical_constants["Bohr radius"][0]
-            Gamma = 1. / self.getStateLifetime(ne, le, je)
+            d = (
+                self.getDipoleMatrixElementHFS(
+                    ng, lg, jg, fg, mfg, ne, le, je, fe, mfe, q
+                )
+                * C_e
+                * physical_constants["Bohr radius"][0]
+            )
+            Gamma = 1.0 / self.getStateLifetime(ne, le, je)
             Is = C_c * epsilon_0 * Gamma**2 * hbar**2 / (4.0 * d**2)
         else:
             raise ValueError("States not coupled")
@@ -2372,69 +2639,79 @@ class AlkaliAtom(object):
 
     def getSaturationIntensityIsotropic(self, ng, lg, jg, fg, ne, le, je, fe):
         r"""
-             Isotropic Saturation Intensity :math:`I_\mathrm{sat}` for transition :math:`f_g\rightarrow f_e` averaged over all polarisations in units of :math:`\mathrm{W}/\mathrm{m}^2`.
+         Isotropic Saturation Intensity :math:`I_\mathrm{sat}` for transition :math:`f_g\rightarrow f_e` averaged over all polarisations in units of :math:`\mathrm{W}/\mathrm{m}^2`.
 
-                :math:`I_\mathrm{sat} = \frac{c\epsilon_0\Gamma^2\hbar^2}{4\vert \epsilon_q\cdot\mathrm{d}\vert^2}`
+            :math:`I_\mathrm{sat} = \frac{c\epsilon_0\Gamma^2\hbar^2}{4\vert \epsilon_q\cdot\mathrm{d}\vert^2}`
 
-            Args:
-                ng, lg, jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
-                    and projection of total angular momentum for ground state
-                ne, le, je, fe, mfe: total orbital, fine basis (total atomic) angular momentum,
-                and projection of total angular momentum for excited state
+        Args:
+            ng, lg, jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
+                and projection of total angular momentum for ground state
+            ne, le, je, fe, mfe: total orbital, fine basis (total atomic) angular momentum,
+            and projection of total angular momentum for excited state
 
-            Returns:
-                float: Saturation Intensity in units of :math:`\mathrm{W}/\mathrm{m}^2`
+        Returns:
+            float: Saturation Intensity in units of :math:`\mathrm{W}/\mathrm{m}^2`
         """
         d_iso_sq = 0.0
         for q in range(-1, 2):
             for mfg in range(-fg, fg + 1):
-                d_iso_sq += self.getDipoleMatrixElementHFS(
-                    ng, lg, jg, fg, mfg, ne, le, je, fe, mfg + q, q)**2
+                d_iso_sq += (
+                    self.getDipoleMatrixElementHFS(
+                        ng, lg, jg, fg, mfg, ne, le, je, fe, mfg + q, q
+                    )
+                    ** 2
+                )
 
         # Avergage over (2fg+1) levels and 3 polarisationsand rescale
-        d_iso_sq = d_iso_sq / 3.0 / \
-            (2 * fg + 1) * (C_e * physical_constants["Bohr radius"][0])**2
+        d_iso_sq = (
+            d_iso_sq
+            / 3.0
+            / (2 * fg + 1)
+            * (C_e * physical_constants["Bohr radius"][0]) ** 2
+        )
 
-        Gamma = 1. / self.getStateLifetime(ne, le, je)
+        Gamma = 1.0 / self.getStateLifetime(ne, le, je)
         Is = C_c * epsilon_0 * Gamma**2 * hbar**2 / (4.0 * d_iso_sq)
 
         return Is
 
-    def groundStateRamanTransition(self, Pa, wa, qa, Pb, wb, qb, Delta, f0, mf0, f1, mf1, ne, le, je):
+    def groundStateRamanTransition(
+        self, Pa, wa, qa, Pb, wb, qb, Delta, f0, mf0, f1, mf1, ne, le, je
+    ):
         r"""
-            Returns two-photon Rabi frequency :math:`\Omega_R`, differential AC Stark shift :math:`\Delta_\mathrm{AC}` and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}` for two-photon ground-state Raman transitions from :math:`\vert f_g,m_{f_g}\rangle\rightarrow\vert nL_{j_r} j_r,m_{j_r}\rangle` via an intermediate excited state :math:`n_e,\ell_e,j_e`.
+        Returns two-photon Rabi frequency :math:`\Omega_R`, differential AC Stark shift :math:`\Delta_\mathrm{AC}` and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}` for two-photon ground-state Raman transitions from :math:`\vert f_g,m_{f_g}\rangle\rightarrow\vert nL_{j_r} j_r,m_{j_r}\rangle` via an intermediate excited state :math:`n_e,\ell_e,j_e`.
 
-                :math:`\Omega_R=\displaystyle\sum_{f_e,m_{f_e}}\frac{\Omega^a_{0\rightarrow f_e}\Omega^b_{1\rightarrow f_e}}{2(\Delta-\Delta_{f_e})},`
+            :math:`\Omega_R=\displaystyle\sum_{f_e,m_{f_e}}\frac{\Omega^a_{0\rightarrow f_e}\Omega^b_{1\rightarrow f_e}}{2(\Delta-\Delta_{f_e})},`
 
-                :math:`\Delta_{\mathrm{AC}} = \displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2-\vert\Omega^b_{1\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}+\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})}-\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})}\right],`
+            :math:`\Delta_{\mathrm{AC}} = \displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2-\vert\Omega^b_{1\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}+\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})}-\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})}\right],`
 
-                :math:`P_\mathrm{sc} =\frac{\Gamma_e t_\pi}{2}\displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega^b_{1\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})^2}+\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})^2}\right]`
+            :math:`P_\mathrm{sc} =\frac{\Gamma_e t_\pi}{2}\displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega^a_{0\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega^b_{1\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega^a_{1\rightarrow f_e}\vert^2}{4(\Delta+\omega_{01}-\Delta_{f_e})^2}+\frac{\vert\Omega^b_{0\rightarrow f_e}\vert^2}{4(\Delta-\omega_{01}-\Delta_{f_e})^2}\right]`
 
-                where :math:`\tau_\pi=\pi/\Omega_R`.
+            where :math:`\tau_\pi=\pi/\Omega_R`.
 
-            .. figure:: ./GroundStateRaman.png
-                :width: 250 px
-                :alt: Schema of |0>-> -> |e> -> |1> transition
-                :align: right
+        .. figure:: ./GroundStateRaman.png
+            :width: 250 px
+            :alt: Schema of |0>-> -> |e> -> |1> transition
+            :align: right
 
-            Args:
-                Pa:
-                    power (W), of laser a :math:`\vert 0 \rangle\rightarrow\vert e\rangle`
-                wa:
-                    beam waist (m) of laser a :math:`\vert 0 \rangle\rightarrow\vert e\rangle`
-                qa:
-                    polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`, :math:`\pi` and :math:`\sigma^-`)
-                    of laser a :math:`\vert 0 \rangle\rightarrow\vert e\rangle`
-                Pb: power (W)  of laser b :math:`\vert 1 \rangle\rightarrow\vert e\rangle`
-                wb: beam waist (m)  of laser b :math:`\vert 1 \rangle\rightarrow\vert e\rangle`
-                qb: polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`, :math:`\pi` and :math:`\sigma^-`) of laser b :math:`\vert 1 \rangle\rightarrow\vert e\rangle`
-                Delta : Detuning from excited state centre of mass (rad :math:`\mathrm{s}^{-1}`)
-                f0,mf0: Lower hyperfine level
-                f1,mf1: Upper hyperfine level
-                ne, le, je: principal, orbital, total orbital quantum numbers of excited state
+        Args:
+            Pa:
+                power (W), of laser a :math:`\vert 0 \rangle\rightarrow\vert e\rangle`
+            wa:
+                beam waist (m) of laser a :math:`\vert 0 \rangle\rightarrow\vert e\rangle`
+            qa:
+                polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`, :math:`\pi` and :math:`\sigma^-`)
+                of laser a :math:`\vert 0 \rangle\rightarrow\vert e\rangle`
+            Pb: power (W)  of laser b :math:`\vert 1 \rangle\rightarrow\vert e\rangle`
+            wb: beam waist (m)  of laser b :math:`\vert 1 \rangle\rightarrow\vert e\rangle`
+            qb: polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`, :math:`\pi` and :math:`\sigma^-`) of laser b :math:`\vert 1 \rangle\rightarrow\vert e\rangle`
+            Delta : Detuning from excited state centre of mass (rad :math:`\mathrm{s}^{-1}`)
+            f0,mf0: Lower hyperfine level
+            f1,mf1: Upper hyperfine level
+            ne, le, je: principal, orbital, total orbital quantum numbers of excited state
 
-            Returns:
-                float: Two-Photon Rabi frequency :math:`\Omega_R` (units :math:`\mathrm{rads}^{-1}`), differential AC Stark shift :math:`\Delta_\mathrm{AC}` (units :math:`\mathrm{rads}^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
+        Returns:
+            float: Two-Photon Rabi frequency :math:`\Omega_R` (units :math:`\mathrm{rads}^{-1}`), differential AC Stark shift :math:`\Delta_\mathrm{AC}` (units :math:`\mathrm{rads}^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
         """
 
         # Intensity/beam (W/m^2)
@@ -2472,34 +2749,60 @@ class AlkaliAtom(object):
         for fe in range(int(abs(je - self.I)), int(1.0 + (je + self.I))):
             # Hyperfine energy shift (rad s-1)
             Ehfs = 2.0 * np.pi * self.getHFSEnergyShift(je, fe, A, B)
-            for mfe in range(max(-fe, min(mf1, mf0) - 1), 1 + min(fe, max(mf1, mf0) + 1)):
-
+            for mfe in range(
+                max(-fe, min(mf1, mf0) - 1), 1 + min(fe, max(mf1, mf0) + 1)
+            ):
                 # Rabi frequency of each laser from each transition (rad s-1)
-                Omaf0 = Ea * rme_j / hbar * self.getSphericalDipoleMatrixElement(f0, mf0, fe, mfe, qa) \
+                Omaf0 = (
+                    Ea
+                    * rme_j
+                    / hbar
+                    * self.getSphericalDipoleMatrixElement(f0, mf0, fe, mfe, qa)
                     * self._reducedMatrixElementFJ(jg, f0, je, fe)
+                )
 
-                Omaf1 = Ea * rme_j / hbar * self.getSphericalDipoleMatrixElement(f1, mf1, fe, mfe, qa) \
+                Omaf1 = (
+                    Ea
+                    * rme_j
+                    / hbar
+                    * self.getSphericalDipoleMatrixElement(f1, mf1, fe, mfe, qa)
                     * self._reducedMatrixElementFJ(jg, f1, je, fe)
+                )
 
-                Ombf0 = Eb * rme_j / hbar * self.getSphericalDipoleMatrixElement(f0, mf0, fe, mfe, qb) \
+                Ombf0 = (
+                    Eb
+                    * rme_j
+                    / hbar
+                    * self.getSphericalDipoleMatrixElement(f0, mf0, fe, mfe, qb)
                     * self._reducedMatrixElementFJ(jg, f0, je, fe)
+                )
 
-                Ombf1 = Eb * rme_j / hbar * self.getSphericalDipoleMatrixElement(f1, mf1, fe, mfe, qb) \
+                Ombf1 = (
+                    Eb
+                    * rme_j
+                    / hbar
+                    * self.getSphericalDipoleMatrixElement(f1, mf1, fe, mfe, qb)
                     * self._reducedMatrixElementFJ(jg, f1, je, fe)
+                )
 
                 # AC Stark shift on qubit states
-                AC1 += Ombf1**2 / (4 * (Delta - Ehfs)) + \
-                    Omaf1**2 / (4 * (Delta + omega01 - Ehfs))
-                AC0 += Omaf0**2 / (4 * (Delta - Ehfs)) + \
-                    Ombf0**2 / (4 * (Delta - omega01 - Ehfs))
+                AC1 += Ombf1**2 / (4 * (Delta - Ehfs)) + Omaf1**2 / (
+                    4 * (Delta + omega01 - Ehfs)
+                )
+                AC0 += Omaf0**2 / (4 * (Delta - Ehfs)) + Ombf0**2 / (
+                    4 * (Delta - omega01 - Ehfs)
+                )
 
                 # Two-Photon Rabi Frequency
                 OmegaR += Omaf0 * Ombf1 / (2 * (Delta - Ehfs))
 
                 # Excitated state population Pe
-                Pe += 0.5 * Omaf0**2 / (2 * (Delta - Ehfs)**2) + 0.5 * Ombf1**2 / (2 * (Delta - Ehfs)**2) \
-                    + 0.5 * Omaf1**2 / (2 * (Delta + omega01 - Ehfs)**2) + \
-                    0.5 * Ombf0**2 / (2 * (Delta - omega01 - Ehfs)**2)
+                Pe += (
+                    0.5 * Omaf0**2 / (2 * (Delta - Ehfs) ** 2)
+                    + 0.5 * Ombf1**2 / (2 * (Delta - Ehfs) ** 2)
+                    + 0.5 * Omaf1**2 / (2 * (Delta + omega01 - Ehfs) ** 2)
+                    + 0.5 * Ombf0**2 / (2 * (Delta - omega01 - Ehfs) ** 2)
+                )
 
         # Total Differential Shift
         AC = AC0 - AC1
@@ -2511,47 +2814,65 @@ class AlkaliAtom(object):
 
         return OmegaR, AC, Psc
 
-    def twoPhotonRydbergExcitation(self, Pp, wp, qp, Pc, wc, qc, Delta, fg, mfg, ne, le, je, nr, lr, jr, mjr):
+    def twoPhotonRydbergExcitation(
+        self,
+        Pp,
+        wp,
+        qp,
+        Pc,
+        wc,
+        qc,
+        Delta,
+        fg,
+        mfg,
+        ne,
+        le,
+        je,
+        nr,
+        lr,
+        jr,
+        mjr,
+    ):
         r"""
-                Returns two-photon Rabi frequency :math:`\Omega_R`, ground AC Stark shift :math:`\Delta_{\mathrm{AC}_g}`, Rydberg state AC Stark shift :math:`\Delta_{\mathrm{AC}_r}` and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}` for two-photon  excitation from :math:`\vert f_h,m_{f_g}\rangle\rightarrow \vert j_r,m_{j_r}\rangle` via intermediate excited state
+        Returns two-photon Rabi frequency :math:`\Omega_R`, ground AC Stark shift :math:`\Delta_{\mathrm{AC}_g}`, Rydberg state AC Stark shift :math:`\Delta_{\mathrm{AC}_r}` and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}` for two-photon  excitation from :math:`\vert f_h,m_{f_g}\rangle\rightarrow \vert j_r,m_{j_r}\rangle` via intermediate excited state
 
-                    :math:`\Omega_R=\displaystyle\sum_{f_e,m_{f_e}}\frac{\Omega_p^{g\rightarrow f_e}\Omega_c^{f_e\rightarrow r}}{2(\Delta-\Delta_{f_e})}`
+            :math:`\Omega_R=\displaystyle\sum_{f_e,m_{f_e}}\frac{\Omega_p^{g\rightarrow f_e}\Omega_c^{f_e\rightarrow r}}{2(\Delta-\Delta_{f_e})}`
 
-                    :math:`\Delta_{\mathrm{AC}_g} = \displaystyle\sum_{f_e,m_{f_e}}\frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}`
+            :math:`\Delta_{\mathrm{AC}_g} = \displaystyle\sum_{f_e,m_{f_e}}\frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}`
 
-                    :math:`\Delta_{\mathrm{AC}_r} = \displaystyle\sum_{f_e,m_{f_e}}\frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}``
+            :math:`\Delta_{\mathrm{AC}_r} = \displaystyle\sum_{f_e,m_{f_e}}\frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{4(\Delta-\Delta_{f_e})}``
 
-                    :math:`P_\mathrm{sc} = \frac{\Gamma_et_\pi}{2}\displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega_c^{f_e\rightarrow r}\vert^2}{2(\Delta-\Delta_{f_e})^2}\right]`
+            :math:`P_\mathrm{sc} = \frac{\Gamma_et_\pi}{2}\displaystyle\sum_{f_e,m_{f_e}}\left[\frac{\vert\Omega_p^{g\rightarrow f_e}\vert^2}{2(\Delta-\Delta_{f_e})^2}+\frac{\vert\Omega_c^{f_e\rightarrow r}\vert^2}{2(\Delta-\Delta_{f_e})^2}\right]`
 
-                where :math:`\tau_\pi=\pi/\Omega_R`.
+        where :math:`\tau_\pi=\pi/\Omega_R`.
 
-                .. figure:: ./twophotonexcitation.png
-                    :width: 150 px
-                    :alt: Schema of |g-> -> |e> -> |r> transition
-                    :align: right
+        .. figure:: ./twophotonexcitation.png
+            :width: 150 px
+            :alt: Schema of |g-> -> |e> -> |r> transition
+            :align: right
 
-                Args:
-                    Pp: power (W) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
-                    wp: beam waist (m) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
-                    qp: polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
-                    Pb: power (W) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
-                    wb: beam waist (m) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
-                    qb: polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
-                    Delta : Detuning from excited state centre of mass (rad s:math:`^{-1}`)
-                    fg: ground state hyperfine state
-                    mfg: projection of ground state hyperfine state
-                    f1,mf1: upper hyperfine state
-                    ne: principal quantum numbers of excited state 
-                    le: orbital angular momentum of excited state 
-                    je: total angular momentum of excited state
-                    nr: principal quantum number of target Rydberg state
-                    lr: orbital angular momentum of target Rydberg state
-                    jr: total angular momentum of target Rydberg state
-                    mjr: projection of total angular momenutm of target Rydberg state
+        Args:
+            Pp: power (W) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
+            wp: beam waist (m) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
+            qp: polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of probe laser :math:`\vert g \rangle\rightarrow\vert e\rangle`
+            Pb: power (W) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
+            wb: beam waist (m) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
+            qb: polarisation (+1, 0 or -1 corresponding to driving :math:`\sigma^+`,:math:`\pi` and :math:`\sigma^-`) of coupling laser :math:`\vert e\rangle\rightarrow\vert r\rangle`
+            Delta : Detuning from excited state centre of mass (rad s:math:`^{-1}`)
+            fg: ground state hyperfine state
+            mfg: projection of ground state hyperfine state
+            f1,mf1: upper hyperfine state
+            ne: principal quantum numbers of excited state
+            le: orbital angular momentum of excited state
+            je: total angular momentum of excited state
+            nr: principal quantum number of target Rydberg state
+            lr: orbital angular momentum of target Rydberg state
+            jr: total angular momentum of target Rydberg state
+            mjr: projection of total angular momenutm of target Rydberg state
 
-                Returns:
-                    float: Two-Photon Rabi frequency :math:`\Omega_R` (units :math:`\mathrm{rads}^{-1}`),
-                    ground-state AC Stark shift :math:`\Delta_{\mathrm{AC}_g}` (units :math:`\mathrm{rads}^{-1}`) Rydberg-state AC Stark shift :math:`\Delta_{\mathrm{AC}_r}` (units :math:`\mathrm{rads}^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
+        Returns:
+            float: Two-Photon Rabi frequency :math:`\Omega_R` (units :math:`\mathrm{rads}^{-1}`),
+            ground-state AC Stark shift :math:`\Delta_{\mathrm{AC}_g}` (units :math:`\mathrm{rads}^{-1}`) Rydberg-state AC Stark shift :math:`\Delta_{\mathrm{AC}_r}` (units :math:`\mathrm{rads}^{-1}`) and probability to scatter a photon during a :math:`\pi`-pulse :math:`P_\mathrm{sc}`
         """
 
         # Intensity/beam (W/m^2)
@@ -2594,14 +2915,23 @@ class AlkaliAtom(object):
             Ehfs = 2.0 * np.pi * self.getHFSEnergyShift(je, fe, A, B)
             # range(max(-fe,min(mf1,mf0)-1),1+min(fe,max(mf1,mf0)+1)):
             for mfe in range(-fe, fe + 1):
-
                 # Probe Rabi Frequency (rad s-1)
-                OmP = Ep * rme_j / hbar * self.getSphericalDipoleMatrixElement(fg, mfg, fe, mfe, qp) \
+                OmP = (
+                    Ep
+                    * rme_j
+                    / hbar
+                    * self.getSphericalDipoleMatrixElement(fg, mfg, fe, mfe, qp)
                     * self._reducedMatrixElementFJ(jg, fg, je, fe)
+                )
                 # Coupling Rabi Frequency (rad s-1)
-                OmC = Ec * rme_jRyd / hbar * \
-                    self.getSphericalMatrixElementHFStoFS(
-                        je, fe, mfe, jr, mjr, qc)
+                OmC = (
+                    Ec
+                    * rme_jRyd
+                    / hbar
+                    * self.getSphericalMatrixElementHFStoFS(
+                        je, fe, mfe, jr, mjr, qc
+                    )
+                )
 
                 # AC Stark shift on ground state (rad s-1)
                 ACg += (OmP**2) / (4 * (Delta - Ehfs))
@@ -2612,7 +2942,7 @@ class AlkaliAtom(object):
                 OmegaR += OmP * OmC / (2 * (Delta - Ehfs))
 
                 # Excitated state population Pe
-                Pe += 0.5 * (OmP**2 + OmC**2) / (2 * (Delta - Ehfs)**2)
+                Pe += 0.5 * (OmP**2 + OmC**2) / (2 * (Delta - Ehfs) ** 2)
 
         # Pi-rotation time (s)
         tau_pi = pi / abs(OmegaR)
@@ -2637,20 +2967,20 @@ class AlkaliAtom(object):
 
     def breitRabi(self, n, l, j, B):
         r"""
-             Returns exact Zeeman energies math:`E_z` for states :math:`\vert F,m_f\rangle` in the :math:`\ell,j` manifold via exact diagonalisation of the Zeeman interaction :math:`\mathcal{H}_z` and the hyperfine interaction :math:`\mathcal{H}_\mathrm{hfs}` given by equations
+         Returns exact Zeeman energies math:`E_z` for states :math:`\vert F,m_f\rangle` in the :math:`\ell,j` manifold via exact diagonalisation of the Zeeman interaction :math:`\mathcal{H}_z` and the hyperfine interaction :math:`\mathcal{H}_\mathrm{hfs}` given by equations
 
-                    :math:`\mathcal{H}_Z=\frac{\mu_B}{\hbar}(g_J J_z+g_I I_z)B_z`
+                :math:`\mathcal{H}_Z=\frac{\mu_B}{\hbar}(g_J J_z+g_I I_z)B_z`
 
-                and
+            and
 
-                    :math:`\mathcal{H}_\mathrm{hfs}=A_\mathrm{hfs}I\cdot J + B_\mathrm{hfs}\frac{3(I\cdot J)^2+3/2 I\cdot J -I^2J^2}{2I(2I-1)2J(2J-1)}`.
+                :math:`\mathcal{H}_\mathrm{hfs}=A_\mathrm{hfs}I\cdot J + B_\mathrm{hfs}\frac{3(I\cdot J)^2+3/2 I\cdot J -I^2J^2}{2I(2I-1)2J(2J-1)}`.
 
-            Args:
-                n,l,j: principal,orbital, total orbital quantum numbers
-                B: Magnetic Field (units T)
+        Args:
+            n,l,j: principal,orbital, total orbital quantum numbers
+            B: Magnetic Field (units T)
 
-            Returns:
-                float: State energy :math:`E_z` in SI units (Hz), state f, state mf
+        Returns:
+            float: State energy :math:`E_z` in SI units (Hz), state f, state mf
         """
 
         Ahfs, Bhfs = self.getHFSCoefficients(n, l, j)
@@ -2683,9 +3013,12 @@ class AlkaliAtom(object):
 
         # Hyperfine Interaction
         Hhfs = Ahfs * IJ
-        if(Bhfs != 0):
-            Hhfs += Bhfs * (3 * IJ * IJ + 3 / 2 * IJ - I2 * J2) / \
-                (2 * self.I * (2 * self.I - 1) * 2 * j * (2 * j - 1))
+        if Bhfs != 0:
+            Hhfs += (
+                Bhfs
+                * (3 * IJ * IJ + 3 / 2 * IJ - I2 * J2)
+                / (2 * self.I * (2 * self.I - 1) * 2 * j * (2 * j - 1))
+            )
 
         # Zeeman Interaction
         Hz = uB * (self.getLandegjExact(l, j) * Jz + self.gI * Iz)
@@ -2706,12 +3039,12 @@ class AlkaliAtom(object):
         mf = np.zeros(N)
         for ctr in range(N):
             f2 = eVec[:, ctr].conj().T * F2 * eVec[:, ctr]
-            f[ctr] = np.round(
-                1 / 2 * (-1 + np.sqrt(1 + 4 * np.real(f2[0, 0]))))
+            f[ctr] = np.round(1 / 2 * (-1 + np.sqrt(1 + 4 * np.real(f2[0, 0]))))
             m = eVec[:, ctr].conj().T * Fz * eVec[:, ctr]
             mf[ctr] = np.round(np.real(m[0, 0]))
 
         return en, f, mf
+
 
 ### JDP EDITS FINISH ###
 
@@ -2756,29 +3089,31 @@ def NumerovBack(innerLimit, outerLimit, kfun, step, init1, init2):
 
     br = int((sqrt(outerLimit) - sqrt(innerLimit)) / step)
     # integrated wavefunction R(r)*r^{3/4}
-    sol = np.zeros(br, dtype=np.dtype('d'))
+    sol = np.zeros(br, dtype=np.dtype("d"))
     # radial coordinate for integration \sqrt(r)
-    rad = np.zeros(br, dtype=np.dtype('d'))
+    rad = np.zeros(br, dtype=np.dtype("d"))
 
     br = br - 1
     x = sqrt(innerLimit) + step * (br - 1)
-    sol[br] = (2. * (1. - 5.0 / 12.0 * step**2 * kfun(x)) * init1
-               - (1. + 1. / 12.0 * step**2 * kfun(x + step)) * init2) /\
-        (1 + 1 / 12.0 * step**2 * kfun(x - step))
+    sol[br] = (
+        2.0 * (1.0 - 5.0 / 12.0 * step**2 * kfun(x)) * init1
+        - (1.0 + 1.0 / 12.0 * step**2 * kfun(x + step)) * init2
+    ) / (1 + 1 / 12.0 * step**2 * kfun(x - step))
     rad[br] = x
 
     x = x - step
     br = br - 1
 
-    sol[br] = (2. * (1. - 5.0 / 12.0 * step**2 * kfun(x)) * sol[br + 1]
-               - (1. + 1. / 12.0 * step**2 * kfun(x + step)) * init1) /\
-        (1 + 1 / 12.0 * step**2 * kfun(x - step))
+    sol[br] = (
+        2.0 * (1.0 - 5.0 / 12.0 * step**2 * kfun(x)) * sol[br + 1]
+        - (1.0 + 1.0 / 12.0 * step**2 * kfun(x + step)) * init1
+    ) / (1 + 1 / 12.0 * step**2 * kfun(x - step))
     rad[br] = x
 
     # check if the function starts diverging  before the innerLimit
     # -> in that case break integration earlier
 
-    maxValue = 0.
+    maxValue = 0.0
 
     checkPoint = 0
     fromLastMax = 0
@@ -2786,10 +3121,10 @@ def NumerovBack(innerLimit, outerLimit, kfun, step, init1, init2):
     while br > checkPoint:
         br = br - 1
         x = x - step
-        sol[br] = (2. * (1. - 5.0 / 12.0 * step**2 * kfun(x)) * sol[br + 1]
-                   - (1. + 1. / 12.0 * step**2 * kfun(x + step)) * sol[br + 2]
-                   ) /\
-            (1. + 1. / 12.0 * step**2 * kfun(x - step))
+        sol[br] = (
+            2.0 * (1.0 - 5.0 / 12.0 * step**2 * kfun(x)) * sol[br + 1]
+            - (1.0 + 1.0 / 12.0 * step**2 * kfun(x + step)) * sol[br + 2]
+        ) / (1.0 + 1.0 / 12.0 * step**2 * kfun(x - step))
         rad[br] = x
         if abs(sol[br] * sqrt(x)) > maxValue:
             maxValue = abs(sol[br] * sqrt(x))
@@ -2802,25 +3137,26 @@ def NumerovBack(innerLimit, outerLimit, kfun, step, init1, init2):
 
     divergencePoint = 0
 
-    while (br > 0)and(divergencePoint == 0):
+    while (br > 0) and (divergencePoint == 0):
         br = br - 1
         x = x - step
-        sol[br] = (2. * (1. - 5.0 / 12.0 * step**2 * kfun(x)) * sol[br + 1]
-                   - (1. + 1. / 12.0 * step**2 * kfun(x + step)) * sol[br + 2]
-                   ) /\
-            (1. + 1. / 12.0 * step**2 * kfun(x - step))
+        sol[br] = (
+            2.0 * (1.0 - 5.0 / 12.0 * step**2 * kfun(x)) * sol[br + 1]
+            - (1.0 + 1.0 / 12.0 * step**2 * kfun(x + step)) * sol[br + 2]
+        ) / (1.0 + 1.0 / 12.0 * step**2 * kfun(x - step))
         rad[br] = x
-        if (divergencePoint == 0)and(abs(sol[br] * sqrt(x)) > maxValue):
+        if (divergencePoint == 0) and (abs(sol[br] * sqrt(x)) > maxValue):
             divergencePoint = br
-            while (abs(sol[divergencePoint]) > abs(sol[divergencePoint + 1])) \
-                    and (divergencePoint < checkPoint):
+            while (
+                abs(sol[divergencePoint]) > abs(sol[divergencePoint + 1])
+            ) and (divergencePoint < checkPoint):
                 divergencePoint += 1
             if divergencePoint > checkPoint:
                 print("Numerov error")
                 exit()
 
     br = divergencePoint
-    while (br > 0):
+    while br > 0:
         rad[br] = rad[br + 1] - step
         sol[br] = 0
         br -= 1
@@ -2833,15 +3169,31 @@ def NumerovBack(innerLimit, outerLimit, kfun, step, init1, init2):
     return rad, sol
 
 
-def _atomLightAtomCoupling(n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2,
-                           atom1, atom2=None, s=0.5, s2=None):
+def _atomLightAtomCoupling(
+    n,
+    l,
+    j,
+    nn,
+    ll,
+    jj,
+    n1,
+    l1,
+    j1,
+    n2,
+    l2,
+    j2,
+    atom1,
+    atom2=None,
+    s=0.5,
+    s2=None,
+):
     """
-        Calculates radial part of atom-light coupling
+    Calculates radial part of atom-light coupling
 
-        This function might seem redundant, since similar function exist for
-        each of the atoms. Function that is not connected to specific
-        atomic species is provided in order to provides route to implement
-        inter-species coupling.
+    This function might seem redundant, since similar function exist for
+    each of the atoms. Function that is not connected to specific
+    atomic species is provided in order to provides route to implement
+    inter-species coupling.
     """
     if atom2 is None:
         # if not explicitly inter-species, assume it's the same species
@@ -2855,7 +3207,7 @@ def _atomLightAtomCoupling(n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2,
     c1 = 0
     if dl == 1 and (dj < 1.1):
         c1 = 1  # dipole couplings1
-    elif (dl == 0 or dl == 2 or dl == 1) and(dj < 2.1):
+    elif (dl == 0 or dl == 2 or dl == 1) and (dj < 2.1):
         c1 = 2  # quadrupole coupling
     else:
         return False
@@ -2864,7 +3216,7 @@ def _atomLightAtomCoupling(n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2,
     c2 = 0
     if dl == 1 and (dj < 1.1):
         c2 = 1  # dipole coupling
-    elif (dl == 0 or dl == 2 or dl == 1) and(dj < 2.1):
+    elif (dl == 0 or dl == 2 or dl == 1) and (dj < 2.1):
         c2 = 2  # quadrupole coupling
     else:
         return False
@@ -2874,12 +3226,18 @@ def _atomLightAtomCoupling(n, l, j, nn, ll, jj, n1, l1, j1, n2, l2, j2,
 
     # TO-DO: check exponent of the Boht radius (from where it comes?!)
 
-    coupling = C_e**2 / (4.0 * pi * epsilon_0) * radial1 * radial2 *\
-        (physical_constants["Bohr radius"][0])**(c1 + c2)
+    coupling = (
+        C_e**2
+        / (4.0 * pi * epsilon_0)
+        * radial1
+        * radial2
+        * (physical_constants["Bohr radius"][0]) ** (c1 + c2)
+    )
     return coupling
 
 
 # ================== Saving and loading calculations (START) ==================
+
 
 def saveCalculation(calculation, fileName):
     """
@@ -2950,18 +3308,18 @@ def saveCalculation(calculation, fileName):
 
         # close database connections
         atomNumber = 0
-        if hasattr(calculation, 'atom'):
+        if hasattr(calculation, "atom"):
             atomNumber = 1
             atomDatabaseConn1 = calculation.atom.conn
             calculation.atom.conn = False
-        elif hasattr(calculation, 'atom1'):
+        elif hasattr(calculation, "atom1"):
             atomNumber = 2
             atomDatabaseConn1 = calculation.atom1.conn
             calculation.atom1.conn = False
             atomDatabaseConn2 = calculation.atom2.conn
             calculation.atom2.conn = False
 
-        output = gzip.GzipFile(fileName, 'wb')
+        output = gzip.GzipFile(fileName, "wb")
         pickle.dump(calculation, output, pickle.HIGHEST_PROTOCOL)
         output.close()
 
@@ -3001,24 +3359,30 @@ def loadSavedCalculation(fileName):
 
     calculation = False
     try:
-        calcInput = gzip.GzipFile(fileName, 'rb')
+        calcInput = gzip.GzipFile(fileName, "rb")
         calculation = pickle.load(calcInput)
     except Exception as ex:
         print(ex)
         print("ERROR: loading of the calculation from '%s' failed" % fileName)
         print(sys.exc_info())
         return False
-    print("Loading of " + calculation.__class__.__name__ + " from '"
-          + fileName + "' successful.")
+    print(
+        "Loading of "
+        + calculation.__class__.__name__
+        + " from '"
+        + fileName
+        + "' successful."
+    )
 
     # establish conneciton to the database
-    if hasattr(calculation, 'atom'):
+    if hasattr(calculation, "atom"):
         calculation.atom._databaseInit()
-    elif hasattr(calculation, 'atom'):
+    elif hasattr(calculation, "atom"):
         calculation.atom1._databaseInit()
         calculation.atom2._databaseInit()
 
     return calculation
+
 
 # =================== Saving and loading calculations (END) ===================
 
@@ -3037,35 +3401,35 @@ def compositeState(s1, s2):
 
 def printState(n, l, j, s=None):
     """
-        Prints state spectroscopic label for numeric :math:`n`,
-        :math:`l`, :math:`s` label of the state
+    Prints state spectroscopic label for numeric :math:`n`,
+    :math:`l`, :math:`s` label of the state
 
-        Args:
-            n (int): principal quantum number
-            l (int): orbital angular momentum
-            j (float): total angular momentum
-            s (float): (optional) total spin momentum
+    Args:
+        n (int): principal quantum number
+        l (int): orbital angular momentum
+        j (float): total angular momentum
+        s (float): (optional) total spin momentum
     """
     print(printStateString(n, l, j, s=s))
 
 
 def printStateString(n, l, j, s=None):
     """
-        Returns state spectroscopic label for numeric :math:`n`,
-        :math:`l`, :math:`j` label of the state.
+    Returns state spectroscopic label for numeric :math:`n`,
+    :math:`l`, :math:`j` label of the state.
 
-        Optionally users can define :math:`s`, prompting printing :math:`2S+1`
-        index too (commonly used for Alkaline Earth atoms, while it is usually
-        omitted for Alkali atoms)
+    Optionally users can define :math:`s`, prompting printing :math:`2S+1`
+    index too (commonly used for Alkaline Earth atoms, while it is usually
+    omitted for Alkali atoms)
 
-        Args:
-            n (int): principal quantum number
-            l (int): orbital angular momentum
-            j (float): total angular momentum
-            s (float): (optional) total spin momentum
+    Args:
+        n (int): principal quantum number
+        l (int): orbital angular momentum
+        j (float): total angular momentum
+        s (float): (optional) total spin momentum
 
-        Returns:
-            string: label for the state in standard spectroscopic notation
+    Returns:
+        string: label for the state in standard spectroscopic notation
     """
     if s is None:
         return str(n) + " " + printStateLetter(l) + (" %.0d/2" % (j * 2))
@@ -3074,23 +3438,27 @@ def printStateString(n, l, j, s=None):
             subscript = " %.0d" % (j)
         else:
             subscript = " %.0d/2" % (j * 2)
-        return str(n) + (" %d" % (round(2 * s + 1))) + \
-            printStateLetter(l) + subscript
+        return (
+            str(n)
+            + (" %d" % (round(2 * s + 1)))
+            + printStateLetter(l)
+            + subscript
+        )
 
 
 def printStateStringLatex(n, l, j, s=None):
     """
-        Returns latex code for spectroscopic label for numeric :math:`n`,
-        :math:`l`, :math:`j` label of the state.
+    Returns latex code for spectroscopic label for numeric :math:`n`,
+    :math:`l`, :math:`j` label of the state.
 
-        Args:
-            n (int): principal quantum number
-            l (int): orbital angular momentum
-            j (float): total angular momentum
-            s (float): (optional) total spin momentum
+    Args:
+        n (int): principal quantum number
+        l (int): orbital angular momentum
+        j (float): total angular momentum
+        s (float): (optional) total spin momentum
 
-        Returns:
-            string: label for the state in standard spectroscopic notation
+    Returns:
+        string: label for the state in standard spectroscopic notation
     """
     if s is None:
         return str(n) + printStateLetter(l) + ("_{%.0d/2}" % (j * 2))
@@ -3099,12 +3467,16 @@ def printStateStringLatex(n, l, j, s=None):
             subscript = "_{%.0d}" % (j)
         else:
             subscript = "_{%.0d/2}" % (j * 2)
-        return str(n) + (" ^{%d}" % (round(2 * s + 1))) + \
-            printStateLetter(l) + subscript
+        return (
+            str(n)
+            + (" ^{%d}" % (round(2 * s + 1)))
+            + printStateLetter(l)
+            + subscript
+        )
 
 
 def printStateLetter(l):
-    let = ''
+    let = ""
     if l == 0:
         let = "S"
     elif l == 1:
@@ -3132,37 +3504,57 @@ def printStateLetter(l):
     return let
 
 
-def formatNumberSI(datum,precision=4):
-# format datum with SI abbreviation to specified precision (# digits)
+def formatNumberSI(datum, precision=4):
+    # format datum with SI abbreviation to specified precision (# digits)
 
     exponent = np.floor(np.log10(np.abs(datum)))
-    expInt   = np.floor(exponent/3).astype('int')
-    expRange = (expInt * 3).astype('double')
+    expInt = np.floor(exponent / 3).astype("int")
+    expRange = (expInt * 3).astype("double")
 
-    digitsLeftOfDecimal  = exponent - expRange + 1
-    digitsRightOfDecimal = np.max((precision - digitsLeftOfDecimal,0))
+    digitsLeftOfDecimal = exponent - expRange + 1
+    digitsRightOfDecimal = np.max((precision - digitsLeftOfDecimal, 0))
 
-    newDatum = datum * 10**(-expRange);
+    newDatum = datum * 10 ** (-expRange)
 
-    sisym = ('y','z','a','f','p','n','\mu','m','','k','M','G','T','P','E','Z','Y')
+    sisym = (
+        "y",
+        "z",
+        "a",
+        "f",
+        "p",
+        "n",
+        "\mu",
+        "m",
+        "",
+        "k",
+        "M",
+        "G",
+        "T",
+        "P",
+        "E",
+        "Z",
+        "Y",
+    )
     if np.abs(expRange) <= 24:
         sym = " " + sisym[expInt + 8]
     else:
-        sym = " x 10^{%d}"%expRange
+        sym = " x 10^{%d}" % expRange
 
-    if digitsLeftOfDecimal == precision: # if the last significant figure is in the
-                                         # ones place, add the decimal to indicate
-                                         # it as such
+    if (
+        digitsLeftOfDecimal == precision
+    ):  # if the last significant figure is in the
+        # ones place, add the decimal to indicate
+        # it as such
         sym = "." + sym
-
 
     # Formally, if digitsLeftOfDecimal > precision, newDatum should be rounded off
     # to requested precision, but since we are showing no more than 3 digits left
     # of the decimal, it's probably better not to round off
 
-    fmtString = "%%%d.%df%s"%(digitsLeftOfDecimal,digitsRightOfDecimal,sym);
+    fmtString = "%%%d.%df%s" % (digitsLeftOfDecimal, digitsRightOfDecimal, sym)
 
-    return fmtString%(newDatum)
+    return fmtString % (newDatum)
+
 
 # =================== State generation and printing (END) ===================
 
@@ -3172,79 +3564,98 @@ def formatNumberSI(datum,precision=4):
 class _EFieldCoupling:
     dataFolder = DPATH
 
-    def __init__(self, theta=0., phi=0.):
+    def __init__(self, theta=0.0, phi=0.0):
         self.theta = theta
         self.phi = phi
 
         # STARK memoization
-        self.conn = sqlite3.connect(os.path.join(self.dataFolder,
-                                                 "precalculated_stark.db"))
+        self.conn = sqlite3.connect(
+            os.path.join(self.dataFolder, "precalculated_stark.db")
+        )
 
         # ANGULAR PARTS
         c = self.conn.cursor()
-        c.execute('''SELECT COUNT(*) FROM sqlite_master
+        c.execute(
+            """SELECT COUNT(*) FROM sqlite_master
                             WHERE type='table'
-                            AND name='eFieldCoupling_angular';''')
-        if (c.fetchone()[0] == 0):
+                            AND name='eFieldCoupling_angular';"""
+        )
+        if c.fetchone()[0] == 0:
             # create table
-            c.execute('''CREATE TABLE IF NOT EXISTS eFieldCoupling_angular
+            c.execute(
+                """CREATE TABLE IF NOT EXISTS eFieldCoupling_angular
              (l1 TINYINT UNSIGNED, j1_x2 TINYINT UNSIGNED,
              j1_mj1 TINYINT UNSIGNED,
               l2 TINYINT UNSIGNED, j2_x2 TINYINT UNSIGNED,
               j2_mj2 TINYINT UNSIGNED, s_x2 TINYINT UNSIGNED,
              sumPart DOUBLE,
              PRIMARY KEY (l1,j1_x2,j1_mj1,l2,j2_x2,j2_mj2, s_x2)
-            ) ''')
+            ) """
+            )
             self.conn.commit()
 
         # COUPLINGS IN ROTATED BASIS (depend on theta, phi)
         self.wgd = WignerDmatrix(self.theta, self.phi)
 
-        c.execute('''DROP TABLE IF EXISTS eFieldCoupling''')
-        c.execute('''SELECT COUNT(*) FROM sqlite_master
-                            WHERE type='table' AND name='eFieldCoupling';''')
-        if (c.fetchone()[0] == 0):
+        c.execute("""DROP TABLE IF EXISTS eFieldCoupling""")
+        c.execute(
+            """SELECT COUNT(*) FROM sqlite_master
+                            WHERE type='table' AND name='eFieldCoupling';"""
+        )
+        if c.fetchone()[0] == 0:
             # create table
-            c.execute('''CREATE TABLE IF NOT EXISTS eFieldCoupling
+            c.execute(
+                """CREATE TABLE IF NOT EXISTS eFieldCoupling
              (l1 TINYINT UNSIGNED, j1_x2 TINYINT UNSIGNED,
              j1_mj1 TINYINT UNSIGNED,
               l2 TINYINT UNSIGNED, j2_x2 TINYINT UNSIGNED,
               j2_mj2 TINYINT UNSIGNED, s_x2 TINYINT_UNSIGNED,
              coupling DOUBLE,
              PRIMARY KEY (l1,j1_x2,j1_mj1,l2,j2_x2,j2_mj2, s_x2)
-            ) ''')
+            ) """
+            )
             self.conn.commit()
 
     def getAngular(self, l1, j1, mj1, l2, j2, mj2, s=0.5):
         c = self.conn.cursor()
-        c.execute('''SELECT sumPart FROM eFieldCoupling_angular WHERE
+        c.execute(
+            """SELECT sumPart FROM eFieldCoupling_angular WHERE
          l1= ? AND j1_x2 = ? AND j1_mj1 = ? AND
          l2 = ? AND j2_x2 = ? AND j2_mj2 = ? AND s_x2 = ?
-         ''', (l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2))
+         """,
+            (l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2),
+        )
         answer = c.fetchone()
-        if (answer):
+        if answer:
             return answer[0]
 
         # calulates sum (See PRA 20:2251 (1979), eq.(10))
-        sumPart = 0.
+        sumPart = 0.0
 
         for ml in np.linspace(mj1 - s, mj1 + s, round(2 * s + 1)):
-            if (abs(ml) - 0.1 < l1)and(abs(ml) - 0.1 < l2):
-                angularPart = 0.
-                if (abs(l1 - l2 - 1) < 0.1):
-                    angularPart = ((l1**2 - ml**2)
-                                   / ((2. * l1 + 1.) * (2. * l1 - 1.)))**0.5
-                elif(abs(l1 - l2 + 1) < 0.1):
-                    angularPart = ((l2**2 - ml**2)
-                                   / ((2. * l2 + 1.) * (2. * l2 - 1.)))**0.5
-                sumPart += CG(l1, ml, s, mj1 - ml, j1, mj1) \
-                    * CG(l2, ml, s, mj1 - ml, j2, mj2) \
+            if (abs(ml) - 0.1 < l1) and (abs(ml) - 0.1 < l2):
+                angularPart = 0.0
+                if abs(l1 - l2 - 1) < 0.1:
+                    angularPart = (
+                        (l1**2 - ml**2)
+                        / ((2.0 * l1 + 1.0) * (2.0 * l1 - 1.0))
+                    ) ** 0.5
+                elif abs(l1 - l2 + 1) < 0.1:
+                    angularPart = (
+                        (l2**2 - ml**2)
+                        / ((2.0 * l2 + 1.0) * (2.0 * l2 - 1.0))
+                    ) ** 0.5
+                sumPart += (
+                    CG(l1, ml, s, mj1 - ml, j1, mj1)
+                    * CG(l2, ml, s, mj1 - ml, j2, mj2)
                     * angularPart
+                )
 
-        c.execute(''' INSERT INTO eFieldCoupling_angular
-                            VALUES (?,?,?, ?,?,?, ?, ?)''',
-                  [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2,
-                   s * 2, sumPart])
+        c.execute(
+            """ INSERT INTO eFieldCoupling_angular
+                            VALUES (?,?,?, ?,?,?, ?, ?)""",
+            [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2, sumPart],
+        )
         self.conn.commit()
 
         return sumPart
@@ -3254,17 +3665,20 @@ class _EFieldCoupling:
 
         # if calculated before, retrieve from memory
         c = self.conn.cursor()
-        c.execute('''SELECT coupling FROM eFieldCoupling WHERE
+        c.execute(
+            """SELECT coupling FROM eFieldCoupling WHERE
          l1= ? AND j1_x2 = ? AND j1_mj1 = ? AND
          l2 = ? AND j2_x2 = ? AND j2_mj2 = ? AND s_x2 = ?
-         ''', (l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2))
+         """,
+            (l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2),
+        )
         answer = c.fetchone()
-        if (answer):
+        if answer:
             return answer[0]
 
         # if it is not calculated before, calculate now
 
-        coupling = 0.
+        coupling = 0.0
 
         # rotate individual states
         statePart1 = singleAtomState(j1, mj1)
@@ -3279,15 +3693,18 @@ class _EFieldCoupling:
         start = min(j1, j2)
 
         for mj in np.linspace(-start, start, floor(2 * start + 1)):
-            coupling += (self.getAngular(l1, j1, mj, l2, j2, mj)
-                         * (statePart1[j1 + mj] * statePart2[j2 + mj])[0].real)
+            coupling += (
+                self.getAngular(l1, j1, mj, l2, j2, mj)
+                * (statePart1[j1 + mj] * statePart2[j2 + mj])[0].real
+            )
 
         # save in memory for later use
 
-        c.execute(''' INSERT INTO eFieldCoupling
-                            VALUES (?,?,?, ?,?,?, ?, ?)''',
-                  [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2,
-                   coupling])
+        c.execute(
+            """ INSERT INTO eFieldCoupling
+                            VALUES (?,?,?, ?,?,?, ?, ?)""",
+            [l1, 2 * j1, j1 + mj1, l2, j2 * 2, j2 + mj2, s * 2, coupling],
+        )
         self.conn.commit()
 
         # return result
@@ -3298,6 +3715,7 @@ class _EFieldCoupling:
         self.conn.commit()
         self.conn.close()
         self.conn = False
+
 
 # =================== E FIELD Coupling (END) ===================
 

@@ -7,6 +7,7 @@ import numpy as np
 from math import sqrt
 
 import sqlite3
+
 sqlite3.register_adapter(np.float64, float)
 sqlite3.register_adapter(np.float32, float)
 sqlite3.register_adapter(np.int64, int)
@@ -15,28 +16,28 @@ sqlite3.register_adapter(np.int32, int)
 
 class DivalentAtom(AlkaliAtom):
     """
-        Implements general calculations for Alkaline Earths, and other divalent
-        atoms.
+    Implements general calculations for Alkaline Earths, and other divalent
+    atoms.
 
-        This class inherits :obj:`arc.alkali_atom_functions.AlkaliAtom` .
-        Most of the methods can be directly used from there, and the source
-        for them is provided in the base class. Few methods that are
-        implemented differently for Alkaline Earths are defined here.
+    This class inherits :obj:`arc.alkali_atom_functions.AlkaliAtom` .
+    Most of the methods can be directly used from there, and the source
+    for them is provided in the base class. Few methods that are
+    implemented differently for Alkaline Earths are defined here.
 
-        Args:
-            preferQuantumDefects (bool):
-                Use quantum defects for energy level calculations. If False,
-                uses NIST ASD values where available. If True, uses quantum
-                defects for energy calculations for principal quantum numbers
-                within the range specified in :obj:`defectFittingRange` which
-                is specified for each element and series separately.
-                For principal quantum numbers below this value, NIST ASD values
-                are used if existing, since quantum defects. Default is True.
-            cpp_numerov (bool):
-                This switch for Alkaline Earths at the moment doesn't have
-                any effect since wavefunction calculation function is not
-                implemented (d.m.e. and quadrupole matrix elements are
-                calculated directly semiclassically)
+    Args:
+        preferQuantumDefects (bool):
+            Use quantum defects for energy level calculations. If False,
+            uses NIST ASD values where available. If True, uses quantum
+            defects for energy calculations for principal quantum numbers
+            within the range specified in :obj:`defectFittingRange` which
+            is specified for each element and series separately.
+            For principal quantum numbers below this value, NIST ASD values
+            are used if existing, since quantum defects. Default is True.
+        cpp_numerov (bool):
+            This switch for Alkaline Earths at the moment doesn't have
+            any effect since wavefunction calculation function is not
+            implemented (d.m.e. and quadrupole matrix elements are
+            calculated directly semiclassically)
     """
 
     modelPotential_coef = dict()
@@ -45,26 +46,36 @@ class DivalentAtom(AlkaliAtom):
         different l (electron angular momentum)
     """
 
-    quantumDefect = [[[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
     """ Contains list of modified Rydberg-Ritz coefficients for calculating
         quantum defects for
         [[ :math:`^1S_{0},^1P_{1},^1D_{2},^1F_{3}`],
@@ -104,42 +115,53 @@ class DivalentAtom(AlkaliAtom):
 
         if self.cpp_numerov:
             from .arc_c_extensions import NumerovWavefunction
+
             self.NumerovWavefunction = NumerovWavefunction
 
         # load dipole matrix elements previously calculated
         data = []
-        if (self.dipoleMatrixElementFile != ""):
+        if self.dipoleMatrixElementFile != "":
             if preferQuantumDefects is False:
-                self.dipoleMatrixElementFile = \
+                self.dipoleMatrixElementFile = (
                     "NIST_" + self.dipoleMatrixElementFile
+                )
 
             try:
-                data = np.load(os.path.join(self.dataFolder,
-                                            self.dipoleMatrixElementFile),
-                               encoding='latin1', allow_pickle=True)
+                data = np.load(
+                    os.path.join(self.dataFolder, self.dipoleMatrixElementFile),
+                    encoding="latin1",
+                    allow_pickle=True,
+                )
             except IOError as e:
-                print("Error reading dipoleMatrixElement File "
-                      + os.path.join(self.dataFolder,
-                                     self.dipoleMatrixElementFile))
+                print(
+                    "Error reading dipoleMatrixElement File "
+                    + os.path.join(
+                        self.dataFolder, self.dipoleMatrixElementFile
+                    )
+                )
                 print(e)
         # save to SQLite database
         try:
-            c.execute('''SELECT COUNT(*) FROM sqlite_master
-                            WHERE type='table' AND name='dipoleME';''')
-            if (c.fetchone()[0] == 0):
+            c.execute(
+                """SELECT COUNT(*) FROM sqlite_master
+                            WHERE type='table' AND name='dipoleME';"""
+            )
+            if c.fetchone()[0] == 0:
                 # create table
-                c.execute('''CREATE TABLE IF NOT EXISTS dipoleME
+                c.execute(
+                    """CREATE TABLE IF NOT EXISTS dipoleME
                  (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED,
                  j1 TINYINT UNSIGNED,
                  n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED,
                  j2 TINYINT UNSIGNED, s TINYINT UNSIGNED,
                  dme DOUBLE,
                  PRIMARY KEY (n1,l1,j1,n2,l2,j2,s)
-                ) ''')
-                if (len(data) > 0):
+                ) """
+                )
+                if len(data) > 0:
                     c.executemany(
-                        'INSERT INTO dipoleME VALUES (?,?,?,?,?,?,?,?)',
-                        data)
+                        "INSERT INTO dipoleME VALUES (?,?,?,?,?,?,?,?)", data
+                    )
                 self.conn.commit()
         except sqlite3.Error as e:
             print("Error while loading precalculated values into the database")
@@ -148,47 +170,62 @@ class DivalentAtom(AlkaliAtom):
 
         # load quadrupole matrix elements previously calculated
         data = []
-        if (self.quadrupoleMatrixElementFile != ""):
+        if self.quadrupoleMatrixElementFile != "":
             if preferQuantumDefects is False:
-                self.quadrupoleMatrixElementFile = \
+                self.quadrupoleMatrixElementFile = (
                     "NIST_" + self.quadrupoleMatrixElementFile
+                )
             try:
-                data = np.load(os.path.join(self.dataFolder,
-                                            self.quadrupoleMatrixElementFile),
-                               encoding='latin1', allow_pickle=True)
+                data = np.load(
+                    os.path.join(
+                        self.dataFolder, self.quadrupoleMatrixElementFile
+                    ),
+                    encoding="latin1",
+                    allow_pickle=True,
+                )
 
             except IOError as e:
-                print("Error reading quadrupoleMatrixElementFile File "
-                      + os.path.join(self.dataFolder,
-                                     self.quadrupoleMatrixElementFile))
+                print(
+                    "Error reading quadrupoleMatrixElementFile File "
+                    + os.path.join(
+                        self.dataFolder, self.quadrupoleMatrixElementFile
+                    )
+                )
                 print(e)
         # save to SQLite database
         try:
-            c.execute('''SELECT COUNT(*) FROM sqlite_master
-                            WHERE type='table' AND name='quadrupoleME';''')
-            if (c.fetchone()[0] == 0):
+            c.execute(
+                """SELECT COUNT(*) FROM sqlite_master
+                            WHERE type='table' AND name='quadrupoleME';"""
+            )
+            if c.fetchone()[0] == 0:
                 # create table
-                c.execute('''CREATE TABLE IF NOT EXISTS quadrupoleME
+                c.execute(
+                    """CREATE TABLE IF NOT EXISTS quadrupoleME
                  (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED,
                  j1 TINYINT UNSIGNED,
                  n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED,
                  j2 TINYINT UNSIGNED, s TINYINT UNSIGNED,
                  qme DOUBLE,
                  PRIMARY KEY (n1,l1,j1,n2,l2,j2,s)
-                ) ''')
-                if (len(data) > 0):
+                ) """
+                )
+                if len(data) > 0:
                     c.executemany(
-                        'INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?,?,?)',
-                        data)
+                        "INSERT INTO quadrupoleME VALUES (?,?,?,?,?,?,?,?)",
+                        data,
+                    )
                 self.conn.commit()
         except sqlite3.Error as e:
             print("Error while loading precalculated values into the database")
             print(e)
             exit()
 
-        if (self.levelDataFromNIST == ""):
-            print("NIST level data file not specified."
-                  " Only quantum defects will be used.")
+        if self.levelDataFromNIST == "":
+            print(
+                "NIST level data file not specified."
+                " Only quantum defects will be used."
+            )
         else:
             levels = self._parseLevelsFromNIST(
                 os.path.join(self.dataFolder, self.levelDataFromNIST)
@@ -200,73 +237,90 @@ class DivalentAtom(AlkaliAtom):
             try:
                 self.conn.commit()
             except sqlite3.Error as e:
-                print("Error while loading precalculated values"
-                      "into the database")
+                print(
+                    "Error while loading precalculated values"
+                    "into the database"
+                )
                 print(e)
                 exit()
 
         self._readLiteratureValues()
 
     def _parseLevelsFromNIST(self, fileData):
-        data = np.loadtxt(fileData, delimiter=",",
-                          usecols=(0, 1, 3, 2, 4))
+        data = np.loadtxt(fileData, delimiter=",", usecols=(0, 1, 3, 2, 4))
         return data
 
     def _addEnergy(self, n, l, j, s, energy):
         """
-            Adds energy level relative to
+        Adds energy level relative to
 
-            NOTE:
-            Requres changes to be commited to the sql database afterwards!
+        NOTE:
+        Requres changes to be commited to the sql database afterwards!
 
-            Args:
-                n: principal quantum number
-                l: orbital angular momentum quantum number
-                j: total angular momentum quantum number
-                s: spin quantum number
-                energy: energy in cm^-1 relative to the ground state
+        Args:
+            n: principal quantum number
+            l: orbital angular momentum quantum number
+            j: total angular momentum quantum number
+            s: spin quantum number
+            energy: energy in cm^-1 relative to the ground state
         """
         c = self.conn.cursor()
         c.execute(
-            'INSERT INTO energyLevel VALUES (?,?,?,?,?)',
-            (int(n), int(l), int(j), int(s),
-             energy * 1.e2
-             * physical_constants["inverse meter-electron volt relationship"][0]
-             - self.ionisationEnergy)
+            "INSERT INTO energyLevel VALUES (?,?,?,?,?)",
+            (
+                int(n),
+                int(l),
+                int(j),
+                int(s),
+                energy
+                * 1.0e2
+                * physical_constants[
+                    "inverse meter-electron volt relationship"
+                ][0]
+                - self.ionisationEnergy,
+            ),
         )
         self.NISTdataLevels = max(self.NISTdataLevels, int(n))
         # saves energy in eV
 
     def _databaseInit(self):
-        self.conn = sqlite3.connect(os.path.join(self.dataFolder,
-                                                 self.precalculatedDB))
+        self.conn = sqlite3.connect(
+            os.path.join(self.dataFolder, self.precalculatedDB)
+        )
         c = self.conn.cursor()
 
         # create space for storing NIST/literature energy levels
-        c.execute('''SELECT COUNT(*) FROM sqlite_master
-                        WHERE type='table' AND name='energyLevel';''')
-        if (c.fetchone()[0] != 0):
-            c.execute('''DROP TABLE energyLevel''')
+        c.execute(
+            """SELECT COUNT(*) FROM sqlite_master
+                        WHERE type='table' AND name='energyLevel';"""
+        )
+        if c.fetchone()[0] != 0:
+            c.execute("""DROP TABLE energyLevel""")
         # create fresh table
-        c.execute('''CREATE TABLE IF NOT EXISTS energyLevel
+        c.execute(
+            """CREATE TABLE IF NOT EXISTS energyLevel
              (n TINYINT UNSIGNED, l TINYINT UNSIGNED, j TINYINT UNSIGNED,
              s TINYINT UNSIGNED,
              energy DOUBLE,
              PRIMARY KEY (n, l, j, s)
-            ) ''')
+            ) """
+        )
 
         self.conn.commit()
 
     def getEnergy(self, n, l, j, s=None):
         if s is None:
-            raise ValueError("Spin state for DivalentAtom has to be "
-                             "explicitly defined as a keyword argument "
-                             "s=0 or s=1")
+            raise ValueError(
+                "Spin state for DivalentAtom has to be "
+                "explicitly defined as a keyword argument "
+                "s=0 or s=1"
+            )
         if l >= n:
             raise ValueError(
-                "Requested energy for state l=%d >= n=%d !" % (l, n))
+                "Requested energy for state l=%d >= n=%d !" % (l, n)
+            )
 
-        stateLabel = "%d%s%d" % (int(2*s+1), printStateLetter(l), j)
+        stateLabel = "%d%s%d" % (int(2 * s + 1), printStateLetter(l), j)
         minQuantumDefectN = 100000
         maxQuantumDefectN = 0
 
@@ -275,34 +329,35 @@ class DivalentAtom(AlkaliAtom):
             maxQuantumDefectN = self.defectFittingRange[stateLabel][1]
 
         # use NIST data ?
-        if (not self.preferQuantumDefects or n < minQuantumDefectN):
+        if not self.preferQuantumDefects or n < minQuantumDefectN:
             savedEnergy = self._getSavedEnergy(n, l, j, s=s)
-            if (abs(savedEnergy) > 1e-8):
+            if abs(savedEnergy) > 1e-8:
                 return savedEnergy
             else:
-                if (n < minQuantumDefectN or n > maxQuantumDefectN):
+                if n < minQuantumDefectN or n > maxQuantumDefectN:
                     self.energyLevelsExtrapolated = True
 
         # else, use quantum defects
         defect = self.getQuantumDefect(n, l, j, s=s)
-        return -self.scaledRydbergConstant / ((n - defect)**2)
+        return -self.scaledRydbergConstant / ((n - defect) ** 2)
 
     def _getSavedEnergy(self, n, l, j, s=0):
         c = self.conn.cursor()
-        c.execute('''SELECT energy FROM energyLevel WHERE
+        c.execute(
+            """SELECT energy FROM energyLevel WHERE
             n= ? AND l = ? AND j = ? AND
-            s = ? ''', (n, l, j, s))
+            s = ? """,
+            (n, l, j, s),
+        )
         energy = c.fetchone()
-        if (energy):
+        if energy:
             return energy[0]
         else:
-            return 0      # there is no saved energy level measurement
+            return 0  # there is no saved energy level measurement
 
-    def getRadialMatrixElement(self,
-                               n1, l1, j1,
-                               n2, l2, j2,
-                               s=None,
-                               useLiterature=True):
+    def getRadialMatrixElement(
+        self, n1, l1, j1, n2, l2, j2, s=None, useLiterature=True
+    ):
         """
             Radial part of the dipole matrix element
 
@@ -331,15 +386,16 @@ class DivalentAtom(AlkaliAtom):
                 float: dipole matrix element (:math:`a_0 e`).
         """
         if s is None:
-            raise ValueError("You must specify total angular momentum s "
-                             "explicitly.")
+            raise ValueError(
+                "You must specify total angular momentum s " "explicitly."
+            )
 
         dl = abs(l1 - l2)
         dj = abs(j2 - j2)
-        if not(dl == 1 and (dj < 1.1)):
+        if not (dl == 1 and (dj < 1.1)):
             return 0
 
-        if (self.getEnergy(n1, l1, j1, s=s) > self.getEnergy(n2, l2, j2, s=s)):
+        if self.getEnergy(n1, l1, j1, s=s) > self.getEnergy(n2, l2, j2, s=s):
             temp = n1
             n1 = n2
             n2 = temp
@@ -360,37 +416,38 @@ class DivalentAtom(AlkaliAtom):
         if useLiterature:
             # is there literature value for this DME? If there is,
             # use the best one (smalles error)
-            c.execute('''SELECT dme FROM literatureDME WHERE
+            c.execute(
+                """SELECT dme FROM literatureDME WHERE
              n1= ? AND l1 = ? AND j1 = ? AND
              n2 = ? AND l2 = ? AND j2 = ? AND s = ?
-             ORDER BY errorEstimate ASC''',
-             (n1, l1, j1, n2, l2, j2, s))
+             ORDER BY errorEstimate ASC""",
+                (n1, l1, j1, n2, l2, j2, s),
+            )
 
             answer = c.fetchone()
-            if (answer):
+            if answer:
                 # we did found literature value
                 return answer[0]
         # was this calculated before? If it was, retrieve from memory
 
         c.execute(
-            '''SELECT dme FROM dipoleME WHERE
+            """SELECT dme FROM dipoleME WHERE
             n1= ? AND l1 = ? AND j1 = ? AND
-            n2 = ? AND l2 = ? AND j2 = ? AND s = ?''',
-            (n1, l1, j1, n2, l2, j2, s)
-            )
+            n2 = ? AND l2 = ? AND j2 = ? AND s = ?""",
+            (n1, l1, j1, n2, l2, j2, s),
+        )
         dme = c.fetchone()
-        if (dme):
+        if dme:
             return dme[0]
 
         dipoleElement = self._getRadialDipoleSemiClassical(
             n1, l1, j1, n2, l2, j2, s=s
-            )
+        )
 
         c.execute(
-            ''' INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?, ?)''',
-            [n1, l1, j1,
-             n2, l2, j2, s,
-             dipoleElement])
+            """ INSERT INTO dipoleME VALUES (?,?,?, ?,?,?, ?, ?)""",
+            [n1, l1, j1, n2, l2, j2, s, dipoleElement],
+        )
         self.conn.commit()
 
         return dipoleElement
@@ -399,12 +456,15 @@ class DivalentAtom(AlkaliAtom):
         # clear previously saved results, since literature file
         # might have been updated in the meantime
         c = self.conn.cursor()
-        c.execute('''DROP TABLE IF EXISTS literatureDME''')
-        c.execute('''SELECT COUNT(*) FROM sqlite_master
-                        WHERE type='table' AND name='literatureDME';''')
-        if (c.fetchone()[0] == 0):
+        c.execute("""DROP TABLE IF EXISTS literatureDME""")
+        c.execute(
+            """SELECT COUNT(*) FROM sqlite_master
+                        WHERE type='table' AND name='literatureDME';"""
+        )
+        if c.fetchone()[0] == 0:
             # create table
-            c.execute('''CREATE TABLE IF NOT EXISTS literatureDME
+            c.execute(
+                """CREATE TABLE IF NOT EXISTS literatureDME
              (n1 TINYINT UNSIGNED, l1 TINYINT UNSIGNED, j1 TINYINT UNSIGNED,
              n2 TINYINT UNSIGNED, l2 TINYINT UNSIGNED, j2 TINYINT UNSIGNED,
              s TINYINT UNSIGNED,
@@ -414,17 +474,21 @@ class DivalentAtom(AlkaliAtom):
              comment TINYTEXT,
              ref TINYTEXT,
              refdoi TINYTEXT
-            );''')
-            c.execute('''CREATE INDEX compositeIndex
-            ON literatureDME (n1,l1,j1,n2,l2,j2,s); ''')
+            );"""
+            )
+            c.execute(
+                """CREATE INDEX compositeIndex
+            ON literatureDME (n1,l1,j1,n2,l2,j2,s); """
+            )
         self.conn.commit()
 
-        if (self.literatureDMEfilename == ""):
+        if self.literatureDMEfilename == "":
             return 0  # no file specified for literature values
 
         try:
-            fn = open(os.path.join(self.dataFolder,
-                                   self.literatureDMEfilename), 'r')
+            fn = open(
+                os.path.join(self.dataFolder, self.literatureDMEfilename), "r"
+            )
             dialect = csv.Sniffer().sniff(fn.read(2024), delimiters=";,\t")
             fn.seek(0)
             data = csv.reader(fn, dialect, quotechar='"')
@@ -444,15 +508,16 @@ class DivalentAtom(AlkaliAtom):
                     l2 = int(row[5])
                     j2 = int(row[6])
                     s2 = int(row[7])
-                    if (s1 != s2):
-                        raise ValueError("Error reading litearture: database "
-                                         "cannot accept spin changing "
-                                         "transitions")
+                    if s1 != s2:
+                        raise ValueError(
+                            "Error reading litearture: database "
+                            "cannot accept spin changing "
+                            "transitions"
+                        )
                     s = s1
-                    if (
-                        self.getEnergy(n1, l1, j1, s=s)
-                            > self.getEnergy(n2, l2, j2, s=s)
-                            ):
+                    if self.getEnergy(n1, l1, j1, s=s) > self.getEnergy(
+                        n2, l2, j2, s=s
+                    ):
                         temp = n1
                         n1 = n2
                         n2 = temp
@@ -468,13 +533,17 @@ class DivalentAtom(AlkaliAtom):
                     # values
 
                     # To-DO : see in what notation are Strontium literature elements saved
-                    print("To-do (_readLiteratureValues): see in what notation are Sr literature saved (angular part)")
+                    print(
+                        "To-do (_readLiteratureValues): see in what notation are Sr literature saved (angular part)"
+                    )
                     dme = float(row[8]) / (
-                        (-1)**(int(l1 + s + j2 + 1.))
-                        * sqrt((2. * j1 + 1.) * (2. * j2 + 1.))
-                        * Wigner6j(j1, 1., j2, l2, s, l1)
-                        * (-1)**l1 * sqrt((2.0 * l1 + 1.0) * (2.0 * l2 + 1.0))
-                        * Wigner3j(l1, 1, l2, 0, 0, 0))
+                        (-1) ** (int(l1 + s + j2 + 1.0))
+                        * sqrt((2.0 * j1 + 1.0) * (2.0 * j2 + 1.0))
+                        * Wigner6j(j1, 1.0, j2, l2, s, l1)
+                        * (-1) ** l1
+                        * sqrt((2.0 * l1 + 1.0) * (2.0 * l2 + 1.0))
+                        * Wigner3j(l1, 1, l2, 0, 0, 0)
+                    )
 
                     comment = row[9]
                     typeOfSource = int(row[10])  # 0 = experiment; 1 = theory
@@ -482,37 +551,53 @@ class DivalentAtom(AlkaliAtom):
                     ref = row[12]
                     refdoi = row[13]
 
-                    literatureDME.append([n1, l1, j1,
-                                          n2, l2, j2, s, dme,
-                                          typeOfSource, errorEstimate,
-                                          comment, ref,
-                                          refdoi])
+                    literatureDME.append(
+                        [
+                            n1,
+                            l1,
+                            j1,
+                            n2,
+                            l2,
+                            j2,
+                            s,
+                            dme,
+                            typeOfSource,
+                            errorEstimate,
+                            comment,
+                            ref,
+                            refdoi,
+                        ]
+                    )
                 i += 1
             fn.close()
 
             try:
                 if i > 1:
-                    c.executemany('''INSERT INTO literatureDME
+                    c.executemany(
+                        """INSERT INTO literatureDME
                                         VALUES (?,?,?, ?,?,?,?
-                                                ?,?,?,?,?,?)''',
-                                       literatureDME)
+                                                ?,?,?,?,?,?)""",
+                        literatureDME,
+                    )
                     self.conn.commit()
 
             except sqlite3.Error as e:
-                print("Error while loading precalculated values "
-                      "into the database")
+                print(
+                    "Error while loading precalculated values "
+                    "into the database"
+                )
                 print(e)
                 print(literatureDME)
                 exit()
 
         except IOError as e:
-            print("Error reading literature values File "
-                  + self.literatureDMEfilename)
+            print(
+                "Error reading literature values File "
+                + self.literatureDMEfilename
+            )
             print(e)
 
-    def getLiteratureDME(self,
-                         n1, l1, j1,
-                         n2, l2, j2, s=0):
+    def getLiteratureDME(self, n1, l1, j1, n2, l2, j2, s=0):
         """
             Returns literature information on requested transition.
 
@@ -576,7 +661,7 @@ class DivalentAtom(AlkaliAtom):
 
         """
 
-        if (self.getEnergy(n1, l1, j1, s=s) > self.getEnergy(n2, l2, j2, s=s)):
+        if self.getEnergy(n1, l1, j1, s=s) > self.getEnergy(n2, l2, j2, s=s):
             temp = n1
             n1 = n2
             n2 = temp
@@ -591,27 +676,31 @@ class DivalentAtom(AlkaliAtom):
         # use the best one (wit the smallest error)
 
         c = self.conn.cursor()
-        c.execute('''SELECT dme, typeOfSource,
+        c.execute(
+            """SELECT dme, typeOfSource,
                      errorEstimate ,
                      comment ,
                      ref,
                      refdoi FROM literatureDME WHERE
                      n1= ? AND l1 = ? AND j1 = ? AND
                      n2 = ? AND l2 = ? AND j2 = ? AND s = ?
-                     ORDER BY errorEstimate ASC''',
-                       (n1, l1, j1, n2, l2, j2, s))
+                     ORDER BY errorEstimate ASC""",
+            (n1, l1, j1, n2, l2, j2, s),
+        )
         answer = c.fetchone()
-        if (answer):
+        if answer:
             # we did found literature value
-            return True, answer[0], [answer[1], answer[2], answer[3],
-                                     answer[4], answer[5]]
+            return (
+                True,
+                answer[0],
+                [answer[1], answer[2], answer[3], answer[4], answer[5]],
+            )
 
         # if we are here, we were unsucessfull in literature search
         # for this value
         return False, 0, []
 
-    def getQuadrupoleMatrixElement(self, n1, l1, j1, n2, l2, j2,
-                                   s=0.5):
+    def getQuadrupoleMatrixElement(self, n1, l1, j1, n2, l2, j2, s=0.5):
         """
             Radial part of the quadrupole matrix element
 
@@ -638,11 +727,10 @@ class DivalentAtom(AlkaliAtom):
 
         dl = abs(l1 - l2)
         dj = abs(j1 - j2)
-        if not ((dl == 0 or dl == 2 or dl == 1)and (dj < 2.1)):
+        if not ((dl == 0 or dl == 2 or dl == 1) and (dj < 2.1)):
             return 0
 
-        if (self.getEnergy(n1, l1, j1, s=s)
-                > self.getEnergy(n2, l2, j2, s=s)):
+        if self.getEnergy(n1, l1, j1, s=s) > self.getEnergy(n2, l2, j2, s=s):
             temp = n1
             n1 = n2
             n2 = temp
@@ -660,12 +748,14 @@ class DivalentAtom(AlkaliAtom):
 
         # was this calculated before? If yes, retrieve from memory.
         c = self.conn.cursor()
-        c.execute('''SELECT qme FROM quadrupoleME WHERE
+        c.execute(
+            """SELECT qme FROM quadrupoleME WHERE
             n1= ? AND l1 = ? AND j1 = ? AND
-            n2 = ? AND l2 = ? AND j2 = ? AND s= ?''',
-            (n1, l1, j1, n2, l2, j2, s))
+            n2 = ? AND l2 = ? AND j2 = ? AND s= ?""",
+            (n1, l1, j1, n2, l2, j2, s),
+        )
         qme = c.fetchone()
-        if (qme):
+        if qme:
             return qme[0]
 
         # if it wasn't, calculate now
@@ -674,51 +764,68 @@ class DivalentAtom(AlkaliAtom):
             n1, l1, j1, n2, l2, j2, s=s
         )
 
-        c.execute(''' INSERT INTO quadrupoleME VALUES (?,?,?, ?,?,?,?, ?)''',
-                       [n1, l1, j1, n2, l2, j2, s, quadrupoleElement])
+        c.execute(
+            """ INSERT INTO quadrupoleME VALUES (?,?,?, ?,?,?,?, ?)""",
+            [n1, l1, j1, n2, l2, j2, s, quadrupoleElement],
+        )
         self.conn.commit()
 
         return quadrupoleElement
 
-    def radialWavefunction(self, l, s, j, stateEnergy,
-                           innerLimit, outerLimit, step):
+    def radialWavefunction(
+        self, l, s, j, stateEnergy, innerLimit, outerLimit, step
+    ):
         """
-            Not implemented for Alkaline earths
+        Not implemented for Alkaline earths
         """
-        raise NotImplementedError("radialWavefunction calculation for alkaline"
-                                  " earths has not been implemented yet.")
+        raise NotImplementedError(
+            "radialWavefunction calculation for alkaline"
+            " earths has not been implemented yet."
+        )
 
     def effectiveCharge(self, l, r):
         """
-            Not implemented for Alkaline earths
+        Not implemented for Alkaline earths
         """
-        raise NotImplementedError("effectiveCharge calculation for alkaline"
-                                  " earths has not been implemented yet.")
+        raise NotImplementedError(
+            "effectiveCharge calculation for alkaline"
+            " earths has not been implemented yet."
+        )
 
     def corePotential(self, l, r):
         """
-            Not implemented for Alkaline earths
+        Not implemented for Alkaline earths
         """
-        raise NotImplementedError("corePotential calculation for alkaline"
-                                  " earths has not been implemented yet.")
+        raise NotImplementedError(
+            "corePotential calculation for alkaline"
+            " earths has not been implemented yet."
+        )
 
     def potential(self, l, s, j, r):
         """
-            Not implemented for Alkaline earths
+        Not implemented for Alkaline earths
         """
-        raise NotImplementedError("potential calculation for alkaline"
-                                  " earths has not been implemented yet.")
+        raise NotImplementedError(
+            "potential calculation for alkaline"
+            " earths has not been implemented yet."
+        )
 
-    def getStateLifetime(self, n, l, j, temperature=0, includeLevelsUpTo=0,
-                         s=0):
-        print("WARNING:  For AlkalineEarths, lifetimes are observed to be "
-              "significantly modified by inter-electron correlations that are "
-              "not included in this code (see Vaillant et al., J. Phys B 47 "
-              "155001 (2015) for examples).  Use with caution.")
+    def getStateLifetime(
+        self, n, l, j, temperature=0, includeLevelsUpTo=0, s=0
+    ):
+        print(
+            "WARNING:  For AlkalineEarths, lifetimes are observed to be "
+            "significantly modified by inter-electron correlations that are "
+            "not included in this code (see Vaillant et al., J. Phys B 47 "
+            "155001 (2015) for examples).  Use with caution."
+        )
         # after waring user, call method from the parent class
         # (parent of DivalentAtom is AlkaliAtom)
         return super(DivalentAtom, self).getStateLifetime(
-            n, l, j,
+            n,
+            l,
+            j,
             temperature=temperature,
             includeLevelsUpTo=includeLevelsUpTo,
-            s=s)
+            s=s,
+        )

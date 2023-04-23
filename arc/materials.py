@@ -26,11 +26,16 @@ class OpticalMaterial(object):
     def __init__(self):
         for s in self.sources:
             self.sourcesN.append(
-                np.loadtxt(os.path.join(DPATH, "refractive_index_data", s),
-                           skiprows=1, delimiter=',', unpack=True)
+                np.loadtxt(
+                    os.path.join(DPATH, "refractive_index_data", s),
+                    skiprows=1,
+                    delimiter=",",
+                    unpack=True,
                 )
-            self.sourcesRange.append([self.sourcesN[-1][0].min(),
-                                      self.sourcesN[-1][0].max()])
+            )
+            self.sourcesRange.append(
+                [self.sourcesN[-1][0].min(), self.sourcesN[-1][0].max()]
+            )
 
     def getN(self, *args, **kwargs):
         """
@@ -50,20 +55,22 @@ class OpticalMaterial(object):
 
 class Air(OpticalMaterial):
     """
-        Air as an optical material at normal conditions
+    Air as an optical material at normal conditions
     """
 
     name = "Air (dry, normal conditions)"
-    sources = ["Mathar-1.3.csv",
-               "Mathar-2.8.csv",
-               "Mathar-4.35.csv",
-               "Mathar-7.5.csv"]
-    sourcesComment = ['vacuum', 'vacuum', 'vacuum', 'vacuum']
+    sources = [
+        "Mathar-1.3.csv",
+        "Mathar-2.8.csv",
+        "Mathar-4.35.csv",
+        "Mathar-7.5.csv",
+    ]
+    sourcesComment = ["vacuum", "vacuum", "vacuum", "vacuum"]
 
     def getN(self, vacuumWavelength=None, *args, **kwargs):
         """
 
-            Assumes temperature: 15 °C, pressure: 101325 Pa
+        Assumes temperature: 15 °C, pressure: 101325 Pa
         """
         if vacuumWavelength is not None:
             x = vacuumWavelength
@@ -71,20 +78,26 @@ class Air(OpticalMaterial):
             raise ValueError("wavelength not specified for refractive index")
 
         if (x > 0.23) and (x < 1.690):
-            return 1 + 0.05792105 / (238.0185 - x**(-2)) \
-                + 0.00167917 / (57.362 - x**(-2))
+            return (
+                1
+                + 0.05792105 / (238.0185 - x ** (-2))
+                + 0.00167917 / (57.362 - x ** (-2))
+            )
         else:
             for i, rangeN in enumerate(self.sourcesRange):
                 if (x > rangeN[0]) and (x < rangeN[1]):
-                    return np.interp(x, self.sourcesN[i][0],
-                                     self.sourcesN[i][1])
-            raise ValueError("No refrative index data available for requested"
-                             " wavelength %.3f mum" % x)
+                    return np.interp(
+                        x, self.sourcesN[i][0], self.sourcesN[i][1]
+                    )
+            raise ValueError(
+                "No refrative index data available for requested"
+                " wavelength %.3f mum" % x
+            )
 
 
 class Sapphire(OpticalMaterial):
     """
-        Sapphire as optical material.
+    Sapphire as optical material.
     """
 
     name = "Sapphire"
@@ -93,12 +106,15 @@ class Sapphire(OpticalMaterial):
     sourcesN = []
     sourcesComment = ["o", "e"]
 
-    def getN(self, vacuumWavelength=None,
-             airWavelength=None,
-             axis='ordinary', *args, **kwargs):
-        """
-
-        """
+    def getN(
+        self,
+        vacuumWavelength=None,
+        airWavelength=None,
+        axis="ordinary",
+        *args,
+        **kwargs
+    ):
+        """ """
 
         if vacuumWavelength is not None:
             air = Air()
@@ -108,34 +124,52 @@ class Sapphire(OpticalMaterial):
         else:
             raise ValueError("wavelength not specified for refractive index")
 
-        if (axis == 'ordinary') or (axis == 'o'):
+        if (axis == "ordinary") or (axis == "o"):
             # electric field polarisation perpendicular to cristal axis
             if (x > 0.2) and (x < 5.0):
-                return (1 + 1.4313493 / (1 - (0.0726631 / x)**2)
-                        + 0.65054713 / (1 - (0.1193242 / x)**2)
-                        + 5.3414021 / (1 - (18.028251 / x)**2))**.5
+                return (
+                    1
+                    + 1.4313493 / (1 - (0.0726631 / x) ** 2)
+                    + 0.65054713 / (1 - (0.1193242 / x) ** 2)
+                    + 5.3414021 / (1 - (18.028251 / x) ** 2)
+                ) ** 0.5
             else:
                 for i, rangeN in enumerate(self.sourcesRange):
-                    if (x > rangeN[0]) and (x < rangeN[1]) \
-                            and (self.sourcesComment[i] == "o"):
-                        return np.interp(x, self.sourcesN[i][0],
-                                         self.sourcesN[i][1])
-                raise ValueError("No refrative index data available for "
-                                 "requested wavelength %.3f mum" % x)
+                    if (
+                        (x > rangeN[0])
+                        and (x < rangeN[1])
+                        and (self.sourcesComment[i] == "o")
+                    ):
+                        return np.interp(
+                            x, self.sourcesN[i][0], self.sourcesN[i][1]
+                        )
+                raise ValueError(
+                    "No refrative index data available for "
+                    "requested wavelength %.3f mum" % x
+                )
 
-        elif (axis == 'extraordinary') or (axis == 'e'):
+        elif (axis == "extraordinary") or (axis == "e"):
             # electric field polarisation along cristal axis
             if (x > 0.2) or (x < 5.0):
-                return (1 + 1.5039759 / (1 - (0.0740288 / x)**2)
-                        + 0.55069141 / (1 - (0.1216529 / x)**2)
-                        + 6.5927379 / (1 - (20.072248 / x)**2))**.5
+                return (
+                    1
+                    + 1.5039759 / (1 - (0.0740288 / x) ** 2)
+                    + 0.55069141 / (1 - (0.1216529 / x) ** 2)
+                    + 6.5927379 / (1 - (20.072248 / x) ** 2)
+                ) ** 0.5
             else:
                 for i, rangeN in enumerate(self.sourcesRange):
-                    if (x > rangeN[0]) and (x < rangeN[1]) \
-                            and (self.sourcesComment[i] == "e"):
-                        return np.interp(x, self.sourcesN[i][0],
-                                         self.sourcesN[i][1])
-                raise ValueError("No refrative index data available for "
-                                 "requested wavelength %.3f mum" % x)
+                    if (
+                        (x > rangeN[0])
+                        and (x < rangeN[1])
+                        and (self.sourcesComment[i] == "e")
+                    ):
+                        return np.interp(
+                            x, self.sourcesN[i][0], self.sourcesN[i][1]
+                        )
+                raise ValueError(
+                    "No refrative index data available for "
+                    "requested wavelength %.3f mum" % x
+                )
         else:
             raise ValueError("Uknown axis")

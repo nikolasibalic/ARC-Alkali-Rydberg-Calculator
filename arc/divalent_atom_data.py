@@ -215,9 +215,9 @@ class Strontium88(DivalentAtom):
 
     def getPressure(self, temperature):
         """
-            Pressure of atomic vapour at given temperature.
+        Pressure of atomic vapour at given temperature.
 
-            Calculates pressure based on Ref. [#pr]_ (accuracy +- 5%).
+        Calculates pressure based on Ref. [#pr]_ (accuracy +- 5%).
         """
         if temperature < 298:
             print("WARNING: Sr vapour pressure below 298 K is unknown (small)")
@@ -231,7 +231,8 @@ class Strontium88(DivalentAtom):
             )
         else:
             raise ValueError(
-                "ERROR: Sr vapour pressure above %.0f C is unknown" % self.meltingPoint
+                "ERROR: Sr vapour pressure above %.0f C is unknown"
+                % self.meltingPoint
             )
 
 
@@ -328,9 +329,9 @@ class Calcium40(DivalentAtom):
 
     def getPressure(self, temperature):
         """
-            Pressure of atomic vapour at given temperature.
+        Pressure of atomic vapour at given temperature.
 
-            Calculates pressure based on Ref. [#pr]_ (accuracy +- 5%).
+        Calculates pressure based on Ref. [#pr]_ (accuracy +- 5%).
         """
         if temperature < 298:
             print("WARNING: Ca vapour pressure below 298 K is unknown (small)")
@@ -344,7 +345,8 @@ class Calcium40(DivalentAtom):
             )
         else:
             raise ValueError(
-                "ERROR: Ca vapour pressure above %.0f C is unknown" % self.meltingPoint
+                "ERROR: Ca vapour pressure above %.0f C is unknown"
+                % self.meltingPoint
             )
 
 
@@ -436,9 +438,9 @@ class Ytterbium174(DivalentAtom):
 
     def getPressure(self, temperature):
         """
-            Pressure of atomic vapour at given temperature.
+        Pressure of atomic vapour at given temperature.
 
-            Calculates pressure based on Ref. [#pr]_ (accuracy +- 5%).
+        Calculates pressure based on Ref. [#pr]_ (accuracy +- 5%).
         """
         if temperature < 298:
             print("WARNING: Yb vapour pressure below 298 K is unknown (small)")

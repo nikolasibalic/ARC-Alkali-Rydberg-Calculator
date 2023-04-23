@@ -111,12 +111,16 @@ from scipy.constants import m_e as C_m_e
 
 class Hydrogen(AlkaliAtom):
     """
-        Properties of hydrogen atoms
+    Properties of hydrogen atoms
     """
+
     ionisationEnergy = 13.598433  #: (eV), Ref. [#c8]_.
     Z = 1
-    scaledRydbergConstant = 109677.5834 * 1.e2\
+    scaledRydbergConstant = (
+        109677.5834
+        * 1.0e2
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     # NOTE: below data is from NIST Atomic Spectra Database (ASD, ver. 5.5.6)
     # Even more precise Hydrogen level data is available if needed on
@@ -145,16 +149,22 @@ class Hydrogen(AlkaliAtom):
 
     def potential(self, l, s, j, r):
         # Returns total potential that electron feels = core potential + Spin-Orbit interaction
-        return -self.Z / r + self.alpha**2 / (2.0 * r**3) * (j * (j + 1.0) - l * (l + 1.0) - s * (s + 1)) / 2.0
+        return (
+            -self.Z / r
+            + self.alpha**2
+            / (2.0 * r**3)
+            * (j * (j + 1.0) - l * (l + 1.0) - s * (s + 1))
+            / 2.0
+        )
 
     def stateQuantumDefect(self, n, l, j):
-        defect = 0.
+        defect = 0.0
         return defect
 
 
 class Caesium(AlkaliAtom):
     """
-        Properties of caesium atoms
+    Properties of caesium atoms
     """
 
     # ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)
@@ -191,8 +201,11 @@ class Caesium(AlkaliAtom):
     I = 3.5  # 7/2
 
     #: (eV), Ref. [#jd2016]_.
-    ionisationEnergy = 31406.4677325 * 1.e2\
+    ionisationEnergy = (
+        31406.4677325
+        * 1.0e2
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     NISTdataLevels = 25
 
@@ -200,16 +213,22 @@ class Caesium(AlkaliAtom):
     # second index [0..4] : s,p,d,f,g
     # third index [delta0,delta2...]
 
-    quantumDefect = [[[4.04935665, 0.2377037, 0.255401, 0.00378, 0.25486, 0.0],
-                      [3.59158950, 0.360926, 0.41905, 0.64388, 1.45035, 0.0],
-                      [2.4754562, 0.009320, -0.43498, -0.76358, -18.0061, 0.0],
-                      [0.03341424, -0.198674, 0.28953, -0.2601, 0.0, 0.0],
-                      [0.00703865, -0.049252, 0.01291, 0.0, 0.0, 0.0]],
-                     [[4.04935665, 0.2377037, 0.255401, 0.00378, 0.25486, 0.0],
-                      [3.5589599, 0.392469, -0.67431, 22.3531, -92.289, 0.0],
-                      [2.46631524, 0.013577, -0.37457, -2.1867, -1.5532, -56.6739],
-                      [0.03341424, -0.198674, 0.28953, -0.2601, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [4.04935665, 0.2377037, 0.255401, 0.00378, 0.25486, 0.0],
+            [3.59158950, 0.360926, 0.41905, 0.64388, 1.45035, 0.0],
+            [2.4754562, 0.009320, -0.43498, -0.76358, -18.0061, 0.0],
+            [0.03341424, -0.198674, 0.28953, -0.2601, 0.0, 0.0],
+            [0.00703865, -0.049252, 0.01291, 0.0, 0.0, 0.0],
+        ],
+        [
+            [4.04935665, 0.2377037, 0.255401, 0.00378, 0.25486, 0.0],
+            [3.5589599, 0.392469, -0.67431, 22.3531, -92.289, 0.0],
+            [2.46631524, 0.013577, -0.37457, -2.1867, -1.5532, -56.6739],
+            [0.03341424, -0.198674, 0.28953, -0.2601, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
     """
         quantum defects for :math:`S_{1/2}`, :math:`nP_{1/2}`, :math:`D_{5/2}`,
         :math:`F_{5/2}` and :math:`G_{7/2}` are from [#Weber1987]_, while
@@ -228,11 +247,19 @@ class Caesium(AlkaliAtom):
     dipoleMatrixElementFile = "cs_dipole_matrix_elements.npy"
     quadrupoleMatrixElementFile = "cs_quadrupole_matrix_elements.npy"
 
-    literatureDMEfilename = 'caesium_literature_dme.csv'
+    literatureDMEfilename = "caesium_literature_dme.csv"
 
     #: levels that are for smaller n than ground level, but are above in energy due to angular part
-    extraLevels = [[5, 2, 2 + 0.5], [5, 2, 2 - 0.5], [5, 3, 3 + 0.5], [5, 3, 3 - 0.5],
-                   [5, 4, 4 + 0.5], [5, 4, 4 - 0.5], [4, 3, 3 + 0.5], [4, 3, 3 - 0.5]]
+    extraLevels = [
+        [5, 2, 2 + 0.5],
+        [5, 2, 2 - 0.5],
+        [5, 3, 3 + 0.5],
+        [5, 3, 3 - 0.5],
+        [5, 4, 4 + 0.5],
+        [5, 4, 4 - 0.5],
+        [4, 3, 3 + 0.5],
+        [4, 3, 3 - 0.5],
+    ]
 
     groundStateN = 6
 
@@ -240,8 +267,12 @@ class Caesium(AlkaliAtom):
     abundance = 1.000
 
     #: in eV
-    scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
+    scaledRydbergConstant = (
+        (mass - C_m_e)
+        / (mass)
+        * C_Rydberg
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     elementName = "Cs133"
     meltingPoint = 28.44 + 273.15  #: in K
@@ -249,17 +280,16 @@ class Caesium(AlkaliAtom):
     #: source of HFS magnetic dipole and quadrupole constants
     hyperfineStructureData = "cs_hfs_data.csv"
 
-    gL = 0.99999587      #: Electron orbital g-factor [#SteckCs]_
+    gL = 0.99999587  #: Electron orbital g-factor [#SteckCs]_
     gI = -0.00039885395  #: Nuclear g-factor  [#SteckCs]_
-
 
     def getPressure(self, temperature):
         """
-            Pressure of atomic vapour at given temperature.
+        Pressure of atomic vapour at given temperature.
 
-            Uses equation and values from [#c3]_. Values from table 2.
-            (accuracy +- 5%) are used for Cs in solid phase. Values from table 3.
-            (accuracy +-1 %) are used for Cs in liquid phase.
+        Uses equation and values from [#c3]_. Values from table 2.
+        (accuracy +- 5%) are used for Cs in solid phase. Values from table 3.
+        (accuracy +-1 %) are used for Cs in liquid phase.
 
         """
 
@@ -267,15 +297,25 @@ class Caesium(AlkaliAtom):
 
         if temperature < self.meltingPoint:
             # Cs is in solid phase (from table 2. for recommended equations / +-5%)
-            return 10.0**(2.881 + 4.711 - 3999. / temperature) * 133.322368
+            return 10.0 ** (2.881 + 4.711 - 3999.0 / temperature) * 133.322368
 
-        elif temperature < 550. + 273.15:
+        elif temperature < 550.0 + 273.15:
             # Cs is in liquid phase (from table 3. of the cited reference "precisely fitted equations / +- 1%)
-            return 10.0**(2.881 + 8.232 - 4062. / temperature -
-                          1.3359 * log(temperature) / log(10.)) * 133.322368
+            return (
+                10.0
+                ** (
+                    2.881
+                    + 8.232
+                    - 4062.0 / temperature
+                    - 1.3359 * log(temperature) / log(10.0)
+                )
+                * 133.322368
+            )
         else:
-            print("ERROR: Cs vapour pressure above 550 C is unknown \
-                    (limits of experimental interpolation)")
+            print(
+                "ERROR: Cs vapour pressure above 550 C is unknown \
+                    (limits of experimental interpolation)"
+            )
             return 0
 
     def getPressureOld(self, temperature):
@@ -285,33 +325,56 @@ class Caesium(AlkaliAtom):
         # edited by Robert Gary
         # as was found in Steck Alkali metal data, revision 1.6, 14 October 2003
 
-        print("WARNING: getPressureOld is provided just for reference for \
-                the old versions of the programme")
+        print(
+            "WARNING: getPressureOld is provided just for reference for \
+                the old versions of the programme"
+        )
         print("New programmes should use getPressure function instead !")
 
         if temperature < 28.44 + 273.15:
             # Cs is in solid phase
-            return 10.0**(-219.482 + 1088.676 / temperature - 0.08336185 * temperature +
-                          94.88752 * log(temperature) / log(10.0)) * 133.322368
+            return (
+                10.0
+                ** (
+                    -219.482
+                    + 1088.676 / temperature
+                    - 0.08336185 * temperature
+                    + 94.88752 * log(temperature) / log(10.0)
+                )
+                * 133.322368
+            )
 
         elif temperature < 671 + 273.15:
             # Cs is in liquid phase
-            return 10.0**(8.22127 - 4006.048 / temperature - 0.00060194 * temperature -
-                          0.19623 * log(temperature) / log(10.0)) * 133.322368
+            return (
+                10.0
+                ** (
+                    8.22127
+                    - 4006.048 / temperature
+                    - 0.00060194 * temperature
+                    - 0.19623 * log(temperature) / log(10.0)
+                )
+                * 133.322368
+            )
         else:
-            print("ERROR: Cs vapour pressure above 671 C is unknown \
-                    (limits of experimental interpolation)")
+            print(
+                "ERROR: Cs vapour pressure above 671 C is unknown \
+                    (limits of experimental interpolation)"
+            )
             return 0
+
 
 class Cesium(Caesium):
     """
-        support for American English spelling
+    support for American English spelling
     """
+
     pass
+
 
 class Rubidium85(AlkaliAtom):
     """
-        Properites of rubidium 85 atoms
+    Properites of rubidium 85 atoms
     """
 
     # ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)
@@ -353,19 +416,28 @@ class Rubidium85(AlkaliAtom):
     NISTdataLevels = 77
 
     #: (eV) Ref. [#Sanguinetti2009]_
-    ionisationEnergy = (1010.024700e12) / C_c \
+    ionisationEnergy = (
+        (1010.024700e12)
+        / C_c
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
-    quantumDefect = [[[3.1311804, 0.1784, 0.0, 0.0, 0.0, 0.0],
-                      [2.6548849, 0.2900, 0.0, 0.0, 0.0, 0.0],
-                      [1.34809171, -0.60286, 0.0, 0.0, 0.0, 0.0],
-                      [0.0165192, -0.085, 0.0, 0.0, 0.0, 0.0],
-                      [0.0039990, -0.0202, 0.0, 0.0, 0.0, 0.0]],
-                     [[3.1311804, 0.1784, 0.0, 0.0, 0.0, 0.0],
-                      [2.6416737, 0.2950, 0.0, 0.0, 0.0, 0.0],
-                      [1.34646572, -0.59600, 0.0, 0.0, 0.0, 0.0],
-                      [0.0165437, -0.086, 0.0, 0.0, 0.0, 0.0],
-                      [0.0039990, -0.0202, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [3.1311804, 0.1784, 0.0, 0.0, 0.0, 0.0],
+            [2.6548849, 0.2900, 0.0, 0.0, 0.0, 0.0],
+            [1.34809171, -0.60286, 0.0, 0.0, 0.0, 0.0],
+            [0.0165192, -0.085, 0.0, 0.0, 0.0, 0.0],
+            [0.0039990, -0.0202, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [3.1311804, 0.1784, 0.0, 0.0, 0.0, 0.0],
+            [2.6416737, 0.2950, 0.0, 0.0, 0.0, 0.0],
+            [1.34646572, -0.59600, 0.0, 0.0, 0.0, 0.0],
+            [0.0165437, -0.086, 0.0, 0.0, 0.0, 0.0],
+            [0.0039990, -0.0202, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
     """
         quantum defects for :math:`nF` states are
         from [#c5]_. Quantum defects for :math:`nG` states are
@@ -381,11 +453,15 @@ class Rubidium85(AlkaliAtom):
 
     precalculatedDB = "rb85_precalculated.db"
 
-    literatureDMEfilename = 'rubidium_literature_dme.csv'
+    literatureDMEfilename = "rubidium_literature_dme.csv"
 
     #: levels that are for smaller n than ground level, but are above in energy due to angular part
-    extraLevels = [[4, 2, 2 + 0.5], [4, 2, 2 - 0.5],
-                   [4, 3, 3 + 0.5], [4, 3, 3 - 0.5]]
+    extraLevels = [
+        [4, 2, 2 + 0.5],
+        [4, 2, 2 - 0.5],
+        [4, 3, 3 + 0.5],
+        [4, 3, 3 - 0.5],
+    ]
 
     groundStateN = 5
 
@@ -395,8 +471,12 @@ class Rubidium85(AlkaliAtom):
     abundance = 0.7217
 
     #:  in eV
-    scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
+    scaledRydbergConstant = (
+        (mass - C_m_e)
+        / (mass)
+        * C_Rydberg
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     elementName = "Rb85"
     meltingPoint = 39.31 + 273.15  #: in K
@@ -404,45 +484,56 @@ class Rubidium85(AlkaliAtom):
     #: source of HFS magnetic dipole and quadrupole constants
     hyperfineStructureData = "rb85_hfs_data.csv"
 
-    gL = 0.99999354      #: Electron orbital g-factor [#Steck85Rb]_
+    gL = 0.99999354  #: Electron orbital g-factor [#Steck85Rb]_
     gI = -0.00029364000  #: Nuclear g-factor  [#Steck85Rb]_
 
     def getPressure(self, temperature):
         """
-            Pressure of atomic vapour at given temperature.
+        Pressure of atomic vapour at given temperature.
 
-            Uses equation and values from [#c3]_. Values from table 2.
-            (accuracy +- 5%) are used for Rb in solid phase. Values from table 3.
-            (accuracy +-1 %) are used for Rb in liquid phase.
+        Uses equation and values from [#c3]_. Values from table 2.
+        (accuracy +- 5%) are used for Rb in solid phase. Values from table 3.
+        (accuracy +-1 %) are used for Rb in liquid phase.
 
         """
 
         if temperature < self.meltingPoint:
             # Rb is in solid phase (from table 2. for recommended equations / +-5%)
-            return 10.0**(2.881 + 4.857 - 4215. / temperature) * 133.322368
+            return 10.0 ** (2.881 + 4.857 - 4215.0 / temperature) * 133.322368
 
-        elif temperature < 550. + 273.15:
+        elif temperature < 550.0 + 273.15:
             # Rb is in liquid phase (from table 3. of the cited reference "precisely fitted equations / +- 1%)
-            return 10.0**(2.881 + 8.316 - 4275. / temperature -
-                          1.3102 * log(temperature) / log(10.)) * 133.322368
+            return (
+                10.0
+                ** (
+                    2.881
+                    + 8.316
+                    - 4275.0 / temperature
+                    - 1.3102 * log(temperature) / log(10.0)
+                )
+                * 133.322368
+            )
         else:
-            print("ERROR: Rb vapour pressure above 550 C is unknown \
-                    (limits of experimental interpolation)")
+            print(
+                "ERROR: Rb vapour pressure above 550 C is unknown \
+                    (limits of experimental interpolation)"
+            )
             return 0
 
 
 class Rubidium(Rubidium85):
     """
-        backward compatibility:
-        before there was only one Rubidium class, and that one corresponded
-        to Rubidium85
+    backward compatibility:
+    before there was only one Rubidium class, and that one corresponded
+    to Rubidium85
     """
+
     pass
 
 
 class Rubidium87(AlkaliAtom):
     """
-        Properites of rubidium 87 atoms
+    Properites of rubidium 87 atoms
     """
 
     # ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)
@@ -484,19 +575,28 @@ class Rubidium87(AlkaliAtom):
     NISTdataLevels = 77
 
     #: (eV) Ref. [#Mack2011]_
-    ionisationEnergy = (1010.0291646e12 - 4.271676631815181e9) / C_c \
+    ionisationEnergy = (
+        (1010.0291646e12 - 4.271676631815181e9)
+        / C_c
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
-    quantumDefect = [[[3.1311804, 0.1784, 0.0, 0.0, 0.0, 0.0],
-                      [2.6548849, 0.2900, 0.0, 0.0, 0.0, 0.0],
-                      [1.34809171, -0.60286, 0.0, 0.0, 0.0, 0.0],
-                      [0.0165192, -0.085, 0.0, 0.0, 0.0, 0.0],
-                      [0.00405, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[3.1311804, 0.1784, 0.0, 0.0, 0.0, 0.0],
-                      [2.6416737, 0.2950, 0.0, 0.0, 0.0, 0.0],
-                      [1.34646572, -0.59600, 0.0, 0.0, 0.0, 0.0],
-                      [0.0165437, -0.086, 0.0, 0.0, 0.0, 0.0],
-                      [0.00405, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [3.1311804, 0.1784, 0.0, 0.0, 0.0, 0.0],
+            [2.6548849, 0.2900, 0.0, 0.0, 0.0, 0.0],
+            [1.34809171, -0.60286, 0.0, 0.0, 0.0, 0.0],
+            [0.0165192, -0.085, 0.0, 0.0, 0.0, 0.0],
+            [0.00405, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [3.1311804, 0.1784, 0.0, 0.0, 0.0, 0.0],
+            [2.6416737, 0.2950, 0.0, 0.0, 0.0, 0.0],
+            [1.34646572, -0.59600, 0.0, 0.0, 0.0, 0.0],
+            [0.0165437, -0.086, 0.0, 0.0, 0.0, 0.0],
+            [0.00405, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
     """
         quantum defects for :math:`nF` states are
         from [#c5]_. Quantum defects for :math:`nG` states are
@@ -512,11 +612,15 @@ class Rubidium87(AlkaliAtom):
 
     precalculatedDB = "rb87_precalculated.db"
 
-    literatureDMEfilename = 'rubidium_literature_dme.csv'
+    literatureDMEfilename = "rubidium_literature_dme.csv"
 
     #: levels that are for smaller n than ground level, but are above in energy due to angular part
-    extraLevels = [[4, 2, 2 + 0.5], [4, 2, 2 - 0.5],
-                   [4, 3, 3 + 0.5], [4, 3, 3 - 0.5]]
+    extraLevels = [
+        [4, 2, 2 + 0.5],
+        [4, 2, 2 - 0.5],
+        [4, 3, 3 + 0.5],
+        [4, 3, 3 - 0.5],
+    ]
 
     groundStateN = 5
 
@@ -526,10 +630,14 @@ class Rubidium87(AlkaliAtom):
     abundance = 0.2783
 
     #:  in eV  (M_ion core = m_atomic - m_electron)
-    scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
+    scaledRydbergConstant = (
+        (mass - C_m_e)
+        / (mass)
+        * C_Rydberg
         * physical_constants["inverse meter-electron volt relationship"][0]
-    #109736.605*1.e2 \
-#        *physical_constants["inverse meter-electron volt relationship"][0]
+    )
+    # 109736.605*1.e2 \
+    #        *physical_constants["inverse meter-electron volt relationship"][0]
 
     elementName = "Rb87"
     meltingPoint = 39.31 + 273.15  #: in K
@@ -537,36 +645,46 @@ class Rubidium87(AlkaliAtom):
     #: source of HFS magnetic dipole and quadrupole constants
     hyperfineStructureData = "rb87_hfs_data.csv"
 
-    gL = 0.99999369      #: Electron orbital g-factor [#Steck87Rb]_
-    gI = -0.0009951414   #: Nuclear g-factor  [#Steck87Rb]_
+    gL = 0.99999369  #: Electron orbital g-factor [#Steck87Rb]_
+    gI = -0.0009951414  #: Nuclear g-factor  [#Steck87Rb]_
 
     def getPressure(self, temperature):
         """
-            Pressure of atomic vapour at given temperature.
+        Pressure of atomic vapour at given temperature.
 
-            Uses equation and values from [#c3]_. Values from table 2.
-            (accuracy +- 5%) are used for Rb in solid phase. Values from table 3.
-            (accuracy +-1 %) are used for Rb in liquid phase.
+        Uses equation and values from [#c3]_. Values from table 2.
+        (accuracy +- 5%) are used for Rb in solid phase. Values from table 3.
+        (accuracy +-1 %) are used for Rb in liquid phase.
 
         """
 
         if temperature < self.meltingPoint:
             # Rb is in solid phase (from table 2. for recommended equations / +-5%)
-            return 10.0**(2.881 + 4.857 - 4215. / temperature) * 133.322368
+            return 10.0 ** (2.881 + 4.857 - 4215.0 / temperature) * 133.322368
 
-        elif temperature < 550. + 273.15:
+        elif temperature < 550.0 + 273.15:
             # Rb is in liquid phase (from table 3. of the cited reference "precisely fitted equations / +- 1%)
-            return 10.0**(2.881 + 8.316 - 4275. / temperature -
-                          1.3102 * log(temperature) / log(10.)) * 133.322368
+            return (
+                10.0
+                ** (
+                    2.881
+                    + 8.316
+                    - 4275.0 / temperature
+                    - 1.3102 * log(temperature) / log(10.0)
+                )
+                * 133.322368
+            )
         else:
-            print("ERROR: Rb vapour pressure above 550 C is unknown \
-                    (limits of experimental interpolation)")
+            print(
+                "ERROR: Rb vapour pressure above 550 C is unknown \
+                    (limits of experimental interpolation)"
+            )
             return 0
 
 
 class Lithium6(AlkaliAtom):  # Li
     """
-        Properties of lithium 6 atoms
+    Properties of lithium 6 atoms
     """
 
     # ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)
@@ -604,25 +722,34 @@ class Lithium6(AlkaliAtom):  # Li
 
     Z = 3
 
-    I = 1.
+    I = 1.0
 
     NISTdataLevels = 42
 
     # (eV) from Ref. [#c7]_
-    ionisationEnergy = 43487.15 * 1.e2\
+    ionisationEnergy = (
+        43487.15
+        * 1.0e2
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     # PRA 34, 2889 (1986); and (for D_J and F_J) from Physica Scripta 27:300-305 (1983)
-    quantumDefect = [[[0.3995101, 0.0290, 0.0, 0.0, 0.0, 0.0],
-                      [0.0471835, -0.024, 0.0, 0.0, 0.0, 0.0],
-                      [0.002129, -0.01491, 0.1759, -0.8507, 0.0, 0.0],
-                      [-0.000077, 0.021856, -0.4211, 2.3891, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[0.3995101, 0.0290, 0.0, 0.0, 0.0, 0.0],
-                      [0.0471720, -0.024, 0.0, 0.0, 0.0, 0.0],
-                      [0.002129, -0.01491, 0.1759, -0.8507, 0.0, 0.0],
-                      [-0.000077, 0.021856, -0.4211, 2.3891, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [0.3995101, 0.0290, 0.0, 0.0, 0.0, 0.0],
+            [0.0471835, -0.024, 0.0, 0.0, 0.0, 0.0],
+            [0.002129, -0.01491, 0.1759, -0.8507, 0.0, 0.0],
+            [-0.000077, 0.021856, -0.4211, 2.3891, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [0.3995101, 0.0290, 0.0, 0.0, 0.0, 0.0],
+            [0.0471720, -0.024, 0.0, 0.0, 0.0, 0.0],
+            [0.002129, -0.01491, 0.1759, -0.8507, 0.0, 0.0],
+            [-0.000077, 0.021856, -0.4211, 2.3891, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
     """
         quantum defects for :math:`nS` and :math:`nP` are from Ref. [#c6]_ .
         Quantum defects for :math:`D_j` and :math:`F_j` are from Ref. [#c7]_
@@ -650,10 +777,14 @@ class Lithium6(AlkaliAtom):  # Li
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 0.0759
 
-    gL = 1 - physical_constants["electron mass"][0]/mass
+    gL = 1 - physical_constants["electron mass"][0] / mass
 
-    scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
+    scaledRydbergConstant = (
+        (mass - C_m_e)
+        / (mass)
+        * C_Rydberg
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     elementName = "Li6"
     meltingPoint = 180.54 + 273.15  #: in K
@@ -663,34 +794,53 @@ class Lithium6(AlkaliAtom):  # Li
 
     def getPressure(self, temperature):
         """
-            Pressure of atomic vapour at given temperature.
+        Pressure of atomic vapour at given temperature.
 
-            Uses equation and values from [#c3]_. Values from table 3.
-            (accuracy +-1 %) are used both for liquid and solid phase of Li.
+        Uses equation and values from [#c3]_. Values from table 3.
+        (accuracy +-1 %) are used both for liquid and solid phase of Li.
 
         """
 
         if temperature < self.meltingPoint:
             # Li is in solid phase (from table 3. of the cited reference
             # "precisely fitted equations / +- 1%)
-            return 10.0**(2.881 + 7.790 - 8423. / temperature -
-                          0.7074 * log(temperature) / log(10.)) * 133.322368
+            return (
+                10.0
+                ** (
+                    2.881
+                    + 7.790
+                    - 8423.0 / temperature
+                    - 0.7074 * log(temperature) / log(10.0)
+                )
+                * 133.322368
+            )
 
-        elif temperature < 1000. + 273.15:
+        elif temperature < 1000.0 + 273.15:
             # Li is in liquid phase (from table 3. of the cited reference
             # "precisely fitted equations / +- 1%)
-            return 10.0**(2.881 + 8.409 - 8320. / temperature -
-                          1.0255 * log(temperature) / log(10.)) * 133.322368
+            return (
+                10.0
+                ** (
+                    2.881
+                    + 8.409
+                    - 8320.0 / temperature
+                    - 1.0255 * log(temperature) / log(10.0)
+                )
+                * 133.322368
+            )
         else:
-            print("ERROR: Li vapour pressure above 1000 C is unknown \
-                    (limits of experimental interpolation)")
+            print(
+                "ERROR: Li vapour pressure above 1000 C is unknown \
+                    (limits of experimental interpolation)"
+            )
             return 0
 
 
 class Lithium7(AlkaliAtom):  # Li
     """
-        Properties of lithium 7 atoms
+    Properties of lithium 7 atoms
     """
+
     # ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)
     # model potential parameters from Marinescu et.al, PRA 49:982 (1994)
     alphaC = 0.1923
@@ -731,16 +881,22 @@ class Lithium7(AlkaliAtom):  # Li
     NISTdataLevels = 42
     ionisationEnergy = 5.391719  #: (eV) NIST Ref. [#c11]_.
 
-    quantumDefect = [[[0.3995101, 0.0290, 0.0, 0.0, 0.0, 0.0],
-                      [0.0471780, -0.024, 0.0, 0.0, 0.0, 0.0],
-                      [0.002129, -0.01491, 0.1759, -0.8507, 0.0, 0.0],
-                      [-0.000077, 0.021856, -0.4211, 2.3891, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[0.3995101, 0.0290, 0.0, 0.0, 0.0, 0.0],
-                      [0.0471665, -0.024, 0.0, 0.0, 0.0, 0.0],
-                      [0.002129, -0.01491, 0.1759, -0.8507, 0.0, 0.0],
-                      [-0.000077, 0.021856, -0.4211, 2.3891, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [0.3995101, 0.0290, 0.0, 0.0, 0.0, 0.0],
+            [0.0471780, -0.024, 0.0, 0.0, 0.0, 0.0],
+            [0.002129, -0.01491, 0.1759, -0.8507, 0.0, 0.0],
+            [-0.000077, 0.021856, -0.4211, 2.3891, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [0.3995101, 0.0290, 0.0, 0.0, 0.0, 0.0],
+            [0.0471665, -0.024, 0.0, 0.0, 0.0, 0.0],
+            [0.002129, -0.01491, 0.1759, -0.8507, 0.0, 0.0],
+            [-0.000077, 0.021856, -0.4211, 2.3891, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
     """
         quantum defects for :math:`nS` and :math:`nP` states are
         from Ref. [#c6]_. Quantum defects for :math:`D_j` and :math:`F_j`
@@ -767,10 +923,14 @@ class Lithium7(AlkaliAtom):  # Li
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 0.9241
 
-    gL = 1 - physical_constants["electron mass"][0]/mass
+    gL = 1 - physical_constants["electron mass"][0] / mass
 
-    scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
+    scaledRydbergConstant = (
+        (mass - C_m_e)
+        / (mass)
+        * C_Rydberg
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     elementName = "Li7"
     meltingPoint = 180.54 + 273.15  #: in K
@@ -780,33 +940,51 @@ class Lithium7(AlkaliAtom):  # Li
 
     def getPressure(self, temperature):
         """
-            Pressure of atomic vapour at given temperature (in K).
+        Pressure of atomic vapour at given temperature (in K).
 
-            Uses equation and values from [#c3]_. Values from table 3.
-            (accuracy +-1 %) are used for both liquid and solid phase of Li.
+        Uses equation and values from [#c3]_. Values from table 3.
+        (accuracy +-1 %) are used for both liquid and solid phase of Li.
 
         """
 
         if temperature < self.meltingPoint:
             # Li is in solid phase (from table 3. of the cited reference
             # "precisely fitted equations / +- 1%)
-            return 10.0**(2.881 + 7.790 - 8423. / temperature -
-                          0.7074 * log(temperature) / log(10.)) * 133.322368
+            return (
+                10.0
+                ** (
+                    2.881
+                    + 7.790
+                    - 8423.0 / temperature
+                    - 0.7074 * log(temperature) / log(10.0)
+                )
+                * 133.322368
+            )
 
-        elif temperature < 1000. + 273.15:
+        elif temperature < 1000.0 + 273.15:
             # Li is in liquid phase (from table 3. of the cited reference
             # "precisely fitted equations / +- 1%)
-            return 10.0**(2.881 + 8.409 - 8320. / temperature -
-                          1.0255 * log(temperature) / log(10.)) * 133.322368
+            return (
+                10.0
+                ** (
+                    2.881
+                    + 8.409
+                    - 8320.0 / temperature
+                    - 1.0255 * log(temperature) / log(10.0)
+                )
+                * 133.322368
+            )
         else:
-            print("ERROR: Li vapour pressure above 1000 C is unknown \
-                    (limits of experimental interpolation)")
+            print(
+                "ERROR: Li vapour pressure above 1000 C is unknown \
+                    (limits of experimental interpolation)"
+            )
             return 0
 
 
 class Sodium(AlkaliAtom):  # Na23
     """
-        Properties of sodium 23 atoms
+    Properties of sodium 23 atoms
     """
 
     #: ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)
@@ -848,19 +1026,28 @@ class Sodium(AlkaliAtom):  # Na23
     NISTdataLevels = 20
 
     #: (eV) from Ref. [#c7]_
-    ionisationEnergy = 41449.44 * 1.e2\
+    ionisationEnergy = (
+        41449.44
+        * 1.0e2
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
-    quantumDefect = [[[1.347964, 0.060673, 0.0233, -0.0085, 0.0, 0.0],
-                      [0.855380, 0.11363, 0.0384, 0.1412, 0.0, 0.0],
-                      [0.015543, -0.08535, 0.7958, -4.0513, 0.0, 0.0],
-                      [0.001453, 0.017312, -0.7809, 7.021, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[1.347964, 0.060673, 0.0233, -0.0085, 0.0, 0.0],
-                      [0.854565, 0.114195, 0.0352, 0.1533, 0.0, 0.0],
-                      [0.015543, -0.08535, 0.7958, -4.0513, 0.0, 0.0],
-                      [0.001453, 0.017312, -0.7809, 7.021, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [1.347964, 0.060673, 0.0233, -0.0085, 0.0, 0.0],
+            [0.855380, 0.11363, 0.0384, 0.1412, 0.0, 0.0],
+            [0.015543, -0.08535, 0.7958, -4.0513, 0.0, 0.0],
+            [0.001453, 0.017312, -0.7809, 7.021, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [1.347964, 0.060673, 0.0233, -0.0085, 0.0, 0.0],
+            [0.854565, 0.114195, 0.0352, 0.1533, 0.0, 0.0],
+            [0.015543, -0.08535, 0.7958, -4.0513, 0.0, 0.0],
+            [0.001453, 0.017312, -0.7809, 7.021, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
     """
         Quantum defects are from Ref. [#c7]_. Note that we are using modified
         Rydberg-Ritz formula. In literature both modified and non-modified
@@ -874,7 +1061,7 @@ class Sodium(AlkaliAtom):  # Na23
 
     precalculatedDB = "na23_precalculated.db"
 
-    literatureDMEfilename = 'sodium_literature_dme.csv'
+    literatureDMEfilename = "sodium_literature_dme.csv"
 
     # levels that are for smaller n than ground level, but are above in
     # energy due to angular part
@@ -887,11 +1074,15 @@ class Sodium(AlkaliAtom):  # Na23
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 1.00
 
-    gL = 1 - physical_constants["electron mass"][0]/mass
+    gL = 1 - physical_constants["electron mass"][0] / mass
 
     #: (eV)
-    scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
+    scaledRydbergConstant = (
+        (mass - C_m_e)
+        / (mass)
+        * C_Rydberg
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     elementName = "Na23"
     meltingPoint = 97.794 + 273.15  #: in K
@@ -901,33 +1092,44 @@ class Sodium(AlkaliAtom):  # Na23
 
     def getPressure(self, temperature):
         """
-            Pressure of atomic vapour at given temperature.
+        Pressure of atomic vapour at given temperature.
 
-            Uses equation and values from [#c3]_. Values from table 2.
-            (accuracy +- 5%) are used for Na in solid phase. Values from table 3.
-            (accuracy +-1 %) are used for Na in liquid phase.
+        Uses equation and values from [#c3]_. Values from table 2.
+        (accuracy +- 5%) are used for Na in solid phase. Values from table 3.
+        (accuracy +-1 %) are used for Na in liquid phase.
 
         """
 
         if temperature < self.meltingPoint:
             # Na is in solid phase (from table 2. of the cited reference  / +- 5%)
-            return 10.0**(2.881 + 5.298 - 5603. / temperature) * 133.322368
+            return 10.0 ** (2.881 + 5.298 - 5603.0 / temperature) * 133.322368
 
-        elif temperature < 700. + 273.15:
+        elif temperature < 700.0 + 273.15:
             # Na is in liquid phase (from table 3. of the cited reference
             # "precisely fitted equations / +- 1%)
-            return 10.0**(2.881 + 8.400 - 5634. / temperature -
-                          1.1748 * log(temperature) / log(10.)) * 133.322368
+            return (
+                10.0
+                ** (
+                    2.881
+                    + 8.400
+                    - 5634.0 / temperature
+                    - 1.1748 * log(temperature) / log(10.0)
+                )
+                * 133.322368
+            )
         else:
-            print("ERROR: Na vapour pressure above 700 C is unknown \
-                    (limits of experimental interpolation)")
+            print(
+                "ERROR: Na vapour pressure above 700 C is unknown \
+                    (limits of experimental interpolation)"
+            )
             return 0
 
 
 class Potassium39(AlkaliAtom):
     """
-        Properties of potassium 39 atoms
+    Properties of potassium 39 atoms
     """
+
     # ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)
     alphaC = 5.3310
     """
@@ -967,20 +1169,29 @@ class Potassium39(AlkaliAtom):
     NISTdataLevels = 46
 
     #: (eV), weighted average of values in Ref. [#c7]_.
-    ionisationEnergy = 35009.8139375 * 1.e2\
+    ionisationEnergy = (
+        35009.8139375
+        * 1.0e2
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     # quantum defects from Physica Scripta 27:300 (1983)
-    quantumDefect = [[[2.1801985, 0.13558, 0.0759, 0.117, -0.206, 0.0],
-                      [1.713892, 0.233294, 0.16137, 0.5345, -0.234, 0.0],
-                      [0.27697, -1.024911, -0.709174, 11.839, -26.689, 0.0],
-                      [0.010098, -0.100224, 1.56334, -12.6851, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[2.1801985, 0.13558, 0.0759, 0.117, -0.206, 0.0],
-                      [1.710848, 0.235437, 0.11551, 1.1015, -2.0356, 0.0],
-                      [0.2771580, -1.025635, -0.59201, 10.0053, -19.0244, 0.0],
-                      [0.010098, -0.100224, 1.56334, -12.6851, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [2.1801985, 0.13558, 0.0759, 0.117, -0.206, 0.0],
+            [1.713892, 0.233294, 0.16137, 0.5345, -0.234, 0.0],
+            [0.27697, -1.024911, -0.709174, 11.839, -26.689, 0.0],
+            [0.010098, -0.100224, 1.56334, -12.6851, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [2.1801985, 0.13558, 0.0759, 0.117, -0.206, 0.0],
+            [1.710848, 0.235437, 0.11551, 1.1015, -2.0356, 0.0],
+            [0.2771580, -1.025635, -0.59201, 10.0053, -19.0244, 0.0],
+            [0.010098, -0.100224, 1.56334, -12.6851, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
     """
         quantum defects from Ref. [#c7]_.
     """
@@ -991,7 +1202,7 @@ class Potassium39(AlkaliAtom):
 
     precalculatedDB = "k39_precalculated.db"
 
-    literatureDMEfilename = 'potassium_literature_dme.csv'
+    literatureDMEfilename = "potassium_literature_dme.csv"
 
     #: levels that are for smaller n than ground level, but are above in energy due to angular part
     extraLevels = [[3, 2, 2 + 0.5], [3, 2, 2 - 0.5]]
@@ -1003,11 +1214,15 @@ class Potassium39(AlkaliAtom):
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 0.932581
 
-    gL = 1 - physical_constants["electron mass"][0]/mass
+    gL = 1 - physical_constants["electron mass"][0] / mass
 
     # in eV
-    scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
+    scaledRydbergConstant = (
+        (mass - C_m_e)
+        / (mass)
+        * C_Rydberg
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     elementName = "K39"
     meltingPoint = 63.5 + 273.15  #: in K
@@ -1017,42 +1232,54 @@ class Potassium39(AlkaliAtom):
 
     def getPressure(self, temperature):
         """
-            Pressure of atomic vapour at given temperature.
+        Pressure of atomic vapour at given temperature.
 
-            Uses equation and values from [#c3]_. Values from table 2.
-            (accuracy +- 5%) are used for Na in solid phase. Values from table 3.
-            (accuracy +-1 %) are used for Na in liquid phase.
+        Uses equation and values from [#c3]_. Values from table 2.
+        (accuracy +- 5%) are used for Na in solid phase. Values from table 3.
+        (accuracy +-1 %) are used for Na in liquid phase.
 
         """
 
         if temperature < self.meltingPoint:
             # K is in solid phase (from table 2. of the cited reference  / +- 5%)
-            return 10.0**(2.881 + 4.961 - 4646. / temperature) * 133.322368
+            return 10.0 ** (2.881 + 4.961 - 4646.0 / temperature) * 133.322368
 
-        elif temperature < 600. + 273.15:
+        elif temperature < 600.0 + 273.15:
             # K is in liquid phase (from table 3. of the cited reference
             # "precisely fitted equations / +- 1%)
-            return 10.0**(2.881 + 8.233 - 4693. / temperature -
-                          1.2403 * log(temperature) / log(10.)) * 133.322368
+            return (
+                10.0
+                ** (
+                    2.881
+                    + 8.233
+                    - 4693.0 / temperature
+                    - 1.2403 * log(temperature) / log(10.0)
+                )
+                * 133.322368
+            )
         else:
-            print("ERROR: K vapour pressure above 600 C is unknown \
-                (limits of experimental interpolation)")
+            print(
+                "ERROR: K vapour pressure above 600 C is unknown \
+                (limits of experimental interpolation)"
+            )
             return 0
 
 
 class Potassium(Potassium39):
     """
-      backward compatibility:
-      before only one class for Potassium existed and
-      it corresponded to Potassium 39
+    backward compatibility:
+    before only one class for Potassium existed and
+    it corresponded to Potassium 39
     """
+
     pass
 
 
 class Potassium40(AlkaliAtom):
     """
-        Properties of potassium 40 atoms
+    Properties of potassium 40 atoms
     """
+
     # ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)
     alphaC = 5.3310
     """
@@ -1092,20 +1319,29 @@ class Potassium40(AlkaliAtom):
     NISTdataLevels = 46
 
     #: (eV), weighted average of values in Ref. [#c7]_.
-    ionisationEnergy = 35009.8139375 * 1.e2\
+    ionisationEnergy = (
+        35009.8139375
+        * 1.0e2
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     # quantum defects from Physica Scripta 27:300 (1983)
-    quantumDefect = [[[2.1801985, 0.13558, 0.0759, 0.117, -0.206, 0.0],
-                      [1.713892, 0.233294, 0.16137, 0.5345, -0.234, 0.0],
-                      [0.27697, -1.024911, -0.709174, 11.839, -26.689, 0.0],
-                      [0.010098, -0.100224, 1.56334, -12.6851, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[2.1801985, 0.13558, 0.0759, 0.117, -0.206, 0.0],
-                      [1.710848, 0.235437, 0.11551, 1.1015, -2.0356, 0.0],
-                      [0.2771580, -1.025635, -0.59201, 10.0053, -19.0244, 0.0],
-                      [0.010098, -0.100224, 1.56334, -12.6851, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [2.1801985, 0.13558, 0.0759, 0.117, -0.206, 0.0],
+            [1.713892, 0.233294, 0.16137, 0.5345, -0.234, 0.0],
+            [0.27697, -1.024911, -0.709174, 11.839, -26.689, 0.0],
+            [0.010098, -0.100224, 1.56334, -12.6851, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [2.1801985, 0.13558, 0.0759, 0.117, -0.206, 0.0],
+            [1.710848, 0.235437, 0.11551, 1.1015, -2.0356, 0.0],
+            [0.2771580, -1.025635, -0.59201, 10.0053, -19.0244, 0.0],
+            [0.010098, -0.100224, 1.56334, -12.6851, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
     """
         quantum defects from Ref. [#c7]_.
     """
@@ -1116,7 +1352,7 @@ class Potassium40(AlkaliAtom):
 
     precalculatedDB = "k40_precalculated.db"
 
-    literatureDMEfilename = 'potassium_literature_dme.csv'
+    literatureDMEfilename = "potassium_literature_dme.csv"
 
     #: levels that are for smaller n than ground level, but are above in energy due to angular part
     extraLevels = [[3, 2, 2 + 0.5], [3, 2, 2 - 0.5]]
@@ -1128,11 +1364,15 @@ class Potassium40(AlkaliAtom):
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 0.000117
 
-    gL = 1 - physical_constants["electron mass"][0]/mass
+    gL = 1 - physical_constants["electron mass"][0] / mass
 
     #: in eV
-    scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
+    scaledRydbergConstant = (
+        (mass - C_m_e)
+        / (mass)
+        * C_Rydberg
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     elementName = "K40"
     meltingPoint = 63.5 + 273.15  #: in K
@@ -1142,33 +1382,44 @@ class Potassium40(AlkaliAtom):
 
     def getPressure(self, temperature):
         """
-            Pressure of atomic vapour at given temperature.
+        Pressure of atomic vapour at given temperature.
 
-            Uses equation and values from [#c3]_. Values from table 2.
-            (accuracy +- 5%) are used for Na in solid phase. Values from table 3.
-            (accuracy +-1 %) are used for Na in liquid phase.
+        Uses equation and values from [#c3]_. Values from table 2.
+        (accuracy +- 5%) are used for Na in solid phase. Values from table 3.
+        (accuracy +-1 %) are used for Na in liquid phase.
 
         """
 
         if temperature < self.meltingPoint:
             # K is in solid phase (from table 2. of the cited reference  / +- 5%)
-            return 10.0**(2.881 + 4.961 - 4646. / temperature) * 133.322368
+            return 10.0 ** (2.881 + 4.961 - 4646.0 / temperature) * 133.322368
 
-        elif temperature < 600. + 273.15:
+        elif temperature < 600.0 + 273.15:
             # K is in liquid phase (from table 3. of the cited reference
             # "precisely fitted equations / +- 1%)
-            return 10.0**(2.881 + 8.233 - 4693. / temperature -
-                          1.2403 * log(temperature) / log(10.)) * 133.322368
+            return (
+                10.0
+                ** (
+                    2.881
+                    + 8.233
+                    - 4693.0 / temperature
+                    - 1.2403 * log(temperature) / log(10.0)
+                )
+                * 133.322368
+            )
         else:
-            print("ERROR: K vapour pressure above 600 C is unknown \
-                (limits of experimental interpolation)")
+            print(
+                "ERROR: K vapour pressure above 600 C is unknown \
+                (limits of experimental interpolation)"
+            )
             return 0
 
 
 class Potassium41(AlkaliAtom):
     """
-        Properties of potassium 41 atoms
+    Properties of potassium 41 atoms
     """
+
     # ALL PARAMETERES ARE IN ATOMIC UNITS (HATREE)
     alphaC = 5.3310
     """
@@ -1208,20 +1459,29 @@ class Potassium41(AlkaliAtom):
     NISTdataLevels = 46
 
     #: (eV), weighted average of values in Ref. [#c7]_.
-    ionisationEnergy = 35009.8139375 * 1.e2\
+    ionisationEnergy = (
+        35009.8139375
+        * 1.0e2
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     # quantum defects from Physica Scripta 27:300 (1983)
-    quantumDefect = [[[2.1801985, 0.13558, 0.0759, 0.117, -0.206, 0.0],
-                      [1.713892, 0.233294, 0.16137, 0.5345, -0.234, 0.0],
-                      [0.27697, -1.024911, -0.709174, 11.839, -26.689, 0.0],
-                      [0.010098, -0.100224, 1.56334, -12.6851, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]],
-                     [[2.1801985, 0.13558, 0.0759, 0.117, -0.206, 0.0],
-                      [1.710848, 0.235437, 0.11551, 1.1015, -2.0356, 0.0],
-                      [0.2771580, -1.025635, -0.59201, 10.0053, -19.0244, 0.0],
-                      [0.010098, -0.100224, 1.56334, -12.6851, 0.0, 0.0],
-                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]]
+    quantumDefect = [
+        [
+            [2.1801985, 0.13558, 0.0759, 0.117, -0.206, 0.0],
+            [1.713892, 0.233294, 0.16137, 0.5345, -0.234, 0.0],
+            [0.27697, -1.024911, -0.709174, 11.839, -26.689, 0.0],
+            [0.010098, -0.100224, 1.56334, -12.6851, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+        [
+            [2.1801985, 0.13558, 0.0759, 0.117, -0.206, 0.0],
+            [1.710848, 0.235437, 0.11551, 1.1015, -2.0356, 0.0],
+            [0.2771580, -1.025635, -0.59201, 10.0053, -19.0244, 0.0],
+            [0.010098, -0.100224, 1.56334, -12.6851, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ],
+    ]
     """
         quantum defects from Ref. [#c7]_.
     """
@@ -1232,7 +1492,7 @@ class Potassium41(AlkaliAtom):
 
     precalculatedDB = "k41_precalculated.db"
 
-    literatureDMEfilename = 'potassium_literature_dme.csv'
+    literatureDMEfilename = "potassium_literature_dme.csv"
 
     #: levels that are for smaller n than ground level, but are above in energy due to angular part
     extraLevels = [[3, 2, 2 + 0.5], [3, 2, 2 - 0.5]]
@@ -1244,11 +1504,15 @@ class Potassium41(AlkaliAtom):
     #: source NIST, Atomic Weights and Isotopic Compositions [#c14]_
     abundance = 0.067302
 
-    gL = 1 - physical_constants["electron mass"][0]/mass
+    gL = 1 - physical_constants["electron mass"][0] / mass
 
     #: in eV
-    scaledRydbergConstant = (mass - C_m_e) / (mass) * C_Rydberg\
+    scaledRydbergConstant = (
+        (mass - C_m_e)
+        / (mass)
+        * C_Rydberg
         * physical_constants["inverse meter-electron volt relationship"][0]
+    )
 
     elementName = "K41"
     meltingPoint = 63.5 + 273.15  #: in K
@@ -1258,24 +1522,34 @@ class Potassium41(AlkaliAtom):
 
     def getPressure(self, temperature):
         """
-            Pressure of atomic vapour at given temperature.
+        Pressure of atomic vapour at given temperature.
 
-            Uses equation and values from [#c3]_. Values from table 2.
-            (accuracy +- 5%) are used for Na in solid phase. Values from table 3.
-            (accuracy +-1 %) are used for Na in liquid phase.
+        Uses equation and values from [#c3]_. Values from table 2.
+        (accuracy +- 5%) are used for Na in solid phase. Values from table 3.
+        (accuracy +-1 %) are used for Na in liquid phase.
 
         """
 
         if temperature < self.meltingPoint:
             # K is in solid phase (from table 2. of the cited reference  / +- 5%)
-            return 10.0**(2.881 + 4.961 - 4646. / temperature) * 133.322368
+            return 10.0 ** (2.881 + 4.961 - 4646.0 / temperature) * 133.322368
 
-        elif temperature < 600. + 273.15:
+        elif temperature < 600.0 + 273.15:
             # K is in liquid phase (from table 3. of the cited reference
             # "precisely fitted equations / +- 1%)
-            return 10.0**(2.881 + 8.233 - 4693. / temperature -
-                          1.2403 * log(temperature) / log(10.)) * 133.322368
+            return (
+                10.0
+                ** (
+                    2.881
+                    + 8.233
+                    - 4693.0 / temperature
+                    - 1.2403 * log(temperature) / log(10.0)
+                )
+                * 133.322368
+            )
         else:
-            print("ERROR: K vapour pressure above 600 C is unknown \
-                (limits of experimental interpolation)")
+            print(
+                "ERROR: K vapour pressure above 600 C is unknown \
+                (limits of experimental interpolation)"
+            )
             return 0
