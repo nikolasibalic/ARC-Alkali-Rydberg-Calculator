@@ -12,9 +12,10 @@ except ImportError:
 class get_numpy_include_dirs(object):
     """Returns a list of include directories for Numpy after lazy loading;
     Ensure that Numpy is installed before referencing it."""
-    
+
     def __str__(self):
         import numpy as np
+
         return np.get_include()
 
 

@@ -26,11 +26,9 @@ from math import sqrt
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 import numpy as np
-import re
 import warnings
 from .wigner import Wigner6j, CG
 from scipy.constants import physical_constants, pi, epsilon_0, hbar
-from scipy.constants import k as C_k
 from scipy.constants import c as C_c
 from scipy.constants import h as C_h
 from scipy.constants import e as C_e
@@ -43,7 +41,6 @@ from numpy.linalg import eigh
 
 import scipy.sparse as sp
 from scipy.sparse import csr_matrix
-from scipy.sparse.linalg import eigsh
 from scipy.special import sph_harm
 
 import sys
@@ -60,6 +57,20 @@ sqlite3.register_adapter(np.int32, int)
 
 def Ylm(l, m, theta, phi):
     return sph_harm(m, l, phi, theta)
+
+
+__all__ = [
+    "Ylm",
+    "Wavefunction",
+    "StarkMap",
+    "LevelPlot",
+    "AtomSurfaceVdW",
+    "OpticalLattice1D",
+    "DynamicPolarizability",
+    "StarkBasisGenerator",
+    "ShirleyMethod",
+    "RWAStarkShift",
+]
 
 
 class Wavefunction:
@@ -1574,7 +1585,7 @@ class StarkMap:
         accountForAmplitude=0.95,
         debugOutput=False,
     ):
-        """
+        r"""
         Returns basis states and coefficients that make up for a given electric
         field the eigenstate with largest contribution of the original state.
 
@@ -1995,7 +2006,7 @@ class LevelPlot:
 
         # TITLE
         self.ax.set_title(
-            "%s: $n \in [%d,%d]$"
+            "%s: $n \\in [%d,%d]$"
             % (self.atom.elementName, self.nFrom, self.nTo)
         )
 
@@ -3260,7 +3271,7 @@ class StarkBasisGenerator:
         # hamiltonian components
         self.H = []
         """
-        Diagonal elements of Stark-matrix. Not to be confused with :obj:`H0` for the 
+        Diagonal elements of Stark-matrix. Not to be confused with :obj:`H0` for the
         Time-Independant Formulation of the Floquet Hamiltonian. Given in units of
         GHz.
         """
@@ -3677,8 +3688,8 @@ class ShirleyMethod(StarkBasisGenerator):
         # Shirley Floquet Hamiltonian components
         self.fn = None
         """
-        Saves rank of Floquet Hamiltonian expansion. 
-    
+        Saves rank of Floquet Hamiltonian expansion.
+
         Only fn+1 photon processes are accurately accounted for in the diagonalisation.
         """
         self.H0 = []
@@ -3992,7 +4003,7 @@ class RWAStarkShift(StarkBasisGenerator):
         """
 
     def findDipoleCoupledStates(self, debugOutput=False):
-        """
+        r"""
         Finds the states in :obj:`basisStates` that directly couple to
         :obj:`targetState` via single photon electric dipole transitions.
 

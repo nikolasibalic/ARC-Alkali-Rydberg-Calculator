@@ -13,10 +13,10 @@ labels etc.
 
 from __future__ import division, print_function, absolute_import
 
-import sqlite3
+from arc._database import sqlite3
 import csv
 import gzip
-from math import log, exp, sqrt
+from math import exp, sqrt
 from mpmath import angerj
 
 # for web-server execution, uncomment the following two lines
@@ -37,7 +37,6 @@ from scipy.constants import e as C_e
 from scipy.constants import m_e as C_m_e
 
 # for matrices
-from scipy.sparse import csr_matrix
 from numpy import floor
 
 import sys
@@ -48,13 +47,18 @@ if sys.version_info > (2,):
 
 import pickle
 
-sqlite3.register_adapter(np.float64, float)
-sqlite3.register_adapter(np.float32, float)
-sqlite3.register_adapter(np.int64, int)
-sqlite3.register_adapter(np.int32, int)
 
 DPATH = os.path.join(os.path.expanduser("~"), ".arc-data")
 __arc_data_version__ = 10
+
+__all__ = [
+    "AlkaliAtom",
+    "printState",
+    "printStateString",
+    "printStateStringLatex",
+    "printStateLetter",
+    "formatNumberSI",
+]
 
 
 def setup_data_folder():
@@ -605,11 +609,11 @@ class AlkaliAtom(object):
         n = 0
         levels = []
         for line in f:
-            line = re.sub("[\[\]]", "", line)
-            pattern = "\.\d*[spdfgh]"
-            pattern2 = "\|\s+\d*/"
-            pattern3 = "/\d* \|"
-            pattern4 = "\| *\d*\.\d* *\|"
+            line = re.sub(r"[\[\]]", "", line)
+            pattern = r"\.\d*[spdfgh]"
+            pattern2 = r"\|\s+\d*/"
+            pattern3 = r"/\d* \|"
+            pattern4 = r"\| *\d*\.\d* *\|"
             match = re.search(pattern, line)
             if match is not None:
                 n = int(line[match.start() + 1 : match.end() - 1])
@@ -3046,9 +3050,6 @@ class AlkaliAtom(object):
         return en, f, mf
 
 
-### JDP EDITS FINISH ###
-
-
 def NumerovBack(innerLimit, outerLimit, kfun, step, init1, init2):
     """
         Full Python implementation of Numerov integration
@@ -3239,7 +3240,7 @@ def _atomLightAtomCoupling(
 # ================== Saving and loading calculations (START) ==================
 
 
-def saveCalculation(calculation, fileName):
+def saveCalculation(calculation, fileName:str):
     """
     Saves calculation for future use.
 
@@ -3338,7 +3339,7 @@ def saveCalculation(calculation, fileName):
     return 0
 
 
-def loadSavedCalculation(fileName):
+def loadSavedCalculation(fileName:str):
     """
     Loads previously saved calculation.
 
@@ -3399,7 +3400,7 @@ def compositeState(s1, s2):
     return np.kron(s1, s2).reshape((s1.shape[0] * s2.shape[0], 1))
 
 
-def printState(n, l, j, s=None):
+def printState(n:int, l:int, j:float, s=None):
     """
     Prints state spectroscopic label for numeric :math:`n`,
     :math:`l`, :math:`s` label of the state
@@ -3413,7 +3414,7 @@ def printState(n, l, j, s=None):
     print(printStateString(n, l, j, s=s))
 
 
-def printStateString(n, l, j, s=None):
+def printStateString(n:int, l:int, j:float, s=None):
     """
     Returns state spectroscopic label for numeric :math:`n`,
     :math:`l`, :math:`j` label of the state.
@@ -3446,7 +3447,7 @@ def printStateString(n, l, j, s=None):
         )
 
 
-def printStateStringLatex(n, l, j, s=None):
+def printStateStringLatex(n:int , l: int, j: float, s=None):
     """
     Returns latex code for spectroscopic label for numeric :math:`n`,
     :math:`l`, :math:`j` label of the state.
@@ -3475,7 +3476,7 @@ def printStateStringLatex(n, l, j, s=None):
         )
 
 
-def printStateLetter(l):
+def printStateLetter(l: int):
     let = ""
     if l == 0:
         let = "S"
@@ -3523,7 +3524,7 @@ def formatNumberSI(datum, precision=4):
         "f",
         "p",
         "n",
-        "\mu",
+        r"\mu",
         "m",
         "",
         "k",

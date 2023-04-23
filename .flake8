@@ -1,0 +1,9 @@
+[flake8]
+exclude = 
+    build
+    doc
+ignore = 
+    E501
+    W503
+    E741
+    E203

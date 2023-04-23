@@ -105,7 +105,14 @@ Data sources
 .. [#nist] NIST Standard reference database, https://dx.doi.org/10.18434/T4FW23
 """
 
-from .divalent_atom_functions import *
+from math import log
+from scipy.constants import physical_constants
+from scipy.constants import h as C_h
+from scipy.constants import e as C_e
+from arc.divalent_atom_functions import DivalentAtom
+
+
+__all_ = ["Strontium88", "Calcium40", "Ytterbium174"]
 
 
 class Strontium88(DivalentAtom):

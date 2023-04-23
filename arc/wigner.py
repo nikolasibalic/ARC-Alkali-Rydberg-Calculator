@@ -25,6 +25,8 @@ if sys.version_info > (2,):
 else:
     roundPy2 = round
 
+__all__ = ["Wigner3j", "Wigner6j", "TriaCoeff", "CG", "WignerDmatrix"]
+
 wignerPrecal = (
     True  # use precalculated values - tested only for the main algorithm calls
 )
@@ -268,7 +270,7 @@ def Wigner6j(j1, j2, j3, J1, J2, J3):
             J2 - 1,
             int(roundPy2(2 * j2)),
         ]
-    ##print("not in database %1.f %1.f %1.f %1.f %1.f %1.f" % (j1,j2,j3,J1,J2,J3))
+    # print("not in database %1.f %1.f %1.f %1.f %1.f %1.f" % (j1,j2,j3,J1,J2,J3))
 
     if j1 > 50 or j2 > 50 or j3 > 50 or J1 > 50 or J2 > 50 or J3 > 50:
         # usual implementation of coefficient calculation that uses factorials

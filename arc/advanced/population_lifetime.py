@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from scipy.integrate import odeint
 from lmfit import minimize, Parameters, report_fit
-from ..alkali_atom_data import *
 import matplotlib.pyplot as plt
+import numpy as np
+import sys
 
 """
     **Contributors:**
@@ -163,8 +164,8 @@ def getPopulationLifetime(
         print("Error: plotting must be equal to 0, 1, 2, 3 or 4.")
         return
 
-    if ((thresholdState == False) and (plotting > 1)) or (
-        thresholdState == True
+    if ((not thresholdState) and (plotting > 1)) or (
+        thresholdState
     ):
         print(
             "Error: you need to specify the principal quantum number of the "
@@ -186,17 +187,17 @@ def getPopulationLifetime(
 
     # Which states do you want to consider for the BBR width?
     if includeLevelsUpTo - STATE < 0:
-        raise valueError("Error: includeLevelsUpTo must be >= n")
+        raise ValueError("Error: includeLevelsUpTo must be >= n")
     WidthBBR = includeLevelsUpTo - STATE
     # What is the temperature?
     if temperature == 0:
-        raise valueError(
+        raise ValueError(
             "Error: if you don't want BBR-induced transition, use getStateLifetime"
         )
     TEMP_BBR = temperature
     # What is the critical state for the ionization?
     if thresholdState - STATE >= 0:
-        raise valueError("Error: thresholdState must be < n")
+        raise ValueError("Error: thresholdState must be < n")
     CState = thresholdState
     # It creates the references for the ensemble population
     cutoffs = int(
@@ -252,8 +253,8 @@ def getPopulationLifetime(
 
     print("Creating the rates matrix:")
 
-    for pqn in xrange(extraL[0], STATE + WidthBBR + 1):
-        for fpqn in xrange(extraL[0], STATE + WidthBBR + 1):
+    for pqn in range(extraL[0], STATE + WidthBBR + 1):
+        for fpqn in range(extraL[0], STATE + WidthBBR + 1):
             # rate from s
             c[pqn + rifs, fpqn + rifp05] = atom.getTransitionRate(
                 pqn, 0, 0.5, fpqn, 1, 0.5, TEMP_BBR
@@ -394,7 +395,7 @@ def getPopulationLifetime(
     with open("Lifetime" + str(STATE) + StrL + StrJ + ".txt", "w") as fi:
         fi.writelines("")
 
-    if detailedOutput == True:
+    if detailedOutput:
         # It creates the file for the all states
         with open(
             "Lifetime" + str(STATE) + StrL + StrJ + "All.txt", "w"
@@ -404,14 +405,14 @@ def getPopulationLifetime(
 
     # It creates four lists to quickly write the results to the file
     ListTime = []
-    if thresholdState != False:
+    if thresholdState:
         ListRed = []
         ListBlue = []
     ListGreen = []
 
     # The core of the program starts
     while t < (totaltime):
-        if detailedOutput == True:
+        if detailedOutput:
             ListStates = []
             ListStates.append(t * 1e6)
         for a in range(0, riftot):
@@ -422,7 +423,7 @@ def getPopulationLifetime(
         pop += popaus
         if t == 0:
             Dt = Dtmin
-        if detailedOutput == True:
+        if detailedOutput:
             ListStates.extend(pop[0, :])
             with open(
                 "Lifetime" + str(STATE) + StrL + StrJ + "All.txt", "a"
@@ -433,7 +434,7 @@ def getPopulationLifetime(
                 )
                 fall.writelines("\n")
         ListTime.append(t * 1e6)
-        if thresholdState != False:
+        if thresholdState:
             popall = 0.0
             for k in range(0, riftot):
                 if (
@@ -454,7 +455,7 @@ def getPopulationLifetime(
         sys.stdout.flush()
         t = t + Dt
 
-    if thresholdState == False:
+    if not thresholdState:
         with open("Lifetime" + str(STATE) + StrL + StrJ + ".txt", "a") as f:
             f.writelines(
                 "%.4f \t %.5f \n" % (ListTime[index], ListGreen[index])
@@ -529,7 +530,7 @@ def getPopulationLifetime(
         axes.set_xlim(0, max(ListTime))
         axes.legend(loc=0, fontsize=12)
         axes.set_ylabel("Number of Rydberg atoms", fontsize=12)
-        axes.set_xlabel("Time, $\mu s$", fontsize=12)
+        axes.set_xlabel(r"Time, $\mu s$", fontsize=12)
         axes.grid()
         plt.legend
         plt.show()
@@ -552,7 +553,7 @@ def getPopulationLifetime(
         axes.set_xlim(0, ListTime[-1])
         axes.legend(loc=0, fontsize=12)
         axes.set_ylabel("Number of Rydberg atoms", fontsize=12)
-        axes.set_xlabel("Time [$\mu s$]", fontsize=12)
+        axes.set_xlabel(r"Time [$\mu s$]", fontsize=12)
         axes.grid()
         plt.legend
         plt.show()
@@ -570,7 +571,7 @@ def getPopulationLifetime(
             x, y = xs
             return [-gammaEnsemble * x, -gammaTarget * y]
 
-        def g(t, x0, ps):
+        def g(t, x0, ps):  # noqa: F821, F811
             """
             Solution to the ODE x'(t) = f(t,x,k) with initial condition x(0) = x0
             """
@@ -583,7 +584,7 @@ def getPopulationLifetime(
             return (model - data).ravel()
 
         t = np.array(ListTime)
-        x0 = np.array([0, 0])
+        x0 = np.array([0, 0])  # noqa: F841
 
         dataAll = np.zeros(shape=(len(t), 3))
         dataAll[:, 0] = np.array(ListRed)
@@ -622,7 +623,7 @@ def getPopulationLifetime(
         axes.set_xlim(0, max(ListTime))
         axes.legend(loc=0, fontsize=12)
         axes.set_ylabel("Number of Rydberg atoms", fontsize=12)
-        axes.set_xlabel("Time, $\mu s$", fontsize=12)
+        axes.set_xlabel(r"Time, $\mu s$", fontsize=12)
         axes.grid()
         plt.legend
         plt.show()
@@ -664,7 +665,7 @@ def getPopulationLifetime(
                 + gammaSupportBBR * y,
             ]
 
-        def g(t, x0, ps):
+        def g(t, x0, ps):  # noqa: F821, F811
             """
             Solution to the ODE x'(t) = f(t,x,k) with initial condition x(0) = x0
             """
@@ -718,7 +719,7 @@ def getPopulationLifetime(
         axes.set_xlim(0, max(ListTime))
         axes.legend(loc=0, fontsize=12)
         axes.set_ylabel("Number of Rydberg atoms", fontsize=12)
-        axes.set_xlabel("Time, $\mu s$", fontsize=12)
+        axes.set_xlabel(r"Time, $\mu s$", fontsize=12)
         axes.grid()
         plt.legend()
         plt.show()

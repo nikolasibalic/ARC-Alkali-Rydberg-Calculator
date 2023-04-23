@@ -48,7 +48,7 @@ def rabiFrequencyWidget(atom, n1, l1, j1, n2, l2, j2, laserPower, laserWaist):
                 arr.append("not coupled")
         sol.append(arr)
         index += 1
-    inputMj += '</select>\
+    inputMj += r'</select>\
     <input type="radio" name="colors" id="sigma-" value="0" >$\sigma^-$ | \
 <input type="radio" name="colors" id="pi" value="1" checked>$\pi$ |\
 <input type="radio" name="colors" id="sigma+" value="2" >$\sigma^+$\
@@ -144,7 +144,7 @@ def plotStarkMap(calc, units=1, xlim=[], ylim=[], filename=""):
     y = y[sortOrder]
     yState = yState[sortOrder]
 
-    ct = "|< %s | \mu > |^2" % printStateString(n, l, j)
+    ct = "|< %s | \\mu > |^2" % printStateString(n, l, j)
 
     ax.scatter(x / 100.0, y, c=yState, cmin=0, cmax=1, ctitle=ct)
 
@@ -160,8 +160,8 @@ def plotStarkMap(calc, units=1, xlim=[], ylim=[], filename=""):
 
 def plotInteractionLevels(calc, xlim=[], ylim=[], filename=""):
     ax = webPlot()
-    ax.xlabel = "R (\mu m)"
-    ax.ylabel = "\Delta E (GHz)"
+    ax.xlabel = r"R (\mu m)"
+    ax.ylabel = r"\Delta E (GHz)"
 
     if calc.drivingFromState[0] == 0:
         # colouring is based on the contribution of the original pair state here
@@ -173,7 +173,7 @@ def plotInteractionLevels(calc, xlim=[], ylim=[], filename=""):
         )
     else:
         # colouring is based on the coupling to different states
-        ct = "\Omega_\mu/\Omega"
+        ct = r"\Omega_\mu/\Omega"
 
     x = []
     y = []

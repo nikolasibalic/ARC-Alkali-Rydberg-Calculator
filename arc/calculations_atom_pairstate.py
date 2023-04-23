@@ -30,29 +30,31 @@
 
 from __future__ import division, print_function, absolute_import
 
-from .wigner import Wigner6j, Wigner3j, CG, WignerDmatrix
-from .alkali_atom_functions import _atomLightAtomCoupling
+from arc._database import sqlite3
+from arc.wigner import Wigner6j, CG, WignerDmatrix
+from arc.alkali_atom_functions import (
+    _atomLightAtomCoupling,
+    singleAtomState,
+    compositeState,
+)
 from scipy.constants import physical_constants, pi
 import gzip
 import sys
+import os
 import datetime
 import matplotlib
 from matplotlib.colors import LinearSegmentedColormap
-from .calculations_atom_single import StarkMap
-from .alkali_atom_functions import *
-from .divalent_atom_functions import DivalentAtom
+from arc.calculations_atom_single import StarkMap
+from arc.alkali_atom_functions import printStateStringLatex, printStateString, printStateLetter
+from arc.divalent_atom_functions import DivalentAtom
 from scipy.special import factorial
-from numpy import floor
 from scipy.sparse.linalg import eigsh
 from scipy.sparse import csr_matrix
-from numpy.lib.polynomial import real
-from numpy.ma import conjugate
 from scipy.optimize import curve_fit
 from scipy.constants import e as C_e
 from scipy.constants import h as C_h
 from scipy.constants import c as C_c
-from scipy.constants import k as C_k
-import re
+
 import numpy as np
 from math import exp, sqrt
 import matplotlib.pyplot as plt
@@ -79,6 +81,8 @@ if sys.version_info > (2,):
 
 
 DPATH = os.path.join(os.path.expanduser("~"), ".arc-data")
+
+__all__ = ["PairStateInteractions", "StarkMapResonances"]
 
 
 class PairStateInteractions:
@@ -116,7 +120,7 @@ class PairStateInteractions:
                 :obj:`arc.divalent_atom_data.Ytterbium174` }
                 Select the alkali metal for energy level
                 diagram calculation
-            n (int): 
+            n (int):
                 principal quantum number for the *first* atom
             l (int):
                 orbital angular momentum for the *first* atom
@@ -316,7 +320,7 @@ class PairStateInteractions:
             `matrixElement[i]` gives index of state in
             :obj:`PairStateInteractions.channel` basis
             (that doesn't resolve :math:`m_j` states), for the given index `i`
-            of the state in :obj:`PairStateInteractions.basisStates` 
+            of the state in :obj:`PairStateInteractions.basisStates`
             ( :math:`m_j` resolving) basis.
         """
 
@@ -541,7 +545,7 @@ class PairStateInteractions:
             )
             np.save(fileHandle, data)
             fileHandle.close()
-        except IOError as e:
+        except IOError:
             print(
                 "Error while updating angularMatrix \
                 data meta (description) File "
@@ -2164,11 +2168,11 @@ class PairStateInteractions:
                 newline="\n",
                 header=(
                     commonHeader
-                    + " - - - Interatomic distance, r (\mu m) - - -"
+                    + " - - - Interatomic distance, r (\\mu m) - - -"
                 ),
                 comments="# ",
             )
-            print("   Interatomic distances (\mu m) saved in %s" % filename)
+            print("   Interatomic distances (\\mu m) saved in %s" % filename)
 
             filename = fileBase + "_energyLevels." + exportFormat
             headerDetails = " NOTE : Each row corresponds to eigenstates for a single specified interatomic distance"
@@ -3113,7 +3117,7 @@ class StarkMapResonances:
         Bz=0,
         progressOutput=False,
     ):
-        """
+        r"""
         Finds near-resonant dipole-coupled pair-states
 
         For states in range of principal quantum numbers [`nMin`,`nMax`]
