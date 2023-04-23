@@ -74,6 +74,12 @@ Finally, this is the naming convention. of the original package. For consistency
 Code format
 -----------
 
-Please run ``black``  in ```arc``` folder fixing line length to 80 characters::
+Please run ``black``  in the repository folder fixing line length to 80 characters::
 
     black -l 80 .
+
+And then run linter
+
+    flake8 .
+
+and resolve any erros that appear there before submitting code.
