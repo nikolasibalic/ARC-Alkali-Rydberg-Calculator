@@ -75,11 +75,11 @@ def Wigner3j(j1, j2, j3, m1, m2, m3):
         ):
             # return precalculated value
             return wignerPrecal3j[
-                int(roundPy2(2 * j1)),
-                int(roundPy2(2 * (wignerPrecalJmax + m1))),
-                int(roundPy2(2.0 * j2)),
-                int(roundPy2(m2 + j2)),
-                int(roundPy2(2 - j3 + j1)),
+                round(roundPy2(2 * j1)),
+                round(roundPy2(2 * (wignerPrecalJmax + m1))),
+                round(roundPy2(2.0 * j2)),
+                round(roundPy2(m2 + j2)),
+                round(roundPy2(2 - j3 + j1)),
             ]
         else:
             # that value is 0
@@ -265,10 +265,10 @@ def Wigner6j(j1, j2, j3, J1, J2, J3):
         return wignerPrecal6j[
             j1,
             2 + j1 - J3,
-            int(roundPy2(2 + 2 * (j3 - j1))),
-            int(roundPy2(2 + 2 * (J1 - J3))),
+            round(roundPy2(2 + 2 * (j3 - j1))),
+            round(roundPy2(2 + 2 * (J1 - J3))),
             J2 - 1,
-            int(roundPy2(2 * j2)),
+            round(roundPy2(2 * j2)),
         ]
     # print("not in database %1.f %1.f %1.f %1.f %1.f %1.f" % (j1,j2,j3,J1,J2,J3))
 
@@ -509,22 +509,22 @@ class WignerDmatrix:
         """
         if self.trivial:
             return sparse_eye(
-                int(roundPy2(2.0 * j + 1.0)),
-                int(roundPy2(2.0 * j + 1.0)),
+                round(roundPy2(2.0 * j + 1.0)),
+                round(roundPy2(2.0 * j + 1.0)),
                 dtype=np.complex128,
             )
-        savedIndex = self.matLoc[int(roundPy2(2 * j))]
+        savedIndex = self.matLoc[round(roundPy2(2 * j))]
         if savedIndex != 0:
             return self.matSaved[savedIndex - 1]
             # bacause 0 marks no entry; but matrix numbers starts from zero,
             # saved Index array is actually offsetted by 1
         # else
         mat = np.zeros(
-            (int(roundPy2(2.0 * j + 1.0)), int(roundPy2(2.0 * j + 1.0))),
+            (round(roundPy2(2.0 * j + 1.0)), round(roundPy2(2.0 * j + 1.0))),
             dtype=np.complex128,
         )
-        jrange = np.linspace(-j, j, int(2 * j) + 1)
-        maxIndex = int(2 * j) + 1
+        jrange = np.linspace(-j, j, round(2 * j) + 1)
+        maxIndex = round(2 * j) + 1
 
         for index1 in xrange(maxIndex):
             for index2 in xrange(maxIndex):
@@ -534,5 +534,5 @@ class WignerDmatrix:
 
         mat = csr_matrix(mat)
         self.matSaved.append(mat)
-        self.matLoc[int(roundPy2(2 * j))] = len(self.matSaved)
+        self.matLoc[round(roundPy2(2 * j))] = len(self.matSaved)
         return mat

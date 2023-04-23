@@ -271,10 +271,10 @@ class DivalentAtom(AlkaliAtom):
         c.execute(
             "INSERT INTO energyLevel VALUES (?,?,?,?,?)",
             (
-                int(n),
-                int(l),
-                int(j),
-                int(s),
+                round(n),
+                round(l),
+                round(j),
+                round(s),
                 energy
                 * 1.0e2
                 * physical_constants[
@@ -283,7 +283,7 @@ class DivalentAtom(AlkaliAtom):
                 - self.ionisationEnergy,
             ),
         )
-        self.NISTdataLevels = max(self.NISTdataLevels, int(n))
+        self.NISTdataLevels = max(self.NISTdataLevels, round(n))
         # saves energy in eV
 
     def _databaseInit(self):
@@ -323,7 +323,7 @@ class DivalentAtom(AlkaliAtom):
                 "Requested energy for state l=%d >= n=%d !" % (l, n)
             )
 
-        stateLabel = "%d%s%d" % (int(2 * s + 1), printStateLetter(l), j)
+        stateLabel = "%d%s%d" % (round(2 * s + 1), printStateLetter(l), j)
         minQuantumDefectN = 100000
         maxQuantumDefectN = 0
 
@@ -409,10 +409,10 @@ class DivalentAtom(AlkaliAtom):
             j1 = j2
             j2 = temp
 
-        n1 = int(n1)
-        n2 = int(n2)
-        l1 = int(l1)
-        l2 = int(l2)
+        n1 = round(n1)
+        n2 = round(n2)
+        l1 = round(l1)
+        l2 = round(l2)
 
         c = self.conn.cursor()
 
@@ -502,15 +502,15 @@ class DivalentAtom(AlkaliAtom):
             i = 0
             for row in data:
                 if i != 0:
-                    n1 = int(row[0])
-                    l1 = int(row[1])
-                    j1 = int(row[2])
-                    s1 = int(row[3])
+                    n1 = round(row[0])
+                    l1 = round(row[1])
+                    j1 = round(row[2])
+                    s1 = round(row[3])
 
-                    n2 = int(row[4])
-                    l2 = int(row[5])
-                    j2 = int(row[6])
-                    s2 = int(row[7])
+                    n2 = round(row[4])
+                    l2 = round(row[5])
+                    j2 = round(row[6])
+                    s2 = round(row[7])
                     if s1 != s2:
                         raise ValueError(
                             "Error reading litearture: database "
@@ -540,7 +540,7 @@ class DivalentAtom(AlkaliAtom):
                         "To-do (_readLiteratureValues): see in what notation are Sr literature saved (angular part)"
                     )
                     dme = float(row[8]) / (
-                        (-1) ** (int(l1 + s + j2 + 1.0))
+                        (-1) ** (round(l1 + s + j2 + 1.0))
                         * sqrt((2.0 * j1 + 1.0) * (2.0 * j2 + 1.0))
                         * Wigner6j(j1, 1.0, j2, l2, s, l1)
                         * (-1) ** l1
@@ -549,7 +549,7 @@ class DivalentAtom(AlkaliAtom):
                     )
 
                     comment = row[9]
-                    typeOfSource = int(row[10])  # 0 = experiment; 1 = theory
+                    typeOfSource = round(row[10])  # 0 = experiment; 1 = theory
                     errorEstimate = float(row[11])
                     ref = row[12]
                     refdoi = row[13]
@@ -744,10 +744,10 @@ class DivalentAtom(AlkaliAtom):
             j1 = j2
             j2 = temp
 
-        n1 = int(n1)
-        n2 = int(n2)
-        l1 = int(l1)
-        l2 = int(l2)
+        n1 = round(n1)
+        n2 = round(n2)
+        l1 = round(l1)
+        l2 = round(l2)
 
         # was this calculated before? If yes, retrieve from memory.
         c = self.conn.cursor()

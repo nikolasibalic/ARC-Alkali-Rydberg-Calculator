@@ -894,8 +894,8 @@ class StarkMap:
                 print("Finding driving field coupling...")
             # get first what was the state we are calculating coupling with
             state1 = drivingFromState
-            n1 = int(round(state1[0]))
-            l1 = int(round(state1[1]))
+            n1 = round(state1[0])
+            l1 = round(state1[1])
             j1 = state1[2]
             m1 = state1[3]
             q = state1[4]
@@ -908,13 +908,13 @@ class StarkMap:
                     )
                     sys.stdout.flush()
                 if (
-                    (int(abs(self.basisStates[i][1] - l1)) == 1)
-                    and (int(abs(self.basisStates[i][2] - j1)) <= 1)
-                    and (int(abs(self.basisStates[i][3] - m1 - q)) == 0)
+                    (round(abs(self.basisStates[i][1] - l1)) == 1)
+                    and (round(abs(self.basisStates[i][2] - j1)) <= 1)
+                    and (round(abs(self.basisStates[i][3] - m1 - q)) == 0)
                 ):
                     state2 = self.basisStates[i]
-                    n2 = int(state2[0])
-                    l2 = int(state2[1])
+                    n2 = round(state2[0])
+                    l2 = round(state2[1])
                     j2 = state2[2]
                     m2 = state2[3]
                     if debugOutput:
@@ -1052,7 +1052,7 @@ class StarkMap:
         commonHeader += "\n *** Stark Map for %s %s m_j = %d/2. ***\n\n" % (
             self.atom.elementName,
             printStateString(self.n, self.l, self.j),
-            int(round(2.0 * self.mj)),
+            round(2.0 * self.mj),
         )
         commonHeader += (
             " - Included states - principal quantum number (n) range [%d-%d].\n"
@@ -1078,7 +1078,7 @@ class StarkMap:
                 + "   %s m_j =%d/2 with polarization q=%d.\n"
                 % (
                     printStateString(*self.drivingFromState[0:3]),
-                    int(round(2.0 * self.drivingFromState[3])),
+                    round(2.0 * self.drivingFromState[3]),
                     self.drivingFromState[4],
                 )
             )
@@ -1421,13 +1421,13 @@ class StarkMap:
             # we have Alkali Atoms
             return "|%s m_j=%d/2\\rangle" % (
                 printStateStringLatex(n1, l1, j1),
-                int(2 * mj1),
+                round(2 * mj1),
             )
         else:
             # we have singlets or triplets states of divalent atoms
             return "|%s m_j=%d\\rangle" % (
                 printStateStringLatex(n1, l1, j1, s=self.s),
-                int(mj1),
+                round(mj1),
             )
 
     def getPolarizability(
@@ -2263,10 +2263,10 @@ class AtomSurfaceVdW:
             )
 
         # sum over mj1
-        for mj1 in np.linspace(-j1, j1, int(round(2 * j1 + 1))):
+        for mj1 in np.linspace(-j1, j1, round(2 * j1 + 1)):
             # calculate sum_mj2 |<j1,mj1|Dx|j2,mj2>|^2 + |<j1,mj1|Dy|j2,mj2>|^2 + 2* |<j1,mj1|Dz|j2,mj2>|^2
             # which is equal to (check!)  |<j1,mj1|D+|j2,mj2>|^2 + |<j1,mj1|D-|j2,mj2>|^2 + 2* |<j1,mj1|Dz|j2,mj2>|^2
-            for mj2 in np.linspace(-j2, j2, int(round(2 * j2 + 1, 0))):
+            for mj2 in np.linspace(-j2, j2, round(2 * j2 + 1)):
                 for q in [-1, +1]:
                     result += (
                         abs(

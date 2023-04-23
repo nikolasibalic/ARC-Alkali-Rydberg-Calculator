@@ -823,7 +823,7 @@ class AlkaliAtom(object):
         defect = 0.0
         if l < 5:
             # find correct part in table of quantum defects
-            modifiedRRcoef = self.quantumDefect[int(floor(s) + s + j - l)][l]
+            modifiedRRcoef = self.quantumDefect[round(floor(s) + s + j - l)][l]
             if l < 3 and abs(modifiedRRcoef[0]) < 1e-9 and self.Z != 1:
                 # it's not Hydrogen but for l in {s,p,d} quantum defect is 0
                 raise ValueError(
@@ -846,7 +846,7 @@ class AlkaliAtom(object):
         return defect
 
     def getRadialMatrixElement(
-        self, n1, l1, j1, n2, l2, j2, s=0.5, useLiterature=True
+        self, n1:int, l1:int, j1:float, n2:int, l2:int, j2:float, s=0.5, useLiterature=True
     ):
         """
             Radial part of the dipole matrix element
@@ -891,12 +891,12 @@ class AlkaliAtom(object):
             j1 = j2
             j2 = temp
 
-        n1 = int(n1)
-        n2 = int(n2)
-        l1 = int(l1)
-        l2 = int(l2)
-        j1_x2 = int(round(2 * j1))
-        j2_x2 = int(round(2 * j2))
+        n1 = round(n1)
+        n2 = round(n2)
+        l1 = round(l1)
+        l2 = round(l2)
+        j1_x2 = round(2 * j1)
+        j2_x2 = round(2 * j2)
 
         c = self.conn.cursor()
 
@@ -966,7 +966,7 @@ class AlkaliAtom(object):
 
         return dipoleElement
 
-    def getQuadrupoleMatrixElement(self, n1, l1, j1, n2, l2, j2, s=0.5):
+    def getQuadrupoleMatrixElement(self, n1:int, l1:int, j1:float, n2:int, l2:int, j2:float, s=0.5):
         """
             Radial part of the quadrupole matrix element
 
@@ -1007,12 +1007,12 @@ class AlkaliAtom(object):
             j1 = j2
             j2 = temp
 
-        n1 = int(n1)
-        n2 = int(n2)
-        l1 = int(l1)
-        l2 = int(l2)
-        j1_x2 = int(round(2 * j1))
-        j2_x2 = int(round(2 * j2))
+        n1 = round(n1)
+        n2 = round(n2)
+        l1 = round(l1)
+        l2 = round(l2)
+        j1_x2 = round(2 * j1)
+        j2_x2 = round(2 * j2)
 
         c = self.conn.cursor()
         # was this calculated before? If yes, retrieve from memory.
@@ -1120,7 +1120,7 @@ class AlkaliAtom(object):
             j1 = j2
             j2 = temp
         return (
-            (-1) ** (int((l2 + l1 + 3.0) / 2.0 + s + j2))
+            (-1) ** (round((l2 + l1 + 3.0) / 2.0 + s + j2))
             * sqrt((2.0 * j2 + 1.0) * (2.0 * l1 + 1.0))
             * Wigner6j(l1, l2, 1, j2, j1, s)
             * sqrt(float(max(l1, l2)) / (2.0 * l1 + 1.0))
@@ -1173,7 +1173,7 @@ class AlkaliAtom(object):
         """
 
         return (
-            (-1) ** (int(l1 + s + j2 + 1.0))
+            (-1) ** (round(l1 + s + j2 + 1.0))
             * sqrt((2.0 * j1 + 1.0) * (2.0 * j2 + 1.0))
             * Wigner6j(j1, 1.0, j2, l2, s, l1)
             * self.getReducedMatrixElementL(n1, l1, j1, n2, l2, j2, s=s)
@@ -1863,8 +1863,8 @@ class AlkaliAtom(object):
             for row in data:
                 if count != 0:
                     # if not header
-                    n = int(row[0])
-                    l = int(row[1])
+                    n = round(row[0])
+                    l = round(row[1])
                     j = float(row[2])
                     A = float(row[3])
                     B = float(row[4])
@@ -1965,11 +1965,11 @@ class AlkaliAtom(object):
             i = 0
             for row in data:
                 if i != 0:
-                    n1 = int(row[0])
-                    l1 = int(row[1])
+                    n1 = round(row[0])
+                    l1 = round(row[1])
                     j1 = float(row[2])
-                    n2 = int(row[3])
-                    l2 = int(row[4])
+                    n2 = round(row[3])
+                    l2 = round(row[4])
                     j2 = float(row[5])
                     if self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2):
                         temp = n1
@@ -1986,7 +1986,7 @@ class AlkaliAtom(object):
                     # to radial part of dme as it is saved for calculated
                     # values
                     dme = float(row[6]) / (
-                        (-1) ** (int(l1 + 0.5 + j2 + 1.0))
+                        (-1) ** (round(l1 + 0.5 + j2 + 1.0))
                         * sqrt((2.0 * j1 + 1.0) * (2.0 * j2 + 1.0))
                         * Wigner6j(j1, 1.0, j2, l2, 0.5, l1)
                         * (-1) ** l1
@@ -1995,7 +1995,7 @@ class AlkaliAtom(object):
                     )
 
                     comment = row[7]
-                    typeOfSource = int(row[8])  # 0 = experiment; 1 = theory
+                    typeOfSource = round(row[8])  # 0 = experiment; 1 = theory
                     errorEstimate = float(row[9])
                     ref = row[10]
                     refdoi = row[11]
@@ -2315,7 +2315,7 @@ class AlkaliAtom(object):
 
     def _reducedMatrixElementFJ(self, j1, f1, j2, f2):
         sph = 0.0
-        if (abs(f2 - f1) < 2) & (int(abs(j2 - j1)) < 2):
+        if (abs(f2 - f1) < 2) & (round(abs(j2 - j1)) < 2):
             # Reduced Matrix Element <f||er||f'> in units of reduced matrix element <j||er||j'>
             sph = (
                 (-1.0) ** (j1 + self.I + f2 + 1.0)
@@ -2750,7 +2750,7 @@ class AlkaliAtom(object):
         Pe = np.zeros(np.shape(Delta))
 
         # Loop over excited state energylevels
-        for fe in range(int(abs(je - self.I)), int(1.0 + (je + self.I))):
+        for fe in range(round(abs(je - self.I)), round(1.0 + (je + self.I))):
             # Hyperfine energy shift (rad s-1)
             Ehfs = 2.0 * np.pi * self.getHFSEnergyShift(je, fe, A, B)
             for mfe in range(
@@ -2914,7 +2914,7 @@ class AlkaliAtom(object):
         Pe = np.zeros(np.shape(Delta))
 
         # Loop over excited state energylevels
-        for fe in range(int(abs(je - self.I)), 1 + int(je + self.I)):
+        for fe in range(round(abs(je - self.I)), 1 + round(je + self.I)):
             # Hyperfine energy shift (rad s-1)
             Ehfs = 2.0 * np.pi * self.getHFSEnergyShift(je, fe, A, B)
             # range(max(-fe,min(mf1,mf0)-1),1+min(fe,max(mf1,mf0)+1)):
@@ -2993,11 +2993,11 @@ class AlkaliAtom(object):
         uB = physical_constants["Bohr magneton in Hz/T"][0]
 
         # Define Spin Matrices
-        N = int((2 * j + 1) * (2 * self.I + 1))
+        N = round((2 * j + 1) * (2 * self.I + 1))
         [jx, jy, jz] = self._spinMatrices(j)
-        ji = np.eye(int(2.0 * j + 1.0))
+        ji = np.eye(round(2.0 * j + 1.0))
         [ix, iy, iz] = self._spinMatrices(self.I)
-        ii = np.eye(int(2.0 * self.I + 1.0))
+        ii = np.eye(round(2.0 * self.I + 1.0))
 
         # Calculate Tensor Products
         Jx = np.kron(jx, ii)
@@ -3088,7 +3088,7 @@ def NumerovBack(innerLimit, outerLimit, kfun, step, init1, init2):
 
     """
 
-    br = int((sqrt(outerLimit) - sqrt(innerLimit)) / step)
+    br = round((sqrt(outerLimit) - sqrt(innerLimit)) / step)
     # integrated wavefunction R(r)*r^{3/4}
     sol = np.zeros(br, dtype=np.dtype("d"))
     # radial coordinate for integration \sqrt(r)
@@ -3391,8 +3391,8 @@ def loadSavedCalculation(fileName:str):
 
 
 def singleAtomState(j, m):
-    a = np.zeros((int(round(2.0 * j + 1.0, 0)), 1), dtype=np.complex128)
-    a[int(round(j + m, 0))] = 1
+    a = np.zeros((round(2.0 * j + 1.0), 1), dtype=np.complex128)
+    a[round(j + m)] = 1
     return a
 
 

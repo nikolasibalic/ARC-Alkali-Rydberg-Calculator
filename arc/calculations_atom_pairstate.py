@@ -442,8 +442,8 @@ class PairStateInteractions:
 
         am = np.zeros(
             (
-                int(round((2 * j1 + 1) * (2 * j2 + 1), 0)),
-                int(round((2 * j + 1) * (2 * jj + 1), 0)),
+                round((2 * j1 + 1) * (2 * j2 + 1)),
+                round((2 * j + 1) * (2 * jj + 1)),
             ),
             dtype=np.float64,
         )
@@ -453,31 +453,25 @@ class PairStateInteractions:
 
         j1range = np.linspace(-j1, j1, round(2 * j1) + 1)
         j2range = np.linspace(-j2, j2, round(2 * j2) + 1)
-        jrange = np.linspace(-j, j, int(2 * j) + 1)
-        jjrange = np.linspace(-jj, jj, int(2 * jj) + 1)
+        jrange = np.linspace(-j, j, round(2 * j) + 1)
+        jjrange = np.linspace(-jj, jj, round(2 * jj) + 1)
 
         for m1 in j1range:
             for m2 in j2range:
                 # we have chosen the first index
-                index1 = int(
-                    round(
+                index1 = round(
                         m1 * (2.0 * j2 + 1.0)
                         + m2
-                        + (j1 * (2.0 * j2 + 1.0) + j2),
-                        0,
+                        + (j1 * (2.0 * j2 + 1.0) + j2)
                     )
-                )
                 for m in jrange:
                     for mm in jjrange:
                         # we have chosen the second index
-                        index2 = int(
-                            round(
+                        index2 = round(
                                 m * (2.0 * jj + 1.0)
                                 + mm
-                                + (j * (2.0 * jj + 1.0) + jj),
-                                0,
+                                + (j * (2.0 * jj + 1.0) + jj)
                             )
-                        )
 
                         # angular matrix element from Sa??mannshausen, Heiner,
                         # Merkt, Fr??d??ric, Deiglmayr, Johannes
@@ -1261,8 +1255,8 @@ class PairStateInteractions:
 
         interactionMatrix = np.zeros(
             (
-                int(round((2 * self.j + 1) * (2 * self.jj + 1))),
-                int(round((2 * self.j + 1) * (2 * self.jj + 1))),
+                round((2 * self.j + 1) * (2 * self.jj + 1)),
+                round((2 * self.j + 1) * (2 * self.jj + 1)),
             ),
             dtype=np.complex,
         )
@@ -1855,8 +1849,8 @@ class PairStateInteractions:
                 print("Finding coupling strengths")
             # get first what was the state we are calculating coupling with
             state1 = drivingFromState
-            n1 = int(round(state1[0]))
-            l1 = int(round(state1[1]))
+            n1 = round(state1[0])
+            l1 = round(state1[1])
             j1 = state1[2]
             m1 = state1[3]
             q = state1[4]
@@ -1865,7 +1859,7 @@ class PairStateInteractions:
                 thisCoupling = 0.0
 
                 if (
-                    int(abs(self.basisStates[i][5] - l1)) == 1
+                    round(abs(self.basisStates[i][5] - l1)) == 1
                     and abs(
                         self.basisStates[i][0]
                         - self.basisStates[self.originalPairStateIndex][0]
@@ -1888,8 +1882,8 @@ class PairStateInteractions:
                     < 0.1
                 ):
                     state2 = self.basisStates[i]
-                    n2 = int(state2[0 + 4])
-                    l2 = int(state2[1 + 4])
+                    n2 = round(state2[0 + 4])
+                    l2 = round(state2[1 + 4])
                     j2 = state2[2 + 4]
                     m2 = state2[3 + 4]
                     if debugOutput:
@@ -2069,10 +2063,10 @@ class PairStateInteractions:
             % (
                 self.atom1.elementName,
                 printStateString(self.n, self.l, self.j),
-                int(round(2.0 * self.m1)),
+                round(2.0 * self.m1),
                 self.atom2.elementName,
                 printStateString(self.nn, self.ll, self.jj),
-                int(round(2.0 * self.m2)),
+                round(2.0 * self.m2),
             )
         )
         if self.interactionsUpTo == 1:
@@ -2137,7 +2131,7 @@ class PairStateInteractions:
                     + "   %s m_j =%d/2 with polarization q=%d.\n"
                     % (
                         printStateString(*self.drivingFromState[0:3]),
-                        int(round(2.0 * self.drivingFromState[3])),
+                        round(2.0 * self.drivingFromState[3]),
                         self.drivingFromState[4],
                     )
                 )
@@ -2252,26 +2246,26 @@ class PairStateInteractions:
             # Alkali atom
             stateString += "|%s %d/2" % (
                 printStateStringLatex(n1, l1, j1, s=self.s1),
-                int(2 * mj1),
+                round(2 * mj1),
             )
         else:
             # divalent atoms
             stateString += "|%s %d" % (
                 printStateStringLatex(n1, l1, j1, s=self.s1),
-                int(mj1),
+                round(mj1),
             )
 
         if abs(self.s2 - 0.5) < 0.1:
             # Alkali atom
             stateString += ",%s %d/2\\rangle" % (
                 printStateStringLatex(n2, l2, j2, s=self.s2),
-                int(2 * mj2),
+                round(2 * mj2),
             )
         else:
             # divalent atom
             stateString += ",%s %d\\rangle" % (
                 printStateStringLatex(n2, l2, j2, s=self.s2),
-                int(mj2),
+                round(mj2),
             )
         return stateString
 
@@ -2374,26 +2368,26 @@ class PairStateInteractions:
                 # Alkali atom
                 label += r"$|\langle %s m_j=%d/2 " % (
                     printStateStringLatex(self.n, self.l, self.j),
-                    int(round(2.0 * self.m1, 0)),
+                    round(2.0 * self.m1),
                 )
             else:
                 # divalent atom
                 label += r"$|\langle %s m_j=%d " % (
                     printStateStringLatex(self.n, self.l, self.j, s=self.s1),
-                    int(round(self.m1, 0)),
+                    round(self.m1),
                 )
 
             if abs(self.s2 - 0.5) < 0.1:
                 # Alkali atom
                 label += r", %s m_j=%d/2 | \mu \rangle |^2$" % (
                     printStateStringLatex(self.nn, self.ll, self.jj),
-                    int(round(2.0 * self.m2, 0)),
+                    round(2.0 * self.m2),
                 )
             else:
                 # divalent atom
                 label += r", %s m_j=%d | \mu \rangle |^2$" % (
                     printStateStringLatex(self.nn, self.ll, self.jj, s=self.s2),
-                    int(round(self.m2, 0)),
+                    round(self.m2, 0),
                 )
 
             cb.set_label(label)
