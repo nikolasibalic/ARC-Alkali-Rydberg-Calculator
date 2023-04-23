@@ -3052,7 +3052,7 @@ class DynamicPolarizability:
         `magic wavelength snippet`_.
 
         .. _`magic wavelength snippet`:
-            ./ARC_3_0_introduction.html#Calculations-of-dynamic-polarisability-and-magic-wavelengths-for-optical-traps
+            ../ARC_3_0_introduction.html#Calculations-of-dynamic-polarisability-and-magic-wavelengths-for-optical-traps
 
 
         Parameters:
