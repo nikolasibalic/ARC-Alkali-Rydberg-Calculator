@@ -1873,8 +1873,8 @@ class AlkaliAtom(object):
             for row in data:
                 if count != 0:
                     # if not header
-                    n = round(row[0])
-                    l = round(row[1])
+                    n = int(row[0])
+                    l = int(row[1])
                     j = float(row[2])
                     A = float(row[3])
                     B = float(row[4])
@@ -1975,11 +1975,11 @@ class AlkaliAtom(object):
             i = 0
             for row in data:
                 if i != 0:
-                    n1 = round(row[0])
-                    l1 = round(row[1])
+                    n1 = int(row[0])
+                    l1 = int(row[1])
                     j1 = float(row[2])
-                    n2 = round(row[3])
-                    l2 = round(row[4])
+                    n2 = int(row[3])
+                    l2 = int(row[4])
                     j2 = float(row[5])
                     if self.getEnergy(n1, l1, j1) > self.getEnergy(n2, l2, j2):
                         temp = n1
@@ -2005,7 +2005,7 @@ class AlkaliAtom(object):
                     )
 
                     comment = row[7]
-                    typeOfSource = round(row[8])  # 0 = experiment; 1 = theory
+                    typeOfSource = int(row[8])  # 0 = experiment; 1 = theory
                     errorEstimate = float(row[9])
                     ref = row[10]
                     refdoi = row[11]
