@@ -3662,10 +3662,9 @@ class ShirleyMethod(StarkBasisGenerator):
     Examples:
         AC Stark Map calculation
 
-        >>> from arc import Rubidium85
-        >>> from ACStarkMap import ACStarkMap
-        >>> calc = ACStarkMap(Rubidium85())
-        >>> calc.defineBasis(56, 2, 2.5, 0.5, 45, 70, 10)
+        >>> from arc import Rubidium85, ShirleyMethod
+        >>> calc = ShirleyMethod(Rubidium85())
+        >>> calc.defineBasis(56, 2, 2.5, 0.5, 0, 45, 70, 10)
         >>> calc.defineShirleyHamiltonian(fn=1)
         >>> calc.diagonalise(0.01, np.linspace(1.0e9, 40e9, 402))
         >>> print(calc.targetShifts.shape)
@@ -3978,7 +3977,7 @@ class RWAStarkShift(StarkBasisGenerator):
 
         >>> from arc import Rubidium85, RWAStarkShift
         >>> calc = RWAStarkShift(Rubidium85())
-        >>> calc.defineBasis(56, 2, 2.5, 0.5, 45, 70, 10)
+        >>> calc.defineBasis(56, 2, 2.5, 0.5, 0, 45, 70, 10)
         >>> calc.findDipoleCoupledStates()
         >>> calc.makeRWA(0.01, np.linspace(1.0e9, 40e9, 402))
         >>> print(calc.starkShifts.shape)
