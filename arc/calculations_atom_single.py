@@ -3279,10 +3279,10 @@ class StarkBasisGenerator:
         """
         self.V = []
         """
-        off-diagonal elements of Stark-matrix divided by electric
-        field value. To get off diagonal elemements multiply this matrix
+        Off-diagonal elements of Stark-matrix divided by electric field value.
+        To get off diagonal elemements multiply this matrix
         with electric field value. Full DC Stark matrix is obtained as
-        `fullStarkMatrix` = :obj:np.diag(`bareEnergies`) + :obj:`V` *`eField`. Calculated by
+        ``fullStarkMatrix`` = np.diag(:obj:`bareEnergies`) + :obj:`V` * ``eField``. Calculated by
         :obj:`defineBasis` in the basis :obj:`basisStates` in units of GHz/(V/m).
         """
 
@@ -3998,7 +3998,7 @@ class RWAStarkShift(StarkBasisGenerator):
         """
         self.dipoleCoupledFreqs = []
         """
-        Transition frequencies in Hz between :obj:`targetState` and :obj:`dipoleCoupledStates`.
+        Transition frequencies in Hz between :obj:`~StarkBasisGenerator.targetState` and :obj:`dipoleCoupledStates`.
         """
         self.starkShifts = []
         """
@@ -4015,7 +4015,7 @@ class RWAStarkShift(StarkBasisGenerator):
 
         Args:
             q (int): laser polarization (-1,0,1 corresponds to :math:`\sigma^-`
-            :math:`\pi` and :math:`\sigma^+` respectively)
+                :math:`\pi` and :math:`\sigma^+` respectively)
         """
 
         coupledStates = []
@@ -4077,7 +4077,7 @@ class RWAStarkShift(StarkBasisGenerator):
         :obj:`findDipoleCoupledStates` must be run fist.
 
         Args:
-            eFields (float or sequence of floats): electric field amplitude in V/m
+            efields (float or sequence of floats): electric field amplitude in V/m
             freqs (float or sequence of floats): electric field frequency in Hz
             maxRes (float, optional): only include dipole transitions with frequences
                 less than this. Specified in Hz.
