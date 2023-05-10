@@ -228,16 +228,24 @@ def Wigner6j(j1, j2, j3, J1, J2, J3):
 
     # Check if the 4 triads ( (j1 j2 j3), (j1 J2 J3), (J1 j2 J3), (J1 J2 j3) )
     # satisfy the triangular inequalities
-    if (
-        (abs(j1 - j2) > j3)
-        | (j1 + j2 < j3)
-        | (abs(j1 - J2) > J3)
-        | (j1 + J2 < J3)
-        | (abs(J1 - j2) > J3)
-        | (J1 + j2 < J3)
-        | (abs(J1 - J2) > j3)
-        | (J1 + J2 < j3)
-    ):
+    IsTriangle = True
+    msg = ''
+    if ((abs(j1 - j2) > j3) | (j1 + j2 < j3)):
+        IsTriangle = False
+        msg += '(%.1f, %.1f, %.1f) is not triangular\n'%(j1,j2,j3)
+    if ((abs(j1 - J2) > J3) | (j1 + J2 < J3)):
+        IsTriangle = False
+        msg += '(%.1f, %.1f, %.1f) is not triangular\n'%(j1,J2,J3)
+    if ((abs(J1 - j2) > J3) | (J1 + j2 < J3)):
+        IsTriangle = False
+        msg += '(%.1f, %.1f, %.1f) is not triangular\n'%(J1,j2,J3)
+    if ((abs(J1 - J2) > j3) | (J1 + J2 < j3)):
+        IsTriangle = False
+        msg += '(%.1f, %.1f, %.1f) is not triangular\n'%(J1,J2,j3)
+    if not IsTriangle:
+        msg = "WARNING!!\n" + msg
+        msg += "For the 6j-Symbol:\n %3.1f %3.1f %3.1f\n %3.1f %3.1f %3.1f"%(j1,j2,j3,J1,J2,J3)
+        print(msg)
         raise ValueError("6j-Symbol is not triangular!")
 
     # Check if the sum of the elements of each traid is an integer
