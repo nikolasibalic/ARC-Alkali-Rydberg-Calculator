@@ -246,6 +246,7 @@ def Wigner6j(j1, j2, j3, J1, J2, J3):
         msg = "WARNING!!\n" + msg
         msg += "For the 6j-Symbol:\n %3.1f %3.1f %3.1f\n %3.1f %3.1f %3.1f"%(j1,j2,j3,J1,J2,J3)
         print(msg)
+        return 0
         raise ValueError("6j-Symbol is not triangular!")
 
     # Check if the sum of the elements of each traid is an integer
@@ -268,6 +269,7 @@ def Wigner6j(j1, j2, j3, J1, J2, J3):
         msg += "For the 6j-Symbol:\n %3.1f %3.1f %3.1f\n %3.1f %3.1f %3.1f"%(j1,j2,j3,J1,J2,J3)
         msg += "\n6j-Symbol is undefined when any triad has a non-integer sum"
         print(msg)
+        return np.nan
         raise ValueError("6j-Symbol is undefined when any triad has a non-integer sum")
         raise ValueError("6j-Symbol is defined only when all triads have integer sums")
 
