@@ -244,7 +244,7 @@ def Wigner6j(j1, j2, j3, J1, J2, J3, verbose=False):
         msg += '(%.1f, %.1f, %.1f) is not triangular\n'%(J1,J2,j3)
     if not IsTriangle:
         msg = "WARNING!!\n" + msg
-        msg += "For the 6j-Symbol:\n %3.1f %3.1f %3.1f\n %3.1f %3.1f %3.1f"%(j1,j2,j3,J1,J2,J3)
+        msg += "For the 6j-Symbol:\n ⎰%3.1f %3.1f %3.1f⎱\n ⎱%3.1f %3.1f %3.1f⎰"%(j1,j2,j3,J1,J2,J3)
         if verbose:
             print(msg)
         return 0
@@ -267,7 +267,7 @@ def Wigner6j(j1, j2, j3, J1, J2, J3, verbose=False):
         msg += '%.1f + %.1f + %.1f is not an integer\n'%(J1,J2,j3)
     if not SumIsInteger:
         msg = "WARNING!!\n" + msg
-        msg += "For the 6j-Symbol:\n %3.1f %3.1f %3.1f\n %3.1f %3.1f %3.1f"%(j1,j2,j3,J1,J2,J3)
+        msg += "For the 6j-Symbol:\n ⎰%3.1f %3.1f %3.1f⎱\n ⎱%3.1f %3.1f %3.1f⎰"%(j1,j2,j3,J1,J2,J3)
         msg += "\n6j-Symbol is undefined when any triad has a non-integer sum"
         if verbose:
             print(msg)
