@@ -1257,19 +1257,19 @@ class AlkaliAtom(object):
         \end{matrix}\right) \
         \langle n_1 \ell_1 j_1 f_1|| r || n_2 \ell_2 j_2 f_2 \rangle,` where
         :math:`\langle n_1 \ell_1 j_1 f_1 ||r|| n_2 \ell_2 j_2 f_2 \rangle \
-        = (-1)^{j_1+I+F_2+1}\sqrt{(2f_1+1)(2f_2+1)} ~ \
+        = (-1)^{j_1+I+f_2+1}\sqrt{(2f_1+1)(2f_2+1)} ~ \
         \left\{ \begin{matrix}\
-        F_1 & 1 & F_2 \\ \
+        f_1 & 1 & f_2 \\ \
         j_2 & I & j_1 \
         \end{matrix}\right\}~ \
         \langle n_1 \ell_1 j_1||r || n_2 \ell_2 j_2 \rangle.`
 
 
         Args:
-            n1. l1, j1, f1, mf1: principal, orbital, total orbital,
+            n1, l1, j1, f1, mf1: principal, orbital, total orbital,
                 fine basis (total atomic) angular momentum,
                 and projection of total angular momentum for state 1
-            n2. l2, j2, f2, mf2: principal, orbital, total orbital,
+            n2, l2, j2, f2, mf2: principal, orbital, total orbital,
                 fine basis (total atomic) angular momentum,
                 and projection of total angular momentum for state 2
             q (int): specifies transition that the driving field couples to,
