@@ -580,7 +580,7 @@ class PairStateInteractions:
         data[:, 5] *= 2  # j3 -> 2 r j3
         data[:, 7] *= 2  # j4 -> 2 r j4
 
-        data = np.array(np.rint(data), dtype=np.int16)
+        data = np.array(np.rint(data), dtype=int)
 
         try:
             c = self.conn.cursor()
