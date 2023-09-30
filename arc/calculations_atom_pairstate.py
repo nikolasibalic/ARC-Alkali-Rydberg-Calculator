@@ -580,7 +580,7 @@ class PairStateInteractions:
         data[:, 5] *= 2  # j3 -> 2 r j3
         data[:, 7] *= 2  # j4 -> 2 r j4
 
-        data = np.array(np.rint(data), dtype=np.int)
+        data = np.array(np.rint(data), dtype=np.int16)
 
         try:
             c = self.conn.cursor()
@@ -1260,7 +1260,7 @@ class PairStateInteractions:
                 round((2 * self.j + 1) * (2 * self.jj + 1)),
                 round((2 * self.j + 1) * (2 * self.jj + 1)),
             ),
-            dtype=np.complex,
+            dtype=np.complex128,
         )
 
         for n1 in xrange(max(self.n - nRange, 1), self.n + nRange + 1):
