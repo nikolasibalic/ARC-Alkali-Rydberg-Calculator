@@ -2694,7 +2694,8 @@ class AlkaliAtom(object):
             # only one of these can be non-zero
             b += self.getSphericalDipoleMatrixElement(je, mje, jg, mjg, -q) ** 2
 
-        return b 
+        # rescale
+        return b * (2 * je + 1)
 
     def getSaturationIntensity(
         self, ng, lg, jg, fg, mfg, ne, le, je, fe, mfe, s=0.5
