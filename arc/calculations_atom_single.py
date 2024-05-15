@@ -3575,7 +3575,7 @@ class StarkBasisGenerator:
         for ii in range(dimension):
             if progressOutput:
                 progress += (dimension - ii) * 2 - 1
-                print(f"{progress/dimension**2:.0%}", end="\r")
+                print(f"{progress / dimension**2:.0%}", end="\r")
 
             # add diagonal element
             self.bareEnergies[ii] = (
@@ -3887,7 +3887,7 @@ class ShirleyMethod(StarkBasisGenerator):
         with it:
             for field, freq in it:
                 if progressOutput:
-                    print(f"{(it.iterindex+1)/it.itersize:.0%}", end="\r")
+                    print(f"{(it.iterindex + 1) / it.itersize:.0%}", end="\r")
 
                 # define the Shirley Hamiltonian for this combo of field and frequency
                 Hf = self.H0 + self.dT * freq + self.B * field
@@ -3930,11 +3930,13 @@ class ShirleyMethod(StarkBasisGenerator):
                 targetShifts[it.multi_index] = targetEnergy - ev[evInd]
 
                 if debugOutput:
-                    print(f"E field {field:.5f} V/m, Freq {freq*1e-9:.3f} GHz")
                     print(
-                        f"Eigenvalue with largest overlap of target state {evInd}: {ev[evInd]*1e-9:.3f} GHz"
+                        f"E field {field:.5f} V/m, Freq {freq * 1e-9:.3f} GHz"
                     )
-                    print(f"Shift: {(targetEnergy-ev[evInd])*1e-9:.3e} GHz")
+                    print(
+                        f"Eigenvalue with largest overlap of target state {evInd}: {ev[evInd] * 1e-9:.3f} GHz"
+                    )
+                    print(f"Shift: {(targetEnergy - ev[evInd]) * 1e-9:.3e} GHz")
                     print(f"Eigenstate: {egvector[evInd]}")
 
         # squeeze out unused dimensions corresponding to single element inputs
@@ -4043,7 +4045,7 @@ class RWAStarkShift(StarkBasisGenerator):
         if debugOutput:
             print(f"Found {len(coupledStates):d} dipole coupled states")
             print(
-                f"Nearest dipole coupled state is detuned by: {np.abs(self.dipoleCoupledFreqs).min()*1e-9:.3f} GHz"
+                f"Nearest dipole coupled state is detuned by: {np.abs(self.dipoleCoupledFreqs).min() * 1e-9:.3f} GHz"
             )
 
     def _getRabiFrequency2_broadcast(

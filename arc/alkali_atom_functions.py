@@ -49,7 +49,7 @@ import pickle
 
 
 DPATH = os.path.join(os.path.expanduser("~"), ".arc-data")
-__arc_data_version__ = 10
+__arc_data_version__ = 11
 
 __all__ = [
     "AlkaliAtom",
@@ -2271,9 +2271,7 @@ class AlkaliAtom(object):
 
         if dl == 0:
             quadrupoleElement = (
-                (5.0 / 2.0)
-                * nu_c**4
-                * (1.0 - (3.0 * l_c**2) / (5 * nu_c**2))
+                (5.0 / 2.0) * nu_c**4 * (1.0 - (3.0 * l_c**2) / (5 * nu_c**2))
             )
             for p in range(0, 2, 1):
                 sm += gamma ** (2 * p) * q[2 * p]
@@ -3659,13 +3657,11 @@ class _EFieldCoupling:
                 angularPart = 0.0
                 if abs(l1 - l2 - 1) < 0.1:
                     angularPart = (
-                        (l1**2 - ml**2)
-                        / ((2.0 * l1 + 1.0) * (2.0 * l1 - 1.0))
+                        (l1**2 - ml**2) / ((2.0 * l1 + 1.0) * (2.0 * l1 - 1.0))
                     ) ** 0.5
                 elif abs(l1 - l2 + 1) < 0.1:
                     angularPart = (
-                        (l2**2 - ml**2)
-                        / ((2.0 * l2 + 1.0) * (2.0 * l2 - 1.0))
+                        (l2**2 - ml**2) / ((2.0 * l2 + 1.0) * (2.0 * l2 - 1.0))
                     ) ** 0.5
                 sumPart += (
                     CG(l1, ml, s, mj1 - ml, j1, mj1)
