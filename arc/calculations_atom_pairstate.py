@@ -552,9 +552,12 @@ class PairStateInteractions:
             fileHandle = gzip.GzipFile(
                 os.path.join(self.dataFolder, self.angularMatrixFile), "wb"
             )
-            np.save(fileHandle, self.savedAngularMatrix_matrix)
+            np.save(
+                fileHandle,
+                np.array(self.savedAngularMatrix_matrix, dtype=object),
+            )
             fileHandle.close()
-        except IOError as e:
+        except (IOError, ValueError) as e:
             print(
                 "Error while updating angularMatrix \
                     data File "
