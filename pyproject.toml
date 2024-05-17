@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "oldest-supported-numpy"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = [
+    "arc",
+    "arc.advanced",
+    # below only store data files
+    "arc.data",
+    "arc.data.refractive_index_data",
+]
+
+[tool.setuptools.package-data]
+arc = ["data/*", "data/refractive_index_data/*", "arc_c_extensions.c"]
+
+
+[project]
+name = "ARC-Alkali-Rydberg-Calculator"
+description = "Alkali Rydberg Calculator"
+version = "3.4.1"
+authors = [
+    {name = "Nikola Sibalic", email = "nikolasibalic@physics.org"},
+    {name = "Elizabeth J. Robertson"},
+    {name = "Jonathan D. Pritchard"},
+    {name = "Robert M. Potvliege"},
+    {name = "Matthew P. A. Jones"},
+    {name = "Charles S. Adams"},
+    {name = "Kevin J. Weatherill"},
+    {name = "and contributors"},
+]
+keywords = [
+    "rydberg",
+    "physics",
+    "stark maps",
+    "atom interactions",
+    "quantum optics",
+    "van der Waals",
+    "scientific",
+    "atomic sensors",
+    "quantum sensors",
+    "alkali atoms",
+    "alkaline atoms",
+    "divalent atoms",
+    "quantum computing",
+]
+license = {text = "BSD3"}
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: BSD License",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Development Status :: 5 - Production/Stable",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "scipy>=0.18.1",
+    "numpy>=1.16.0",
+    "matplotlib>=1.5.3",
+    "sympy>=1.1.1",
+    "lmfit>=0.9.0",
+]
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.urls]
+Homepage = "https://atomcalc.org/"
+Repository = "https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator"
+Documentation = "https://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/"
+Download = "https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/archive/refs/tags/v3.4.1.tar.gz"
