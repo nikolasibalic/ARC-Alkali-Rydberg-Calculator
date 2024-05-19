@@ -2599,7 +2599,7 @@ class AlkaliAtom(object):
         r"""
          Branching ratio for decay from :math:`\vert j_e,f_e,m_{f_e} \rangle \rightarrow \vert j_g,f_g,m_{f_g}\rangle`
 
-            :math:`b = \displaystyle\sum_q (2j_e+1)\left(\begin{matrix}f_1 & 1 & f_2 \\-m_{f1} & q & m_{f2}\end{matrix}\right)^2\vert \langle j_e,f_e\vert \vert er \vert\vert j_g,f_g\rangle\vert^2/|\langle j_e || er || j_g \rangle |^2`
+        :math:`b = \displaystyle\sum_q (2j_e+1)\left(\begin{matrix}f_1 & 1 & f_2 \\-m_{f1} & q & m_{f2}\end{matrix}\right)^2\vert \langle j_e,f_e\vert \vert er \vert\vert j_g,f_g\rangle\vert^2/|\langle j_e || er || j_g \rangle |^2`
 
         Args:
             jg, fg, mfg: total orbital, fine basis (total atomic) angular momentum,
@@ -2622,6 +2622,80 @@ class AlkaliAtom(object):
 
         # Rescale
         return b * (2.0 * je + 1.0)
+    
+    def getBranchingRatioFStoHFS(self, jg, fg, mfg, je, mje, s=0.5):
+        r"""
+        Branching ratio for decay from :math:`\vert j_e, m_{j_e} \rangle \rightarrow \vert j_g,f_g,m_{f_g} \rangle`
+
+        Args:
+            jg (float): total orbital angular momentum of the lower energy state
+            fg (float): hyperfine basis (total atomic) angular momentum of the lower energy state
+            mfg (float): projection of the total angular momentum of the lower energy state
+            je (float): total orbital angular momentum of the higher energy state
+            mje (float): projection of the total orbital angular momentum of the higher energy state
+            s (float, optional): total spin angular momentum of the states.
+                By default 0.5 for Alkali atoms.
+
+        Returns:
+            float: branching ratio
+        """
+        UsedModulesARC.hyperfine = True
+
+        b = 0.0
+        for q in [-1, 0, 1]:
+            b += self.getSphericalMatrixElementHFStoFS(jg, fg, mfg, je, mje, -q) ** 2
+
+        # rescale
+        return b * (2 * je + 1) / (2 * self.I + 1)
+    
+    def getBranchingRatioHFStoFS(self, jg, mjg, je, fe, mfe, s=0.5):
+        r"""
+        Branching ratio for decay from :math:`\vert j_e,f_e,m_{f_e} \rangle \rightarrow \vert j_g,m_{j_g} \rangle`
+
+        Args:
+            jg (float): total orbital angular momentum of the lower energy state
+            mjg (float): projection of the total orbital angular momentum of the lower energy state
+            je (float): total orbital angular momentum of the higher energy state
+            fe (float): hyperfine basis (total atomic) angular momentum of the higher energy state
+            mfe (float): projection of the total angular momentum of the higher energy state
+            s (float, optional): total spin angular momentum of the states.
+                By default 0.5 for Alkali atoms.
+
+        Returns:
+            float: branching ratio
+        """
+        UsedModulesARC.hyperfine = True
+
+        b = 0.0
+        for q in [-1, 0, 1]:
+            b += self.getSphericalMatrixElementHFStoFS(je, fe, mfe, jg, mjg, -q) ** 2
+
+        # rescale
+        return b * (2 * je + 1)
+    
+    def getBranchingRatioFStoFS(self, jg, mjg, je, mje, s=0.5):
+        r"""
+        Branching ratio for decay from :math:`\vert j_e, m_{j_e} \rangle \rightarrow \vert j_g,m_{j_g} \rangle`
+
+        Args:
+            jg (float): total orbital angular momentum of the lower energy state
+            mjg (float): projection of the total orbital momentum of the lower energy state
+            je (float): total orbital angular momentum of the higher energy state
+            mje (float): projection of the total orbital angular momentum of the higher energy state
+            s (float, optional): total spin angular momentum of the states.
+                By default 0.5 for Alkali atoms.
+
+        Returns:
+            float: branching ratio
+        """
+
+        b = 0.0
+        for q in [-1, 0, 1]:
+            # only one of these can be non-zero
+            b += self.getSphericalDipoleMatrixElement(je, mje, jg, mjg, -q) ** 2
+
+        # rescale
+        return b * (2 * je + 1)
 
     def getSaturationIntensity(
         self, ng, lg, jg, fg, mfg, ne, le, je, fe, mfe, s=0.5
