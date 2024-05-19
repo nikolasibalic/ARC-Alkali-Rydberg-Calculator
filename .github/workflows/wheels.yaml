@@ -9,7 +9,7 @@ on:
       - master
       - 'releases/**'
   release:
-    types: [created]
+    types: [published]
 
 jobs:
   format_test:
