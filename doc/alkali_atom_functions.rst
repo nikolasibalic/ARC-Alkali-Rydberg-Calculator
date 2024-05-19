@@ -117,6 +117,7 @@ Transitions between states
     ~AlkaliAtom.getReducedMatrixElementJ
     ~AlkaliAtom.getReducedMatrixElementL
     ~AlkaliAtom.getRadialMatrixElement
+    ~AlkaliAtom.getSphericalDipoleMatrixElement
     ~AlkaliAtom.getQuadrupoleMatrixElement
 
     ~AlkaliAtom.getC6term
@@ -133,6 +134,9 @@ Transitions between states
     ~AlkaliAtom.getHFSCoefficients
     ~AlkaliAtom.getHFSEnergyShift
     ~AlkaliAtom.getBranchingRatio
+    ~AlkaliAtom.getBranchingRatioFStoFS
+    ~AlkaliAtom.getBranchingRatioFStoHFS
+    ~AlkaliAtom.getBranchingRatioHFStoFS
     ~AlkaliAtom.getSaturationIntensity
     ~AlkaliAtom.getSaturationIntensityIsotropic
     ~AlkaliAtom.groundStateRamanTransition
