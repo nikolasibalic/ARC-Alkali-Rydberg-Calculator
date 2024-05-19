@@ -112,7 +112,7 @@ class Sapphire(OpticalMaterial):
         airWavelength=None,
         axis="ordinary",
         *args,
-        **kwargs
+        **kwargs,
     ):
         """ """
 

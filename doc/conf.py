@@ -14,18 +14,16 @@
 
 import sys
 import os
-
+from mock import Mock as MagicMock
 
 sys.path.insert(0, os.path.abspath(".."))
 # resolve problem with not having _tkinter on server used for documentation building
 autodoc_mock_imports = ["_tkinter"]
-import matplotlib
+import matplotlib  # noqa: E402
 
 matplotlib.use("agg")
 
 html_extra_path = ["./_static/"]
-
-from mock import Mock as MagicMock
 
 
 class Mock(MagicMock):
@@ -172,7 +170,7 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-##html_theme = 'alabaster'
+# html_theme = 'alabaster'
 
 # import sphinx_rtd_theme
 
@@ -316,9 +314,9 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     "papersize": "a4paper",
     # The font size ('10pt', '11pt' or '12pt').
-    #'pointsize': '10pt',
+    # 'pointsize': '10pt',
     # Additional stuff for the LaTeX preamble.
-    #'preamble': '',
+    # 'preamble': '',
     # Latex figure (float) alignment
     "figure_align": "htbp",
 }
