@@ -445,7 +445,7 @@ class Wavefunction:
             units=units,
         )
         fig = plt.figure(figsize=(6, 4))
-        ax = fig.gca(projection="3d")
+        ax = fig.add_subplot(projection="3d")
         ax.view_init(40, -35)
 
         # Plot the surface.
