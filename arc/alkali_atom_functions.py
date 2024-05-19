@@ -2622,7 +2622,7 @@ class AlkaliAtom(object):
 
         # Rescale
         return b * (2.0 * je + 1.0)
-    
+
     def getBranchingRatioFStoHFS(self, jg, fg, mfg, je, mje, s=0.5):
         r"""
         Branching ratio for decay from :math:`\vert j_e, m_{j_e} \rangle \rightarrow \vert j_g,f_g,m_{f_g} \rangle`
@@ -2643,11 +2643,14 @@ class AlkaliAtom(object):
 
         b = 0.0
         for q in [-1, 0, 1]:
-            b += self.getSphericalMatrixElementHFStoFS(jg, fg, mfg, je, mje, -q) ** 2
+            b += (
+                self.getSphericalMatrixElementHFStoFS(jg, fg, mfg, je, mje, -q)
+                ** 2
+            )
 
         # rescale
         return b * (2 * je + 1) / (2 * self.I + 1)
-    
+
     def getBranchingRatioHFStoFS(self, jg, mjg, je, fe, mfe, s=0.5):
         r"""
         Branching ratio for decay from :math:`\vert j_e,f_e,m_{f_e} \rangle \rightarrow \vert j_g,m_{j_g} \rangle`
@@ -2668,11 +2671,14 @@ class AlkaliAtom(object):
 
         b = 0.0
         for q in [-1, 0, 1]:
-            b += self.getSphericalMatrixElementHFStoFS(je, fe, mfe, jg, mjg, -q) ** 2
+            b += (
+                self.getSphericalMatrixElementHFStoFS(je, fe, mfe, jg, mjg, -q)
+                ** 2
+            )
 
         # rescale
         return b * (2 * je + 1)
-    
+
     def getBranchingRatioFStoFS(self, jg, mjg, je, mje, s=0.5):
         r"""
         Branching ratio for decay from :math:`\vert j_e, m_{j_e} \rangle \rightarrow \vert j_g,m_{j_g} \rangle`

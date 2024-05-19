@@ -276,7 +276,7 @@ def Wigner6j(j1, j2, j3, J1, J2, J3, verbose=False):
         msg += "\n6j-Symbol is undefined when any triad has a non-integer sum"
         if verbose:
             print(msg)
-        return np.nan
+        return 0
 
     # if possible, use precalculated values
     global wignerPrecal
