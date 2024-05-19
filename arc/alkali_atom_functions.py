@@ -2336,7 +2336,21 @@ class AlkaliAtom(object):
         return sph
 
     def getSphericalDipoleMatrixElement(self, j1, mj1, j2, mj2, q):
-        # Spherical Component of Angular Matrix Element in units of reduced matrix element <j||er||j'>
+        r"""Spherical Component of Angular Matrix Element
+
+        Args:
+            j1 (float): total orbital angular momentum of state 1
+            mj1 (float): projection of total orbital angular momentum of state 1
+            j2 (float): total orbital angular momentum of state 2
+            mj2 (float): projection of total orbital angular momentum of state 2
+            q (int): specifies transition that the driving field couples to,
+                from state 1 to state 2, with
+                +1, 0 or -1 corresponding to driving :math:`\sigma^+`,
+                :math:`\pi` and :math:`\sigma^-` transitions respectively.
+
+        Returns:
+            _type_: (units of reduced matrix element :math:`<j||er||j'>` )
+        """
         return (-1) ** (j1 - mj1) * Wigner3j(j1, 1, j2, -mj1, -q, mj2)
 
     def getSphericalMatrixElementHFStoFS(self, j1, f1, mf1, j2, mj2, q):
