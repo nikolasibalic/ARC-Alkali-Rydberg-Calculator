@@ -3069,9 +3069,17 @@ class AlkaliAtom(object):
         return OmegaR, ACg, ACr, Psc
 
     def _spinMatrices(self, j):
-        # SPINMATRICES Generates spin-matrices for spin S
-        #   [Sx,Sy,Sz]=SPINMATRICES(S) returns the Sx,Sy,Sz spin
-        #   matrices calculated using raising and lowering operators
+        """Generates spin-matrices for spin S
+
+        The Sx,Sy,Sz spin matrices calculated using raising and lowering
+        operators.
+
+        Args:
+            j (_type_): _description_
+
+        Returns:
+            array: [Sx,Sy,Sz]=SPINMATRICES(S)
+        """
         mj = -np.arange(-j + 1, j + 1)
         jm = np.sqrt(j * (j + 1) - mj * (mj + 1))
         Jplus = np.matrix(np.diag(jm, 1))  # Raising Operator
@@ -3084,13 +3092,17 @@ class AlkaliAtom(object):
 
     def breitRabi(self, n, l, j, B):
         r"""
-         Returns exact Zeeman energies math:`E_z` for states :math:`\vert F,m_f\rangle` in the :math:`\ell,j` manifold via exact diagonalisation of the Zeeman interaction :math:`\mathcal{H}_z` and the hyperfine interaction :math:`\mathcal{H}_\mathrm{hfs}` given by equations
+         Returns exact Zeeman energies math:`E_z` for states
+         :math:`\vert F,m_f\rangle` in the :math:`\ell,j` manifold via exact
+         diagonalisation of the Zeeman interaction :math:`\mathcal{H}_z` and
+         the hyperfine interaction :math:`\mathcal{H}_\mathrm{hfs}` given by
+         equations
 
-                :math:`\mathcal{H}_Z=\frac{\mu_B}{\hbar}(g_J J_z+g_I I_z)B_z`
+            :math:`\mathcal{H}_Z=\frac{\mu_B}{\hbar}(g_J J_z+g_I I_z)B_z`
 
-            and
+        and
 
-                :math:`\mathcal{H}_\mathrm{hfs}=A_\mathrm{hfs}I\cdot J + B_\mathrm{hfs}\frac{3(I\cdot J)^2+3/2 I\cdot J -I^2J^2}{2I(2I-1)2J(2J-1)}`.
+            :math:`\mathcal{H}_\mathrm{hfs}=A_\mathrm{hfs}I\cdot J + B_\mathrm{hfs}\frac{3(I\cdot J)^2+3/2 I\cdot J -I^2J^2}{2I(2I-1)2J(2J-1)}`.
 
         Args:
             n,l,j: principal,orbital, total orbital quantum numbers
@@ -3156,9 +3168,12 @@ class AlkaliAtom(object):
         mf = np.zeros(N)
         for ctr in range(N):
             f2 = eVec[:, ctr].conj().T * F2 * eVec[:, ctr]
-            f[ctr] = np.round(1 / 2 * (-1 + np.sqrt(1 + 4 * np.real(f2[0, 0]))))
+            f[ctr] = (
+                np.round(2 * 1 / 2 * (-1 + np.sqrt(1 + 4 * np.real(f2[0, 0]))))
+                / 2
+            )
             m = eVec[:, ctr].conj().T * Fz * eVec[:, ctr]
-            mf[ctr] = np.round(np.real(m[0, 0]))
+            mf[ctr] = np.round(2 * np.real(m[0, 0])) / 2
 
         return en, f, mf
 
