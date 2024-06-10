@@ -1356,6 +1356,56 @@ class AlkaliAtom(object):
         freq = electricFieldAmplitude * abs(dipole) / hbar
         return freq
 
+    def getPower(
+        self,
+        n1,
+        l1,
+        j1,
+        mj1,
+        n2,
+        l2,
+        j2,
+        mj2,
+        q,
+        rabiFrequency,
+        laserWaist,
+        s=0.5,
+    ):
+        """
+        Returns a laser power for resonantly driven atom in a
+        center of TEM00 mode of a driving field
+
+        Args:
+            n1,l1,j1,mj1 : state from which we are driving transition
+            n2,l2,j2 : state to which we are driving transition
+            q : laser polarization (-1,0,1 correspond to :math:`\\sigma^-`,
+                :math:`\\pi` and :math:`\\sigma^+` respectively)
+            rabiFrequency : laser power in units of rad/s
+            laserWaist : laser :math:`1/e^2` waist (radius) in units of m
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
+
+        Returns:
+            float:
+                laserPower in units of W
+        """
+        if abs(mj2) - 0.1 > j2:
+            return 0
+        dipole = (
+            self.getDipoleMatrixElement(
+                n1, l1, j1, mj1, n2, l2, j2, mj2, q, s=s
+            )
+            * C_e
+            * physical_constants["Bohr radius"][0]
+        )
+        return (
+            pi
+            / 4
+            * C_c
+            * epsilon_0
+            * (laserWaist * hbar * rabiFrequency / abs(dipole)) ** 2
+        )
+
     def getC6term(self, n, l, j, n1, l1, j1, n2, l2, j2, s=0.5):
         """
             C6 interaction term for the given two pair-states
