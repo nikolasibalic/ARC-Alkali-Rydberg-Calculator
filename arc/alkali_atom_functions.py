@@ -1609,6 +1609,29 @@ class AlkaliAtom(object):
             )
             print(e)
 
+    def getFarleyWing(self, n1, l1, j1, n2, l2, j2, temperature=0.0):
+        """
+        Calculates the Farley Wing function in the context of a BBR shift, uses a closed
+        form for the integral (which has a singularity, need Cauchy principal value)
+
+        References:
+            (Farley, John W., and William H. Wing. Physical Review A 23.5 (1981): 2397
+            doi = {10.1103/PhysRevA.23.2397}
+
+             (A.A. Kamenski et al 2019 Quantum Electron. 49 464, DOI:10.1070/QEL17000 )
+
+        """
+        if temperature == 0:
+            temperature = 1e-10 ###avoid zero error 
+
+        transition_frequency = self.getTransitionFrequency(n1, l1, j1, n2, l2, j2)
+        y = scipy.constants.h * transition_frequency / (scipy.constants.Boltzmann * temperature)
+
+        
+        z = 1j * y
+        a = 0.5 * (np.log(z / (2 * np.pi)) - np.pi / z - mpmath.digamma(z / (2 * np.pi)))
+        return float(-(np.pi**2) * y / 3 - 2 * y**3 * mpmath.re(a))
+    
     def getBBRshift(self, n, l, j, includeLevelsUpTo=0, temperature=0.0, s=0.5):
         """
         Frequency shift of an atomic state induced by black-body radiation
