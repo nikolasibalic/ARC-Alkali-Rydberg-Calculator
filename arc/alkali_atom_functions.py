@@ -1669,45 +1669,53 @@ class AlkaliAtom(object):
 
         n = int(n)
         l = int(l)
-        
+
         DeltaE = 0
         
-        factor = (-0.5 * (physical_constants["Bohr radius"][0] * scipy.constants.e) ** 2 /
+        factor = (-(physical_constants["Bohr radius"][0] * scipy.constants.e) ** 2 /
                 (6 * scipy.constants.epsilon_0 * np.pi ** 2 * scipy.constants.c ** 3) *
                 (scipy.constants.Boltzmann * temperature / scipy.constants.hbar) ** 3 /
                 scipy.constants.h)
 
         # Precompute commonly used values
         max_ground_state_n = max(self.groundStateN, l)
-        degen = 2 * l + 1
+        #degen = 2 * l + 1
 
         def compute_deltaE(n, l, j, nto, lto, jto):
+            prefactor = (2*jto + 1)*Wigner6j(l,j,s,jto,lto,1)**2
             radial_matrix_element = self.getRadialMatrixElement(n, l, j, nto, lto, jto)
             farley_wing = self.getFarleyWing(n, l, j, nto, lto, jto, temperature)
             max_l = max(l, lto)
-            return (max_l / degen) * (radial_matrix_element ** 2) * farley_wing
+            return prefactor*(max_l) * (radial_matrix_element ** 2) * farley_wing
 
         # Sum over all l-1
         if l > 0:
             lto = l - 1
             for nto in range(max_ground_state_n, includeLevelsUpTo + 1):
                 if lto > j - s - 0.1:
-                    DeltaE += compute_deltaE(n, l, j, nto, lto, j)
+                    jto = j
+                    print(nto, lto, jto)
+                    DeltaE += compute_deltaE(n, l, j, nto, lto, jto)
                 jto = j - 1.0
                 if jto > 0:
+                    print(nto, lto, jto)
                     DeltaE += compute_deltaE(n, l, j, nto, lto, jto)
 
         # Sum over all l+1
         lto = l + 1
         for nto in range(max(self.groundStateN, l + 2), includeLevelsUpTo + 1):
             if lto - s - 0.1 < j:
-                DeltaE += compute_deltaE(n, l, j, nto, lto, j)
+                jto = j
+                print(nto, lto, jto)
+                DeltaE += compute_deltaE(n, l, j, nto, lto, jto)
             jto = j + 1
+            print(nto, lto, jto)
             DeltaE += compute_deltaE(n, l, j, nto, lto, jto)
 
         # Sum over additional states
         for state in self.extraLevels:
             if (abs(j - state[2]) < 1.1 and abs(state[1] - l) < 1.1 and abs(state[1] - l) > 0.9):
+                print(state[0], state[1], state[2])
                 DeltaE += compute_deltaE(n, l, j, state[0], state[1], state[2])
 
         return factor * DeltaE
