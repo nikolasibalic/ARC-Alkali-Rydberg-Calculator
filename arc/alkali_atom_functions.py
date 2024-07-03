@@ -787,7 +787,20 @@ class AlkaliAtom(object):
 
         # else, use quantum defects
         defect = self.getQuantumDefect(n, l, j, s=s)
-        return -self.scaledRydbergConstant / ((n - defect) ** 2)
+
+        
+
+        if l <= 3:
+            return -self.scaledRydbergConstant / ((n - defect) ** 2)
+        elif l == 4:
+            FS = (2*self.scaledRydbergConstant)*pow(scipy.constants.alpha,2)/(2*l*(l+1)*pow(n,3))
+            LI = -FS/(l+0.5)
+            return -self.scaledRydbergConstant / ((n - defect) ** 2) -0.5*LI*(j*(j+1)-l*(l+1)-s*(s+1))
+        else:
+            FS = (2*self.scaledRydbergConstant)*pow(scipy.constants.alpha,2)/(2*l*(l+1)*pow(n,3))
+            LI = -FS/(l+0.5)
+            return -self.scaledRydbergConstant / ((n) ** 2) -0.5*LI*(j*(j+1)-l*(l+1)-s*(s+1)) - 2*self.scaledRydbergConstant*defect
+
 
     def _getSavedEnergy(self, n, l, j, s=0.5):
         if abs(j - (l - 0.5)) < 0.001:
@@ -844,6 +857,7 @@ class AlkaliAtom(object):
             n = int(n)
             l = int(l)
     
+
             # Use \delta_\ell = \delta_g * (4/\ell)**5
             # from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.74.062712
     
@@ -874,13 +888,12 @@ class AlkaliAtom(object):
             )
             r6 = top_r6 / bottom_r6
     
-            # Calculate the defect
+            # Calculate the energy difference from polarisation energy
             defect = (
-                0.5 * pow(n, 3) * (self.a_d_eff * r4 + self.a_q_eff * r6)
-               
+                0.5 * (self.a_d_eff * r4 + self.a_q_eff * r6)
             )
 
-    return defect
+        return defect
 
     def getRadialMatrixElement(
         self,
