@@ -841,10 +841,46 @@ class AlkaliAtom(object):
                 + modifiedRRcoef[5] / ((n - modifiedRRcoef[0]) ** 10)
             )
         else:
-            # use \delta_\ell = \delta_g * (4/\ell)**5
+            n = int(n)
+            l = int(l)
+    
+            # Use \delta_\ell = \delta_g * (4/\ell)**5
             # from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.74.062712
-            defect = self.quantumDefect[0][4][0] * (4 / l) ** 5
-        return defect
+    
+            # Calculate r4 and r6 coefficients
+            top_r4 = 3 * pow(n, 2) - (l * (l + 1))
+            bottom_r4 = (
+                2 * pow(n, 5) * (l + 1.5) * (l + 1) * (l + 0.5) * l * (l - 0.5)
+            )
+            r4 = top_r4 / bottom_r4
+    
+            top_r6 = (
+                35 * pow(n, 4)
+                - 5 * pow(n, 2) * (6 * l * (l + 1) - 5)
+                + 3 * (l + 2) * (l + 1) * l * (l - 1)
+            )
+            bottom_r6 = (
+                8
+                * pow(n, 7)
+                * (l + 2.5)
+                * (l + 2)
+                * (l + 1.5)
+                * (l + 1)
+                * (l + 0.5)
+                * l
+                * (l - 0.5)
+                * (l - 1)
+                * (l - 1.5)
+            )
+            r6 = top_r6 / bottom_r6
+    
+            # Calculate the defect
+            defect = (
+                0.5 * pow(n, 3) * (self.a_d_eff * r4 + self.a_q_eff * r6)
+               
+            )
+
+    return defect
 
     def getRadialMatrixElement(
         self,
