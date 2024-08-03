@@ -1609,6 +1609,111 @@ class AlkaliAtom(object):
             )
             print(e)
 
+    def getFarleyWing(self, n1, l1, j1, n2, l2, j2, temperature=0.0):
+        """
+        Calculates the Farley Wing function in the context of a BBR shift, uses a closed
+        form for the integral (which has a singularity, need Cauchy principal value)
+
+        References:
+            (Farley, John W., and William H. Wing. Physical Review A 23.5 (1981): 2397
+            doi = {10.1103/PhysRevA.23.2397}
+
+             (A.A. Kamenski et al 2019 Quantum Electron. 49 464, DOI:10.1070/QEL17000 )
+
+        """
+        if temperature == 0:
+            temperature = 1e-10 ###avoid zero error 
+
+        transition_frequency = self.getTransitionFrequency(n1, l1, j1, n2, l2, j2)
+        y = scipy.constants.h * transition_frequency / (scipy.constants.Boltzmann * temperature)
+
+        
+        z = 1j * y
+        a = 0.5 * (np.log(z / (2 * np.pi)) - np.pi / z - mpmath.digamma(z / (2 * np.pi)))
+        return float(-(np.pi**2) * y / 3 - 2 * y**3 * mpmath.re(a))
+    
+    def getBBRshift(self, n, l, j, includeLevelsUpTo=0, temperature=0.0, s=0.5):
+        """
+        Frequency shift of an atomic state induced by black-body radiation
+        using the Farley-Wing function. 
+        Uses getFarleyWing as part of the calculation.
+
+            n, l, j (int,int,float): specifies state whose shift we are
+                calculating
+            temperature : optional. Temperature at which the atom
+                environment is, measured in K. If this parameter
+                is non-zero, user has to specify transitions up to
+                which state (due to black-body decay) should be included
+                in calculation.
+            includeLevelsUpTo (int): optional and not needed for atom
+                lifetimes calculated at zero temperature. At non zero
+                temperatures, this specify maximum principal quantum number
+                of the state to which black-body induced transitions will
+                be included. Minimal value of the parameter in that case is
+                :math:`n+1`
+
+        Returns:
+            float:
+                Energy shift in units of frequency (Hz)
+
+        See also:
+            :obj:`getFarleyWing` which is used in calculation.
+
+        References:
+        (Farley, John W., and William H. Wing. Physical Review A 23.5 (1981): 2397
+        doi = {10.1103/PhysRevA.23.2397}
+)
+
+        """
+
+        n = int(n)
+        l = int(l)
+
+        DeltaE = 0
+        
+        factor = (-(physical_constants["Bohr radius"][0] * scipy.constants.e) ** 2 /
+                (6 * scipy.constants.epsilon_0 * np.pi ** 2 * scipy.constants.c ** 3) *
+                (scipy.constants.Boltzmann * temperature / scipy.constants.hbar) ** 3 /
+                scipy.constants.h)
+
+        # Precompute commonly used values
+        max_ground_state_n = max(self.groundStateN, l)
+
+        def compute_deltaE(n, l, j, nto, lto, jto):
+            prefactor = (2*jto + 1)*Wigner6j(l,j,s,jto,lto,1)**2
+            radial_matrix_element = self.getRadialMatrixElement(n, l, j, nto, lto, jto)
+            farley_wing = self.getFarleyWing(n, l, j, nto, lto, jto, temperature)
+            max_l = max(l, lto)
+            return prefactor*(max_l) * (radial_matrix_element ** 2) * farley_wing
+
+        # Sum over all l-1
+        if l > 0:
+            lto = l - 1
+            for nto in range(max_ground_state_n, includeLevelsUpTo + 1):
+                if lto > j - s - 0.1:
+                    jto = j
+                    DeltaE += compute_deltaE(n, l, j, nto, lto, jto)
+                jto = j - 1.0
+                if jto > 0:
+                    DeltaE += compute_deltaE(n, l, j, nto, lto, jto)
+
+        # Sum over all l+1
+        lto = l + 1
+        for nto in range(max(self.groundStateN, l + 2), includeLevelsUpTo + 1):
+            if lto - s - 0.1 < j:
+                jto = j
+                DeltaE += compute_deltaE(n, l, j, nto, lto, jto)
+            jto = j + 1
+
+            DeltaE += compute_deltaE(n, l, j, nto, lto, jto)
+
+        # Sum over additional states
+        for state in self.extraLevels:
+            if (abs(j - state[2]) < 1.1 and abs(state[1] - l) < 1.1 and abs(state[1] - l) > 0.9):
+                DeltaE += compute_deltaE(n, l, j, state[0], state[1], state[2])
+
+        return factor * DeltaE
+        
     def getTransitionRate(self, n1, l1, j1, n2, l2, j2, temperature=0.0, s=0.5):
         """
             Transition rate due to coupling to vacuum modes
