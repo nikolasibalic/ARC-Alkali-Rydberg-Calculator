@@ -793,13 +793,26 @@ class AlkaliAtom(object):
         if l <= 3:
             return -self.scaledRydbergConstant / ((n - defect) ** 2)
         elif l == 4:
-            FS = (2*self.scaledRydbergConstant)*pow(scipy.constants.alpha,2)/(2*l*(l+1)*pow(n,3))
-            LI = -FS/(l+0.5)
-            return -self.scaledRydbergConstant / ((n - defect) ** 2) -0.5*LI*(j*(j+1)-l*(l+1)-s*(s+1))
+            fineStructSplit = -(2*self.scaledRydbergConstant)*pow(scipy.constants.alpha,2)/(2*l*(l+0.5)*(l+1)*pow(n,3))
+            
+            if j == l + 0.5:
+                 fineStructSplit *= 0.5*l
+
+            elif j == l - 0.5:
+                fineStructSplit *= -1*0.5*(l+1)
+
+            return -self.scaledRydbergConstant / ((n - defect) ** 2) - fineStructSplit
+            
         else:
-            FS = (2*self.scaledRydbergConstant)*pow(scipy.constants.alpha,2)/(2*l*(l+1)*pow(n,3))
-            LI = -FS/(l+0.5)
-            return -self.scaledRydbergConstant / ((n) ** 2) -0.5*LI*(j*(j+1)-l*(l+1)-s*(s+1)) - 2*self.scaledRydbergConstant*defect
+            fineStructSplit = -(2*self.scaledRydbergConstant)*pow(scipy.constants.alpha,2)/(2*l*(l+0.5)*(l+1)*pow(n,3))
+
+            if j == l + 0.5:
+                 fineStructSplit *= 0.5*l
+
+            elif j == l - 0.5:
+                fineStructSplit *= -1*0.5*(l+1)
+
+            return -self.scaledRydbergConstant / ((n) ** 2) - fineStructSplit - 2*self.scaledRydbergConstant*defect
 
 
     def _getSavedEnergy(self, n, l, j, s=0.5):
@@ -857,11 +870,7 @@ class AlkaliAtom(object):
             n = int(n)
             l = int(l)
     
-
-            # Use \delta_\ell = \delta_g * (4/\ell)**5
-            # from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.74.062712
-    
-            # Calculate r4 and r6 coefficients
+            # Calculate r4 and r6 coefficients from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.9.1087 
             top_r4 = 3 * pow(n, 2) - (l * (l + 1))
             bottom_r4 = (
                 2 * pow(n, 5) * (l + 1.5) * (l + 1) * (l + 0.5) * l * (l - 0.5)
@@ -888,7 +897,7 @@ class AlkaliAtom(object):
             )
             r6 = top_r6 / bottom_r6
     
-            # Calculate the energy difference from polarisation energy
+            # Calculate the energy difference from polarisation energy from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.14.1614
             defect = (
                 0.5 * (self.a_d_eff * r4 + self.a_q_eff * r6)
             )
