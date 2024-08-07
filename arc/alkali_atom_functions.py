@@ -788,7 +788,33 @@ class AlkaliAtom(object):
 
         # else, use quantum defects
         defect = self.getQuantumDefect(n, l, j, s=s)
-        return -self.scaledRydbergConstant / ((n - defect) ** 2)
+
+        
+
+        if l <= 3:
+            return -self.scaledRydbergConstant / ((n - defect) ** 2)
+        elif l == 4:
+            fineStructSplit = -(2*self.scaledRydbergConstant)*pow(scipy.constants.alpha,2)/(2*l*(l+0.5)*(l+1)*pow(n,3))
+            
+            if j == l + 0.5:
+                 fineStructSplit *= 0.5*l
+
+            elif j == l - 0.5:
+                fineStructSplit *= -1*0.5*(l+1)
+
+            return -self.scaledRydbergConstant / ((n - defect) ** 2) - fineStructSplit
+            
+        else:
+            fineStructSplit = -(2*self.scaledRydbergConstant)*pow(scipy.constants.alpha,2)/(2*l*(l+0.5)*(l+1)*pow(n,3))
+
+            if j == l + 0.5:
+                 fineStructSplit *= 0.5*l
+
+            elif j == l - 0.5:
+                fineStructSplit *= -1*0.5*(l+1)
+
+            return -self.scaledRydbergConstant / ((n) ** 2) - fineStructSplit - 2*self.scaledRydbergConstant*defect
+
 
     def _getSavedEnergy(self, n, l, j, s=0.5):
         if abs(j - (l - 0.5)) < 0.001:
@@ -842,9 +868,41 @@ class AlkaliAtom(object):
                 + modifiedRRcoef[5] / ((n - modifiedRRcoef[0]) ** 10)
             )
         else:
-            # use \delta_\ell = \delta_g * (4/\ell)**5
-            # from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.74.062712
-            defect = self.quantumDefect[0][4][0] * (4 / l) ** 5
+            n = int(n)
+            l = int(l)
+    
+            # Calculate r4 and r6 coefficients from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.9.1087 
+            top_r4 = 3 * pow(n, 2) - (l * (l + 1))
+            bottom_r4 = (
+                2 * pow(n, 5) * (l + 1.5) * (l + 1) * (l + 0.5) * l * (l - 0.5)
+            )
+            r4 = top_r4 / bottom_r4
+    
+            top_r6 = (
+                35 * pow(n, 4)
+                - 5 * pow(n, 2) * (6 * l * (l + 1) - 5)
+                + 3 * (l + 2) * (l + 1) * l * (l - 1)
+            )
+            bottom_r6 = (
+                8
+                * pow(n, 7)
+                * (l + 2.5)
+                * (l + 2)
+                * (l + 1.5)
+                * (l + 1)
+                * (l + 0.5)
+                * l
+                * (l - 0.5)
+                * (l - 1)
+                * (l - 1.5)
+            )
+            r6 = top_r6 / bottom_r6
+    
+            # Calculate the energy difference from polarisation energy from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.14.1614
+            defect = (
+                0.5 * (self.a_d_eff * r4 + self.a_q_eff * r6)
+            )
+
         return defect
 
     def getRadialMatrixElement(
