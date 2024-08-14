@@ -29,6 +29,7 @@ import shutil
 from numpy.linalg import eigh
 
 from .wigner import Wigner6j, Wigner3j, CG, WignerDmatrix
+from scipy.integrate import trapezoid
 from scipy.constants import physical_constants, pi, epsilon_0, hbar
 from scipy.constants import k as C_k
 from scipy.constants import c as C_c
@@ -575,7 +576,7 @@ class AlkaliAtom(object):
 
             psi_r = d[0]
             r = d[1]
-            suma = np.trapz(psi_r**2, x=r)
+            suma = trapezoid(psi_r**2, x=r)
             psi_r = psi_r / (sqrt(suma))
         else:
             # full implementation in Python
@@ -592,7 +593,7 @@ class AlkaliAtom(object):
                 innerLimit, outerLimit, potential, step, 0.01, 0.01
             )
 
-            suma = np.trapz(psi_r**2, x=r)
+            suma = trapezoid(psi_r**2, x=r)
             psi_r = psi_r / (sqrt(suma))
 
         return r, psi_r
@@ -959,7 +960,7 @@ class AlkaliAtom(object):
 
         # note that r1 and r2 change in same staps,
         # starting from the same value
-        dipoleElement = np.trapz(
+        dipoleElement = trapezoid(
             np.multiply(
                 np.multiply(psi1_r1[0:upTo], psi2_r2[0:upTo]), r1[0:upTo]
             ),
@@ -1063,7 +1064,7 @@ class AlkaliAtom(object):
 
         # note that r1 and r2 change in same staps,
         # starting from the same value
-        quadrupoleElement = np.trapz(
+        quadrupoleElement = trapezoid(
             np.multiply(
                 np.multiply(psi1_r1[0:upTo], psi2_r2[0:upTo]),
                 np.multiply(r1[0:upTo], r1[0:upTo]),
