@@ -3500,6 +3500,9 @@ class StarkBasisGenerator:
         for tn in range(nMin, nMax):
             for tl in range(min(maxL + 1, tn)):
                 for tj in np.linspace(tl - s, tl + s, round(2 * s + 1)):
+                    # ensure test state is physical
+                    if (abs(mj + q) - 0.1 > tj):
+                        continue
                     # ensure we add the target state
                     if (n == tn) and (l == tl) and (j == tj):
                         states.append([tn, tl, tj, mj])
@@ -3507,7 +3510,6 @@ class StarkBasisGenerator:
                     # adding all manifold states
                     elif (
                         (edN == 0)
-                        and (abs(mj) + q - 0.1 <= tj)
                         and (
                             tn >= self.atom.groundStateN
                             or [tn, tl, tj] in self.atom.extraLevels
