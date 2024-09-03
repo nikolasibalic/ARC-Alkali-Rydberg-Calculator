@@ -3342,7 +3342,7 @@ class StarkBasisGenerator:
         if (ns == nt) and (ls == lt) and (js == jt) and (mjs == mjt):
             return False
         # transitions that change l by 1
-        elif (abs(ls - lt) == 1) and (mjs - mjt == q):
+        elif (abs(ls - lt) == 1) and (mjt - mjs == q):
             if ls - lt == js - jt:
                 return True
             elif (js == jt) and ((js == ls + s) or (jt == lt + s)):
@@ -3379,11 +3379,11 @@ class StarkBasisGenerator:
         elif (
             (abs(ls - lt) == 2)
             and (ls - lt == js - jt)
-            and ((mjs - mjt) / 2 == q)
+            and ((mjt - mjs) / 2 == q)
         ):
             return True
         # transitions that don't change l
-        elif ((ls - lt) == 0) and (js == jt) and ((mjs - mjt) / 2 == q):
+        elif ((ls - lt) == 0) and (js == jt) and ((mjt - mjs) / 2 == q):
             return True
         else:
             return False
