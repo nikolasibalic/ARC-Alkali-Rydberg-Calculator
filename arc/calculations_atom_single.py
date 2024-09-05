@@ -3400,6 +3400,7 @@ class StarkBasisGenerator:
         maxL,
         Bz=0,
         edN=0,
+        basisStates=None,
         progressOutput=False,
         debugOutput=False,
         s=0.5,
@@ -3436,6 +3437,9 @@ class StarkBasisGenerator:
                 only include single-photon dipole-allowed transitions.
                 Setting to 2 means include up to 2 photon transitions.
                 Higher numbers not supported.
+            basisStates (list of states, optional): Manually specify the basis.
+                Defaults to None, in which case it creates the basis as normal.
+                If specified, `nMin`, `nMax`, `maxL`, and `edN` are ignored.
             progressOutput (:obj:`bool`, optional): if True prints the
                 progress of calculation; Set to false by default.
             debugOutput (:obj:`bool`, optional): if True prints additional
@@ -3454,19 +3458,40 @@ class StarkBasisGenerator:
         self.j = j
         self.mj = mj
         self.q = q
-        if edN in [0, 1, 2]:
-            self.edN = edN
-        else:
-            raise ValueError("EN must be 0, 1, or 2")
-        self.nMin = nMin
-        self.nMax = nMax
-        self.maxL = maxL
         self.Bz = Bz
         self.s = s
-        # save calculation details END
-
-        self._findBasisStates(progressOutput, debugOutput)
+        # basis definition
+        if basisStates is not None:
+            self._defineBasisStates(basisStates)
+        else:
+            # options to control automatically finding basis states
+            if edN in [0, 1, 2]:
+                self.edN = edN
+            else:
+                raise ValueError("edN must be 0, 1, or 2")
+            self.nMin = nMin
+            self.nMax = nMax
+            self.maxL = maxL
+            self._findBasisStates(progressOutput, debugOutput)
+        # generate the hamiltonian
         self._buildHamiltonian(progressOutput, debugOutput)
+
+    def _defineBasisStates(self, states_list):
+        """
+        Use the user-provided list of states to define the basis
+
+        Args:
+            states_list (list): List of state quantum numbers in the form
+                `[n, l, j, mj]`.        
+        """
+        self.basisStates = states_list
+        # find index of target state
+        t_state = [self.n, self.l, self.j, self.mj]
+        try:
+            self.indexOfCoupledState = states_list.index(t_state)
+        except ValueError:
+            raise ValueError(f"Target state {t_state} not in states list")
+        self.targetState = states_list[self.indexOfCoupledState]
 
     def _findBasisStates(self, progressOutput=False, debugOutput=False):
         """
