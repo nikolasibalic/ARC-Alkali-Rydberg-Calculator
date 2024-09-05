@@ -3906,21 +3906,9 @@ class ShirleyMethod(StarkBasisGenerator):
                 refInd = self.fn * dim0
                 # index of target state in basis
                 tarInd = self.indexOfCoupledState + refInd
-                transProbs[it.multi_index] = np.array(
-                    [
-                        np.sum(
-                            [
-                                np.abs(
-                                    np.conj(egvector[refInd + k * dim0 + i])
-                                    * egvector[tarInd]
-                                )
-                                ** 2
-                                for k in range(-self.fn, self.fn + 1, 1)
-                            ]
-                        )
-                        for i in range(0, dim0, 1)
-                    ]
-                )
+                transProbs[it.multi_index] = (np.abs(np.conj(egvector) * egvector[tarInd])**2
+                          ).reshape((2 * self.fn + 1, dim0, (2 * self.fn + 1) * dim0)
+                          ).sum(axis=(0,-1))
                 # get the target shift by finding the max overlap with the target state
                 evInd = np.argmax(
                     np.abs(egvector[tarInd].conj() * egvector[tarInd]) ** 2
