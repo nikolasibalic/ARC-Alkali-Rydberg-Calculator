@@ -3394,10 +3394,10 @@ class StarkBasisGenerator:
         l,
         j,
         mj,
-        q,
-        nMin,
-        nMax,
-        maxL,
+        q=0,
+        nMin=None,
+        nMax=None,
+        maxL=None,
         Bz=0,
         edN=0,
         basisStates=None,
@@ -3419,14 +3419,18 @@ class StarkBasisGenerator:
             l (int): angular orbital momentum of the state
             j (flaot): total angular momentum of the state
             mj (float): projection of total angular momentum of the state
-            q (int): polarization of coupling field is spherical basis.
+            q (int, optional): polarization of coupling field is spherical basis.
                 Must be -1, 0, or 1: corresponding to sigma-, pi, sigma+
-            nMin (int): *minimal* principal quantum number of the states to
+                Default is 0.
+            nMin (int, optional): *minimal* principal quantum number of the states to
                 be included in the basis for calculation
-            nMax (int): *maximal* principal quantum number of the states to
+                If not provided, `basisStates` must be provided.
+            nMax (int, optional): *maximal* principal quantum number of the states to
                 be included in the basis for calculation
-            maxL (int): *maximal* value of orbital angular momentum for the
+                If not provided, `basisStates` must be provided.
+            maxL (int, optional): *maximal* value of orbital angular momentum for the
                 states to be included in the basis for calculation
+                If not provided, `basisStates` must be provided.
             Bz (float, optional): magnetic field directed along z-axis in
                 units of Tesla. Calculation will be correct only for weak
                 magnetic fields, where paramagnetic term is much stronger
@@ -3457,14 +3461,14 @@ class StarkBasisGenerator:
         self.l = l
         self.j = j
         self.mj = mj
-        self.q = q
         self.Bz = Bz
         self.s = s
         # basis definition
         if basisStates is not None:
             self._defineBasisStates(basisStates)
-        else:
+        elif nMin is not None and nMax is not None and maxL is not None:
             # options to control automatically finding basis states
+            self.q = q
             if edN in [0, 1, 2]:
                 self.edN = edN
             else:
@@ -3473,6 +3477,9 @@ class StarkBasisGenerator:
             self.nMax = nMax
             self.maxL = maxL
             self._findBasisStates(progressOutput, debugOutput)
+        else:
+            raise ValueError("Input arguments are not complete. "
+                             + "Either specify nMin, nMax, maxL or basisStates")
         # generate the hamiltonian
         self._buildHamiltonian(progressOutput, debugOutput)
 
