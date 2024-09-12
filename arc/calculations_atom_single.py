@@ -3886,8 +3886,14 @@ class ShirleyMethod(StarkBasisGenerator):
         """
 
         # get basic info about solve structure from class
-        dim0 = len(self.basisStates)
+        dim0 = len(self.basisStates)  # atomic basis size
+        dim1 = 2 * self.fn + 1 # floquet basis size
         targetEnergy = self.targetEnergy
+
+        # index of first basis state in k=0 block diagonal
+        refInd = self.fn * dim0
+        # index of target state in basis
+        tarInd = self.indexOfCoupledState + refInd
 
         # ensure inputs are numpy arrays, if scalars, 0d-arrays
         self.eFields = np.array(eFields, ndmin=1)
@@ -3895,15 +3901,15 @@ class ShirleyMethod(StarkBasisGenerator):
 
         # pre-allocation of results array
         eig = np.zeros(
-            (*self.eFields.shape, *self.freqs.shape, dim0 * (2 * self.fn + 1)),
+            (*self.eFields.shape, *self.freqs.shape, dim0 * dim1),
             dtype=np.double,
         )
         eigVec = np.zeros(
             (
                 *self.eFields.shape,
                 *self.freqs.shape,
-                dim0 * (2 * self.fn + 1),
-                dim0 * (2 * self.fn + 1),
+                dim0 * dim1,
+                dim0 * dim1,
             ),
             dtype=np.complex128,
         )
@@ -3944,12 +3950,8 @@ class ShirleyMethod(StarkBasisGenerator):
                 eigVec[it.multi_index] = egvector
 
                 # get transition probabilities from target state to other basis states
-                # index of first basis state in k=0 block diagonal
-                refInd = self.fn * dim0
-                # index of target state in basis
-                tarInd = self.indexOfCoupledState + refInd
                 transProbs[it.multi_index] = (np.abs(np.conj(egvector) * egvector[tarInd])**2
-                          ).reshape((2 * self.fn + 1, dim0, (2 * self.fn + 1) * dim0)
+                          ).reshape((dim1, dim0, dim1 * dim0)
                           ).sum(axis=(0,-1))
                 # get the target shift by finding the max overlap with the target state
                 evInd = np.argmax(
