@@ -3956,7 +3956,7 @@ class ShirleyMethod(StarkBasisGenerator):
                           ).sum(axis=(0,-1))
                 # get the target shift by finding the max overlap with the target state
                 evInd = np.argmax(
-                    np.abs(egvector[tarInd].conj() * egvector[tarInd]) ** 2
+                    np.abs(egvector[tarInd]) ** 2
                 )
                 if np.count_nonzero(ev == ev[evInd]) > 1:
                     warnings.warn(
