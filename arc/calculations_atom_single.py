@@ -3489,7 +3489,7 @@ class StarkBasisGenerator:
 
         Args:
             states_list (list): List of state quantum numbers in the form
-                `[n, l, j, mj]`.        
+                `[n, l, j, mj]`.
         """
         self.basisStates = states_list
         # find index of target state
@@ -3784,7 +3784,7 @@ class ShirleyMethod(StarkBasisGenerator):
         """
         This is the shift of the target state relative to the zero field energy for an applied
         field of :obj:`eField` and :obj:`freq`. Given in units of Hz.
-        
+
         .. note::
             Accurate calculation of the target shifts relies on
             the energy ordering of the eigenstates to remain the same.
@@ -3887,7 +3887,7 @@ class ShirleyMethod(StarkBasisGenerator):
 
         # get basic info about solve structure from class
         dim0 = len(self.basisStates)  # atomic basis size
-        dim1 = 2 * self.fn + 1 # floquet basis size
+        dim1 = 2 * self.fn + 1  # floquet basis size
         targetEnergy = self.targetEnergy
 
         # index of first basis state in k=0 block diagonal
@@ -3952,8 +3952,8 @@ class ShirleyMethod(StarkBasisGenerator):
                 # get transition probabilities from target state to other basis states
                 # note: conj not necessary since all eigenvalues are real
                 transProbs[it.multi_index] = (np.abs(egvector * egvector[tarInd].conj())**2
-                          ).reshape((dim1, dim0, dim1 * dim0)
-                          ).sum(axis=(0,-1))
+                                              ).reshape((dim1, dim0, dim1 * dim0)
+                                                        ).sum(axis=(0, -1))
                 # get the target shift by finding the max overlap with the target state
                 evInd = np.argmax(
                     np.abs(egvector[tarInd]) ** 2
@@ -4015,17 +4015,19 @@ class ShirleyMethod(StarkBasisGenerator):
         dim1 = 2 * self.fn + 1
         tarInd = self.indexOfCoupledState + (self.fn * dim0)
 
-        ut = np.exp(-1.0j*2*np.pi*np.einsum('i,...j->i...j', t_eval, self.eigs))
+        ut = np.exp(-1.0j * 2 * np.pi * np.einsum('i,...j->i...j', t_eval, self.eigs))
         # reshape separates atomic and floquet basis expansions
         # final result sums along floquet expansion only
         Pab = (np.abs(np.einsum('...km,l...m,...m->l...k',
                                 self.eigVectors,
                                 ut,
-                                self.eigVectors[...,tarInd,:].conj())
-                                )**2).reshape(ut.shape[:-1] + (dim1,dim0)
-                                              ).sum(axis=-2)
-        
-        return Pab.squeeze() # remove 0-d time, if applicable
+                                self.eigVectors[..., tarInd, :].conj())
+                      )**2
+               ).reshape(ut.shape[:-1] + (dim1, dim0)
+                         ).sum(axis=-2)
+
+        return Pab.squeeze()  # remove 0-d time, if applicable
+
 
 class RWAStarkShift(StarkBasisGenerator):
     """
