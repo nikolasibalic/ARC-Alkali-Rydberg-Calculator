@@ -3532,7 +3532,7 @@ class StarkBasisGenerator:
         for tn in range(nMin, nMax):
             for tl in range(min(maxL + 1, tn)):
                 for tj in np.linspace(tl - s, tl + s, round(2 * s + 1)):
-                    # ensure test state is physical
+                    # skip test state if unphysical
                     if (abs(mj + q) - 0.1 > tj):
                         continue
                     # ensure we add the target state
@@ -3776,12 +3776,22 @@ class ShirleyMethod(StarkBasisGenerator):
         """
         self.transProbs = []
         """
-        Probability to transition from the target state to another state in the basis.
+        Long-time averaged probability to transition from the target state to another state in the basis.
+
+        Calculated using Eq. 19 of Shirley, Physical Review (1965).
         """
         self.targetShifts = []
         """
         This is the shift of the target state relative to the zero field energy for an applied
         field of :obj:`eField` and :obj:`freq`. Given in units of Hz.
+        
+        .. note::
+            Accurate calculation of the target shifts relies on
+            the energy ordering of the eigenstates to remain the same.
+            Situations with large shifts can result in re-ordering which makes
+            this calculation (and the associated :obj:`transProbs`) invalid.
+            In such a case, it is best to perform a more informed analysis on the
+            base eigenvalues and eigenenergies.
         """
 
     def defineShirleyHamiltonian(self, fn, debugOutput=False):
