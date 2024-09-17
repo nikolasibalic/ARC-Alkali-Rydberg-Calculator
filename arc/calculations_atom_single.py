@@ -3950,7 +3950,8 @@ class ShirleyMethod(StarkBasisGenerator):
                 eigVec[it.multi_index] = egvector
 
                 # get transition probabilities from target state to other basis states
-                transProbs[it.multi_index] = (np.abs(np.conj(egvector) * egvector[tarInd])**2
+                # note: conj not necessary since all eigenvalues are real
+                transProbs[it.multi_index] = (np.abs(egvector * egvector[tarInd].conj())**2
                           ).reshape((dim1, dim0, dim1 * dim0)
                           ).sum(axis=(0,-1))
                 # get the target shift by finding the max overlap with the target state
