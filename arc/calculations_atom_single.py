@@ -3980,6 +3980,52 @@ class ShirleyMethod(StarkBasisGenerator):
         self.transProbs = transProbs.squeeze()
         self.targetShifts = targetShifts.squeeze()
 
+    def calcTransitionProbability(self, tevals):
+        """
+        Calculates the time-dependent transition probability.
+
+        Note that the calculation assumes all population is in
+        the target state at time :math:`t=0` and
+        that this probability is averaged over initial phases
+        of the driving field, therefore is primarily valid in the CW
+        driving case.
+
+        This function implements Eq. 18 of [1]_ and is primarily
+        for calculation the Rabi flops in population under high driving fields.
+
+        Args:
+            tevals (float or numpy.ndarray): Times to evaluate the transition probability.
+                In units of seconds. Input is coerced to a numpy array.
+
+        Returns:
+            numpy.ndarray: Transition probability to go from the target state
+                to any state in the basis, as a function of t.
+                Output tensor shape is of the form
+                `(tevals, efields, freqs, floquet_basis)`,
+                where `efields`, `freqs`, and `floquet_basis` sizes are taken
+                from the result of the :meth:`diagonalise` function.
+
+        References:
+        .. [1] J. H. Shirley, Physical Review **138**, B979 (1965)
+            https://link.aps.org/doi/10.1103/PhysRev.138.B979
+        """
+
+        t_eval = np.array(tevals, ndmin=1)
+        dim0 = len(self.basisStates)
+        dim1 = 2 * self.fn + 1
+        tarInd = self.indexOfCoupledState + (self.fn * dim0)
+
+        ut = np.exp(-1.0j*2*np.pi*np.einsum('i,...j->i...j', t_eval, self.eigs))
+        # reshape separates atomic and floquet basis expansions
+        # final result sums along floquet expansion only
+        Pab = (np.abs(np.einsum('...km,l...m,...m->l...k',
+                                self.eigVectors,
+                                ut,
+                                self.eigVectors[...,tarInd,:].conj())
+                                )**2).reshape(ut.shape[:-1] + (dim1,dim0)
+                                              ).sum(axis=-2)
+        
+        return Pab.squeeze() # remove 0-d time, if applicable
 
 class RWAStarkShift(StarkBasisGenerator):
     """
