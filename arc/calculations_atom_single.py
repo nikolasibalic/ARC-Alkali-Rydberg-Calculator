@@ -3478,8 +3478,10 @@ class StarkBasisGenerator:
             self.maxL = maxL
             self._findBasisStates(progressOutput, debugOutput)
         else:
-            raise ValueError("Input arguments are not complete. "
-                             + "Either specify nMin, nMax, maxL or basisStates")
+            raise ValueError(
+                "Input arguments are not complete. "
+                + "Either specify nMin, nMax, maxL or basisStates"
+            )
         # generate the hamiltonian
         self._buildHamiltonian(progressOutput, debugOutput)
 
@@ -3533,19 +3535,16 @@ class StarkBasisGenerator:
             for tl in range(min(maxL + 1, tn)):
                 for tj in np.linspace(tl - s, tl + s, round(2 * s + 1)):
                     # skip test state if unphysical
-                    if (abs(mj + q) - 0.1 > tj):
+                    if abs(mj + q) - 0.1 > tj:
                         continue
                     # ensure we add the target state
                     if (n == tn) and (l == tl) and (j == tj):
                         states.append([tn, tl, tj, mj])
                         indexOfCoupledState = index
                     # adding all manifold states
-                    elif (
-                        (edN == 0)
-                        and (
-                            tn >= self.atom.groundStateN
-                            or [tn, tl, tj] in self.atom.extraLevels
-                        )
+                    elif (edN == 0) and (
+                        tn >= self.atom.groundStateN
+                        or [tn, tl, tj] in self.atom.extraLevels
                     ):
                         states.append([tn, tl, tj, mj + q])
                         index += 1
@@ -3951,13 +3950,13 @@ class ShirleyMethod(StarkBasisGenerator):
 
                 # get transition probabilities from target state to other basis states
                 # note: conj not necessary since all eigenvalues are real
-                transProbs[it.multi_index] = (np.abs(egvector * egvector[tarInd].conj())**2
-                                              ).reshape((dim1, dim0, dim1 * dim0)
-                                                        ).sum(axis=(0, -1))
-                # get the target shift by finding the max overlap with the target state
-                evInd = np.argmax(
-                    np.abs(egvector[tarInd]) ** 2
+                transProbs[it.multi_index] = (
+                    (np.abs(egvector * egvector[tarInd].conj()) ** 2)
+                    .reshape((dim1, dim0, dim1 * dim0))
+                    .sum(axis=(0, -1))
                 )
+                # get the target shift by finding the max overlap with the target state
+                evInd = np.argmax(np.abs(egvector[tarInd]) ** 2)
                 if np.count_nonzero(ev == ev[evInd]) > 1:
                     warnings.warn(
                         "Multiple states have same overlap with target. Only saving first one."
@@ -4015,16 +4014,26 @@ class ShirleyMethod(StarkBasisGenerator):
         dim1 = 2 * self.fn + 1
         tarInd = self.indexOfCoupledState + (self.fn * dim0)
 
-        ut = np.exp(-1.0j * 2 * np.pi * np.einsum('i,...j->i...j', t_eval, self.eigs))
+        ut = np.exp(
+            -1.0j * 2 * np.pi * np.einsum("i,...j->i...j", t_eval, self.eigs)
+        )
         # reshape separates atomic and floquet basis expansions
         # final result sums along floquet expansion only
-        Pab = (np.abs(np.einsum('...km,l...m,...m->l...k',
-                                self.eigVectors,
-                                ut,
-                                self.eigVectors[..., tarInd, :].conj())
-                      )**2
-               ).reshape(ut.shape[:-1] + (dim1, dim0)
-                         ).sum(axis=-2)
+        Pab = (
+            (
+                np.abs(
+                    np.einsum(
+                        "...km,l...m,...m->l...k",
+                        self.eigVectors,
+                        ut,
+                        self.eigVectors[..., tarInd, :].conj(),
+                    )
+                )
+                ** 2
+            )
+            .reshape(ut.shape[:-1] + (dim1, dim0))
+            .sum(axis=-2)
+        )
 
         return Pab.squeeze()  # remove 0-d time, if applicable
 
