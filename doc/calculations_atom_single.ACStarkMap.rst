@@ -52,6 +52,7 @@ Calculate
     ~ShirleyMethod.defineBasis
     ~ShirleyMethod.defineShirleyHamiltonian
     ~ShirleyMethod.diagonalise
+    ~ShirleyMethod.calcTransitionProbability
 
 Attributes
 ++++++++++
