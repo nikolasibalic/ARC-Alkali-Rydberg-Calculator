@@ -32,6 +32,7 @@ from scipy.constants import h as C_h
 from scipy.constants import e as C_e
 from scipy.constants import m_e as C_m_e
 from scipy.optimize import curve_fit
+from scipy.integrate import trapezoid
 from scipy import interpolate
 
 # for matrices
@@ -132,7 +133,7 @@ class Wavefunction:
                 2.0 * n * (n + 15.0),
                 step,
             )
-            suma = np.trapz(rWavefunc**2, x=r)
+            suma = trapezoid(rWavefunc**2, x=r)
             rWavefunc = rWavefunc / (sqrt(suma))
 
             self.basisWavefunctions.append(

@@ -55,6 +55,7 @@ from scipy.special import factorial
 from scipy.sparse.linalg import eigsh
 from scipy.sparse import csr_matrix
 from scipy.optimize import curve_fit
+from scipy.integrate import trapezoid
 from scipy.constants import e as C_e
 from scipy.constants import h as C_h
 from scipy.constants import c as C_c
@@ -1112,7 +1113,7 @@ class PairStateInteractions:
             step,
         )
 
-        sqrt_r1_on2 = np.trapz(
+        sqrt_r1_on2 = trapezoid(
             np.multiply(np.multiply(psi1_r1, psi1_r1), np.multiply(r1, r1)),
             x=r1,
         )
@@ -1127,7 +1128,7 @@ class PairStateInteractions:
             step,
         )
 
-        sqrt_r2_on2 = np.trapz(
+        sqrt_r2_on2 = trapezoid(
             np.multiply(np.multiply(psi2_r2, psi2_r2), np.multiply(r2, r2)),
             x=r2,
         )
