@@ -8,55 +8,65 @@ Data sources
         "Bound, odd-parity J = 1 spectra of the alkaline earths: Ca, Sr,
         and Ba",
         *J. Opt. Soc. Am.* **69**, 211-230 (1979)
-
+        https://doi.org/10.1364/JOSA.69.000211
 
 .. [#c2] R.Beigang, K.Lücke, A.Timmermann, P.J.West and D.Frölich,
         Determination of absolute level energies of 5sns1S0 and 5snd1D2
         Rydberg series of Sr,
         *Opt. Commun.* **42**, 19 (1982).
+        https://doi.org/10.1016/0030-4018(82)90082-7
 
 .. [#c3] J. E. Sansonetti and G Nave,
         Wavelengths, Transition Probabilities, and Energy Levels for the
         Spectrum of Neutral Strontium (Sr I),
         Journal of Physical and Chemical Reference Data **39**, 033103 (2010).
+        https://doi.org/10.1063/1.3449176
 
 .. [#c4] Baig M, Yaseen M, Nadeem A, Ali R. and Bhatti S.
         Three-photon excitation of strontium Rydberg levels,
         *Optics Communications* **156**, 279 (1998)
+        https://doi.org/10.1016/S0030-4018(98)00467-2
 
 .. [#c5] P. Esherick, J. J. Wynne and J A Armstrong,
         Spectroscopy of 3P0 states of alkaline earths,
         *Optics Letters* **1**, 19 (1977).
+        https://doi.org/10.1364/OL.1.000019
 
 .. [#c6] P Esherick,
         Bound, even-parity J = 0 and J = 2 spectra of Sr,
         *Physical Review A* **15**, 1920 (1977).
+        https://doi.org/10.1103/PhysRevA.15.1920
 
 .. [#c7] R. Beigang and D. Schmidt,
         Two-Channel MQDT Analysis of Bound 5snd 3D1,3 Rydberg States of
         Strontium,
         *Physica Scripta* **27**, 172 (1983).
+        https://doi.org/10.1088/0031-8949/27/3/005
 
 .. [#c8] J R. Rubbmark and S. A. Borgstr¨om,
          Rydberg Series in Strontium Found in Absorption by Selectively,
          Laser-Excited Atoms.
          *Physica Scripta* **18**, 196 (1978)
+         https://doi.org/10.1088/0031-8949/18/4/002
 
 .. [#c9] Beigang R, Lucke K, Schmidt D, Timmermann A. and West P. J,
         One-Photon Laser Spectroscopy of Rydberg Series from Metastable Levels
         in Calcium and Strontium,
         *Phys. Scr.* **26**, 183 (1982)
+        https://doi.org/10.1088/0031-8949/26/3/007
 
 .. [#c10] L. Couturier, I. Nosske, F. Hu, C. Tan, C. Qiao, Y. H. Jiang, P. Chen
         and M. Weidemüller.
         Measurement of the strontium triplet Rydberg series by depletion
         spectroscopy of ultracold atoms
-        http://arxiv.org/abs/1810.07611
+        *Phys. Rev. A* **99**, 022503 (2019)
+        https://doi.org/10.1103/PhysRevA.99.022503
 
 .. [#yb1] H. Maeda, Y. Matsuo, M. Takami and A. Suzuki,
         Optical-microwave double-resonance spectroscopy of highly excited
         Rydberg states of ytterbium,
         *Physical Review A* **45**, 1732 (1992)
+        https://doi.org/10.1103/PhysRevA.45.1732
 
 .. [#yb2] M. Aymar, A. Debarre and O. Robaux,
         Highly excited levels of neutral ytterbium. II. Multichannel quantum
@@ -70,14 +80,17 @@ Data sources
         Laser and microwave spectroscopy of even-parity Rydberg states of
         neutral ytterbium and multichannel-quantum-defect-theory analysis,
         *Physical Review A* **98**, 062506 (2018)
+        https://doi.org/10.1103/PhysRevA.98.062506
 
 .. [#MT78] W. F. Meggers and J. L. Tech, *J. Res. Natl. Bur. Stand.* (U.S.)
         **83**, 13 (1978).
+        https://doi.org/10.6028/jres.083.003
 
 .. [#ca1] Thomas R. Gentile, Barbara J. Hughey, Daniel Kleppner
         and Theodore W. Ducas,
         Microwave spectroscopy of calcium Rydberg states,
         *Physical Review A* **42**, 440 (1990)
+        https://doi.org/10.1103/PhysRevA.42.440
 
 .. [#ca2] Masabumi Miyabe, Christopher Geppert, Masaaki Kato, Masaki Oba,
         Ikuo Wakaida, Kazuo Watanabe and Klaus D. A. Wendt,
