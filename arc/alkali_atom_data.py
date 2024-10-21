@@ -25,11 +25,12 @@
     -------------
 
     .. [#c1] M. Marinescu, H. R. Sadeghpour, and A. Dalgarno, \
-            *Phys.Rev.A* **49**, 982 (1994)
+            *Phys. Rev. A* **49**, 982 (1994)
             https://doi.org/10.1103/PhysRevA.49.982
 
     .. [#Weber1987] K.-H. Weber and Craig J. Sansonetti,
-            *Phys.Rev.A* **35**, 4650 (1987)
+            *Phys. Rev. A* **35**, 4650 (1987)
+            https://doi.org/10.1103/PhysRevA.35.4650
 
     .. [#c3] C.B.Alcock, V.P.Itkin, M.K.Horrigan,\
             *Canadian Metallurgical Quarterly*, **23**, 309 (1984)
@@ -67,6 +68,7 @@
         127 (1984) https://doi.org/10.1007/BF01419370
 
     .. [#c7] C. -J. Lorenzen, and K. Niemax, *Physica Scripta* **27**, 300 (1983)
+        https://doi.org/10.1088/0031-8949/27/4/012
 
     .. [#c8] NIST, P. Mohr and S. Kotochigova, unpublished calculations (2000).
         The wavelengths for the Balmer-alpha and Balmer-beta transitions at 6563
@@ -93,9 +95,11 @@
     .. [#Steck87Rb] D. Steck, Rubidium 87 D Line Data v2.2.1
         https://steck.us/alkalidata/rubidium87numbers.pdf
 
-    .. [#Feiertag72] D. Feiertag, A. Sahm, and G. zu Putlitz, Z. Phys. 255, 93 (1972)
+    .. [#Feiertag72] D. Feiertag, A. Sahm, and G. zu Putlitz, *Z. Phys.* **255**, 93 (1972)
+        https://doi.org/10.1007/BF01394518
 
-    .. [#Arrimondo77] E. Arrimondo, M. Inguscio and P. Violino, Rev. Mod. Phys. 49, 31 (1977)
+    .. [#Arrimondo77] E. Arrimondo, M. Inguscio and P. Violino, *Rev. Mod. Phys.*
+        **49**, 31 (1977) https://doi.org/10.1103/RevModPhys.49.31
 
     Module
     ------
