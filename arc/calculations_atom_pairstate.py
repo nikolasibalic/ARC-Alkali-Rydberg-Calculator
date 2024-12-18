@@ -1436,6 +1436,639 @@ class PairStateInteractions:
                 stateCom.conj().dot(interactionMatrix.dot(stateCom.T))[0][0]
             )
         return np.real(value), vectors
+        
+    def _getd(self, l, j, ll, jj, l1, j1, l2, j2):
+        r"""
+        Gets the mj-resolved matrix for the transition weights.
+        Note that this function is slow due to database initialisation.
+        Only use if necessary.
+        
+        Args:
+            l, j (floats) -   atom 1, initial state orbital and total angular momentum
+            ll, jj (floats) - atom 2, initial state orbital and total angular momentum
+            l1, j1 (floats) - atom 1, final state orbital and total angular momentum
+            l2, j2 (floats) - atom 2, final state orbital and total angular momentum
+            
+        Output:
+            d (ndarray) - mj-resolved matrix for transition weights
+        """
+        self.__initializeDatabaseForMemoization()
+        d = self.__getAngularMatrix_M(l, j, ll, jj, l1, j1, l2, j2)
+        self.__closeDatabaseForMemoization()
+        return d
+    
+    
+    def _getAngularBasisRotationMatrix(self, j1,j2):
+        r"""
+        Returns basis rotation matrix when interchanging state of atom1 and atom2, e.g. in hopping process.
+        
+        basis2 = rot * basis1 => rot = basis2 * (basis1)^{-1} = basis2 * (1)^{-1} = basis2
+        
+        Args:
+            j1 (float) - total orbital angular momentum of atom 1, half integer or integer >= 0
+            j2 (float) - total orbital angular momentum of atom 2, half integer or integer >= 0
+            
+        Output:
+            basis2 (ndarray) -  (2*j1+1)*(2*j2+1) \times (2*j1+1)*(2*j2+1) fine-structure (mj)
+                                basis rotation matrix
+        """
+        basis2 = np.zeros((int((2*j1+1)*(2*j2+1)),int((2*j1+1)*(2*j2+1))), dtype=np.complex128)
+        for i, mj2 in enumerate(np.arange(-j2, j2+1, 1)):
+            for j, mj1 in enumerate(np.arange(-j1, j1+1, 1)):
+                basis2[int(i*(2*j1+1)+j),:] = compositeState(singleAtomState(j1,mj1),
+                                                             singleAtomState(j2,mj2)).T
+        return basis2
+    
+    
+    def _ljCoupledCheck(self, l, j, l1, j1, s):
+        # [Karen:] Have not really understood the conditions part of the _isCoupled function
+        # so wrote a new one that enforces the selection rules as stated here for LS coupling:
+        # https://en.wikipedia.org/wiki/Selection_rule
+        # also, have a second look at _isCoupled fct but I think it returns states that are
+        # forbidden for dipole allowed only, even when setting interactionsUpTo=1
+        r"""
+        Checks if a pair of angular momentum quantum numbers (l,j) and (l1, j1) is
+        coupled.
+        
+        Args:
+            l, j (floats) -   angular momentum quantum number of initial state
+            l1, j1 (floats) - angular momentum quantum number of final state
+            s (float) -       spin angular momentum of the atom
+            
+        Output:
+            boolean - True or False
+        """
+        if (not (l == l1 and j == j1)
+            and not(abs(j)<0.1 and abs(j1)<0.1)  # j = 0 and j'=0 always forbiden
+            and not (abs(l)<0.1 and abs(l1)<0.1) # l = 0 and l' = 0 always forbiden
+            and (abs(l-j) < s+0.1) # check for total angular momentum
+            and (abs(l1-j1) < s+0.1)
+                ):
+            # check if the pair is dipole coupled
+            # if so, then all is okay and no further selection rules need be enforced
+            if ((abs(l-l1) == 1)
+                and (abs(j-j1) in [0,1])
+               ):
+                return True
+            # if not dipole coupled, check if quadrupole coupling was allowed
+            # and enforce additional quadrupole selection rules
+            elif ((self.interactionsUpTo == 2)
+                  and (abs(l-l1) in [0,2])
+                  and (abs(j-j1) in [0,1,2])
+                  and not (abs(j)<0.1 and abs(j1-1)<0.1) # j=0 to j1=1 forbidden
+                  and not (abs(j-1)<0.1 and abs(j1)<0.1) # j=1 to j1=0 forbidden
+                  and not (abs(j-0.5)<0.1 and abs(j1-0.5)<0.1) # j=1/2 to j1=1/2 forbidden
+                  and not (abs(l)<0.1 and abs(l1-1)<0.1) # l=0 to l1=1 forbidden
+                  and not (abs(l-1)<0.1 and abs(l1)<0.1) # l=1 to l1=0 forbidden
+                 ):
+                return True
+            else:
+                return False
+        else:
+            return False
+    
+    def _findAllCoupledAngularMomentumStates(self, l, j, s1, ll, jj, s2, stateHopping=False):
+        r"""
+        Finds all second-order coupled angular momentum states for an initial pair
+        configuration (l,j; ll,jj) --> (l1,j1; l2,j2) --> (l',j'; ll',jj').
+        If hopping == False, (l',j'; ll',jj') = (l,j; ll,jj)
+        Elif hopping == True, (l',j'; ll',jj') = (ll,jj; l,j)
+        
+        Args:
+            l, j, s1 (floats) -     angular momentum quantum numbers of first atom
+            ll, jj, s2 (floats) -   angular momentum quantum numbers of second atom
+            hopping (boolean) -     determines whether the final angMomentum configuration
+                                    is equal to the initial one or if the states are
+                                    interchanged between the atoms ('state hopping')
+                                
+        Output:
+            coupledStates (list) -  list of tuples containing the coupled angular
+                                    momentum configurations in the form
+                                    (l,j, ll,jj, l1,j1, l2,j2, l',j', ll',jj')
+        """
+        coupledStates = []
+        
+        # iterate through potential states for atom 1
+        for l1 in range(abs(l-self.interactionsUpTo), l+self.interactionsUpTo+1):
+            for j1 in np.arange(abs(j-self.interactionsUpTo), j+self.interactionsUpTo+1, 1):
+                # check if angular momentum coupling is valid
+                if self._ljCoupledCheck(l,j, l1, j1, s1):
+                    # iterate through potential states for atom 2
+                    for l2 in range(abs(ll-self.interactionsUpTo), ll+self.interactionsUpTo+1):
+                        for j2 in np.arange(abs(jj-self.interactionsUpTo), jj+self.interactionsUpTo+1, 1):
+                            # check if angular momentum coupling is valid
+                            if self._ljCoupledCheck(ll, jj, l2, j2, s2):
+                                j1, j2 = float(j1), float(j2)
+                                # atoms each return into their initial state, respectively
+                                if stateHopping == False:
+                                    # append state to list, finalState=initialState is certainly coupled
+                                    coupledStates.append((l,j, ll,jj, l1,j1, l2,j2, l,j, ll,jj))
+                                # atoms return to swappd states, check if these do couple
+                                elif (stateHopping == True
+                                      #and (abs(j1-jj) <= 1) and (abs(j2-j) <= 1)
+                                      and self._ljCoupledCheck(l1,j1, ll,jj, s1)
+                                      and self._ljCoupledCheck(l2,j2, l,j, s2)
+                                     ):
+                                     # append state to list, final state is swapped w.r.t. initial state
+                                    coupledStates.append((l,j, ll,jj, l1,j1, l2,j2, ll,jj, l,j))
+        return coupledStates
+    
+    def _getC6contributions_lj(self, nRange, energyDelta, stateHopping=False):
+        r"""
+        Returns the interaction strengths for the different
+        (l,j; ll,jj) --> (l1,j1; l2,j2) --> (l',j'; ll',jj') configurations.
+        
+        Args:
+            nRange (int) -  how much below and above the given principal quantum number
+                            of the pair state we should be looking
+            energyDelta (float) -   what is maximum energy difference ( :math:`\Delta E/h` in Hz)
+                                    between the original pair state and the other pair states that
+                                    we are including in the calculation
+            stateHopping (bool) -   whether or not the final state is interchanged ('hopped')
+                                    w.r.t. the initial state
+        Output:
+            ljInteractions (list) - list containing entries of the form
+                                    [(l,j, ll,jj, l1,j1, l2,j2, l',j' ll',jj'), V_{lj}]
+                                    with V_{lj} the interaction strength for the given
+                                    configuration in GHz(um)^6
+        """
+        if self.interactionsUpTo == 2:
+            print("WARNING: The quadrupole interaction currently seems to yield bad results.\n"
+                 "Go back and have a look at this!")
+        ljInteractions = []
+        
+        # find all (l,j; ll,jj) --> (l1,j1; l2,j2) --> (l',j'; ll',jj') pairs
+        coupledStates = self._findAllCoupledAngularMomentumStates(self.l, self.j, self.s1,
+                                                                  self.ll, self.jj, self.s2,
+                                                                  stateHopping=stateHopping)
+        
+        for lj in coupledStates:
+            V_lj = 0
+            # unpack angular momentum info
+            [l1, j1, ll1, jj1, l2, j2, ll2, jj2, l3, j3, ll3, jj3] = list(lj)
+            # iterate through n1 states
+            for n2 in range(max(self.n-nRange,1), self.n+nRange+1):
+                # iterate through n2 states
+                for nn2 in range(max(self.nn-nRange,1), self.nn+nRange+1):
+                    # to check if nVals are okay
+                    nCheck = ((n2 >= self.atom1.groundStateN or [n2, l2, j2] in self.atom1.extraLevels)
+                              and (nn2 >= self.atom2.groundStateN or [nn2, ll2, jj2] in self.atom2.extraLevels))
+                    if stateHopping == True:
+                        nCheck = (nCheck
+                                 and (self.nn >= self.atom1.groundStateN or [self.nn, l3, j3] in self.atom1.extraLevels)
+                                 and (self.n >= self.atom2.groundStateN or [self.n, ll3, jj3] in self.atom2.extraLevels)
+                                 )
+                        
+                    # calculate energy defect
+                    energyDefect= self.__getEnergyDefect(self.n,l1,j1, self.nn,ll1,jj1,
+                                                         n2,l2,j2, nn2,ll2,jj2) / C_h 
+                    energyDefect = energyDefect * 1e-9 # GHz
+                    if (abs(energyDefect) < 1e-10):
+                        print(n2,l2,j2, nn2,ll2,jj2, stateHopping, 'error')
+                        raise ValueError(
+                                "The requested pair-state "
+                                "is dipole coupled resonatly "
+                                "(energy defect = 0) "
+                                "to other pair-states. "
+                                "Aborting pertubative "
+                                "calculation. "
+                                "(This usually happens for "
+                                "high-L states for which "
+                                "identical quantum defects give "
+                                "raise to degeneracies, making "
+                                 "total L ultimately not "
+                                 "conserved quantum number) ")
+                    
+                    # proceed only if energy defect is within limit and nCheck was positive
+                    if ((abs(energyDefect) < energyDelta*10**-9) and (nCheck == True)):
+                        # calculate radial overlaps
+                        couplingStrength1 = (_atomLightAtomCoupling(
+                                                        self.n, l1, j1, self.nn, ll1, jj1,
+                                                        n2, l2, j2, nn2, ll2, jj2,
+                                                        self.atom1, atom2=self.atom2,
+                                                        s=self.s1, s2=self.s2)
+                                                    * (1.0e-9 * (1.e6)**3 / C_h)
+                                             )  # GHz / mum^3
+                        if stateHopping == False:
+                            couplingStrength2 = couplingStrength1
+                        elif stateHopping == True:
+                            couplingStrength2 = (_atomLightAtomCoupling(
+                                                        n2, l2, j2, nn2, ll2, jj2,
+                                                        self.nn, l3, j3, self.n, ll3, jj3,
+                                                        self.atom1, atom2=self.atom2,
+                                                        s=self.s1, s2=self.s2)
+                                                    * (1.0e-9 * (1.e6)**3 / C_h)
+                                             )  # GHz / mum^3
+                            
+                        V_lj += abs(couplingStrength1*couplingStrength2)/energyDefect #GHz um^6
+            ljInteractions.append([*list(lj), V_lj])
+        return ljInteractions
+    
+    def _getPerturbativeC6Matrix_lj(self, ljInteractions):
+        r"""
+        Construct full Imat from lj, V_{lj} information.
+        
+        Args:
+            ljInteractions (list) - list contains entries of the form
+                                    [l,j, ll,jj, l1,j1, l2,j2, l',j', ll',jj', V_{lj}]
+                                    Only those angular channels contained in the list are
+                                    included in the resulting Imat. So make sure you pass
+                                    a complete list to this function.
+                                    
+        Output:
+            Imat (ndarray) -    interaction matrix with mj-basis resolution as reconstructed
+                                from ljInteraction list
+        """
+        # open database
+        self.__initializeDatabaseForMemoization()
+        Imat = 0
+        # iterate through channels
+        for vals in ljInteractions:
+            d1 = self.__getAngularMatrix_M(*vals[0:8])
+            d2 = self.__getAngularMatrix_M(*vals[4:12])
+            # no need to take the hermitian conjugate of d2 here as this code uses the right order
+            # of l,j, l1,j1 as opposed to the original code
+            Imat += vals[-1]*d2.dot(d1)
+        # close database
+        self.__closeDatabaseForMemoization()
+        return np.array(Imat)
+    
+    
+    def _getInteractionMatrix_lj(self, nRange, energyDelta):
+        r"""
+        Small helper function to get the interaction matrix from the d_lj method, used for debugging
+        and double-checking. Can also be used to call the interaction matrix via this method - but only
+        for the case theta = phi = 0. Also, it automatically builds the full Imat from all four blocks
+        if atomState1 != atomState2.
+        
+        Args:
+            nRange (int) -  how much below and above the given principal quantum number
+                            of the pair state we should be looking
+            energyDelta (float) -   what is maximum energy difference ( :math:`\Delta E/h` in Hz)
+                                    between the original pair state and the other pair states that
+                                    we are including in the calculation
+                                    
+        Output:
+            Imat (ndarray) - full interaction matrix calculated via d_lj-method for theta=phi=0.
+        """
+        interaction11 = self._getC6contributions_lj(nRange, energyDelta, stateHopping=False)
+        Imat11 = self._getPerturbativeC6Matrix_lj(interaction11)
+        if (self.n == self.nn and self.l == self.ll and self.j == self.jj and self.s1 == self.s2):
+            return Imat11
+        else:
+            # get rotation matrix for basis changes from [atomState2,atomState1] --> [atomState1,atomState2]
+            basisRotationMatrix12 = self._getAngularBasisRotationMatrix(self.jj,self.j)
+            # get second Imat block
+            interaction21 = self._getC6contributions_lj(nRange, energyDelta, stateHopping=True)
+            Imat21 = self._getPerturbativeC6Matrix_lj(interaction21)
+            #put all together
+            Imat = np.block([[Imat11, basisRotationMatrix12.dot(Imat21.dot(basisRotationMatrix12))],
+                                 [Imat21, basisRotationMatrix12.T.dot(Imat11.dot(basisRotationMatrix12))]
+                                ])
+            return Imat
+        
+        
+    def getC6PerturbativelyAngularChannel(self, theta, phi, nRange, energyDelta,
+                            degeneratePerturbation=False, returnInteractionMatrix=False):
+        # [Karen:] theory part of docstring copied from Nikola's code and amended as required
+        r"""
+        Calculates :math:`C_6` from second order perturbation theory.
+
+        Calculates
+        :math:`C_6=\sum_{\rm r',r''}|\langle {\rm r',r''}|V|\
+        {\rm r1,r2}\rangle|^2/\Delta_{\rm r',r''}`, where
+        :math:`\Delta_{\rm r',r''}\equiv E({\rm r',r''})-E({\rm r1, r2})`
+        When second order perturbation couples to multiple energy degenerate
+        states, users shold use **degenerate perturbation calculations** by
+        setting `degeneratePerturbation=True` .
+
+        This calculation is faster then full diagonalization, but it is valid
+        only far from the so called spaghetti region that occurs when atoms
+        are close to each other. In that region multiple levels are strongly
+        coupled, and one needs to use full diagonalization. In region where
+        perturbative calculation is correct, energy level shift can be
+        obtained as :math:`V(R)=-C_6/R^6`
+
+        Args:
+            theta (float) - azimuthal angular orientation of atomic pair
+                            state in rad
+            phi (float) -   polar angular orientation of atomic pair state
+                            in rad
+            nRange (int) -  how much below and above the given principal quantum
+                            number of the pair state we should be looking
+            energyDelta (float) -   what is maximum energy difference
+                                    ( :math:`\Delta E/h` in Hz)
+                                    between the original pair state and the other
+                                    pair states that we are including in
+                                    calculation
+            degeneratePerturbation (bool) - optional, default False. Should one
+                                            use degenerate perturbation theory. 
+                                            This should be used whenever
+                                            angle between quantisation and
+                                            interatomic axis is non-zero,
+                                            as well as when one considers
+                                            non-stretched states.
+            returnInteractionMatrix (bool) -    optional, default False.
+                                                Option to return the interaction
+                                                matrix V(r)*R^6 in [GHz]
+        Output:
+            C6 (float) -    C6 value in [GHz] for the [n1,l1,j1,mj1; n2,l2,j2,mj2]
+                            state specified in the PairStateInteraction class
+                            initialisation
+            if degeneratePerturbation == False:
+                C6hop (float) - C6 value in [GHz] for the
+                                [n1,l1,j1,mj1; n2,l2,j2,mj2] -> 
+                                [n2,l2,j2,mj2; n1,l1,j1,mj1] state hopping contribution
+            elif degeneratePerturbation == True:
+                C6 (ndarray) -  array of eigenvalues of the full
+                                interaction matrix in [GHz]
+                eigenvectors (ndarray) -    corresponding list of eigenvectors
+                                            :math:`\{m_{j_1}=-j_1, \ldots,
+                                            m_{j_1} = +j1\}\bigotimes \
+                                            \{ m_{j_2}=-j_2, \ldots, m_{j_2} = +j2\}`
+                                            basis
+            if returnInteractionMatrix == True:
+                Imat_rot (ndarray) -    interaction matrix, fine-structure basis resolved
+                                        for atomState1 == atomState2:
+                                        [n1,l1,j1, mj1; n2,l2,j2,mj2] with 
+                                        :math:`\{m_{j_1}=-j_1, \ldots,
+                                        m_{j_1} = +j1\}\bigotimes \
+                                        \{ m_{j_2}=-j_2, \ldots, m_{j_2} = +j2\}`
+                                        for aomState != atomState2:
+                                        first basis above, then basis with the 
+                                        atomStates interchanged.
+        """
+        # [copied WignerD rotation stuff from Nikola's code and amended as required]
+        
+        atomState1 = [self.n, self.l, self.j, self.s1]
+        atomState2 = [self.nn, self.ll, self.jj, self.s2]
+        
+        if degeneratePerturbation == True:
+            degenerateStates = [[self.n, self.l, self.j, self.nn, self.ll, self.jj],
+                                [self.nn, self.ll, self.jj, self.n, self.l, self.j]]
+            
+        # calculate interaction matrix wthout any basis changes (top left, Imat11)
+        interaction11 = self._getC6contributions_lj(nRange, energyDelta, stateHopping=False)
+        Imat11 = self._getPerturbativeC6Matrix_lj(interaction11)
+        
+        if atomState1 != atomState2:
+            # if pair states are not identical, also calculate bottom left Imat (Imat21)
+            interaction21 = self._getC6contributions_lj(nRange, energyDelta, stateHopping=True)
+            Imat21 = self._getPerturbativeC6Matrix_lj(interaction21)
+            # get rotation matrix for basis changes from [atomState2,atomState1] --> [atomState1,atomState2]
+            basisRotationMatrix12 = self._getAngularBasisRotationMatrix(self.jj,self.j)
+            
+        
+        # wigner D matrix allows calculations with arbitrary orientation of
+        # the two atoms
+        wgd = WignerDmatrix(theta, phi)
+        angRotationMatrix = np.kron(wgd.get(atomState1[2]).toarray(),
+                                    wgd.get(atomState2[2]).toarray())
+        if atomState1 != atomState2:
+            angRotationMatrix2 = np.kron(wgd.get(atomState2[2]).toarray(),
+                                         wgd.get(atomState1[2]).toarray())
+                    
+        # rotate Imat's into correct basis for angles theta, phi (angle1, angle2)
+        Imat11_rot = angRotationMatrix.dot(
+            Imat11.dot(angRotationMatrix.conj().T)
+            )
+        if atomState1 != atomState2:
+            Imat21_rot = angRotationMatrix2.dot(
+                Imat21.dot(angRotationMatrix.conj().T)
+                )
+                    
+        # if degeneratePerturbation == False, calculate C6 value for a given mj1,mj2 state
+        if degeneratePerturbation == False:
+            # calculate C6 value for non-hopped case
+            compositeState1 = compositeState(singleAtomState(self.j, self.m1),
+                                             singleAtomState(self.jj, self.m2)).T
+            C6 = np.real(compositeState1.dot(Imat11_rot.dot(compositeState1.T))[0][0])
+            
+            # if atom states are different, also calculate C6 contribution from hopping
+            if atomState1 != atomState2:
+                compositeState2 = compositeState(singleAtomState(self.jj, self.m2),
+                                                 singleAtomState(self.j, self.m1)).T
+                C6hop = np.real(compositeState2.dot(Imat21_rot.dot(compositeState1.T))[0][0])
+                
+                
+                    
+        # if degeneratePerturbation == True, construct full interaction matrix from above two matrices
+        if ((degeneratePerturbation == True) or (returnInteractionMatrix == True)):
+            # construct full Imat
+            if atomState1 == atomState2:
+                Imat_rot = Imat11_rot
+            elif atomState1 != atomState2:
+                # compose resulting interaction marix
+                Imat_rot = np.block([[Imat11_rot, basisRotationMatrix12.dot(Imat21_rot.dot(basisRotationMatrix12))],
+                                 [Imat21_rot, basisRotationMatrix12.T.dot(Imat11_rot.dot(basisRotationMatrix12))]
+                                ])
+                        
+            if degeneratePerturbation == True:
+                # calculate eigenvalues, eigenstates etc
+                eigenvalues, eigenvectors = np.linalg.eigh(Imat_rot)
+                eigenvectors = eigenvectors.T
+        
+        # return function output
+        if (degeneratePerturbation == False) and (returnInteractionMatrix == False):
+            return C6, C6hop
+        elif (degeneratePerturbation == False) and (returnInteractionMatrix == True):
+            return C6, C6hop, Imat_rot
+        elif (degeneratePerturbation == True) and (returnInteractionMatrix == False):
+            return eigenvalues, eigenvectors, degenerateStates
+        elif (degeneratePerturbation == True) and (returnInteractionMatrix == True):
+            return eigenvalues, eigenvectors, degenerateStates, Imat_rot
+        
+        
+    def _calcLJcontribution_allParamsFree(self, pathway, atom1, atom2, nRange, energyDelta, stateHopping, interactionsUpTo=1):
+        r"""
+        Returns the interaction strengths for the different
+        (l,j; ll,jj) --> (l1,j1; l2,j2) --> (l',j'; ll',jj') configurations.
+        
+        Args:
+            pathway (list) -    list containing the lj coupling pathway
+                                [l,j, ll,jj, l1,j1, l2,j2, l',j' ll',jj']
+            atom1 (list) -  infos on init state of atom 1 [n,s, atomType (ARC, e.g. Rubidium())]
+            atom2 (list) -  infos on init state of atom 2 [n,s, atomType]
+            nRange (int) -  how much below and above the given principal quantum number
+                            of the pair state we should be looking
+            energyDelta (float) -   what is maximum energy difference ( :math:`\Delta E/h` in Hz)
+                                    between the original pair state and the other pair states that
+                                    we are including in the calculation
+            stateHopping (bool) -   whether or not the final state is interchanged ('hopped')
+                                    w.r.t. the initial state
+        Output:
+            ljInteractions (list) - list containing entries of the form
+                                    [(l,j, ll,jj, l1,j1, l2,j2, l',j' ll',jj'), V_{lj}]
+                                    with V_{lj} the interaction strength for the given
+                                    configuration in GHz(um)^6
+        """
+        if self.interactionsUpTo == 2:
+            print("WARNING: The quadrupole interaction currently seems to yield bad results.\n"
+                 "Go back and have a look at this!")
+        
+        V_lj = 0
+        # unpack angular momentum info
+        [l1, j1, ll1, jj1, l2, j2, ll2, jj2, l3, j3, ll3, jj3] = list(pathway)
+        # iterate through n1 states
+        for n2 in range(max(atom1[0]-nRange,1), atom1[0]+nRange+1):
+            # iterate through n2 states
+            for nn2 in range(max(atom2[0]-nRange,1), atom2[0]+nRange+1):
+                # to check if nVals are okay
+                nCheck = ((n2 >= atom1[2].groundStateN or [n2, l2, j2] in atom1[2].extraLevels)
+                          and (nn2 >= atom2[2].groundStateN or [nn2, ll2, jj2] in atom2[2].extraLevels))
+                if stateHopping == True:
+                    nCheck = (nCheck
+                              and (atom2[0] >= atom1[2].groundStateN or [atom2[0], ll3, jj3] in atom1[2].extraLevels)
+                               and (atom1[0] >= atom2[2].groundStateN or [atom1[0], l3, j3] in atom2[2].extraLevels)
+                             )
+                        
+                # calculate energy defect
+                energyDefect= self.__getEnergyDefect(atom1[0],l1,j1, atom2[0],ll1,jj1,
+                                                     n2,l2,j2, nn2,ll2,jj2) / C_h 
+                energyDefect = energyDefect * 1e-9 # GHz
+                if (abs(energyDefect) < 1e-10):
+                    print(n2,l2,j2, nn2,ll2,jj2, stateHopping, 'error')
+                    raise ValueError(
+                            "The requested pair-state "
+                            "is dipole coupled resonatly "
+                            "(energy defect = 0) "
+                            "to other pair-states. "
+                            "Aborting pertubative "
+                            "calculation. "
+                            "(This usually happens for "
+                            "high-L states for which "
+                            "identical quantum defects give "
+                            "raise to degeneracies, making "
+                             "total L ultimately not "
+                            "conserved quantum number) ")
+                    
+                # proceed only if energy defect is within limit and nCheck was positive
+                if ((abs(energyDefect) < energyDelta*10**-9) and (nCheck == True)):
+                    # calculate radial overlaps
+                    couplingStrength1 = (_atomLightAtomCoupling(
+                                                    atom1[0], l1, j1, atom2[0], ll1, jj1,
+                                                    n2, l2, j2, nn2, ll2, jj2,
+                                                    atom1[2], atom2=atom2[2],
+                                                    s=atom1[1], s2=atom2[1])
+                                                * (1.0e-9 * (1.e6)**3 / C_h)
+                                         )  # GHz / mum^3
+                    if stateHopping == False:
+                        couplingStrength2 = couplingStrength1
+                    elif stateHopping == True:
+                        couplingStrength2 = (_atomLightAtomCoupling(
+                                                    n2, l2, j2, nn2, ll2, jj2,
+                                                    atom2[0], l3, j3, atom1[0], ll3, jj3,
+                                                    atom2[2], atom2=atom1[2],
+                                                    s=atom2[1], s2=atom1[1])
+                                                * (1.0e-9 * (1.e6)**3 / C_h)
+                                         )  # GHz / mum^3
+                            
+                    V_lj += abs(couplingStrength1*couplingStrength2)/energyDefect #GHz um^6
+        return V_lj
+    
+    
+    def saveLJ(self, filename, nValueRange, atom1Vals, atom2Vals, nRange, energyDelta, stateHopping=False):
+        r"""
+        Saves the V_{lj} values for the atom1 and atom2 pair-interaction. From this file,
+        the full interaction matrix can be reconstructed by feeding the filename into the function
+        generateLJfromFile.
+        
+        Args:
+            filename (str) - name of the file (incl. file type ending) to which data should be saved
+            nValueRange (list) - [nMin, nMax]
+            atom1Vals (list) - [l1, j1, s1, atom1Type (ARC, e.g. Rubidium())]
+            atom2Vals (list) - [l2, j2, s2, atom2Type (ARC, e.g. Rubidium())]
+            nRange (int) -  how much below and above the given principal quantum number
+                            of the pair state we should be looking
+            energyDelta (float) -   what is maximum energy difference ( :math:`\Delta E/h` in Hz)
+                                    between the original pair state and the other pair states that
+                                    we are including in the calculation
+            stateHopping (bool) -   whether or not the final state is interchanged ('hopped')
+                                    w.r.t. the initial state
+        """
+        [l1, j1, s1, atom1] = atom1Vals
+        [l2, j2, s2, atom2] = atom2Vals
+        
+        # get coupling pathways
+        if stateHopping == False:
+            coupledStates = self._findAllCoupledAngularMomentumStates(l1,j1,s1, l2,j2,s2, stateHopping=False)
+        elif stateHopping == True:
+            coupledStates = self._findAllCoupledAngularMomentumStates(l1,j1,s1, l2,j2,s2, stateHopping=True)
+        if coupledStates == []:
+            raise ValueError("No interaction pathways found for the specified conditions.")
+        
+        ljValues = np.zeros(((int(nValueRange[1]-nValueRange[0])+1)**2, 2+len(coupledStates)))
+        # iterate through n1Vals
+        for n1 in range(nValueRange[0], nValueRange[1]+1):
+            i = int(n1-nValueRange[0])
+            # iterate through n2Vals
+            for n2 in range(nValueRange[0], nValueRange[1]+1):
+                j = int(n2-nValueRange[0])
+                vals = []
+                for pathway in coupledStates:
+                    V_lj = self._calcLJcontribution_allParamsFree(pathway, [n1,s1, atom1], [n2,s2, atom2],
+                                                                  nRange, energyDelta, stateHopping,
+                                                                  interactionsUpTo=self.interactionsUpTo)
+                    vals.append(V_lj)
+                ljValues[i*int(nValueRange[1]-nValueRange[0]+1)+j,:] = [n1, n2, *vals]
+        
+        # header, line 1: dictionary with the following infos: 
+        #                           atom1_species, atom2_species, nRange, energyDelta, stateHopping
+        # header, line 2:
+        # header, line 3: 'n1', 'n2', {[l,j, ll,jj, l1,j1, ll1,jj1, l',j', ll',jj']}_i
+        # header, line 4: list with all {lj}_i 's in correct order
+        # header, line 5:
+        header = ("{'atom 1':'"+atom1.elementName+"', 'atom 2':'"+atom2.elementName
+                  +"', 'nRange':'"+str(nRange)+"', 'energyDelta':'"+str(energyDelta)
+                  +"', 'stateHopping':'"+str(stateHopping)+"', 'nValueRange':'"
+                  +str(nValueRange)+"', 'interactionsUpTo':'"+str(self.interactionsUpTo)+"'}\n\n"
+                  +"n1, n2, {[l,j, ll,jj, l1,j1, ll1,jj1, l',j', ll',jj']}_i \n"
+                  +" , ")
+        for i in range(len(coupledStates)):
+            header += ','+str(list(coupledStates[i]))
+        header += '\n'
+            
+        np.savetxt(filename, ljValues, header=header, delimiter=',')
+        print("data was successfully saved to file "+filename+".")
+        
+    
+    def loadLJfromFile(self, filename):
+        r"""
+        Loads the V_{lj} data from the file passed to the function.
+        
+        Args:
+            filename (str) - name of the file (incl. file type ending) which contains the data
+            
+        Output:
+            fileInfos (dict) -  dictionary containing the details of the calculation
+                                and the range of n-values in the file
+                                keywords:   'atom 1', 'atom 2', 'nRange', 'energyDelta',
+                                            'stateHopping', 'nValueRange', 'intractionsUpTo'
+            coupled states (list) - list entries contain the 'pathways' of angular momentum
+                                    coupling for the V_{lj}s in the respective columns in the form
+                                    [l,j, ll,jj, l1,j1, l2,j2, l',j' ll',jj']
+            data (list) -   each list entry is a list, each containing the data [n1, n2, V_{lj}_i]
+                            with the V_{lj}_i in GHz um^6 and arranged in the same order as the
+                            corresponding lj pathway provided with the header
+        """
+        # get header
+        file = open(filename)
+        fileInfos = eval(file.readline()[2:])
+        # fix nValueRange and nRange types (list and int, respectively)
+        fileInfos["nRange"] = int(fileInfos["nRange"])
+        fileInfos["nValueRange"] = [int(x) for x in fileInfos["nValueRange"][1:-1].split(', ')]
+        # skip the next two lines as they contain no valuable information
+        for _ in range(2):
+            next(file)
+        coupledStateString = file.readline()[6:]
+        file.close()
+        # generate the list of coupled states from the string
+        coupledStates = [[float(x) for x in listEntry.split(', ')]
+                         for listEntry in coupledStateString[1:-2].split("],[")]
+        
+        # numpy's loadtxt skips the header and thus reads only the data
+        data = np.loadtxt(filename, delimiter=",")
+        return fileInfos, coupledStates, data
 
     def defineBasis(
         self,
