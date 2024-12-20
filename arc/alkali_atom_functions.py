@@ -795,7 +795,7 @@ class AlkaliAtom(object):
             return -self.scaledRydbergConstant / ((n - defect) ** 2) - self._getHydrogenicCorrection(n,l,j,s=s) 
 
     def _getHydrogenicCorrection(self,n,l,j,s=0.5):
-        spinOrbit = -self.scaledRydbergConstant*pow(C_a,2)*(j*(j+1)-l*(l+1)-s*(s+1))/(2*l*(l+0.5)*(l+1)*pow(n,3)) ###Russel-Sanders Correction
+        spinOrbit = -self.scaledRydbergConstant*pow(C_a,2)*(j*(j+1)-l*(l+1)-s*(s+1))/(2*l*(l+0.5)*(l+1)*pow(n,3)) ###Spin-Orbit Correction
         relCorr = self.scaledRydbergConstant/pow(n,2)*(pow(C_a/n,2)* ( (n / (l+0.5) ) - 0.75) )  ###Relativistic Correction
         
         return spinOrbit + relCorr
