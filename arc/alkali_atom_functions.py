@@ -36,6 +36,7 @@ from scipy.constants import c as C_c
 from scipy.constants import h as C_h
 from scipy.constants import e as C_e
 from scipy.constants import m_e as C_m_e
+from scipy.constants import alpha as C_alpha
 
 # for matrices
 from numpy import floor
@@ -134,6 +135,9 @@ class AlkaliAtom(object):
     alphaC = 0.0  #: Core polarizability
     Z = 0.0  #: Atomic number
     I = 0.0  #: Nuclear spin
+
+    alpha_d_eff = 0  #: ion core dipole polarisability
+    alpha_q_eff = 0  #: ion core quadrupole polarisability
 
     #: state energies from NIST values
     #: sEnergy [n,l] = state energy for n, l, j = l-1/2
@@ -801,14 +805,14 @@ class AlkaliAtom(object):
     def _getHydrogenicCorrection(self, n, l, j, s=0.5):
         spinOrbit = (
             -self.scaledRydbergConstant
-            * pow(C_a, 2)
+            * pow(C_alpha, 2)
             * (j * (j + 1) - l * (l + 1) - s * (s + 1))
             / (2 * l * (l + 0.5) * (l + 1) * pow(n, 3))
-        )  # Spin-Orbit Correction
+        )  # Spin-Orbit Correction, eq. 4.136 in https://staff.fnwi.uva.nl/j.t.m.walraven/walraven/Publications_files/2023-AtomicPhysics.pdf
         relCorr = (
             self.scaledRydbergConstant
             / pow(n, 2)
-            * (pow(C_a / n, 2) * ((n / (l + 0.5)) - 0.75))
+            * (pow(C_alpha / n, 2) * ((n / (l + 0.5)) - 0.75))
         )  # Relativistic Correction
 
         return spinOrbit + relCorr
@@ -899,7 +903,11 @@ class AlkaliAtom(object):
             r6 = top_r6 / bottom_r6
 
             # Calculate the pol contribution to qd
-            defect = 0.5 * (self.a_d_eff * r4 + self.a_q_eff * r6) * pow(n, 3)
+            defect = (
+                0.5
+                * (self.alpha_d_eff * r4 + self.alpha_q_eff * r6)
+                * pow(n, 3)
+            )
 
         return defect
 

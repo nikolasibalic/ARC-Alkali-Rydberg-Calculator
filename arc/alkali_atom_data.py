@@ -193,9 +193,9 @@ class Caesium(AlkaliAtom):
 
     """
 
-    a_d_eff = 15.79
+    alpha_d_eff = 15.79
 
-    a_q_eff = 38.7
+    alpha_q_eff = 38.7
 
     """
         Effective core polarisabilities from https://doi.org/10.1364/JOSA.71.000423
@@ -412,9 +412,9 @@ class Rubidium85(AlkaliAtom):
 
     """
 
-    a_d_eff = 9.089
+    alpha_d_eff = 9.089
 
-    a_q_eff = 16.8
+    alpha_q_eff = 16.8
 
     """
         Effective core polarisabilities from https://doi.org/10.1103/PhysRevA.102.062818
@@ -579,9 +579,9 @@ class Rubidium87(AlkaliAtom):
         model potential parameters from [#c1]_
 
     """
-    a_d_eff = 9.089
+    alpha_d_eff = 9.089
 
-    a_q_eff = 16.8
+    alpha_q_eff = 16.8
 
     """
         Effective core polarisabilities from https://doi.org/10.1103/PhysRevA.102.062818
@@ -740,7 +740,7 @@ class Lithium6(AlkaliAtom):  # Li
 
     """
 
-    a_d_eff = 0.1883
+    alpha_d_eff = 0.1883
 
     a_q_eff = 0.04579
 
@@ -904,9 +904,9 @@ class Lithium7(AlkaliAtom):  # Li
 
     """
 
-    a_d_eff = 0.1883
+    alpha_d_eff = 0.1883
 
-    a_q_eff = 0.04579
+    alpha_q_eff = 0.04579
 
     """
         (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.16.1141
@@ -1058,9 +1058,9 @@ class Sodium(AlkaliAtom):  # Na23
 
     """
 
-    a_d_eff = 0.9980
+    alpha_d_eff = 0.9980
 
-    a_q_eff = 0.351
+    alpha_q_eff = 0.351
     """
         (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.38.4985
     """
@@ -1209,9 +1209,9 @@ class Potassium39(AlkaliAtom):
 
     """
 
-    a_d_eff = 5.49
+    alpha_d_eff = 5.49
 
-    a_q_eff = 18
+    alpha_q_eff = 18
 
     """
         (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.100.012501
@@ -1368,9 +1368,9 @@ class Potassium40(AlkaliAtom):
 
     """
 
-    a_d_eff = 5.49
+    alpha_d_eff = 5.49
 
-    a_q_eff = 18
+    alpha_q_eff = 18
 
     """
         (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.100.012501
@@ -1517,9 +1517,9 @@ class Potassium41(AlkaliAtom):
 
     """
 
-    a_d_eff = 5.49
+    alpha_d_eff = 5.49
 
-    a_q_eff = 18
+    alpha_q_eff = 18
 
     """
         (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.100.012501
