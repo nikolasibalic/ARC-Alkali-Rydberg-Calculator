@@ -797,13 +797,30 @@ class AlkaliAtom(object):
         if l <= 4:
             return -self.scaledRydbergConstant / ((n - defect) ** 2)
         else:
-            # Use hydrogenic fine sturcture and relativisitc correction for
+            # Use hydrogenic fine structure and relativistic correction for
             # non-penetrating states from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.100.012501
             return -self.scaledRydbergConstant / (
                 (n - defect) ** 2
             ) - self._getHydrogenicCorrection(n, l, j, s=s)
 
-    def _getHydrogenicCorrection(self, n, l, j, s=0.5):
+    def _getHydrogenicCorrection(
+        self, n: int, l: int, j: float, s: float = 0.5
+    ) -> float:
+        """
+        Use hydrogenic fine structure and relativistic correction for
+        non-penetrating states from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.100.012501
+
+        Args:
+            n (_type_): principal quantum number
+            l (_type_): orbital angular momentum
+            j (_type_): total angular momentum
+            s (float, optional): optional, total spin angular momentum. Default value
+                of 0.5 is correct for Alkali atoms, and has to be specified
+                explicitly for divalent atoms.
+
+        Returns:
+            float: state energy correction (eV)
+        """
         spinOrbit = (
             -self.scaledRydbergConstant
             * pow(C_alpha, 2)
@@ -1422,7 +1439,7 @@ class AlkaliAtom(object):
         freq = electricFieldAmplitude * abs(dipole) / hbar
         return freq
 
-    def getDrivePower(
+    def getDrivingPower(
         self,
         n1,
         l1,

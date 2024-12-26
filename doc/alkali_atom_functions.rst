@@ -65,6 +65,8 @@ Internal structure of atom states
     ~AlkaliAtom.a4
     ~AlkaliAtom.rc
     ~AlkaliAtom.alphaC
+    ~AlkaliAtom.alpha_d_eff
+    ~AlkaliAtom.alpha_q_eff
     ~AlkaliAtom.cpp_numerov
 
 
@@ -111,6 +113,7 @@ Transitions between states
     ~AlkaliAtom.getTransitionFrequency
     ~AlkaliAtom.getRabiFrequency
     ~AlkaliAtom.getRabiFrequency2
+    ~AlkaliAtom.getDrivingPower
     ~AlkaliAtom.getStateLifetime
     ~AlkaliAtom.getTransitionRate
     ~AlkaliAtom.getReducedMatrixElementJ_asymmetric
