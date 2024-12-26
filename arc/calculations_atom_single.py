@@ -44,6 +44,8 @@ from scipy.special import sph_harm
 
 import sys
 
+from typing import List
+
 from arc._database import UsedModulesARC
 from arc.divalent_atom_functions import DivalentAtom
 from arc.wigner import Wigner6j, CG
@@ -2427,21 +2429,21 @@ class OpticalLattice1D:
             (in units of m)
     """
 
-    energy = []
+    energy: List[List[float]] = []
     """
         energy of states obtained by
         :obj:`OpticalLattice1D.diagonalise` method
         in format `[[energies for quasimomentum1 ],  [energies for quasimomentum2 ], ...]`
     """
 
-    quasimomentum = []
+    quasimomentum: List[float] = []
     """
         list of quzimomentum for which the energies of states was calculated
         by :obj:`OpticalLattice1D.diagonalise` method
         in format `[quasimomentum1, quasimomentum2, ...]`
     """
 
-    savedBlochBand = []
+    savedBlochBand: List[List[float]] = []
     """
         list of saved eigen energy state compositions for each of the Calculated
         quasimomentums for the selected index of the Bloch band

@@ -189,13 +189,13 @@ class Strontium88(DivalentAtom):
     # levels that are for smaller n than ground level, but are above in energy
     # due to angular part
     extraLevels = [
-        [4, 2, 3, 1],
-        [4, 2, 1, 1],
-        [4, 3, 3, 0],
-        [4, 3, 4, 1],
-        [4, 3, 3, 1],
-        [4, 3, 2, 1],
-        [4, 2, 2, 0],
+        (4, 2, 3, 1),
+        (4, 2, 1, 1),
+        (4, 3, 3, 0),
+        (4, 3, 4, 1),
+        (4, 3, 3, 1),
+        (4, 3, 2, 1),
+        (4, 2, 2, 0),
     ]
 
     #: Sources Refs. [#c1]_, [#c2]_, [#c3]_, [#c4]_, [#c5]_, [#c6]_, [#c7]_,
@@ -316,7 +316,7 @@ class Calcium40(DivalentAtom):
         [ :math:`^3S_{1},^3P_{2},^3D_{3},^3F_{4}`]]."""
 
     groundStateN = 4
-    extraLevels = []  #: TODO unkown if such exist at time of writing
+    # extraLevels = []  #: TODO unkown if such exist at time of writing
 
     #: Sources Refs. [#c1]_, [#c5]_, [#c9]_, [#ca1]_, [#ca5]_
     levelDataFromNIST = "ca_level_data.csv"
@@ -430,7 +430,7 @@ class Ytterbium174(DivalentAtom):
         [ :math:`^3S_{1},^3P_{2},^3D_{3},^3F_{4}`]]."""
 
     groundStateN = 6
-    extraLevels = []  #: TODO unkown if such exist at time of writing
+    # Levels = []  #: TODO unkown if such exist at time of writing
 
     #: Sources Refs. [#yb1]_, [#yb2]_, [#yb3]_, [#MT78]_
     levelDataFromNIST = "yb_level_data.csv"

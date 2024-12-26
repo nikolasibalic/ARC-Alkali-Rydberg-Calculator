@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from .alkali_atom_functions import DPATH
+from typing import List
 
 
 class OpticalMaterial(object):
@@ -14,14 +15,14 @@ class OpticalMaterial(object):
     #: List of .csv files listing refractive index measurements
     #: first column in these files is wavelength (in mu m), the second
     #: refractive index
-    sources = []
+    sources: List[str] = []
     # This array is loaded automatically based on sources list
-    sourcesN = []
+    sourcesN: List[float] = []
     #: Any notes about measured values
-    sourcesComment = []
+    sourcesComment: List[str] = []
     #: Array of max and minimal wavelegth pairs [lambdaMin, lambdaMax]
     #: for each of the sources. Automatically loaded from sources list
-    sourcesRange = []
+    sourcesRange: List[List[float]] = []
 
     def __init__(self):
         for s in self.sources:

@@ -5,6 +5,8 @@ from arc.wigner import Wigner3j, Wigner6j
 from scipy.constants import physical_constants
 import csv
 
+from typing import List, Tuple
+
 import os
 import numpy as np
 from math import sqrt
@@ -43,7 +45,7 @@ class DivalentAtom(AlkaliAtom):
             calculated directly semiclassically)
     """
 
-    modelPotential_coef = dict()
+    modelPotential_coef: dict = dict()
     """
         Model potential parameters fitted from experimental observations for
         different l (electron angular momentum)
@@ -90,8 +92,12 @@ class DivalentAtom(AlkaliAtom):
     #: `[n, l, s, j, energy, source, absolute uncertanty]`
     levelDataFromNIST = ""
 
+    #: levels that are for smaller principal quantum number (n) than ground
+    #: level, but are above in energy due to angular part
+    extraLevels: List[Tuple[int, int, int, int]] = []  # type: ignore
+
     #: Not used with DivalentAtom, see :obj:`defectFittingRange` instead.
-    minQuantumDefectN = None
+    minQuantumDefectN: int = 0
 
     #: Used for AlkalineEarths to define minimum and maximum principal quantum
     #: number for which quantum defects are valid. Ranges are stored under
@@ -102,7 +108,7 @@ class DivalentAtom(AlkaliAtom):
     #:      limits = self.defectFittingRange['1S0']
     #:      print("Minimal n = %d" % limits[0])
     #:      print("Maximal n = %d" % limits[1]) 1
-    defectFittingRange = {}
+    defectFittingRange: dict = {}
 
     #: flag that is turned to True if the energy levels of this atom were
     #: calculated by extrapolating with quantum defects values outside the

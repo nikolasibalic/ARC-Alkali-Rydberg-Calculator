@@ -283,14 +283,14 @@ class Caesium(AlkaliAtom):
 
     #: levels that are for smaller n than ground level, but are above in energy due to angular part
     extraLevels = [
-        [5, 2, 2 + 0.5],
-        [5, 2, 2 - 0.5],
-        [5, 3, 3 + 0.5],
-        [5, 3, 3 - 0.5],
-        [5, 4, 4 + 0.5],
-        [5, 4, 4 - 0.5],
-        [4, 3, 3 + 0.5],
-        [4, 3, 3 - 0.5],
+        (5, 2, 2 + 0.5),
+        (5, 2, 2 - 0.5),
+        (5, 3, 3 + 0.5),
+        (5, 3, 3 - 0.5),
+        (5, 4, 4 + 0.5),
+        (5, 4, 4 - 0.5),
+        (4, 3, 3 + 0.5),
+        (4, 3, 3 - 0.5),
     ]
 
     groundStateN = 6
@@ -498,10 +498,10 @@ class Rubidium85(AlkaliAtom):
 
     #: levels that are for smaller n than ground level, but are above in energy due to angular part
     extraLevels = [
-        [4, 2, 2 + 0.5],
-        [4, 2, 2 - 0.5],
-        [4, 3, 3 + 0.5],
-        [4, 3, 3 - 0.5],
+        (4, 2, 2 + 0.5),
+        (4, 2, 2 - 0.5),
+        (4, 3, 3 + 0.5),
+        (4, 3, 3 - 0.5),
     ]
 
     groundStateN = 5
@@ -665,10 +665,10 @@ class Rubidium87(AlkaliAtom):
 
     #: levels that are for smaller n than ground level, but are above in energy due to angular part
     extraLevels = [
-        [4, 2, 2 + 0.5],
-        [4, 2, 2 - 0.5],
-        [4, 3, 3 + 0.5],
-        [4, 3, 3 - 0.5],
+        (4, 2, 2 + 0.5),
+        (4, 2, 2 - 0.5),
+        (4, 3, 3 + 0.5),
+        (4, 3, 3 - 0.5),
     ]
 
     groundStateN = 5
@@ -1290,7 +1290,7 @@ class Potassium39(AlkaliAtom):
     literatureDMEfilename = "potassium_literature_dme.csv"
 
     #: levels that are for smaller n than ground level, but are above in energy due to angular part
-    extraLevels = [[3, 2, 2 + 0.5], [3, 2, 2 - 0.5]]
+    extraLevels = [(3, 2, 2 + 0.5), (3, 2, 2 - 0.5)]
 
     groundStateN = 4
 
@@ -1449,7 +1449,7 @@ class Potassium40(AlkaliAtom):
     literatureDMEfilename = "potassium_literature_dme.csv"
 
     #: levels that are for smaller n than ground level, but are above in energy due to angular part
-    extraLevels = [[3, 2, 2 + 0.5], [3, 2, 2 - 0.5]]
+    extraLevels = [(3, 2, 2 + 0.5), (3, 2, 2 - 0.5)]
 
     groundStateN = 4
 
@@ -1598,7 +1598,7 @@ class Potassium41(AlkaliAtom):
     literatureDMEfilename = "potassium_literature_dme.csv"
 
     #: levels that are for smaller n than ground level, but are above in energy due to angular part
-    extraLevels = [[3, 2, 2 + 0.5], [3, 2, 2 - 0.5]]
+    extraLevels = [(3, 2, 2 + 0.5), (3, 2, 2 - 0.5)]
 
     groundStateN = 4
 
