@@ -74,11 +74,19 @@ Repository = "https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator"
 Documentation = "https://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/"
 Download = "https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/archive/refs/tags/v3.6.0.tar.gz"
 
+[dependency-groups]
+dev = [
+    "cibuildwheel>=2.22.0",
+    "coverage>=7.6.1",
+    "mypy>=1.14.0",
+    "pytest>=8.3.4",
+]
+
 [tool.cibuildwheel]
 skip = ["*-win32", "*-manylinux_i686", "*-musllinux_i686" ,"pp*"]
 
 [tool.mypy]
-disable_error_code = ["import-untyped"]
+disable_error_code = ["import-untyped", "import-not-found"]
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.

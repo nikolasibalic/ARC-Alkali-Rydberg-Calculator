@@ -674,7 +674,7 @@ class AlkaliAtom(object):
         f.close()
         return levels
 
-    def _addEnergy(self, n: int, l: float, j: float, energyNIST: float):
+    def _addEnergy(self, n: int, l: int, j: float, energyNIST: float):
         """
         Adding energy levels
 
@@ -2886,6 +2886,7 @@ class AlkaliAtom(object):
             for f2 in np.arange(
                 max(self.I - j2, abs(mf2), f1 - 1), 1 + min(self.I + j2, f1 + 1)
             ):
+                f2 = cast(float, f2) # type: ignore
                 # Enforce Triangle Rule
                 if abs(j2 - self.I) <= f2:
                     # CG multiplied by <j1 f1 mf1|er_q|j2 f2 mf2> in units of <j1 || er || j2 >
@@ -3160,6 +3161,7 @@ class AlkaliAtom(object):
         UsedModulesARC.hyperfine = True
         b = 0.0
         for q in np.arange(-1, 2):
+            q = cast(int, q) # type: ignore
             b += (
                 self.getSphericalDipoleMatrixElement(fg, mfg, fe, mfe, q) ** 2
                 * self._reducedMatrixElementFJ(jg, fg, je, fe) ** 2
@@ -3869,14 +3871,14 @@ def NumerovBack(
 
     br = divergencePoint
     while br > 0:
-        rad[br] = rad[br + 1] - step
-        sol[br] = 0
-        br -= 1
+        rad[br] = rad[br + 1] - step  # type: ignore
+        sol[br] = 0  # type: ignore
+        br -= 1  # type: ignore
 
     # convert R(r)*r^{3/4} to  R(r)*r
-    sol = np.multiply(sol, np.sqrt(rad))
+    sol = np.multiply(sol, np.sqrt(rad)) # type: ignore
     # convert \sqrt(r) to r
-    rad = np.multiply(rad, rad)
+    rad = np.multiply(rad, rad) # type: ignore
 
     return rad, sol
 

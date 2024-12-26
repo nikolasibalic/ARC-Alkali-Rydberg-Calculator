@@ -74,12 +74,15 @@ Finally, this is the naming convention. of the original package. For consistency
 Code format
 -----------
 
-Please run ``black``  in the repository folder fixing line length to 80 characters::
+Please run install `uv` and run linter::
 
-    black -l 80 .
+    pip install uv
+    uvx ruff format
+    uvx ruff check
 
-And then run linter
+and resolve any errors that appear there before submitting code.
 
-    flake8 .
+Optionally also check typing::
 
-and resolve any erros that appear there before submitting code.
+    uv pip install mypy
+    uv run mypy .

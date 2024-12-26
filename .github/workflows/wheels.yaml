@@ -21,23 +21,22 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install flake8 pytest black "black[jupyter]"
-          pip install build
-      - name: Check
+          uv venv
+          uv run python -m compileall -f arc/*.py
+      - name: Lint and format check
         run: |
           # stop the build if there are Python syntax errors or undefined names
-          flake8 --version
-          flake8 . --count --show-source --statistics
-          black --version
-          black -l 80 . --check
-          python  -m compileall -f arc/*.py
+          uvx ruff check
+          uv run python -m compileall -f arc/*.py
+      - name: Typing check
+        run: |
+          uv run mypy .
 
   function_test:
     name: Basic test suite  
@@ -45,21 +44,19 @@ jobs:
     needs: [format_test]
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v4
         with:
-          python-version: 3.12
+          python-version: ${{ matrix.python-version }}
       - name: Setup ARC
         run: |
-          pip install .
-          pip install pytest coverage
-          pytest --version
+          uv venv
       - name: Run tests
         run:
-          coverage run -m pytest -s -v
+          uv run coverage run -m pytest -s -v
       - name: Coverage report
         run:
-          coverage report -m
+          uv run coverage report -m
 
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
