@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# ruff: noqa: E741
 from __future__ import division, print_function, absolute_import
 from arc.alkali_atom_functions import AlkaliAtom, printStateLetter
 from arc.wigner import Wigner3j, Wigner6j

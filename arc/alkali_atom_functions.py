@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# ruff: noqa: E741
 """
 Implements general single-atom calculations
 
@@ -46,7 +47,7 @@ from numpy.typing import NDArray
 import sys
 import os
 
-from typing import List, Union, Tuple, cast, Tuple, Any, Callable
+from typing import List, Union, cast, Tuple, Any, Callable
 
 if sys.version_info > (2,):
     xrange = range
@@ -3084,9 +3085,7 @@ class AlkaliAtom(object):
             f * (f + 1) - self.I * (self.I + 1) + j * (j + 1.0)
         ) / (2 * f * (f + 1.0)) + self.gI * (
             f * (f + 1.0) + self.I * (self.I + 1.0) - j * (j + 1.0)
-        ) / (
-            2.0 * f * (f + 1.0)
-        )
+        ) / (2.0 * f * (f + 1.0))
         return gf
 
     def getHFSEnergyShift(

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# ruff: noqa: E741
 from scipy.integrate import odeint
 from lmfit import minimize, Parameters, report_fit
 import matplotlib.pyplot as plt

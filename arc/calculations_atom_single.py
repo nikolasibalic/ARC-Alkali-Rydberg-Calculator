@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-
+# ruff: noqa: E741
 """
-    This module provides calculations of single-atom properties.
+This module provides calculations of single-atom properties.
 
-    Included calculations are Stark maps, level plot visualisations,
-    lifetimes and radiative decays.
+Included calculations are Stark maps, level plot visualisations,
+lifetimes and radiative decays.
 
 """
 
@@ -611,9 +611,7 @@ class StarkMap:
         See also:
             :obj:`eFieldList`, :obj:`highlight`, :obj:`diagonalise`
         """
-        self.highlight = (
-            []
-        )  # contribution of initial state there (overlap |<original state | given state>|^2)
+        self.highlight = []  # contribution of initial state there (overlap |<original state | given state>|^2)
         """
         `highlight[i]` is an array of values measuring highlighted feature in the
         eigenstates at electric field intensity `eFieldList[i]`. E.g. `highlight[i][j]`

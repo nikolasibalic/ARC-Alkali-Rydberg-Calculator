@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# ruff: noqa: E741
 """
     This module specifies properties of individual alkali metals.
 

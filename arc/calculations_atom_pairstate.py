@@ -1,30 +1,31 @@
 # -*- coding: utf-8 -*-
+# ruff: noqa: E741
 
 """
-    Pair-state basis level diagram calculations
+Pair-state basis level diagram calculations
 
-    Calculates Rydberg spaghetti of level diagrams, as well as pertubative C6
-    and similar properties. It also allows calculation of Foster resonances
-    tuned by DC electric fields.
+Calculates Rydberg spaghetti of level diagrams, as well as pertubative C6
+and similar properties. It also allows calculation of Foster resonances
+tuned by DC electric fields.
 
-    Example:
-        Calculation of the Rydberg eigenstates in pair-state basis for Rubidium
-        in the vicinity of the
-        :math:`|60~S_{1/2}~m_j=1/2,~60~S_{1/2}~m_j=1/2\\rangle` state. Colour
-        highlights coupling strength from state :math:`6~P_{1/2}~m_j=1/2` with
-        :math:`\\pi` (:math:`q=0`) polarized light.
-        eigenstates::
+Example:
+    Calculation of the Rydberg eigenstates in pair-state basis for Rubidium
+    in the vicinity of the
+    :math:`|60~S_{1/2}~m_j=1/2,~60~S_{1/2}~m_j=1/2\\rangle` state. Colour
+    highlights coupling strength from state :math:`6~P_{1/2}~m_j=1/2` with
+    :math:`\\pi` (:math:`q=0`) polarized light.
+    eigenstates::
 
-            from arc import *
-            calc1 = PairStateInteractions(Rubidium(), 60, 0, 0.5, 60, 0, 0.5,0.5, 0.5)
-            calc1.defineBasis( 0., 0., 4, 5,10e9)
-            # optionally we can save now results of calculation for future use
-            saveCalculation(calc1,"mycalculation.pkl")
-            calculation1.diagonalise(linspace(1,10.0,30),250,progressOutput = True,drivingFromState=[6,1,0.5,0.5,0])
-            calc1.plotLevelDiagram()
-            calc1.ax.set_xlim(1,10)
-            calc1.ax.set_ylim(-2,2)
-            calc1.showPlot()
+        from arc import *
+        calc1 = PairStateInteractions(Rubidium(), 60, 0, 0.5, 60, 0, 0.5,0.5, 0.5)
+        calc1.defineBasis( 0., 0., 4, 5,10e9)
+        # optionally we can save now results of calculation for future use
+        saveCalculation(calc1,"mycalculation.pkl")
+        calculation1.diagonalise(linspace(1,10.0,30),250,progressOutput = True,drivingFromState=[6,1,0.5,0.5,0])
+        calc1.plotLevelDiagram()
+        calc1.ax.set_xlim(1,10)
+        calc1.ax.set_ylim(-2,2)
+        calc1.showPlot()
 
 """
 
