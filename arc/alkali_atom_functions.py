@@ -17,6 +17,7 @@ from arc._database import sqlite3, UsedModulesARC
 import csv
 import gzip
 from math import exp, sqrt
+import mpmath
 from mpmath import angerj
 
 # for web-server execution, uncomment the following two lines
@@ -36,6 +37,7 @@ from scipy.constants import c as C_c
 from scipy.constants import h as C_h
 from scipy.constants import e as C_e
 from scipy.constants import m_e as C_m_e
+from scipy.constants import alpha as C_alpha
 
 # for matrices
 from numpy import floor
@@ -134,6 +136,9 @@ class AlkaliAtom(object):
     alphaC = 0.0  #: Core polarizability
     Z = 0.0  #: Atomic number
     I = 0.0  #: Nuclear spin
+
+    alpha_d_eff = 0  #: ion core dipole polarisability
+    alpha_q_eff = 0  #: ion core quadrupole polarisability
 
     #: state energies from NIST values
     #: sEnergy [n,l] = state energy for n, l, j = l-1/2
@@ -788,7 +793,30 @@ class AlkaliAtom(object):
 
         # else, use quantum defects
         defect = self.getQuantumDefect(n, l, j, s=s)
-        return -self.scaledRydbergConstant / ((n - defect) ** 2)
+
+        if l <= 4:
+            return -self.scaledRydbergConstant / ((n - defect) ** 2)
+        else:
+            # Use hydrogenic fine sturcture and relativisitc correction for
+            # non-penetrating states from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.100.012501
+            return -self.scaledRydbergConstant / (
+                (n - defect) ** 2
+            ) - self._getHydrogenicCorrection(n, l, j, s=s)
+
+    def _getHydrogenicCorrection(self, n, l, j, s=0.5):
+        spinOrbit = (
+            -self.scaledRydbergConstant
+            * pow(C_alpha, 2)
+            * (j * (j + 1) - l * (l + 1) - s * (s + 1))
+            / (2 * l * (l + 0.5) * (l + 1) * pow(n, 3))
+        )  # Spin-Orbit Correction, eq. 4.136 in https://staff.fnwi.uva.nl/j.t.m.walraven/walraven/Publications_files/2023-AtomicPhysics.pdf
+        relCorr = (
+            self.scaledRydbergConstant
+            / pow(n, 2)
+            * (pow(C_alpha / n, 2) * ((n / (l + 0.5)) - 0.75))
+        )  # Relativistic Correction
+
+        return spinOrbit + relCorr
 
     def _getSavedEnergy(self, n, l, j, s=0.5):
         if abs(j - (l - 0.5)) < 0.001:
@@ -842,9 +870,46 @@ class AlkaliAtom(object):
                 + modifiedRRcoef[5] / ((n - modifiedRRcoef[0]) ** 10)
             )
         else:
-            # use \delta_\ell = \delta_g * (4/\ell)**5
-            # from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.74.062712
-            defect = self.quantumDefect[0][4][0] * (4 / l) ** 5
+            n = int(n)
+            l = int(l)
+
+            # Use Polarisation energy
+            # from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.14.1614
+
+            # Calculate r4 and r6 coefficients
+            top_r4 = 3 * pow(n, 2) - (l * (l + 1))
+            bottom_r4 = (
+                2 * pow(n, 5) * (l + 1.5) * (l + 1) * (l + 0.5) * l * (l - 0.5)
+            )
+            r4 = top_r4 / bottom_r4
+
+            top_r6 = (
+                35 * pow(n, 4)
+                - 5 * pow(n, 2) * (6 * l * (l + 1) - 5)
+                + 3 * (l + 2) * (l + 1) * l * (l - 1)
+            )
+            bottom_r6 = (
+                8
+                * pow(n, 7)
+                * (l + 2.5)
+                * (l + 2)
+                * (l + 1.5)
+                * (l + 1)
+                * (l + 0.5)
+                * l
+                * (l - 0.5)
+                * (l - 1)
+                * (l - 1.5)
+            )
+            r6 = top_r6 / bottom_r6
+
+            # Calculate the pol contribution to qd
+            defect = (
+                0.5
+                * (self.alpha_d_eff * r4 + self.alpha_q_eff * r6)
+                * pow(n, 3)
+            )
+
         return defect
 
     def getRadialMatrixElement(
@@ -1357,6 +1422,56 @@ class AlkaliAtom(object):
         freq = electricFieldAmplitude * abs(dipole) / hbar
         return freq
 
+    def getDrivePower(
+        self,
+        n1,
+        l1,
+        j1,
+        mj1,
+        n2,
+        l2,
+        j2,
+        mj2,
+        q,
+        rabiFrequency,
+        laserWaist,
+        s=0.5,
+    ):
+        """
+        Returns a laser power for resonantly driven atom in a
+        center of TEM00 mode of a driving field
+
+        Args:
+            n1,l1,j1,mj1 : state from which we are driving transition
+            n2,l2,j2 : state to which we are driving transition
+            q : laser polarization (-1,0,1 correspond to :math:`\\sigma^-`,
+                :math:`\\pi` and :math:`\\sigma^+` respectively)
+            rabiFrequency : laser power in units of rad/s
+            laserWaist : laser :math:`1/e^2` waist (radius) in units of m
+            s (float): optional, total spin angular momentum of state.
+                By default 0.5 for Alkali atoms.
+
+        Returns:
+            float:
+                laserPower in units of W
+        """
+        if abs(mj2) - 0.1 > j2:
+            return 0
+        dipole = (
+            self.getDipoleMatrixElement(
+                n1, l1, j1, mj1, n2, l2, j2, mj2, q, s=s
+            )
+            * C_e
+            * physical_constants["Bohr radius"][0]
+        )
+        return (
+            pi
+            / 4
+            * C_c
+            * epsilon_0
+            * (laserWaist * hbar * rabiFrequency / abs(dipole)) ** 2
+        )
+
     def getC6term(self, n, l, j, n1, l1, j1, n2, l2, j2, s=0.5):
         """
             C6 interaction term for the given two pair-states
@@ -1609,6 +1724,128 @@ class AlkaliAtom(object):
                 + self.quadrupoleMatrixElementFile
             )
             print(e)
+
+    def getFarleyWing(self, n1, l1, j1, n2, l2, j2, temperature=0.0):
+        """
+        Calculates the Farley Wing function in the context of a BBR shift, uses a closed
+        form for the integral (which has a singularity, need Cauchy principal value)
+
+        References:
+            (Farley, John W., and William H. Wing. Physical Review A 23.5 (1981): 2397
+            doi = {10.1103/PhysRevA.23.2397}
+
+             (A.A. Kamenski et al 2019 Quantum Electron. 49 464, DOI:10.1070/QEL17000 )
+
+        """
+        if temperature == 0:
+            temperature = 1e-10  # avoid zero error
+
+        transition_frequency = self.getTransitionFrequency(
+            n1, l1, j1, n2, l2, j2
+        )
+        y = C_h * transition_frequency / (C_k * temperature)
+
+        z = 1j * y
+        a = 0.5 * (
+            np.log(z / (2 * np.pi))
+            - np.pi / z
+            - mpmath.digamma(z / (2 * np.pi))
+        )
+        return float(-(np.pi**2) * y / 3 - 2 * y**3 * mpmath.re(a))
+
+    def getBBRshift(self, n, l, j, includeLevelsUpTo=0, temperature=0.0, s=0.5):
+        """
+        Frequency shift of an atomic state induced by black-body radiation
+        using the Farley-Wing function.
+        Uses getFarleyWing as part of the calculation.
+
+            n, l, j (int,int,float): specifies state whose shift we are
+                calculating
+            temperature : optional. Temperature at which the atom
+                environment is, measured in K. If this parameter
+                is non-zero, user has to specify transitions up to
+                which state (due to black-body decay) should be included
+                in calculation.
+            includeLevelsUpTo (int): optional and not needed for atom
+                lifetimes calculated at zero temperature. At non zero
+                temperatures, this specify maximum principal quantum number
+                of the state to which black-body induced transitions will
+                be included. Minimal value of the parameter in that case is
+                :math:`n+1`
+
+        Returns:
+            float:
+                Energy shift in units of frequency (Hz)
+
+        See also:
+            :obj:`getFarleyWing` which is used in calculation.
+
+        References:
+        (Farley, John W., and William H. Wing. Physical Review A 23.5 (1981): 2397
+        doi = {10.1103/PhysRevA.23.2397}
+        )
+
+        """
+
+        n = int(n)
+        l = int(l)
+
+        deltaE = 0
+
+        factor = (
+            -((physical_constants["Bohr radius"][0] * C_e) ** 2)
+            / (6 * epsilon_0 * np.pi**2 * C_c**3)
+            * (C_k * temperature / hbar) ** 3
+            / C_h
+        )
+
+        # Precompute commonly used values
+        max_ground_state_n = max(self.groundStateN, l)
+
+        def compute_deltaE(n, l, j, nto, lto, jto):
+            prefactor = (2 * jto + 1) * Wigner6j(l, j, s, jto, lto, 1) ** 2
+            radial_matrix_element = self.getRadialMatrixElement(
+                n, l, j, nto, lto, jto
+            )
+            farley_wing = self.getFarleyWing(
+                n, l, j, nto, lto, jto, temperature
+            )
+            max_l = max(l, lto)
+            return (
+                prefactor * (max_l) * (radial_matrix_element**2) * farley_wing
+            )
+
+        # Sum over all l-1
+        if l > 0:
+            lto = l - 1
+            for nto in range(max_ground_state_n, includeLevelsUpTo + 1):
+                if lto > j - s - 0.1:
+                    jto = j
+                    deltaE += compute_deltaE(n, l, j, nto, lto, jto)
+                jto = j - 1.0
+                if jto > 0:
+                    deltaE += compute_deltaE(n, l, j, nto, lto, jto)
+
+        # Sum over all l+1
+        lto = l + 1
+        for nto in range(max(self.groundStateN, l + 2), includeLevelsUpTo + 1):
+            if lto - s - 0.1 < j:
+                jto = j
+                deltaE += compute_deltaE(n, l, j, nto, lto, jto)
+            jto = j + 1
+
+            deltaE += compute_deltaE(n, l, j, nto, lto, jto)
+
+        # Sum over additional states
+        for state in self.extraLevels:
+            if (
+                abs(j - state[2]) < 1.1
+                and abs(state[1] - l) < 1.1
+                and abs(state[1] - l) > 0.9
+            ):
+                deltaE += compute_deltaE(n, l, j, state[0], state[1], state[2])
+
+        return factor * deltaE
 
     def getTransitionRate(self, n1, l1, j1, n2, l2, j2, temperature=0.0, s=0.5):
         """
