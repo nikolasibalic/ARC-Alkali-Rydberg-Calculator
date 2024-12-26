@@ -792,13 +792,25 @@ class AlkaliAtom(object):
         if l <= 4:
             return -self.scaledRydbergConstant / ((n - defect) ** 2)
         else:
-            ### Use hydrogenic fine sturcture and relativisitc correction for non-penetrating states from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.100.012501
-            return -self.scaledRydbergConstant / ((n - defect) ** 2) - self._getHydrogenicCorrection(n,l,j,s=s) 
+            # Use hydrogenic fine sturcture and relativisitc correction for
+            # non-penetrating states from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.100.012501
+            return -self.scaledRydbergConstant / (
+                (n - defect) ** 2
+            ) - self._getHydrogenicCorrection(n, l, j, s=s)
 
-    def _getHydrogenicCorrection(self,n,l,j,s=0.5):
-        spinOrbit = -self.scaledRydbergConstant*pow(C_a,2)*(j*(j+1)-l*(l+1)-s*(s+1))/(2*l*(l+0.5)*(l+1)*pow(n,3)) ###Spin-Orbit Correction
-        relCorr = self.scaledRydbergConstant/pow(n,2)*(pow(C_a/n,2)* ( (n / (l+0.5) ) - 0.75) )  ###Relativistic Correction
-        
+    def _getHydrogenicCorrection(self, n, l, j, s=0.5):
+        spinOrbit = (
+            -self.scaledRydbergConstant
+            * pow(C_a, 2)
+            * (j * (j + 1) - l * (l + 1) - s * (s + 1))
+            / (2 * l * (l + 0.5) * (l + 1) * pow(n, 3))
+        )  # Spin-Orbit Correction
+        relCorr = (
+            self.scaledRydbergConstant
+            / pow(n, 2)
+            * (pow(C_a / n, 2) * ((n / (l + 0.5)) - 0.75))
+        )  # Relativistic Correction
+
         return spinOrbit + relCorr
 
     def _getSavedEnergy(self, n, l, j, s=0.5):
@@ -856,16 +868,16 @@ class AlkaliAtom(object):
             n = int(n)
             l = int(l)
 
-            # Use Polarisation energy 
+            # Use Polarisation energy
             # from https://journals.aps.org/pra/abstract/10.1103/PhysRevA.14.1614
-    
+
             # Calculate r4 and r6 coefficients
             top_r4 = 3 * pow(n, 2) - (l * (l + 1))
             bottom_r4 = (
                 2 * pow(n, 5) * (l + 1.5) * (l + 1) * (l + 0.5) * l * (l - 0.5)
             )
             r4 = top_r4 / bottom_r4
-    
+
             top_r6 = (
                 35 * pow(n, 4)
                 - 5 * pow(n, 2) * (6 * l * (l + 1) - 5)
@@ -885,11 +897,9 @@ class AlkaliAtom(object):
                 * (l - 1.5)
             )
             r6 = top_r6 / bottom_r6
-    
+
             # Calculate the pol contribution to qd
-            defect = (
-                0.5*(self.a_d_eff * r4 + self.a_q_eff * r6)*pow(n,3)
-            )
+            defect = 0.5 * (self.a_d_eff * r4 + self.a_q_eff * r6) * pow(n, 3)
 
         return defect
 
@@ -1403,7 +1413,7 @@ class AlkaliAtom(object):
         freq = electricFieldAmplitude * abs(dipole) / hbar
         return freq
 
-    def getPower(
+    def getDrivePower(
         self,
         n1,
         l1,

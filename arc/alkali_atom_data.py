@@ -127,6 +127,7 @@ __all__ = [
     "Potassium41",
 ]
 
+
 class Hydrogen(AlkaliAtom):
     """
     Properties of hydrogen atoms
@@ -197,7 +198,7 @@ class Caesium(AlkaliAtom):
     a_q_eff = 38.7
 
     """
-        Effective core polarisabilities from https://doi.org/10.1364/JOSA.71.000423 
+        Effective core polarisabilities from https://doi.org/10.1364/JOSA.71.000423
     """
 
     #
@@ -226,8 +227,6 @@ class Caesium(AlkaliAtom):
     Z = 55
 
     I = 3.5  # 7/2
-
-    
 
     #: (eV), Ref. [#jd2016]_.
     ionisationEnergy = (
@@ -400,6 +399,7 @@ class Cesium(Caesium):
 
     pass
 
+
 class Rubidium85(AlkaliAtom):
     """
     Properites of rubidium 85 atoms
@@ -412,7 +412,7 @@ class Rubidium85(AlkaliAtom):
 
     """
 
-    a_d_eff = 9.089  
+    a_d_eff = 9.089
 
     a_q_eff = 16.8
 
@@ -420,7 +420,7 @@ class Rubidium85(AlkaliAtom):
         Effective core polarisabilities from https://doi.org/10.1103/PhysRevA.102.062818
 
     """
-    
+
     a1 = [3.69628474, 4.44088978, 3.78717363, 2.39848933]
     """
         model potential parameters from [#c1]_
@@ -579,7 +579,7 @@ class Rubidium87(AlkaliAtom):
         model potential parameters from [#c1]_
 
     """
-    a_d_eff = 9.089  
+    a_d_eff = 9.089
 
     a_q_eff = 16.8
 
@@ -587,7 +587,7 @@ class Rubidium87(AlkaliAtom):
         Effective core polarisabilities from https://doi.org/10.1103/PhysRevA.102.062818
 
     """
-    
+
     a1 = [3.69628474, 4.44088978, 3.78717363, 2.39848933]
     """
         model potential parameters from [#c1]_
@@ -745,7 +745,7 @@ class Lithium6(AlkaliAtom):  # Li
     a_q_eff = 0.04579
 
     """
-        (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.16.1141 
+        (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.16.1141
     """
 
     # model potential parameters from Marinescu et.al, PRA 49:982 (1994)
@@ -909,7 +909,7 @@ class Lithium7(AlkaliAtom):  # Li
     a_q_eff = 0.04579
 
     """
-        (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.16.1141 
+        (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.16.1141
     """
 
     a1 = [2.47718079, 3.45414648, 2.51909839, 2.51909839]
@@ -1062,10 +1062,8 @@ class Sodium(AlkaliAtom):  # Na23
 
     a_q_eff = 0.351
     """
-        (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.38.4985 
+        (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.38.4985
     """
-
-
 
     a1 = [4.82223117, 5.08382502, 3.53324124, 1.11056646]
     """
@@ -1211,16 +1209,13 @@ class Potassium39(AlkaliAtom):
 
     """
 
-
     a_d_eff = 5.49
 
     a_q_eff = 18
 
-
     """
-        (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.100.012501  
+        (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.100.012501
     """
-
 
     a1 = [3.56079437, 3.65670429, 4.12713694, 1.42310446]
     """
@@ -1279,7 +1274,7 @@ class Potassium39(AlkaliAtom):
         ],
     ]
     """
-         p1/2 and p3/2, s1/2, d3/2, d5/2 and f and g (centre of manifold) from https://doi.org/10.1103/PhysRevA.100.012501 
+         p1/2 and p3/2, s1/2, d3/2, d5/2 and f and g (centre of manifold) from https://doi.org/10.1103/PhysRevA.100.012501
     """
 
     levelDataFromNIST = "k_NIST_level_data.ascii"
@@ -1377,12 +1372,9 @@ class Potassium40(AlkaliAtom):
 
     a_q_eff = 18
 
-
     """
-        (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.100.012501  
+        (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.100.012501
     """
-
-
 
     a1 = [3.56079437, 3.65670429, 4.12713694, 1.42310446]
     """
@@ -1441,7 +1433,7 @@ class Potassium40(AlkaliAtom):
         ],
     ]
     """
-         p1/2 and p3/2, s1/2, d3/2, d5/2 and f and g (centre of manifold) from https://doi.org/10.1103/PhysRevA.100.012501 
+         p1/2 and p3/2, s1/2, d3/2, d5/2 and f and g (centre of manifold) from https://doi.org/10.1103/PhysRevA.100.012501
     """
 
     levelDataFromNIST = "k_NIST_level_data.ascii"
@@ -1529,11 +1521,9 @@ class Potassium41(AlkaliAtom):
 
     a_q_eff = 18
 
-
     """
-        (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.100.012501  
+        (Effective) core plarisabiltiesm from https://doi.org/10.1103/PhysRevA.100.012501
     """
-
 
     a1 = [3.56079437, 3.65670429, 4.12713694, 1.42310446]
     """
@@ -1592,7 +1582,7 @@ class Potassium41(AlkaliAtom):
         ],
     ]
     """
-        p1/2 and p3/2, s1/2, d3/2, d5/2 and f and g (centre of manifold) from https://doi.org/10.1103/PhysRevA.100.012501 
+        p1/2 and p3/2, s1/2, d3/2, d5/2 and f and g (centre of manifold) from https://doi.org/10.1103/PhysRevA.100.012501
     """
 
     levelDataFromNIST = "k_NIST_level_data.ascii"
