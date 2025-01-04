@@ -46,6 +46,7 @@ from numpy.typing import NDArray
 
 import sys
 import os
+from rich.progress import Progress
 
 from typing import List, Union, cast, Tuple, Any, Callable
 
@@ -56,7 +57,7 @@ import pickle
 
 
 DPATH = os.path.join(os.path.expanduser("~"), ".arc-data")
-__arc_data_version__ = 11
+__arc_data_version__ = 12
 
 __all__ = [
     "AlkaliAtom",
@@ -3755,6 +3756,96 @@ class AlkaliAtom(object):
 
         return en, f, mf
 
+    def update_me_cache(self):
+        """
+        Updates cached dipole and quadrupole matrix elements saved in `~/.arc-data`
+        """
+        data = np.load(
+            os.path.join(self.dataFolder, self.dipoleMatrixElementFile),
+            encoding="latin1",
+            allow_pickle=True,
+        )
+        c = self.conn.cursor()
+
+        with Progress() as progress:
+            task = progress.add_task(f"[blue bold]Recalculating {self.elementName} DME...", total=len(data), transient=True)
+
+            for transition in data:
+                c.execute(
+                    """SELECT dme FROM dipoleME WHERE
+                        n1= ? AND l1 = ? AND j1_x2 = ? AND
+                        n2 = ? AND l2 = ? AND j2_x2 = ?""",
+                        (transition[0], transition[1], transition[2], transition[3], transition[4], transition[5]),
+                )
+                dme = c.fetchone()
+                if dme:
+                    c.execute(
+                    """DELETE FROM dipoleME WHERE
+                        n1= ? AND l1 = ? AND j1_x2 = ? AND
+                        n2 = ? AND l2 = ? AND j2_x2 = ?""",
+                        (transition[0], transition[1], transition[2], transition[3], transition[4], transition[5]),
+                    )
+                    new = self.getRadialMatrixElement(round(transition[0]), round(transition[1]), transition[2]/2,
+                                                    round(transition[3]), round(transition[4]), transition[5]/2)
+                    relative_diff = (dme[0]-new)/dme[0] * 100
+                    if abs((dme[0]-new)/dme[0])>1:
+                        progress.log(f"old = {round(dme[0],3)}\t new = {round(new,3)} ({'+' if relative_diff>0 else ''} {round(relative_diff,2)} %) for {int(transition[0])}, {int(transition[1])}, {transition[2]/2} --> {int(transition[3])}, {int(transition[4])}, {transition[5]/2}")
+                        print(f"old = {round(dme[0],3)}\t new = {round(new,3)} ({'+' if relative_diff>0 else ''} {round(relative_diff,2)} %) for {int(transition[0])}, {int(transition[1])}, {transition[2]/2} --> {int(transition[3])}, {int(transition[4])}, {transition[5]/2}")
+                        if abs(new) < 0.00000000001:
+                            c.execute(
+                                """DELETE FROM dipoleME WHERE
+                                    n1= ? AND l1 = ? AND j1_x2 = ? AND
+                                    n2 = ? AND l2 = ? AND j2_x2 = ?""",
+                                    (transition[0], transition[1], transition[2], transition[3], transition[4], transition[5]),
+                                )
+                progress.update(task, advance=1)
+            self.conn.commit()
+            progress.log("Finished calculating DME!")
+
+        data = np.load(
+            os.path.join(self.dataFolder, self.quadrupoleMatrixElementFile),
+            encoding="latin1",
+            allow_pickle=True,
+        )
+        c = self.conn.cursor()
+
+        with Progress() as progress:
+            task = progress.add_task(f"[blue bold]Recalculating {self.elementName} QME...", total=len(data), transient=True)
+
+            for transition in data:
+                c.execute(
+                    """SELECT qme FROM quadrupoleME WHERE
+                        n1= ? AND l1 = ? AND j1_x2 = ? AND
+                        n2 = ? AND l2 = ? AND j2_x2 = ?""",
+                        (transition[0], transition[1], transition[2], transition[3], transition[4], transition[5]),
+                )
+                qme = c.fetchone()
+                if qme:
+                    c.execute(
+                    """DELETE FROM quadrupoleME WHERE
+                        n1= ? AND l1 = ? AND j1_x2 = ? AND
+                        n2 = ? AND l2 = ? AND j2_x2 = ?""",
+                        (transition[0], transition[1], transition[2], transition[3], transition[4], transition[5]),
+                    )
+                    new = self.getQuadrupoleMatrixElement(round(transition[0]), round(transition[1]), transition[2]/2,
+                                                    round(transition[3]), round(transition[4]), transition[5]/2)
+                    relative_diff = (qme[0]-new)/dme[0] * 100
+                    if abs((qme[0]-new)/qme[0])>1:
+                        progress.log(f"old = {round(qme[0],3)}\t new = {round(new,3)} ({'+' if relative_diff>0 else ''} {round(relative_diff,2)} %) for {int(transition[0])}, {int(transition[1])}, {transition[2]/2} --> {int(transition[3])}, {int(transition[4])}, {transition[5]/2}")
+                        print(f"old = {round(qme[0],3)}\t new = {round(new,3)} ({'+' if relative_diff>0 else ''} {round(relative_diff,2)} %) for {int(transition[0])}, {int(transition[1])}, {transition[2]/2} --> {int(transition[3])}, {int(transition[4])}, {transition[5]/2}")
+                        
+                        if abs(new) < 0.00000000001:
+                            c.execute(
+                                """DELETE FROM quadrupoleME WHERE
+                                    n1= ? AND l1 = ? AND j1_x2 = ? AND
+                                    n2 = ? AND l2 = ? AND j2_x2 = ?""",
+                                    (transition[0], transition[1], transition[2], transition[3], transition[4], transition[5]),
+                                )
+                progress.update(task, advance=1)
+            self.conn.commit()
+            progress.log("Finished calculating quadrupole matrix elements!")
+
+        self.updateDipoleMatrixElementsFile()
 
 def NumerovBack(
     innerLimit: float,
