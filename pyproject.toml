@@ -18,7 +18,7 @@ arc = ["data/*", "data/refractive_index_data/*", "arc_c_extensions.c"]
 [project]
 name = "ARC-Alkali-Rydberg-Calculator"
 description = "Alkali Rydberg Calculator"
-version = "3.6.0"
+version = "3.7.0"
 authors = [
     {name = "Nikola Sibalic", email = "nikolasibalic@physics.org"},
     {name = "Elizabeth J. Robertson"},
