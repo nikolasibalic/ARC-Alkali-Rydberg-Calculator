@@ -1481,14 +1481,10 @@ class PairStateInteractions:
     
     
     def _ljCoupledCheck(self, l, j, l1, j1, s):
-        # [Karen:] Have not really understood the conditions part of the _isCoupled function
-        # so wrote a new one that enforces the selection rules as stated here for LS coupling:
-        # https://en.wikipedia.org/wiki/Selection_rule
-        # also, have a second look at _isCoupled fct but I think it returns states that are
-        # forbidden for dipole allowed only, even when setting interactionsUpTo=1
         r"""
         Checks if a pair of angular momentum quantum numbers (l,j) and (l1, j1) is
-        coupled.
+        coupled via dipole or up to quadrupole transitions
+        (for `self.interactionsUpTo=1` and `self.interactionsUpTo=1` respectively).
         
         Args:
             l, j (floats) -   angular momentum quantum number of initial state
@@ -1501,25 +1497,25 @@ class PairStateInteractions:
         if (not (l == l1 and j == j1)
             and not(abs(j)<0.1 and abs(j1)<0.1)  # j = 0 and j'=0 always forbiden
             and not (abs(l)<0.1 and abs(l1)<0.1) # l = 0 and l' = 0 always forbiden
-            and (abs(l-j) < s+0.1) # check for total angular momentum
-            and (abs(l1-j1) < s+0.1)
+            and (abs(round(l-j)) < s+0.1) # check for total angular momentum
+            and (abs(round(l1-j1)) < s+0.1)
                 ):
             # check if the pair is dipole coupled
             # if so, then all is okay and no further selection rules need be enforced
-            if ((abs(l-l1) == 1)
-                and (abs(j-j1) in [0,1])
+            if ((abs(round(l-l1)) == 1)
+                and (abs(round(j-j1)) in [0,1])
                ):
                 return True
             # if not dipole coupled, check if quadrupole coupling was allowed
             # and enforce additional quadrupole selection rules
             elif ((self.interactionsUpTo == 2)
-                  and (abs(l-l1) in [0,2])
-                  and (abs(j-j1) in [0,1,2])
-                  and not (abs(j)<0.1 and abs(j1-1)<0.1) # j=0 to j1=1 forbidden
-                  and not (abs(j-1)<0.1 and abs(j1)<0.1) # j=1 to j1=0 forbidden
-                  and not (abs(j-0.5)<0.1 and abs(j1-0.5)<0.1) # j=1/2 to j1=1/2 forbidden
-                  and not (abs(l)<0.1 and abs(l1-1)<0.1) # l=0 to l1=1 forbidden
-                  and not (abs(l-1)<0.1 and abs(l1)<0.1) # l=1 to l1=0 forbidden
+                  and (abs(round(l-l1)) in [0,2])
+                  and (abs(round(j-j1)) in [0,1,2])
+                  and not (abs(j)<0.1 and abs(round(j1-1))<0.1) # j=0 to j1=1 forbidden
+                  and not (abs(round(j-1))<0.1 and abs(j1)<0.1) # j=1 to j1=0 forbidden
+                  and not (abs(round(j-0.5))<0.1 and abs(round(j1-0.5))<0.1) # j=1/2 to j1=1/2 forbidden
+                  and not (abs(l)<0.1 and abs(round(l1-1))<0.1) # l=0 to l1=1 forbidden
+                  and not (abs(round(l-1))<0.1 and abs(l1)<0.1) # l=1 to l1=0 forbidden
                  ):
                 return True
             else:
@@ -1549,13 +1545,13 @@ class PairStateInteractions:
         coupledStates = []
         
         # iterate through potential states for atom 1
-        for l1 in range(abs(l-self.interactionsUpTo), l+self.interactionsUpTo+1):
-            for j1 in np.arange(abs(j-self.interactionsUpTo), j+self.interactionsUpTo+1, 1):
+        for l1 in range(max(0, l-self.interactionsUpTo), l+self.interactionsUpTo+1):
+            for j1 in np.arange(max(s1, j-self.interactionsUpTo), j+self.interactionsUpTo+1, 1):
                 # check if angular momentum coupling is valid
                 if self._ljCoupledCheck(l,j, l1, j1, s1):
                     # iterate through potential states for atom 2
-                    for l2 in range(abs(ll-self.interactionsUpTo), ll+self.interactionsUpTo+1):
-                        for j2 in np.arange(abs(jj-self.interactionsUpTo), jj+self.interactionsUpTo+1, 1):
+                    for l2 in range(max(0, ll-self.interactionsUpTo), ll+self.interactionsUpTo+1):
+                        for j2 in np.arange(max(s2, jj-self.interactionsUpTo), jj+self.interactionsUpTo+1, 1):
                             # check if angular momentum coupling is valid
                             if self._ljCoupledCheck(ll, jj, l2, j2, s2):
                                 j1, j2 = float(j1), float(j2)
@@ -1592,9 +1588,7 @@ class PairStateInteractions:
                                     with V_{lj} the interaction strength for the given
                                     configuration in GHz(um)^6
         """
-        if self.interactionsUpTo == 2:
-            print("WARNING: The quadrupole interaction currently seems to yield bad results.\n"
-                 "Go back and have a look at this!")
+        
         ljInteractions = []
         
         # find all (l,j; ll,jj) --> (l1,j1; l2,j2) --> (l',j'; ll',jj') pairs
@@ -1661,7 +1655,7 @@ class PairStateInteractions:
                                              )  # GHz / mum^3
                             
                         V_lj += abs(couplingStrength1*couplingStrength2)/energyDefect #GHz um^6
-            ljInteractions.append([*list(lj), V_lj])
+            ljInteractions.append([*list(lj), float(V_lj)])
         return ljInteractions
     
     def _getPerturbativeC6Matrix_lj(self, ljInteractions):
@@ -1730,7 +1724,6 @@ class PairStateInteractions:
         
     def getC6PerturbativelyAngularChannel(self, theta, phi, nRange, energyDelta,
                             degeneratePerturbation=False, returnInteractionMatrix=False):
-        # [Karen:] theory part of docstring copied from Nikola's code and amended as required
         r"""
         Calculates :math:`C_6` from second order perturbation theory.
 
@@ -1798,7 +1791,6 @@ class PairStateInteractions:
                                         first basis above, then basis with the 
                                         atomStates interchanged.
         """
-        # [copied WignerD rotation stuff from Nikola's code and amended as required]
         
         atomState1 = [self.n, self.l, self.j, self.s1]
         atomState2 = [self.nn, self.ll, self.jj, self.s2]
@@ -1902,9 +1894,6 @@ class PairStateInteractions:
                                     with V_{lj} the interaction strength for the given
                                     configuration in GHz(um)^6
         """
-        if self.interactionsUpTo == 2:
-            print("WARNING: The quadrupole interaction currently seems to yield bad results.\n"
-                 "Go back and have a look at this!")
         
         V_lj = 0
         # unpack angular momentum info
@@ -2070,6 +2059,7 @@ class PairStateInteractions:
         data = np.loadtxt(filename, delimiter=",")
         return fileInfos, coupledStates, data
 
+    
     def defineBasis(
         self,
         theta,
