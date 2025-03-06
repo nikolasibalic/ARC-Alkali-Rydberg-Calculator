@@ -2658,6 +2658,7 @@ class AlkaliAtom(object):
         sumOverMl = 0
 
         for ml in np.linspace(mj - s, mj + s, round(2 * s + 1)):
+            ml = float(ml)
             if abs(ml) <= l + 0.1:
                 ms = mj - ml
                 sumOverMl += (ml + gs * ms) * abs(CG(l, ml, s, ms, j, mj)) ** 2
@@ -4438,6 +4439,7 @@ class _EFieldCoupling:
         sumPart = 0.0
 
         for ml in np.linspace(mj1 - s, mj1 + s, round(2 * s + 1)):
+            ml = float(ml)
             if (abs(ml) - 0.1 < l1) and (abs(ml) - 0.1 < l2):
                 angularPart = 0.0
                 if abs(l1 - l2 - 1) < 0.1:

@@ -750,7 +750,7 @@ class StarkMap:
                         tn >= self.atom.groundStateN
                         or [tn, tl, tj] in self.atom.extraLevels
                     ):
-                        states.append([tn, tl, tj, mj])
+                        states.append([tn, tl, float(tj), mj])
 
         dimension = len(states)
         if progressOutput:
