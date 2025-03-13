@@ -1956,28 +1956,296 @@ class PairStateInteractions:
         return V_lj
     
     
-    def saveLJ(self, filename, nValueRange, atom1Vals, atom2Vals, nRange, energyDelta, stateHopping=False):
-        r"""
-        Saves the V_{lj} values for the atom1 and atom2 pair-interaction. From this file,
-        the full interaction matrix can be reconstructed by feeding the filename into the function
-        generateLJfromFile.
+    def __isAngularChannelDataCache(self):
+        '''
+        Checks if the angular channel precalc data file exists or not.
+        If not, creates the directory (if that doesn't exist yet) and creates an empty hdf5 file.
+
+        Output:
+            arcpath (str)     - local ARC directory path
+            datapath (str)    - local ARC angular channel datacache directory path
+            fileExist (bool)  - does datafile exist or not?
+        '''
+        # data filename
+        filename = 'angularChannel_precalcData.hdf5'
+
+        # get path to local ARC dir & data cache
+        try:
+            arcpath = inspectgetmodule(PairStateInteractions).__file__.strip('calculations_atom_pairstate.py')
+            cachepath = arcpath + 'data' + arcpath[-1] + 'C6_angularChannels_cache'
+            if not ospath.exists(cachepath):
+                # create cache directory if it doesn't exist yet
+                makedirs(cachepath)
         
+            # check if file exists in local ARC angular channel data cache: local arc/data/C6_angularChannels_cache
+            fileExist = ospath.isfile(cachepath + arcpath[-1] + filename)
+        except:
+                raise valueError("Local ARC directory cannot be determined.")
+
+        return arcpath, cachepath, fileExist
+
+
+    def __loadAngularChannelPrecalcDataFromZenodo(self):
+        '''
+        Loads precalculated datafile from Zenodo and stores locally.
+        '''
+        # get directories
+        arcpath, cachepath, _ = self.__isAngularChannelDataCache()
+
+        # try to load data from Zenodo
+        try:
+            # load from Zenodo
+            urllib.request.urlretrieve("https://zenodo.org/record/15006915/files/angularChannel_precalcData.hdf5",  cachepath+arcpath[-1]+"angularChannel_precalcData.hdf5")
+            print('Loaded data from Zenodo.')
+        except:
+            # create empty file
+            f = h5py.File(cachepath+arcpath[-1]+"angularChannel_precalcData.hdf5", "w")
+            # close
+            f.close()
+
+
+    def _checkLocalPrecalcForPairStateData(self, f, atom1Vals, atom2Vals, stateHopping):
+        '''
+        Checks whether or not a precalculated dataset for the specified pair state exists locally.
+
         Args:
-            filename (str) - name of the file (incl. file type ending) to which data should be saved
-            nValueRange (list) - [nMin, nMax]
+            f (hdf5 object)  - daat file handle
             atom1Vals (list) - [l1, j1, s1, atom1Type (ARC, e.g. Rubidium())]
             atom2Vals (list) - [l2, j2, s2, atom2Type (ARC, e.g. Rubidium())]
+            stateHopping (bool) -   whether or not the final state is interchanged ('hopped')
+                                    w.r.t. the initial state
+
+        Output:
+            status (bool) - True or False
+            filekey (str) - key to dataset
+        '''
+        # set status flag to False, filekey to nan
+        status = False
+        filekey = np.nan
+
+        # unpack atom data
+        [l1, j1, s1, atom1] = atom1Vals
+        [l2, j2, s2, atom2] = atom2Vals
+        
+        # get atom pair from atom1Vals, atom2Vals and atom species interchanged
+        atompairkey = atom1.elementName[:2]+atom2.elementName[:2]
+
+        ## get folder
+        datakeys = f[atompairkey].keys()
+
+        # iterate through datasets in file until (hopefully) found the matching one
+        for key2 in datakeys:
+            # get attributes of this dataset
+            fileattrs = [x for x in f[atompairkey+'/'+key2].attrs.keys()][1:]
+            # check that pair state details are the same
+            if (not status
+                and f[atompairkey+'/'+key2].attrs['atom 1'][:2] == atom1.elementName[:2] 
+                and f[atompairkey+'/'+key2].attrs['atom 2'][:2] == atom2.elementName[:2]
+                and f[atompairkey+'/'+key2].attrs['j1'] == j1
+                and f[atompairkey+'/'+key2].attrs['j2'] == j2
+                and f[atompairkey+'/'+key2].attrs['l1'] == l1
+                and f[atompairkey+'/'+key2].attrs['l2'] == l2
+               ):
+                status = True
+                filekey = atompairkey+'/'+key2
+
+        return status, filekey
+        
+
+    def __getAngularChannelFilename(self, atom1, l, j, atom2, ll, jj, stateHop):
+        '''
+        Returns the filename for the specified atom parameters.
+
+        Naming scheme example:
+            angularChannels_CsS0p5_RbD2p5_stateHopFalse.txt
+        Means:
+            atom 1: Cs, S-state (i.e. L=0), j=0.5
+            atom 2: Rb, D-state (i.e. L=2), j=2.5
+
+        Args:
+            atom1    - (ARC atom type) e.g. Rubidium()
+            atom2    - (ARC atom type) e.g. Rubidium()
+            l        - (int) l-value of first atom
+            j        - (float) j-value of first atom
+            ll       - (int) l-value of second atom
+            jj       - (float) j-value of second atom
+            stateHop - (bool) state hopping true or false?
+
+        Output:
+            filename - (str) filename for given atom data
+        '''
+        # define l and j dictionaries
+        lDict = {0:'S', 1:'P', 2:'D', 3:'F', 4:'G', 5:'H'}
+        jDict = {0.5:'0p5', 1.5:'1p5', 2.5:'2p5', 3.5:'3p5', 4.5:'4p5', 5.5:'5p5', 6.5:'6p5'}
+        
+        # get name block for atoms 1 and 2
+        atom1block = atom1.elementName[:2] + lDict[l] + jDict[j]
+        atom2block = atom2.elementName[:2] + lDict[ll] + jDict[jj]
+
+        # get filename
+        filename = 'angularChannels_' + atom1block + '_' + atom2block + '_stateHop' + str(stateHop) + '.txt'
+
+        return filename
+        
+
+    def __progressBar(self, n, ntot):
+        '''
+        Prints a progress bar to std output.
+
+        Args:
+            n (int)    - current n
+            ntot (int) - max n
+        '''
+        # write progress bar output
+        sys.stdout.write('\r')
+        sys.stdout.write("[%-20s] %d%%" % ('='*int(np.floor(n/ntot*20)), n/ntot*100))
+        sys.stdout.flush()
+
+
+    def loadAngularChannelData(self, atom1Vals, atom2Vals, stateHopping=False, loadFromZenodo=False):
+        '''
+        Checks if the precalculated angular channel values exist in the local cache. 
+            If yes, returns the data.
+            If not, checks on Zenodo () if bulk data exists, 
+                if yes loads datafile and saves it locally, then returns the data.
+                if not, output prompt to user explainaing how to calculate the requested dataset with the 'saveAngularChannelData' function.
+
+        Args:
+            atom1Vals (list) - [l1, j1, s1, atom1Type (ARC, e.g. Rubidium())]
+            atom2Vals (list) - [l2, j2, s2, atom2Type (ARC, e.g. Rubidium())]
+            stateHopping (bool) -   whether or not the final state is interchanged ('hopped')
+                                    w.r.t. the initial state
+            loadFromZenodo (bool) - whether or not to load data from Zenodo
+                                        If True then this will overwrite locally existing data for the specified pair state
+                                        with data from Zenodo if exists
+                                        If False but no local data exists, then checks Zenodo if data exists there and loads if True
+
+        Output:
+            fileInfos (dict)       - file calculation infos (atom infos, calculation settings)
+            coupledChannels (list) - list of coupled channels, in same order as in data
+            data (ndarray)         - list of angular channel values of the form: [n1, n2, C_lj1, C_lj2, ...] with C_lj the channel values
+        '''
+        # unpack atom data
+        [l1, j1, s1, atom1] = atom1Vals
+        [l2, j2, s2, atom2] = atom2Vals
+
+        # initialise data containers
+        fileInfos, coupledChannels, data = np.nan, np.nan, np.nan
+
+        ## DOES FILE EXIST LOCALLY?
+
+        # get ARC and precalc data directories
+        arcpath, cachepath, fileExist = self.__isAngularChannelDataCache()
+        
+        # if file doesn't exist or loadFromZenodo=True: load file from Zenodo
+        if not fileExist or loadFromZenodo:
+            self.__loadAngularChannelPrecalcDataFromZenodo()
+
+        ## DOES REQUESTED ATOM DATA EXIST LOCALLY?
+
+        # check if we can find relevant data
+        # open file
+        f = h5py.File(cachepath+arcpath[-1]+"angularChannel_precalcData.hdf5", "r")
+        # get groups (i.e. equivalent to folders)
+        atompairkeys = f.keys()
+        
+        # check if atom1-atom2 combination data exists
+        if (atom1.elementName[:2]+atom2.elementName[:2] in atompairkeys):
+            # check if the specific pair state data exists
+            dataExists, datakey = self._checkLocalPrecalcForPairStateData(f, atom1Vals, atom2Vals, stateHopping)
+            if dataExists: print("Data exists.")
+        elif (atom2.elementName[:2]+atom1.elementName[:2] in atompairkeys):
+            # check if the specific pair state data exists
+            dataExists, datakey = self._checkLocalPrecalcForPairStateData(f, atom2Vals, atom1Vals, stateHopping)
+            if dataExists: print('Precalculated data exists, but for atomic species interchanged.\nLoaded data for species in order: atom 1: '+atom2.elementName[:2]+', atom 2: '+atom1.elementName[:2])
+
+        # if the data exists: load all relevant data
+        if dataExists:
+            # get file attributes, i.e. calculation metadata
+            fileattrs = [x for x in f[datakey].attrs.keys()][1:]
+            metadata = dict([(x, f[datakey].attrs[x]) for x in fileattrs])
+            # get angular channels
+            coupledChannels = [[x] for x in (f[datakey].dims[1].label)[14:-2].split('), (')]
+            for i, channel in enumerate(coupledChannels):
+                coupledChannels[i] = [float(x) for x in channel[0].split(',')]
+            # load data
+            data = f[datakey][:] # 'empty' slicing is required to get ndarray that remains accessible after hdf5 file closure
+        # else: prompt user to calculate data with calcAngularChannelData function
+        else:
+            print("The requested data does not exist in the local cache. Please calculate the data via the calcAngularChannelData function.")
+                
+        # close file again
+        f.close()
+
+        return metadata, coupledChannels, data
+
+
+    def calculateAngularChannelData(self, atom1Vals, atom2Vals, nValueRange, nRange, energyDelta, stateHopping=False, overwriteLocalData=False):
+        '''
+        Saves the angular channel values C_{lj} for the atom1 and atom2 pair-interaction. Data is stored in local cache.
+        With this data, the full interaction matrix can be reconstructed by e.g. passing the angular channel values to the function _getPerturbativeC6Matrix_lj, 
+        and the angular channel values can be loaded with the function loadAngularChannelData. 
+        For more information on how to implement this, check the example Jupyter notebook on the angular channel code.
+        
+        Args:
+            atom1Vals (list) - [l1, j1, s1, atom1Type (ARC, e.g. Rubidium())]
+            atom2Vals (list) - [l2, j2, s2, atom2Type (ARC, e.g. Rubidium())]
+            nValueRange (list) - [nMin, nMax]
             nRange (int) -  how much below and above the given principal quantum number
                             of the pair state we should be looking
-            energyDelta (float) -   what is maximum energy difference ( :math:`\Delta E/h` in Hz)
+            energyDelta (float) -   what is maximum energy difference ( :math:`Delta E/h` in Hz)
                                     between the original pair state and the other pair states that
                                     we are including in the calculation
             stateHopping (bool) -   whether or not the final state is interchanged ('hopped')
                                     w.r.t. the initial state
-        """
+            overwriteLocalData (bool) - allow to overwrite the local dataset if it exists already?
+                            
+
+        Output:
+            status (bool) - status flag, True if calculation exited successfully
+        '''
+        # unpack atom data
         [l1, j1, s1, atom1] = atom1Vals
         [l2, j2, s2, atom2] = atom2Vals
+
+        # get ARC and precalc data directories
+        arcpath, cachepath, fileExist = self.__isAngularChannelDataCache()
+
+        # data exists boolean
+        dataExists = False
+
         
+        ## DOES REQUESTED ATOM DATA EXIST LOCALLY?
+
+        if not overwriteLocalData:
+            # check if we can find relevant data
+            # open file
+            f = h5py.File(cachepath+arcpath[-1]+"angularChannel_precalcData.hdf5", "r")
+            # get groups (i.e. equivalent to folders)
+            atompairkeys = f.keys()
+            
+            # check if atom1-atom2 combination data exists
+            if (atom1.elementName[:2]+atom2.elementName[:2] in atompairkeys):
+                # check if the specific pair state data exists
+                dataExists, datakey = self._checkLocalPrecalcForPairStateData(f, atom1Vals, atom2Vals, stateHopping)
+            elif (atom2.elementName[:2]+atom1.elementName[:2] in atompairkeys):
+                # check if the specific pair state data exists
+                dataExists, datakey = self._checkLocalPrecalcForPairStateData(f, atom2Vals, atom1Vals, stateHopping)
+                if dataExists: print('Precalculated data exists, but for atomic species interchanged.\nTry to load data for atom 1: '+atom2.elementName[:2]+', atom 2: '+atom1.elementName[:2])
+                
+            # close file again
+            f.close()
+
+            # if data exists, then print warning and exit function
+            if  dataExists:
+                raise Warning("The data exists locally and overwriteLocal was set to False. No new data was computed." \
+                "\nYou can enforce recalculation of the data by setting the function parameter overwriteLocalData=True. /" \
+                "\nYou can call the existing data via the function loadAngularChannelData.")
+                
+
+        ## DATA DOES NOT EXIST YET OR OVERWRITE LOCAL=TRUE ##
+
+        # calculate data
         # get coupling pathways
         if stateHopping == False:
             coupledStates = self._findAllCoupledAngularMomentumStates(l1,j1,s1, l2,j2,s2, stateHopping=False)
@@ -1985,7 +2253,11 @@ class PairStateInteractions:
             coupledStates = self._findAllCoupledAngularMomentumStates(l1,j1,s1, l2,j2,s2, stateHopping=True)
         if coupledStates == []:
             raise ValueError("No interaction pathways found for the specified conditions.")
-        
+
+        # total number of values to be calculated
+        ntot = int((nValueRange[1]-nValueRange[0]+1)**2)
+        ncurr = 1
+        # get angular channel values
         ljValues = np.zeros(((int(nValueRange[1]-nValueRange[0])+1)**2, 2+len(coupledStates)))
         # iterate through n1Vals
         for n1 in range(nValueRange[0], nValueRange[1]+1):
@@ -1993,6 +2265,7 @@ class PairStateInteractions:
             # iterate through n2Vals
             for n2 in range(nValueRange[0], nValueRange[1]+1):
                 j = int(n2-nValueRange[0])
+                # calculate channel values
                 vals = []
                 for pathway in coupledStates:
                     V_lj = self._calcLJcontribution_allParamsFree(pathway, [n1,s1, atom1], [n2,s2, atom2],
@@ -2000,64 +2273,52 @@ class PairStateInteractions:
                                                                   interactionsUpTo=self.interactionsUpTo)
                     vals.append(V_lj)
                 ljValues[i*int(nValueRange[1]-nValueRange[0]+1)+j,:] = [n1, n2, *vals]
+                # print progress bar
+                self.__progressBar(ncurr, ntot)
+                ncurr += 1
+
+
+        ## write new data to file
+
+        # open file
+        f = h5py.File(cachepath+arcpath[-1]+"angularChannel_precalcData.hdf5", "w")
+
+        # check if current atom combination is already key
+        atomSpeciesKey = atom1.elementName[:2]+atom2.elementName[:2]
+        if atomSpeciesKey in f.keys():
+            datafolder = f[atomSpeciesKey]
+        # if not: create group (folder) and add attributes
+        else:
+            datafolder = f.create_group(atomSpeciesKey)
+            # add attributes to group element
+            datafolder.attrs['atom 1'] = atom1.elementName[:2]
+            datafolder.attrs['atom 2'] = atom2.elementName[:2]
         
-        # header, line 1: dictionary with the following infos: 
-        #                           atom1_species, atom2_species, nRange, energyDelta, stateHopping
-        # header, line 2:
-        # header, line 3: 'n1', 'n2', {[l,j, ll,jj, l1,j1, ll1,jj1, l',j', ll',jj']}_i
-        # header, line 4: list with all {lj}_i 's in correct order
-        # header, line 5:
-        header = ("{'atom 1':'"+atom1.elementName+"', 'atom 2':'"+atom2.elementName
-                  +"', 'nRange':'"+str(nRange)+"', 'energyDelta':'"+str(energyDelta)
-                  +"', 'stateHopping':'"+str(stateHopping)+"', 'nValueRange':'"
-                  +str(nValueRange)+"', 'interactionsUpTo':'"+str(self.interactionsUpTo)+"'}\n\n"
-                  +"n1, n2, {[l,j, ll,jj, l1,j1, ll1,jj1, l',j', ll',jj']}_i \n"
-                  +" , ")
-        for i in range(len(coupledStates)):
-            header += ','+str(list(coupledStates[i]))
-        header += '\n'
-            
-        np.savetxt(filename, ljValues, header=header, delimiter=',')
-        print("data was successfully saved to file "+filename+".")
-        
+        # create dataset
+        filename = self.__getAngularChannelFilename(atom1, l1, j1, atom2, l2, j2, stateHopping)
+        dset = datafolder.create_dataset(filename, data=ljValues, dtype='f', compression='gzip')
     
-    def loadLJfromFile(self, filename):
-        r"""
-        Loads the V_{lj} data from the file passed to the function.
-        
-        Args:
-            filename (str) - name of the file (incl. file type ending) which contains the data
-            
-        Output:
-            fileInfos (dict) -  dictionary containing the details of the calculation
-                                and the range of n-values in the file
-                                keywords:   'atom 1', 'atom 2', 'nRange', 'energyDelta',
-                                            'stateHopping', 'nValueRange', 'intractionsUpTo'
-            coupled states (list) - list entries contain the 'pathways' of angular momentum
-                                    coupling for the V_{lj}s in the respective columns in the form
-                                    [l,j, ll,jj, l1,j1, l2,j2, l',j' ll',jj']
-            data (list) -   each list entry is a list, each containing the data [n1, n2, V_{lj}_i]
-                            with the V_{lj}_i in GHz um^6 and arranged in the same order as the
-                            corresponding lj pathway provided with the header
-        """
-        # get header
-        file = open(filename)
-        fileInfos = eval(file.readline()[2:])
-        # fix nValueRange and nRange types (list and int, respectively)
-        fileInfos["nRange"] = int(fileInfos["nRange"])
-        fileInfos["nValueRange"] = [int(x) for x in fileInfos["nValueRange"][1:-1].split(', ')]
-        # skip the next two lines as they contain no valuable information
-        for _ in range(2):
-            next(file)
-        coupledStateString = file.readline()[6:]
-        file.close()
-        # generate the list of coupled states from the string
-        coupledStates = [[float(x) for x in listEntry.split(', ')]
-                         for listEntry in coupledStateString[1:-2].split("],[")]
-        
-        # numpy's loadtxt skips the header and thus reads only the data
-        data = np.loadtxt(filename, delimiter=",")
-        return fileInfos, coupledStates, data
+        # add 'axis' label to dataset columns, i.e. coupled state info
+        dset.dims[1].label = str(['n1', 'n2', *coupledStates])
+
+        # add atom pair state attributes to dataset
+        dset.attrs['atom 1'] = atom1.elementName
+        dset.attrs['l1'] = l1
+        dset.attrs['j1'] = j1
+        dset.attrs['atom 2'] = atom2.elementName
+        dset.attrs['l2'] = l2
+        dset.attrs['j2'] = j2
+        dset.attrs['stateHopping'] = str(stateHopping)
+        # add calculation attributes to dataset
+        dset.attrs['nRange'] = str(nRange)
+        dset.attrs['energyDelta'] = str(energyDelta)
+        dset.attrs['nValueRange'] = str(nValueRange)
+        dset.attrs['interactionsUpTo'] = str(self.interactionsUpTo)
+
+        # close file
+        f.close()
+
+        print("\nData was successfully saved to local cache.")
 
     
     def defineBasis(
