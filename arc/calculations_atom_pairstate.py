@@ -1872,7 +1872,7 @@ class PairStateInteractions:
             )
             return Imat
 
-    def getC6PerturbativelyAngularChannel(
+    def getC6perturbativelyAngularChannel(
         self,
         theta,
         phi,
@@ -2381,10 +2381,12 @@ class PairStateInteractions:
     ):
         """
         Checks if the precalculated angular channel values exist in the local cache.
-            If yes, returns the data.
-            If not, checks on Zenodo () if bulk data exists,
-                if yes loads datafile and saves it locally, then returns the data.
-                if not, output prompt to user explainaing how to calculate the requested dataset with the 'saveAngularChannelData' function.
+        
+        If yes, returns the data.
+        
+        If not, checks on Zenodo () if bulk data exists,
+            - if yes loads datafile and saves it locally, then returns the data.
+            - if not, output prompt to user explainaing how to calculate the requested dataset with the :obj:`saveAngularChannelData` function.
 
         Args:
             atom1Vals (list) - [l1, j1, s1, atom1Type (ARC, e.g. Rubidium())]
@@ -2488,8 +2490,8 @@ class PairStateInteractions:
     ):
         """
         Saves the angular channel values C_{lj} for the atom1 and atom2 pair-interaction. Data is stored in local cache.
-        With this data, the full interaction matrix can be reconstructed by e.g. passing the angular channel values to the function _getPerturbativeC6Matrix_lj,
-        and the angular channel values can be loaded with the function loadAngularChannelData.
+        With this data, the full interaction matrix can be reconstructed by e.g. passing the angular channel values to the function :obj:`_getPerturbativeC6Matrix_lj`,
+        and the angular channel values can be loaded with the function :obj:`loadAngularChannelData`.
         For more information on how to implement this, check the example Jupyter notebook on the angular channel code.
 
         Args:

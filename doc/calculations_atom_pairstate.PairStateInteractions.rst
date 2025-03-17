@@ -21,6 +21,9 @@ Calculate
     ~PairStateInteractions.getC6perturbatively
     ~PairStateInteractions.getLeRoyRadius
     ~PairStateInteractions.diagonalise
+    ~PairStateInteractions.getC6perturbativelyAngularChannel
+    ~PairStateInteractions.calculateAngularChannelData
+    ~PairStateInteractions.loadAngularChannelData
 
 Analyse
 -------
