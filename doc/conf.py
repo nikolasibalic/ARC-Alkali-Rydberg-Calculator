@@ -400,5 +400,5 @@ intersphinx_mapping = {
     "sympy": ("https://docs.sympy.org/latest/", None),  # type: ignore
     "numpy": ("https://numpy.org/doc/stable/", None),  # type: ignore
     "matplotlib": ("https://matplotlib.org/stable/", None),  # type: ignore
-    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),  # type: ignore
 }  # type: ignore
