@@ -23,6 +23,7 @@ import matplotlib  # noqa: E402
 
 matplotlib.use("agg")
 
+
 class Mock(MagicMock):
     @classmethod
     def __getattr__(cls, name):
@@ -122,7 +123,7 @@ release = "3.8.0"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = 'en'
+language = "en"
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -393,9 +394,11 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'python': ('https://docs.python.org/3', None), # type: ignore
-                       'h5py': ('https://docs.h5py.org/en/latest/', None), # type: ignore
-                       'sympy': ('https://docs.sympy.org/latest/', None), # type: ignore
-                       'numpy': ('https://numpy.org/doc/stable/', None), # type: ignore
-                       'matplotlib': ('https://matplotlib.org/stable/', None),  # type: ignore
-                       'scipy': ('https://docs.scipy.org/doc/scipy/', None)} # type: ignore
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),  # type: ignore
+    "h5py": ("https://docs.h5py.org/en/latest/", None),  # type: ignore
+    "sympy": ("https://docs.sympy.org/latest/", None),  # type: ignore
+    "numpy": ("https://numpy.org/doc/stable/", None),  # type: ignore
+    "matplotlib": ("https://matplotlib.org/stable/", None),  # type: ignore
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+}  # type: ignore

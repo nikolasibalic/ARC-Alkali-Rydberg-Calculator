@@ -2381,9 +2381,9 @@ class PairStateInteractions:
     ):
         """
         Checks if the precalculated angular channel values exist in the local cache.
-        
+
         If yes, returns the data.
-        
+
         If not, checks on Zenodo () if bulk data exists,
             - if yes loads datafile and saves it locally, then returns the data.
             - if not, output prompt to user explainaing how to calculate the requested dataset with the :obj:`saveAngularChannelData` function.
