@@ -51,6 +51,8 @@ __all__ = [
     "C_e",
     "C_m_e",
     "getCitationForARC",
+    "compositeState",
+    "singleAtomState",
 ]
 
 from arc.alkali_atom_functions import (
@@ -60,6 +62,8 @@ from arc.alkali_atom_functions import (
     printStateStringLatex,
     printStateLetter,
     formatNumberSI,
+    compositeState,
+    singleAtomState,
 )
 from arc.alkali_atom_data import (
     Hydrogen,
