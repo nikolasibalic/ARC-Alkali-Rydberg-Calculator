@@ -250,8 +250,7 @@ class DivalentAtom(AlkaliAtom):
                 self.conn.commit()
             except sqlite3.Error as e:
                 print(
-                    "Error while loading precalculated values"
-                    "into the database"
+                    "Error while loading precalculated values into the database"
                 )
                 print(e)
                 exit()
@@ -399,7 +398,7 @@ class DivalentAtom(AlkaliAtom):
         """
         if s is None:
             raise ValueError(
-                "You must specify total angular momentum s " "explicitly."
+                "You must specify total angular momentum s explicitly."
             )
 
         dl = abs(l1 - l2)
@@ -595,8 +594,7 @@ class DivalentAtom(AlkaliAtom):
 
             except sqlite3.Error as e:
                 print(
-                    "Error while loading precalculated values "
-                    "into the database"
+                    "Error while loading precalculated values into the database"
                 )
                 print(e)
                 print(literatureDME)

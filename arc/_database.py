@@ -14,6 +14,7 @@ class UsedModulesARC(object):
     hyperfine = False
     advanced_getPopulationTime = False
     ac_stark = False
+    pairstate_angular_channels = False
 
 
 def getCitationForARC():
@@ -32,6 +33,9 @@ def getCitationForARC():
         citation += """- M. Archimi, C. Simonelli, L. Di Virgilio, A. Greco, M. Ceccanti, E. Arimondo, D. Ciampini, I. I. Ryabtsev, I. I. Beterov, and O. Morsch, Phys. Rev. A 100, 030501(R) (2019) https://doi.org/10.1103/PhysRevA.100.030501\n"""
 
     if UsedModulesARC.ac_stark:
-        citation += """- D. H. Meyer, Z. A. Castillo, K. C. Cox, P. D. Kunz, J. Phys. B: At. Mol. Opt. Phys, 53, 034001 (2020) https://doi.org/10.1088/1361-6455/ab6051"""
+        citation += """- D. H. Meyer, Z. A. Castillo, K. C. Cox, P. D. Kunz, J. Phys. B: At. Mol. Opt. Phys, 53, 034001 (2020) https://doi.org/10.1088/1361-6455/ab6051\n"""
+
+    if UsedModulesARC.pairstate_angular_channels:
+        citation += """- Karen Wadenpfuhl, C. Stuart Adams, Unravelling the Structures in the van der Waals Interactions of Alkali Rydberg Atoms, arXiv:2412.14861, https://arxiv.org/abs/2412.14861\n"""
 
     return citation

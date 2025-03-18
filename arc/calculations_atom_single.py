@@ -2195,8 +2195,7 @@ class AtomSurfaceVdW:
         self.atom = atom
         if surfaceMaterial is None:
             print(
-                "NOTE: No surface material specified. "
-                "Assuming perfect mirror."
+                "NOTE: No surface material specified. Assuming perfect mirror."
             )
         self.surfaceMaterial = surfaceMaterial
 

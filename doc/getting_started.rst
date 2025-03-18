@@ -45,6 +45,16 @@ electric field.
 
     AC_Stark_primer
 
+
+`ARC 3.8 update: support for angular channel analysis`_ adds support for s
+systematic search for suitable pair states relevant for Foster resonances and
+understanding structure of van der Waals interactions of Alkali Rydberg Atoms.
+
+.. toctree::
+    :maxdepth: 4
+
+    ARC_angularChannels.ipynb
+
 Click on the corresponding topic above to open static (HTML) version of the
 notebooks. If you want directly .ipynb format, open directly files form ARC
 repository and run them in `Jupyter`_ .
@@ -56,6 +66,8 @@ repository and run them in `Jupyter`_ .
 .. _`ARC 3.1 update: support for hyperfine structure for alkali atoms`: ./ARC_3_1_additions.ipynb
 
 .. _`ARC 3.3 update: support for AC Stark shifts`: ./AC_Stark_primer.ipynb
+
+.. _`ARC 3.8 update: support for angular channel analysis`: ./ARC_angularChannels.ipynb
 
 .. _`Jupyter`: https://jupyter.org/
 

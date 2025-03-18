@@ -89,7 +89,16 @@ def Wigner3j(j1, j2, j3, m1, m2, m3):
         # usual implementation of coefficient calculation that uses factorials
         # would fail (overflow). Use instead something slower verion from Sympy
         return float(
-            sympyEvaluate(Wigner3j_sympy(j1, j2, j3, m1, m2, m3).doit())
+            sympyEvaluate(
+                Wigner3j_sympy(
+                    float(j1),
+                    float(j2),
+                    float(j3),
+                    float(m1),
+                    float(m2),
+                    float(m3),
+                ).doit()
+            )
         )
 
     # print "unknown %.1f %.1f %.1f %.1f %.1f %.1f " % (j1,j2,j3,m1,m2,m3)

@@ -63,6 +63,7 @@ dependencies = [
     "sympy>=1.1.1",
     "lmfit>=0.9.0",
     "rich>=13.9.4",
+    "h5py>=3.11.0",
 ]
 
 [project.readme]

@@ -2887,7 +2887,7 @@ class AlkaliAtom(object):
             for f2 in np.arange(
                 max(self.I - j2, abs(mf2), f1 - 1), 1 + min(self.I + j2, f1 + 1)
             ):
-                f2 = cast(float, f2) # type: ignore
+                f2 = cast(float, f2)  # type: ignore
                 # Enforce Triangle Rule
                 if abs(j2 - self.I) <= f2:
                     # CG multiplied by <j1 f1 mf1|er_q|j2 f2 mf2> in units of <j1 || er || j2 >
@@ -3162,7 +3162,7 @@ class AlkaliAtom(object):
         UsedModulesARC.hyperfine = True
         b = 0.0
         for q in np.arange(-1, 2):
-            q = cast(int, q) # type: ignore
+            q = cast(int, q)  # type: ignore
             b += (
                 self.getSphericalDipoleMatrixElement(fg, mfg, fe, mfe, q) ** 2
                 * self._reducedMatrixElementFJ(jg, fg, je, fe) ** 2
@@ -3768,36 +3768,71 @@ class AlkaliAtom(object):
         c = self.conn.cursor()
 
         with Progress() as progress:
-            task = progress.add_task(f"[blue bold]Recalculating {self.elementName} DME...", total=len(data), transient=True)
+            task = progress.add_task(
+                f"[blue bold]Recalculating {self.elementName} DME...",
+                total=len(data),
+                transient=True,
+            )
 
             for transition in data:
                 c.execute(
                     """SELECT dme FROM dipoleME WHERE
                         n1= ? AND l1 = ? AND j1_x2 = ? AND
                         n2 = ? AND l2 = ? AND j2_x2 = ?""",
-                        (transition[0], transition[1], transition[2], transition[3], transition[4], transition[5]),
+                    (
+                        transition[0],
+                        transition[1],
+                        transition[2],
+                        transition[3],
+                        transition[4],
+                        transition[5],
+                    ),
                 )
                 dme = c.fetchone()
                 if dme:
                     c.execute(
-                    """DELETE FROM dipoleME WHERE
+                        """DELETE FROM dipoleME WHERE
                         n1= ? AND l1 = ? AND j1_x2 = ? AND
                         n2 = ? AND l2 = ? AND j2_x2 = ?""",
-                        (transition[0], transition[1], transition[2], transition[3], transition[4], transition[5]),
+                        (
+                            transition[0],
+                            transition[1],
+                            transition[2],
+                            transition[3],
+                            transition[4],
+                            transition[5],
+                        ),
                     )
-                    new = self.getRadialMatrixElement(round(transition[0]), round(transition[1]), transition[2]/2,
-                                                    round(transition[3]), round(transition[4]), transition[5]/2)
-                    relative_diff = (dme[0]-new)/dme[0] * 100
-                    if abs((dme[0]-new)/dme[0])>1:
-                        progress.log(f"old = {round(dme[0],3)}\t new = {round(new,3)} ({'+' if relative_diff>0 else ''} {round(relative_diff,2)} %) for {int(transition[0])}, {int(transition[1])}, {transition[2]/2} --> {int(transition[3])}, {int(transition[4])}, {transition[5]/2}")
-                        print(f"old = {round(dme[0],3)}\t new = {round(new,3)} ({'+' if relative_diff>0 else ''} {round(relative_diff,2)} %) for {int(transition[0])}, {int(transition[1])}, {transition[2]/2} --> {int(transition[3])}, {int(transition[4])}, {transition[5]/2}")
+                    new = self.getRadialMatrixElement(
+                        round(transition[0]),
+                        round(transition[1]),
+                        transition[2] / 2,
+                        round(transition[3]),
+                        round(transition[4]),
+                        transition[5] / 2,
+                    )
+                    relative_diff = (dme[0] - new) / dme[0] * 100
+                    if abs((dme[0] - new) / dme[0]) > 1:
+                        progress.log(
+                            f"old = {round(dme[0], 3)}\t new = {round(new, 3)} ({'+' if relative_diff > 0 else ''} {round(relative_diff, 2)} %) for {int(transition[0])}, {int(transition[1])}, {transition[2] / 2} --> {int(transition[3])}, {int(transition[4])}, {transition[5] / 2}"
+                        )
+                        print(
+                            f"old = {round(dme[0], 3)}\t new = {round(new, 3)} ({'+' if relative_diff > 0 else ''} {round(relative_diff, 2)} %) for {int(transition[0])}, {int(transition[1])}, {transition[2] / 2} --> {int(transition[3])}, {int(transition[4])}, {transition[5] / 2}"
+                        )
                         if abs(new) < 0.00000000001:
                             c.execute(
                                 """DELETE FROM dipoleME WHERE
                                     n1= ? AND l1 = ? AND j1_x2 = ? AND
                                     n2 = ? AND l2 = ? AND j2_x2 = ?""",
-                                    (transition[0], transition[1], transition[2], transition[3], transition[4], transition[5]),
-                                )
+                                (
+                                    transition[0],
+                                    transition[1],
+                                    transition[2],
+                                    transition[3],
+                                    transition[4],
+                                    transition[5],
+                                ),
+                            )
                 progress.update(task, advance=1)
             self.conn.commit()
             progress.log("Finished calculating DME!")
@@ -3810,42 +3845,78 @@ class AlkaliAtom(object):
         c = self.conn.cursor()
 
         with Progress() as progress:
-            task = progress.add_task(f"[blue bold]Recalculating {self.elementName} QME...", total=len(data), transient=True)
+            task = progress.add_task(
+                f"[blue bold]Recalculating {self.elementName} QME...",
+                total=len(data),
+                transient=True,
+            )
 
             for transition in data:
                 c.execute(
                     """SELECT qme FROM quadrupoleME WHERE
                         n1= ? AND l1 = ? AND j1_x2 = ? AND
                         n2 = ? AND l2 = ? AND j2_x2 = ?""",
-                        (transition[0], transition[1], transition[2], transition[3], transition[4], transition[5]),
+                    (
+                        transition[0],
+                        transition[1],
+                        transition[2],
+                        transition[3],
+                        transition[4],
+                        transition[5],
+                    ),
                 )
                 qme = c.fetchone()
                 if qme:
                     c.execute(
-                    """DELETE FROM quadrupoleME WHERE
+                        """DELETE FROM quadrupoleME WHERE
                         n1= ? AND l1 = ? AND j1_x2 = ? AND
                         n2 = ? AND l2 = ? AND j2_x2 = ?""",
-                        (transition[0], transition[1], transition[2], transition[3], transition[4], transition[5]),
+                        (
+                            transition[0],
+                            transition[1],
+                            transition[2],
+                            transition[3],
+                            transition[4],
+                            transition[5],
+                        ),
                     )
-                    new = self.getQuadrupoleMatrixElement(round(transition[0]), round(transition[1]), transition[2]/2,
-                                                    round(transition[3]), round(transition[4]), transition[5]/2)
-                    relative_diff = (qme[0]-new)/dme[0] * 100
-                    if abs((qme[0]-new)/qme[0])>1:
-                        progress.log(f"old = {round(qme[0],3)}\t new = {round(new,3)} ({'+' if relative_diff>0 else ''} {round(relative_diff,2)} %) for {int(transition[0])}, {int(transition[1])}, {transition[2]/2} --> {int(transition[3])}, {int(transition[4])}, {transition[5]/2}")
-                        print(f"old = {round(qme[0],3)}\t new = {round(new,3)} ({'+' if relative_diff>0 else ''} {round(relative_diff,2)} %) for {int(transition[0])}, {int(transition[1])}, {transition[2]/2} --> {int(transition[3])}, {int(transition[4])}, {transition[5]/2}")
-                        
+                    new = self.getQuadrupoleMatrixElement(
+                        round(transition[0]),
+                        round(transition[1]),
+                        transition[2] / 2,
+                        round(transition[3]),
+                        round(transition[4]),
+                        transition[5] / 2,
+                    )
+                    relative_diff = (qme[0] - new) / dme[0] * 100
+                    if abs((qme[0] - new) / qme[0]) > 1:
+                        progress.log(
+                            f"old = {round(qme[0], 3)}\t new = {round(new, 3)} ({'+' if relative_diff > 0 else ''} {round(relative_diff, 2)} %) for {int(transition[0])}, {int(transition[1])}, {transition[2] / 2} --> {int(transition[3])}, {int(transition[4])}, {transition[5] / 2}"
+                        )
+                        print(
+                            f"old = {round(qme[0], 3)}\t new = {round(new, 3)} ({'+' if relative_diff > 0 else ''} {round(relative_diff, 2)} %) for {int(transition[0])}, {int(transition[1])}, {transition[2] / 2} --> {int(transition[3])}, {int(transition[4])}, {transition[5] / 2}"
+                        )
+
                         if abs(new) < 0.00000000001:
                             c.execute(
                                 """DELETE FROM quadrupoleME WHERE
                                     n1= ? AND l1 = ? AND j1_x2 = ? AND
                                     n2 = ? AND l2 = ? AND j2_x2 = ?""",
-                                    (transition[0], transition[1], transition[2], transition[3], transition[4], transition[5]),
-                                )
+                                (
+                                    transition[0],
+                                    transition[1],
+                                    transition[2],
+                                    transition[3],
+                                    transition[4],
+                                    transition[5],
+                                ),
+                            )
                 progress.update(task, advance=1)
             self.conn.commit()
             progress.log("Finished calculating quadrupole matrix elements!")
 
         self.updateDipoleMatrixElementsFile()
+
 
 def NumerovBack(
     innerLimit: float,
@@ -3967,9 +4038,9 @@ def NumerovBack(
         br -= 1  # type: ignore
 
     # convert R(r)*r^{3/4} to  R(r)*r
-    sol = np.multiply(sol, np.sqrt(rad)) # type: ignore
+    sol = np.multiply(sol, np.sqrt(rad))  # type: ignore
     # convert \sqrt(r) to r
-    rad = np.multiply(rad, rad) # type: ignore
+    rad = np.multiply(rad, rad)  # type: ignore
 
     return rad, sol
 
