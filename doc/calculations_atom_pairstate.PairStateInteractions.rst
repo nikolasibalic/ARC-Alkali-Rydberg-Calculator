@@ -14,6 +14,8 @@ PairStateInteractions
 Calculate
 ---------
 
+Full numerical calculation
+
 .. autosummary::
     :toctree: generated/
 
@@ -21,9 +23,16 @@ Calculate
     ~PairStateInteractions.getC6perturbatively
     ~PairStateInteractions.getLeRoyRadius
     ~PairStateInteractions.diagonalise
+cd
+Analysis of dominant angular channels and perturbative calculation
+
+.. autosummary::
+    :toctree: generated/
+
     ~PairStateInteractions.getC6perturbativelyAngularChannel
     ~PairStateInteractions.calculateAngularChannelData
     ~PairStateInteractions.loadAngularChannelData
+    ~PairStateInteractions.getC6perturbatively_anglePairs
 
 Analyse
 -------
