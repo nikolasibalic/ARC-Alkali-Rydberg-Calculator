@@ -2885,7 +2885,8 @@ class AlkaliAtom(object):
         sph = 0.0
         if abs(mI) <= self.I:
             for f2 in np.arange(
-                max(self.I - j2, abs(mf2), f1 - 1), 1 + min(self.I + j2, f1 + 1)
+                max(self.I - j2, abs(mf2), f1 - 1), 1 + min(self.I + j2, f1 + 1),
+                dtype=float
             ):
                 f2 = cast(float, f2)  # type: ignore
                 # Enforce Triangle Rule
@@ -3161,7 +3162,7 @@ class AlkaliAtom(object):
         """
         UsedModulesARC.hyperfine = True
         b = 0.0
-        for q in np.arange(-1, 2):
+        for q in np.arange(-1, 2, dtype=int):
             q = cast(int, q)  # type: ignore
             b += (
                 self.getSphericalDipoleMatrixElement(fg, mfg, fe, mfe, q) ** 2

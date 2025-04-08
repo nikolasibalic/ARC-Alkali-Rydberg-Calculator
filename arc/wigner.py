@@ -494,7 +494,7 @@ def _wignerD(j, m, n=0, approx_lim=10):
     )
 
 
-def CG(j1, m1, j2, m2, j3, m3):
+def CG(j1, m1, j2, m2, j3, m3) -> float:
     r"""
     Clebsch–Gordan (CG) coefficients
 
