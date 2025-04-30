@@ -130,7 +130,7 @@ class Wavefunction:
                 l,
                 0.5,
                 j,
-                self.atom.getEnergy(n, l, j) / 27.211,
+                self.atom.getEnergy(n, l, j) / 27.211_386_245_981,
                 self.atom.alphaC ** (1 / 3.0),
                 2.0 * n * (n + 15.0),
                 step,

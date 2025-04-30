@@ -1107,7 +1107,8 @@ class PairStateInteractions:
             self.l,
             0.5,
             self.j,
-            self.atom1.getEnergy(self.n, self.l, self.j, s=self.s1) / 27.211,
+            self.atom1.getEnergy(self.n, self.l, self.j, s=self.s1)
+            / 27.211_386_245_981,
             self.atom1.alphaC ** (1 / 3.0),
             2.0 * self.n * (self.n + 15.0),
             step,
@@ -1122,7 +1123,8 @@ class PairStateInteractions:
             self.ll,
             0.5,
             self.jj,
-            self.atom2.getEnergy(self.nn, self.ll, self.jj, s=self.s2) / 27.211,
+            self.atom2.getEnergy(self.nn, self.ll, self.jj, s=self.s2)
+            / 27.211_386_245_981,
             self.atom2.alphaC ** (1 / 3.0),
             2.0 * self.nn * (self.nn + 15.0),
             step,
