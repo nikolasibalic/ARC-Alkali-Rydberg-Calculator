@@ -2019,6 +2019,9 @@ class PairStateInteractions:
                 C6hop = np.real(
                     compositeState2.dot(Imat21_rot.dot(compositeState1.T))[0][0]
                 )
+            # if atom states are the same, then C6hop = C6
+            else:
+                C6hop = C6
 
         # if degeneratePerturbation == True, construct full interaction matrix from above two matrices
         if degeneratePerturbation or returnInteractionMatrix:
