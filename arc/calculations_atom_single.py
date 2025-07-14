@@ -1769,7 +1769,7 @@ class LevelPlot:
                     # for ground state S state, there is only singlet
                     l += 1
                 while l <= min(lTo, n - 1):
-                    for j in np.linspace(l - s, l + s, round(2 * s + 1)):
+                    for j in np.linspace(np.abs(l - s), l + s, round(2 * s + 1)):
                         if j > -0.1:
                             self.listX.append(l - lFrom + xPositionOffset)
                             self.listY.append(self.atom.getEnergy(n, l, j, s=s))
