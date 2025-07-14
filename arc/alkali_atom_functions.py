@@ -57,7 +57,7 @@ import pickle
 
 
 DPATH = os.path.join(os.path.expanduser("~"), ".arc-data")
-__arc_data_version__ = 12
+__arc_data_version__ = 13
 
 __all__ = [
     "AlkaliAtom",
