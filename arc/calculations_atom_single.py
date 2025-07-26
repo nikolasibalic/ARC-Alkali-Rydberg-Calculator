@@ -144,7 +144,7 @@ class Wavefunction:
                     r, rWavefunc, bounds_error=False, fill_value=(0, 0)
                 )
             )
-            self.basisFrequencies.append(self.atom.getEnergy(n, l, j) / hbar)
+            self.basisFrequencies.append(self.atom.getEnergy(n, l, j) / physical_constants["Planck constant in eV/Hz"][0])
 
     def getRtimesPsiSpherical(self, theta, phi, r, t=0.0):
         r"""
