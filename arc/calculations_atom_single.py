@@ -118,6 +118,7 @@ class Wavefunction:
         self.basisStates = basisStates
         self.coef = coefficients
         self.basisWavefunctions = []
+        self.basisFrequencies = []
 
         for state in self.basisStates:
             n = state[0]
@@ -143,10 +144,11 @@ class Wavefunction:
                     r, rWavefunc, bounds_error=False, fill_value=(0, 0)
                 )
             )
+            self.basisFrequencies.append(self.atom.getEnergy(n, l, j) / hbar)
 
-    def getRtimesPsiSpherical(self, theta, phi, r):
+    def getRtimesPsiSpherical(self, theta, phi, r, t=0.0):
         r"""
-        Calculates list of :math:`r \cdot \psi_{m_s} (\theta, \phi, r)`
+        Calculates list of :math:`r \cdot \psi_{m_s} (\theta, \phi, r, t)`
 
         At point defined by spherical coordinates, returns list of
         :math:`r \cdot \psi_{m_s} (\theta, \phi, r)`
@@ -164,14 +166,15 @@ class Wavefunction:
                 selected point) (in units of radians).
             r (float): distance between coordinate origin and selected
                 point. (in atomic units of Bohr radius :math:`a_0`)
+            t (float): optional, time at which wavefunction is calculated.
 
         Returns:
             list of complex values corresponding to
-            :math:`\psi_{m_s} (\theta, \phi, r)` for different
+            :math:`\psi_{m_s} (\theta, \phi, r, t)` for different
             spin states :math:`m_s` contributing to the state in **decreasing**
             order of :math:`m_s`. For example, for :obj:`arc.AlkaliAtom`
-            returns :math:`r \cdot \psi_{m_s=+1/2} (\theta, \phi, r)` and
-            :math:`r \cdot \psi_{m_s=-1/2} (\theta, \phi, r) `.
+            returns :math:`r \cdot \psi_{m_s=+1/2} (\theta, \phi, r, t)` and
+            :math:`r \cdot \psi_{m_s=-1/2} (\theta, \phi, r, t)` .
             )`
         """
 
@@ -188,6 +191,7 @@ class Wavefunction:
                     * Ylm(l, mj - 0.5, theta, phi)
                     * self.basisWavefunctions[i](r)
                     * self.coef[i]
+                    * np.exp(-1j * self.basisFrequencies[i] * t)
                 )
             if abs(mj + 0.5) - 0.1 < l:
                 wfElectronM += (
@@ -195,12 +199,13 @@ class Wavefunction:
                     * Ylm(l, mj + 0.5, theta, phi)
                     * self.basisWavefunctions[i](r)
                     * self.coef[i]
+                    * np.exp(-1j * self.basisFrequencies[i] * t)
                 )
         return wfElectronP, wfElectronM
 
-    def getRtimesPsi(self, x, y, z):
+    def getRtimesPsi(self, x, y, z, t=0.0):
         r"""
-        Calculates list of :math:`r \cdot \psi_{m_s} (x, y, z)`
+        Calculates list of :math:`r \cdot \psi_{m_s} (x, y, z, t)`
 
         At a point defined by Cartesian coordinates returns list of
         :math:`r \cdot \psi_{m_s} (x, y, z)`
@@ -217,28 +222,29 @@ class Wavefunction:
             z (float): Cartesian coordinates of selected point,
                 relative to the atom core.
                 (in atomic units of Bohr radius :math:`a_0`)
+            t (float): optional, time at which wavefunction is calculated.
 
         Returns:
             list of complex values corresponding to
-            :math:`r \cdot \psi_{m_s} (\theta, \phi, r)` for different
+            :math:`r \cdot \psi_{m_s} (\theta, \phi, r, t)` for different
             spin states :math:`m_s` contributing to the state in
             **decreasing** order of :math:`m_s`.
             For example, for :obj:`arc.AlkaliAtom`
-            returns :math:`r \cdot \psi_{m_s=+1/2} (\theta, \phi, r)` and
-            :math:`r \cdot \psi_{m_s=-1/2} (\theta, \phi, r)` .
+            returns :math:`r \cdot \psi_{m_s=+1/2} (\theta, \phi, r, t)` and
+            :math:`r \cdot \psi_{m_s=-1/2} (\theta, \phi, r, t)` .
             )`, where :math:`r=\sqrt{x^2+y^2+z^2}`.
         """
         theta = np.arctan2((x**2 + y**2) ** 0.5, z)
         phi = np.arctan2(y, x)
         r = np.sqrt(x**2 + y**2 + z**2)
-        return self.getRtimesPsiSpherical(theta, phi, r)
+        return self.getRtimesPsiSpherical(theta, phi, r, t)
 
-    def getPsi(self, x, y, z):
+    def getPsi(self, x, y, z, t=0.0):
         r"""
-        Calculates list of :math:`\psi_{m_s} (x,y,z)`
+        Calculates list of :math:`\psi_{m_s} (x,y,z,t)`
 
         At point define by Cartesian coordinates returns list of
-        :math:`\psi_{m_s} (x,y,z)` wavefunction values corresponding
+        :math:`\psi_{m_s} (x,y,z,t)` wavefunction values corresponding
         to different electron spin projection values :math:`m_s`.
 
         Args:
@@ -251,22 +257,23 @@ class Wavefunction:
             z (float): Cartesian coordinates of selected point,
                 relative to the atom core.
                 (in atomic units of Bohr radius :math:`a_0`)
+            t (float): optional, time at which wavefunction is calculated.
 
         Returns:
             list of complex values corresponding to
-            :math:`\psi_{m_s} (\theta, \phi, r)` for different
+            :math:`\psi_{m_s} (\theta, \phi, r, t)` for different
             spin states :math:`m_s` contributing to the state in
             **decreasing** order of :math:`m_s`.
             For example, for :obj:`arc.AlkaliAtom`
-            returns :math:`\psi_{m_s=+1/2} (\theta, \phi, r)` and
-            :math:`\psi_{m_s=-1/2} (\theta, \phi, r)` .
+            returns :math:`\psi_{m_s=+1/2} (\theta, \phi, r, t)` and
+            :math:`\psi_{m_s=-1/2} (\theta, \phi, r, t)` .
             )`.
         """
         r = np.sqrt(x * x + y * y + z * z)
-        return self.getRtimesPsi(x, y, z) / r
+        return self.getRtimesPsi(x, y, z, t) / r
 
     def getRtimesPsiSquaredInPlane(
-        self, plane="x-z", pointsPerAxis=150, axisLength=None, units="atomic"
+        self, plane="x-z", pointsPerAxis=150, axisLength=None, units="atomic", t=0.0
     ):
         r"""
         Calculates :math:`|r \cdot \psi|^2` on a mesh in a given plane.
@@ -283,8 +290,9 @@ class Wavefunction:
                 (in atomic units of Bohr radius :math:`a_0`).
             units (str): optional, units of length in which calculated mesh
                 will be **returned** (note that `axisLength` is on the other
-                hand always in atomi units.). Supported values are
-                `'atomic'` or `'nm'`. Default value `'atomic'` .
+                hand always in atomic units.). Supported values are
+                `'atomic'` or `'nm'`. Default value `'atomic'`.
+            t (float): optional, time at which wavefunction is calculated.
 
         Returns:
             meshCoordinate1, meshCoordinate2 and
@@ -311,7 +319,7 @@ class Wavefunction:
         else:
             raise ValueError("Only 'x-y' and 'x-z' planes are supported.")
 
-        wfP, wfM = self.getRtimesPsi(*coord)
+        wfP, wfM = self.getRtimesPsi(*coord, t=t)
 
         # change units
         if units == "nm":
