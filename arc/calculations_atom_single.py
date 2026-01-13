@@ -40,7 +40,7 @@ from numpy.linalg import eigh
 
 import scipy.sparse as sp
 from scipy.sparse import csr_matrix
-from scipy.special import sph_harm
+from scipy.special import sph_harm_y
 
 import sys
 
@@ -56,7 +56,7 @@ if sys.version_info > (2,):
 
 
 def Ylm(l, m, theta, phi):
-    return sph_harm(m, l, phi, theta)
+    return sph_harm_y(m, l, phi, theta)
 
 
 __all__ = [
