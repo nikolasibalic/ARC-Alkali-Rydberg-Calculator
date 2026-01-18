@@ -3179,8 +3179,7 @@ class AlkaliAtom(object):
         """
         UsedModulesARC.hyperfine = True
         b = 0.0
-        for q in np.arange(-1, 2, dtype=int):
-            q = cast(int, q)  # type: ignore
+        for q in (-1, 0, 1):
             b += (
                 self.getSphericalDipoleMatrixElement(fg, mfg, fe, mfe, q) ** 2
                 * self._reducedMatrixElementFJ(jg, fg, je, fe) ** 2
