@@ -55,9 +55,9 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Physics",
     "Development Status :: 5 - Production/Stable",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
-    "scipy>=0.18.1",
+    "scipy>=1.15.0",
     "numpy>=2.0",
     "matplotlib>=1.5.3",
     "sympy>=1.1.1",

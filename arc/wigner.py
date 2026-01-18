@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import division, print_function, absolute_import
-from scipy.special import jv, legendre, sph_harm, jacobi
+from scipy.special import jv, legendre, sph_harm_y, jacobi
 from math import pi
 from numpy import conj as conjugate
 from numpy import floor, sqrt, sin, cos, exp, power
@@ -427,7 +427,7 @@ def _wignerd(j, m, n=0, approx_lim=10):
         elif False:
             # print('spherical harmonics (exact)')
             a = sqrt(4.0 * pi / (2.0 * j + 1.0))
-            return lambda beta: a * conjugate(sph_harm(m, j, beta, 0.0))
+            return lambda beta: a * conjugate(sph_harm_y(m, j, beta, 0.0))
 
     jmn_terms = {
         j + n: (m - n, m - n),
