@@ -64,6 +64,7 @@ dependencies = [
     "lmfit>=0.9.0",
     "rich>=13.9.4",
     "h5py>=3.11.0",
+    "asteval>=1.0.6", # avoid upstream CVE-2025-24359 
 ]
 
 [project.readme]
