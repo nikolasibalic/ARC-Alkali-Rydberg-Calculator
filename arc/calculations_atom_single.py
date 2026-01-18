@@ -1769,7 +1769,9 @@ class LevelPlot:
                     # for ground state S state, there is only singlet
                     l += 1
                 while l <= min(lTo, n - 1):
-                    for j in np.linspace(np.abs(l - s), l + s, round(2 * s + 1)):
+                    for j in np.linspace(
+                        np.abs(l - s), l + s, round(2 * s + 1)
+                    ):
                         if j > -0.1:
                             self.listX.append(l - lFrom + xPositionOffset)
                             self.listY.append(self.atom.getEnergy(n, l, j, s=s))
@@ -3531,7 +3533,7 @@ class StarkBasisGenerator:
         # track where target state is inserted in this list
         indexOfCoupledState = 0
         index = 0
-        for tn in range(nMin, nMax + 1 ):
+        for tn in range(nMin, nMax + 1):
             for tl in range(min(maxL + 1, tn)):
                 for tj in np.linspace(tl - s, tl + s, round(2 * s + 1)):
                     # skip test state if unphysical
