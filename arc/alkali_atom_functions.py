@@ -2186,6 +2186,15 @@ class AlkaliAtom(object):
             transition rates between the two states
 
         """
+        quantum_defect_correction = 0  # can state decay sometimes to higher pricipal quantum number, that is lower in energy?
+        if l > 0:
+            # include situations such as Rb85 5D->6P decay since 6P is lower in energy than 5D
+            quantum_defect_correction = int(
+                (
+                    self.getQuantumDefect(n, l - 1, j)
+                    - self.getQuantumDefect(n, l, j)
+                )
+            )
         if temperature > 0.1 and includeLevelsUpTo <= n:
             raise ValueError(
                 "For non-zero temperatures, user has to specify "
@@ -2195,7 +2204,14 @@ class AlkaliAtom(object):
                 + " higher lying up in energy levels."
             )
         elif temperature < 0.1:
-            includeLevelsUpTo = max(n, self.groundStateN)
+            includeLevelsUpTo = max(
+                n + quantum_defect_correction, self.groundStateN
+            )
+        else:
+            # high temperature, set max levels
+            includeLevelsUpTo = max(
+                n + quantum_defect_correction, includeLevelsUpTo
+            )
 
         transitionRate = 0.0
 
@@ -2885,8 +2901,9 @@ class AlkaliAtom(object):
         sph = 0.0
         if abs(mI) <= self.I:
             for f2 in np.arange(
-                max(self.I - j2, abs(mf2), f1 - 1), 1 + min(self.I + j2, f1 + 1),
-                dtype=float
+                max(self.I - j2, abs(mf2), f1 - 1),
+                1 + min(self.I + j2, f1 + 1),
+                dtype=float,
             ):
                 f2 = cast(float, f2)  # type: ignore
                 # Enforce Triangle Rule
