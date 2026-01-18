@@ -58,9 +58,55 @@ jobs:
         run:
           uv run coverage report -m
 
+  security_test:
+    name: Trivy security scan
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+    permissions:
+      contents: read          # Required to checkout and read repo files
+      security-events: write  # Required to upload SARIF files to Security tab
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install uv and set the python version
+        uses: astral-sh/setup-uv@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Setup ARC
+        run: |
+          uv venv
+          uv sync
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: 'fs'
+          ignore-unfixed: true
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'HIGH,CRITICAL'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Fail build on High/Criticial Vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          format: table
+          scan-ref: .
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: 1
+          # On a subsequent call to the action we know trivy is already installed so can skip this
+          skip-setup-trivy: true
+
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
-    needs: [function_test]
+    needs: [function_test, security_test]
     if: github.event_name == 'release' && github.event.action == 'published'
     runs-on: ${{ matrix.os }}
     strategy:
