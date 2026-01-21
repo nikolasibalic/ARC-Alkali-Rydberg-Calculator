@@ -2189,9 +2189,10 @@ class AlkaliAtom(object):
         quantum_defect_correction = 0  # can state decay sometimes to higher pricipal quantum number, that is lower in energy?
         if l > 0:
             # include situations such as Rb85 5D->6P decay since 6P is lower in energy than 5D
+            # make sure that lower l state and connecting j state exist using min and max
             quantum_defect_correction = int(
                 (
-                    self.getQuantumDefect(n, l - 1, j)
+                    self.getQuantumDefect(n, max(0, l - 1), min(l-1+s,j))
                     - self.getQuantumDefect(n, l, j)
                 )
             )
