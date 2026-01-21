@@ -3304,7 +3304,7 @@ class PairStateInteractions:
                 more verbose output.
         """
 
-        self.r = np.sort(rangeR)
+        self.r = np.sort(rangeR)[::-1]
         dimension = len(self.basisStates)
 
         self.noOfEigenvectors = noOfEigenvectors
@@ -3420,7 +3420,7 @@ class PairStateInteractions:
             print("\n\nDiagonalizing interaction matrix...\n")
 
         rvalIndex = 0.0
-        previousEigenvectors = []
+        previousEigenvectors = None
 
         for rval in self.r:
             if progressOutput:
@@ -3454,7 +3454,7 @@ class PairStateInteractions:
                 # previous diagonalisatoin, in order to find "adiabatic"
                 # continuation for the respective states
 
-                if previousEigenvectors == []:
+                if previousEigenvectors is None:
                     previousEigenvectors = np.copy(egvector)
                 rowPicked = [False for i in range(len(ev))]
                 columnPicked = [False for i in range(len(ev))]

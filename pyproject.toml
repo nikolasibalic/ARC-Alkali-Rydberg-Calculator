@@ -18,7 +18,7 @@ arc = ["data/*", "data/refractive_index_data/*", "arc_c_extensions.c"]
 [project]
 name = "ARC-Alkali-Rydberg-Calculator"
 description = "Alkali Rydberg Calculator"
-version = "3.10.1"
+version = "3.10.2"
 authors = [
     {name = "Nikola Sibalic", email = "nikolasibalic@physics.org"},
     {name = "Elizabeth J. Robertson"},
@@ -64,7 +64,7 @@ dependencies = [
     "lmfit>=0.9.0",
     "rich>=13.9.4",
     "h5py>=3.11.0",
-    "asteval>=1.0.6", # avoid upstream CVE-2025-24359 
+    "asteval>=1.0.6", # avoid upstream CVE-2025-24359
 ]
 
 [project.readme]
@@ -75,7 +75,7 @@ content-type = "text/markdown"
 Homepage = "https://atomcalc.org/"
 Repository = "https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator"
 Documentation = "https://arc-alkali-rydberg-calculator.readthedocs.io/en/latest/"
-Download = "https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/archive/refs/tags/v3.10.1.tar.gz"
+Download = "https://github.com/nikolasibalic/ARC-Alkali-Rydberg-Calculator/archive/refs/tags/v3.10.2.tar.gz"
 
 [dependency-groups]
 dev = [

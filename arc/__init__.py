@@ -3,7 +3,7 @@
 # this is automatically parsed by Aphinx module in Python, using napoleon addon
 from __future__ import division, print_function, absolute_import
 
-__version__ = "3.10.1"
+__version__ = "3.10.2"
 
 __all__ = [
     "AlkaliAtom",
