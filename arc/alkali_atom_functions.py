@@ -2192,7 +2192,7 @@ class AlkaliAtom(object):
             # make sure that lower l state and connecting j state exist using min and max
             quantum_defect_correction = int(
                 (
-                    self.getQuantumDefect(n, max(0, l - 1), min(l-1+s,j))
+                    self.getQuantumDefect(n, max(0, l - 1), min(l - 1 + s, j))
                     - self.getQuantumDefect(n, l, j)
                 )
             )
