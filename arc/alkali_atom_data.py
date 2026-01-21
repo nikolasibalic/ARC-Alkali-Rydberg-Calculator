@@ -271,7 +271,7 @@ class Caesium(AlkaliAtom):
             f_7/2 quantum defects are PUT TO BE EXACTLY the same as f_5/2 (~10MHz difference?!)
     """
 
-    minQuantumDefectN = 9
+    minQuantumDefectN = 12
 
     levelDataFromNIST = "cs_NIST_level_data.ascii"
 
