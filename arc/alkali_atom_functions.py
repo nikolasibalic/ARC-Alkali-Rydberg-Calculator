@@ -1346,14 +1346,14 @@ class AlkaliAtom(object):
 
     def getDipoleMatrixElement(
         self,
-        n1: int,
-        l1: int,
-        j1: float,
-        mj1: float,
         n2: int,
         l2: int,
         j2: float,
         mj2: float,
+        n1: int,
+        l1: int,
+        j1: float,
+        mj1: float,
         q: int,
         s: float = 0.5,
     ) -> float:
@@ -1398,7 +1398,7 @@ class AlkaliAtom(object):
         #            Wigner3j(j1, 1, j2, -mj1, -q, mj2) *\
         #            self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
         return self.getSphericalDipoleMatrixElement(
-            j1, mj1, j2, mj2, q
+            j1, mj1, j2, mj2, -q
         ) * self.getReducedMatrixElementJ(n1, l1, j1, n2, l2, j2, s=s)
 
     def getDipoleMatrixElementHFS(
