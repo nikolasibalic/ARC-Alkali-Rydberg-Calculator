@@ -742,7 +742,6 @@ class StarkMap:
         self.Bz = Bz
         self.s = s
         # save calculation details END
-
         for tn in xrange(nMin, nMax + 1):
             for tl in xrange(min(maxL + 1, tn)):
                 for tj in np.linspace(tl - s, tl + s, round(2 * s + 1)):
@@ -814,16 +813,38 @@ class StarkMap:
             # add off-diagonal element
 
             for jj in xrange(ii + 1, dimension):
+                if (
+                    Bz != 0
+                    and abs(states[ii][0] - states[jj][0]) < 0.1
+                    and abs(states[ii][1] -states[jj][1]) < 0.1
+                    and abs(states[ii][3] - states[jj][3]) < 0.1
+                ):
+                    zeemanCoupling = (
+                        self.atom.getZeemanEnergyShiftOffDiagonal(
+                            states[ii][1],
+                            states[ii][2],
+                            states[ii][3],
+                            states[jj][2],
+                            states[jj][3],
+                            self.Bz,
+                            s=self.s,
+                        )
+                        / C_h
+                        * 1.0e-9
+                    )
+                    self.mat1[jj][ii] = zeemanCoupling
+                    self.mat1[ii][jj] = zeemanCoupling
+
                 coupling = (
                     self._eFieldCouplingDivE(
                         states[ii][0],
                         states[ii][1],
                         states[ii][2],
-                        mj,
+                        states[ii][3],
                         states[jj][0],
                         states[jj][1],
                         states[jj][2],
-                        mj,
+                        states[jj][3],
                         s=self.s,
                     )
                     * 1.0e-9
@@ -831,7 +852,6 @@ class StarkMap:
                 )
                 self.mat2[jj][ii] = coupling
                 self.mat2[ii][jj] = coupling
-
         if progressOutput:
             print("\n")
         if debugOutput:
@@ -980,7 +1000,6 @@ class StarkMap:
                     "\r%d%%" % (float(progress) / float(len(eFieldList)) * 100)
                 )
                 sys.stdout.flush()
-
             m = self.mat1 + self.mat2 * eField
 
             ev, egvector = eigh(m)
@@ -1583,6 +1602,7 @@ class StarkMap:
         maxL,
         accountForAmplitude=0.95,
         debugOutput=False,
+        Bz=0
     ):
         r"""
         Returns basis states and coefficients that make up for a given electric
@@ -1610,6 +1630,7 @@ class StarkMap:
                 for 95\% of the state amplitude.
             debugOutput (bool): optional, prints additional debug information
                 if True. Default False.
+            Bz (float): Magnetic field in z direction.
 
         Returns:
             **array of states** in format [[n1, l1, j1, mj1], ...] and
@@ -1621,7 +1642,7 @@ class StarkMap:
 
         """
         self.defineBasis(
-            state[0], state[1], state[2], state[3], minN, maxN, maxL
+            state[0], state[1], state[2], state[3], minN, maxN, maxL, Bz
         )
 
         m = self.mat1 + self.mat2 * electricField
