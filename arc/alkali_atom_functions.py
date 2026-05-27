@@ -2680,6 +2680,54 @@ class AlkaliAtom(object):
                 sumOverMl += (ml + gs * ms) * abs(CG(l, ml, s, ms, j, mj)) ** 2
         return prefactor * sumOverMl
 
+    def getZeemanEnergyShiftOffDiagonal(
+        self,
+        l: int,
+        j1: float,
+        mj1: float,
+        j2: float,
+        mj2: float,
+        magneticFieldBz: float,
+        s: float = 0.5,
+    ) -> float:
+        r"""
+            Retuns off diagonal linear (paramagnetic) Zeeman shift.
+
+            :math:`\mathcal{H}_P=\frac{\mu_B B_z}{\hbar}(\hat{L}_{\rm z}+\
+            g_{\rm S}S_{\rm z})`
+
+            Args:
+                l (int): orbital angular momentum
+                j1 (float): total angular momentum of first state
+                mj1 (float): projection of total angular momentum of first state along z-axis
+                j2 (float): total angular momentum of second state
+                mj2 (float): projection of total angular momentum of second state along z-axis
+                magneticFieldBz (float): applied magnetic field (along  z-axis
+                    only) in units of T (Tesla)
+                s (float): optional, total spin angular momentum of state.
+                    By default 0.5 for Alkali atoms.
+
+            Returns:
+                float: energy offset of the state (in J)
+        """
+        if abs(mj1 - mj2) > 0.1:
+            return 0.0
+
+        prefactor = physical_constants["Bohr magneton"][0] * magneticFieldBz
+        gs = -physical_constants["electron g factor"][0]
+        sumOverMl = 0.0
+
+        for ml in np.linspace(mj1 - s, mj1 + s, round(2 * s + 1)):
+            if abs(ml) <= l + 0.1:
+                ms = mj1 - ml
+                if abs(ms) <= s + 0.1:
+                    sumOverMl += (
+                        (self.gL * ml + gs * ms)
+                        * CG(l, ml, s, ms, j1, mj1)
+                        * CG(l, ml, s, ms, j2, mj2)
+                    )
+        return prefactor * sumOverMl
+
     def _getRadialDipoleSemiClassical(
         self,
         n1: int,

@@ -636,6 +636,7 @@ class StarkMap:
         self.fittedCurveY = []
 
         self.drivingFromState = [0, 0, 0, 0, 0]
+        self.highlightUncoupledState = None
         self.maxCoupling = 0.0
 
         # STARK memoization
@@ -742,7 +743,6 @@ class StarkMap:
         self.Bz = Bz
         self.s = s
         # save calculation details END
-
         for tn in xrange(nMin, nMax + 1):
             for tl in xrange(min(maxL + 1, tn)):
                 for tj in np.linspace(tl - s, tl + s, round(2 * s + 1)):
@@ -814,16 +814,38 @@ class StarkMap:
             # add off-diagonal element
 
             for jj in xrange(ii + 1, dimension):
+                if (
+                    Bz != 0
+                    and abs(states[ii][0] - states[jj][0]) < 0.1
+                    and abs(states[ii][1] -states[jj][1]) < 0.1
+                    and abs(states[ii][3] - states[jj][3]) < 0.1
+                ):
+                    zeemanCoupling = (
+                        self.atom.getZeemanEnergyShiftOffDiagonal(
+                            states[ii][1],
+                            states[ii][2],
+                            states[ii][3],
+                            states[jj][2],
+                            states[jj][3],
+                            self.Bz,
+                            s=self.s,
+                        )
+                        / C_h
+                        * 1.0e-9
+                    )
+                    self.mat1[jj][ii] = zeemanCoupling
+                    self.mat1[ii][jj] = zeemanCoupling
+
                 coupling = (
                     self._eFieldCouplingDivE(
                         states[ii][0],
                         states[ii][1],
                         states[ii][2],
-                        mj,
+                        states[ii][3],
                         states[jj][0],
                         states[jj][1],
                         states[jj][2],
-                        mj,
+                        states[jj][3],
                         s=self.s,
                     )
                     * 1.0e-9
@@ -831,7 +853,6 @@ class StarkMap:
                 )
                 self.mat2[jj][ii] = coupling
                 self.mat2[ii][jj] = coupling
-
         if progressOutput:
             print("\n")
         if debugOutput:
@@ -847,6 +868,7 @@ class StarkMap:
         self,
         eFieldList,
         drivingFromState=[0, 0, 0, 0, 0],
+        highlightUncoupledState=None,
         progressOutput=False,
         debugOutput=False,
         upTo=4,
@@ -864,6 +886,11 @@ class StarkMap:
             eFieldList (array): array of electric field strength (in V/m)
                 for which we want to know energy eigenstates
 
+            highlightUncoupledState (array): optional target state in the
+                uncoupled basis :math:`[n,\\ell,m_\\ell,m_s]`. If provided,
+                highlighting shows the projection of each eigenstate onto this
+                uncoupled state. The calculation itself remains in the coupled
+                :math:`[n,\\ell,j,m_j]` basis.
             progressOutput (:obj:`bool`, optional): if True prints the
                 progress of calculation; Set to false by default.
             debugOutput (:obj:`bool`, optional): if True prints additional
@@ -881,13 +908,45 @@ class StarkMap:
                 upTo = -1.
         """
 
-        # if we are driving from some state
-        # ========= FIND LASER COUPLINGS (START) =======
-
         coupling = []
         dimension = len(self.basisStates)
         self.maxCoupling = 0.0
         self.drivingFromState = drivingFromState
+        self.highlightUncoupledState = highlightUncoupledState
+
+        if highlightUncoupledState is not None and drivingFromState[0] != 0:
+            raise ValueError(
+                "highlightUncoupledState cannot be used together with "
+                "drivingFromState."
+            )
+
+        uncoupledStateVector = None
+        if highlightUncoupledState is not None:
+            uncoupledStateVector = np.zeros(dimension, dtype=np.double)
+            hn = round(highlightUncoupledState[0])
+            hl = round(highlightUncoupledState[1])
+            hml = highlightUncoupledState[2]
+            hms = highlightUncoupledState[3]
+            hmj = hml + hms
+
+            for i, state in enumerate(self.basisStates):
+                if (
+                    state[0] == hn
+                    and state[1] == hl
+                    and abs(state[3] - hmj) < 0.1
+                ):
+                    uncoupledStateVector[i] = CG(
+                        state[1], hml, self.s, hms, state[2], state[3]
+                    )
+
+            if np.linalg.norm(uncoupledStateVector) < 0.1:
+                raise ValueError(
+                    "highlightUncoupledState is not represented in the "
+                    "current coupled basis."
+                )
+
+        # if we are driving from some state
+        # ========= FIND LASER COUPLINGS (START) =======
         if self.drivingFromState[0] != 0:
             if progressOutput:
                 print("Finding driving field coupling...")
@@ -980,7 +1039,6 @@ class StarkMap:
                     "\r%d%%" % (float(progress) / float(len(eFieldList)) * 100)
                 )
                 sys.stdout.flush()
-
             m = self.mat1 + self.mat2 * eField
 
             ev, egvector = eigh(m)
@@ -990,7 +1048,12 @@ class StarkMap:
                 sh = []
                 comp = []
                 for i in xrange(len(ev)):
-                    sh.append(abs(egvector[indexOfCoupledState, i]) ** 2)
+                    if uncoupledStateVector is None:
+                        sh.append(abs(egvector[indexOfCoupledState, i]) ** 2)
+                    else:
+                        sh.append(
+                            abs(np.vdot(uncoupledStateVector, egvector[:, i])) ** 2
+                        )
                     comp.append(
                         self._stateComposition2(
                             egvector[:, i],
@@ -1066,10 +1129,19 @@ class StarkMap:
             % (self.s)
         )
         if self.drivingFromState[0] < 0.1:
-            commonHeader += (
-                " - State highlighting based on the relative contribution \n"
-                + "   of the original state in the eigenstates obtained by diagonalization."
-            )
+            if self.highlightUncoupledState is not None:
+                state = self.highlightUncoupledState
+                commonHeader += (
+                    " - State highlighting based on the relative contribution \n"
+                    + "   of the uncoupled state "
+                    + "|n=%d, l=%d, m_l=%.1f, m_s=%.1f> in the eigenstates."
+                    % (state[0], state[1], state[2], state[3])
+                )
+            else:
+                commonHeader += (
+                    " - State highlighting based on the relative contribution \n"
+                    + "   of the original state in the eigenstates obtained by diagonalization."
+                )
         else:
             commonHeader += (
                 " - State highlighting based on the relative driving strength \n"
@@ -1264,10 +1336,18 @@ class StarkMap:
                 cax = self.fig.add_axes([0.91, 0.1, 0.02, 0.8])
                 cb = matplotlib.colorbar.ColorbarBase(cax, cmap=cm, norm=cNorm)
                 if self.drivingFromState[0] < 0.1:
-                    cb.set_label(
-                        r"$|\langle %s | \mu \rangle |^2$"
-                        % printStateStringLatex(n, l, j, s=self.s)
-                    )
+                    if self.highlightUncoupledState is not None:
+                        state = self.highlightUncoupledState
+                        cb.set_label(
+                            r"$|\langle n=%d,\ell=%d,m_\ell=%.1f,m_s=%.1f"
+                            r"|\mu\rangle|^2$"
+                            % (state[0], state[1], state[2], state[3])
+                        )
+                    else:
+                        cb.set_label(
+                            r"$|\langle %s | \mu \rangle |^2$"
+                            % printStateStringLatex(n, l, j, s=self.s)
+                        )
                 else:
                     cb.set_label(r"$( \Omega_\mu | \Omega )^2$")
 
@@ -1464,11 +1544,12 @@ class StarkMap:
                 float: scalar polarizability in units of MHz cm :math:`^2` / V \
                 :math:`^2`
         """
-        if self.drivingFromState[0] != 0:
+        if self.drivingFromState[0] != 0 or self.highlightUncoupledState is not None:
             raise Exception(
                 "Program can only find Polarizability of the original "
                 + "state if you highlight original state. You can do so by NOT "
-                + "specifying drivingFromState in diagonalise function."
+                + "specifying drivingFromState or highlightUncoupledState in "
+                + "diagonalise function."
             )
 
         eFieldList = self.eFieldList
@@ -1583,6 +1664,7 @@ class StarkMap:
         maxL,
         accountForAmplitude=0.95,
         debugOutput=False,
+        Bz=0
     ):
         r"""
         Returns basis states and coefficients that make up for a given electric
@@ -1610,6 +1692,7 @@ class StarkMap:
                 for 95\% of the state amplitude.
             debugOutput (bool): optional, prints additional debug information
                 if True. Default False.
+            Bz (float): Magnetic field in z direction.
 
         Returns:
             **array of states** in format [[n1, l1, j1, mj1], ...] and
@@ -1621,7 +1704,7 @@ class StarkMap:
 
         """
         self.defineBasis(
-            state[0], state[1], state[2], state[3], minN, maxN, maxL
+            state[0], state[1], state[2], state[3], minN, maxN, maxL, Bz
         )
 
         m = self.mat1 + self.mat2 * electricField
