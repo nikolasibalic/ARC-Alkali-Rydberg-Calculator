@@ -15,6 +15,7 @@ labels etc.
 from __future__ import division, print_function, absolute_import
 
 from arc._database import sqlite3, UsedModulesARC
+from arc._data import DPATH
 import csv
 import gzip
 from math import exp, sqrt
@@ -56,7 +57,6 @@ if sys.version_info > (2,):
 import pickle
 
 
-DPATH = os.path.join(os.path.expanduser("~"), ".arc-data")
 __arc_data_version__ = 13
 
 __all__ = [
@@ -70,7 +70,7 @@ __all__ = [
 
 
 def setup_data_folder():
-    """Setup the data folder in the users home directory."""
+    """Set up the user's ARC data directory."""
     if not os.path.exists(DPATH):
         os.makedirs(DPATH)
 
@@ -1004,7 +1004,7 @@ class AlkaliAtom(object):
                 useLiterature (bool): optional, should literature values for
                     dipole matrix element be used if existing? If true,
                     compiled values stored in `literatureDMEfilename` variable
-                    for a given atom (file is stored locally at ~/.arc-data/),
+                    for a given atom (stored in ARC's user data directory),
                     will be checked, and if the value is found, selects the
                     value with smallest error estimate (if there are multiple
                     entries). If no value is found, it will default to numerical
@@ -3776,7 +3776,8 @@ class AlkaliAtom(object):
 
     def update_me_cache(self):
         """
-        Updates cached dipole and quadrupole matrix elements saved in `~/.arc-data`
+        Updates cached dipole and quadrupole matrix elements saved in ARC's
+        user data directory.
         """
         data = np.load(
             os.path.join(self.dataFolder, self.dipoleMatrixElementFile),

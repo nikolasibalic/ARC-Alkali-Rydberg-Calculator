@@ -58,7 +58,9 @@ Make sure you have C compiler and `python development headers <https://anaconda.
     python setup.py build
     python setup.py install
 
-Databases that have to be changed with new values will be locally copied from package data location to `~.arc-data` folder when arc is used for the first time.
+Databases that have to be changed with new values will be locally copied from
+package data location to the platform-specific ARC user data directory when
+ARC is used for the first time.
 
 Compiling C extension
 ----------------------

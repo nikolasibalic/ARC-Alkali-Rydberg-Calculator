@@ -32,6 +32,7 @@ Example:
 from __future__ import division, print_function, absolute_import
 
 from arc._database import sqlite3, UsedModulesARC
+from arc._data import DPATH
 from arc.wigner import Wigner6j, CG, WignerDmatrix
 from arc.alkali_atom_functions import (
     _atomLightAtomCoupling,
@@ -88,8 +89,6 @@ mpl.rcParams["font.family"] = "serif"
 if sys.version_info > (2,):
     xrange = range
 
-
-DPATH = os.path.join(os.path.expanduser("~"), ".arc-data")
 
 __all__ = ["PairStateInteractions", "StarkMapResonances"]
 

@@ -65,6 +65,7 @@ dependencies = [
     "rich>=13.9.4",
     "h5py>=3.11.0",
     "asteval>=1.0.6", # avoid upstream CVE-2025-24359
+    "platformdirs>=4.3.6",
 ]
 
 [project.readme]
@@ -170,4 +171,3 @@ docstring-code-format = false
 # This only has an effect when the `docstring-code-format` setting is
 # enabled.
 docstring-code-line-length = "dynamic"
-
