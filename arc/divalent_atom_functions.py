@@ -388,7 +388,7 @@ class DivalentAtom(AlkaliAtom):
                 useLiterature (bool): optional, should literature values for
                     dipole matrix element be used if existing? If true,
                     compiled values stored in `literatureDMEfilename` variable
-                    for a given atom (file is stored locally at ~/.arc-data/),
+                    for a given atom (stored in ARC's user data directory),
                     will be checked, and if the value is found, selects the
                     value with smallest error estimate (if there are multiple
                     entries). If no value is found, it will default to numerical

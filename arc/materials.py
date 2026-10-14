@@ -1,6 +1,6 @@
 import numpy as np
 import os
-from .alkali_atom_functions import DPATH
+from ._data import DPATH
 from typing import List
 
 
